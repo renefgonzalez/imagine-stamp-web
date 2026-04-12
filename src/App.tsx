@@ -188,7 +188,7 @@ export default function App() {
           <section className="relative w-full h-[350px] md:h-[400px] overflow-hidden mb-8">
             <img 
               alt="Hero" className="w-full h-full object-cover" 
-              src="https://images.unsplash.com/photo-1560060141-7b3018bc419d?q=80&w=2000&auto=format&fit=crop"
+              src="./hero-imagine-stamp.png"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12">
