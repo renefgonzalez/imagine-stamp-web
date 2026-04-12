@@ -2,7 +2,7 @@ import React, { useState, useMemo, ErrorInfo, ReactNode, Component } from 'react
 import { 
   Menu, Search, Heart, Plus, ShoppingBag, Store, Sparkles, User, X, 
   ChevronRight, Instagram, Facebook, Mail, Phone, Settings, ShoppingCart, 
-  MessageCircle, Mail as MailIcon, PartyPopper, Gift, Briefcase, LayoutGrid 
+  MessageCircle, Mail as MailIcon, PartyPopper, Gift, Briefcase, LayoutGrid, Lock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
@@ -303,7 +303,9 @@ export default function App() {
           </div>
           <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-primary/5 text-center">
             <p className="text-primary/30 text-[10px] uppercase tracking-widest">© 2026 Imagine & Stamp. Todos los derechos reservados.</p>
-            <button onClick={() => window.location.hash = '/admin'} className="mt-4 text-primary/20 hover:text-primary/60 transition-colors text-[10px] uppercase flex items-center gap-1 mx-auto"><Settings size={14} /> Acceso Admin</button>
+            <button onClick={() => window.location.hash = '/admin'} className="mt-4 text-primary/20 hover:text-primary/60 transition-colors flex items-center justify-center mx-auto" aria-label="Admin Access">
+              <Lock size={16} />
+            </button>
           </div>
         </footer>
 
