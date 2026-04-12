@@ -114,27 +114,25 @@ const SpeedyCartIcon = ({ className }: { className?: string }) => (
 export default function App() {
   const [cart, setCart] = useState<{ id: number; name: string; price: number; quantity: number }[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cartStep, setCartStep] = useState<'cart' | 'details'>('cart');
+  const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', city: '', notes: '' });
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const categories = useMemo(() => {
     const saved = localStorage.getItem('imagine_stamp_categories_v2');
     if (!saved) return DEFAULT_CATEGORIES;
-    
     const parsed = JSON.parse(saved);
     if (parsed.length === 0) return DEFAULT_CATEGORIES;
-
     const dynamicCategories = parsed.map((cat: any) => ({
       ...cat,
       icon: ICON_MAP[cat.id] || ICON_MAP[cat.name] || Sparkles
     }));
-
     return [DEFAULT_CATEGORIES[0], ...dynamicCategories];
   }, []);
 
   const filteredProducts = useMemo(() => {
     const localProducts = JSON.parse(localStorage.getItem('imagine_stamp_products') || '[]');
     const allProducts = [...PRODUCTS, ...localProducts];
-    
     if (selectedCategory === 'all') return allProducts;
     return allProducts.filter(p => p.category === selectedCategory);
   }, [selectedCategory]);
@@ -142,24 +140,36 @@ export default function App() {
   const addToCart = (product: Product) => {
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
-      if (existing) {
-        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
-      }
+      if (existing) return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
       return [...prev, { id: product.id, name: product.name, price: product.price, quantity: 1 }];
     });
   };
 
-  const removeFromCart = (id: number) => {
-    setCart(prev => prev.filter(item => item.id !== id));
+  const updateQuantity = (id: number, delta: number) => {
+    setCart(prev => prev
+      .map(item => item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item)
+    );
   };
+
+  const removeFromCart = (id: number) => setCart(prev => prev.filter(item => item.id !== id));
 
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
   const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
-  const handleCheckout = () => {
-    const phoneNumber = "525650469993"; 
-    const summary = cart.map(item => `${item.name} (x${item.quantity})`).join(', ');
-    const message = `¡Hola René! Me interesa el siguiente pedido: ${summary} - Total: $${totalPrice}`;
+  const openCart = () => { setCartStep('cart'); setIsCartOpen(true); };
+
+  const handleFinalCheckout = () => {
+    const phoneNumber = '525650469993';
+    const lines = cart.map(item => `  • ${item.name} x${item.quantity} = $${item.price * item.quantity} MXN`).join('\n');
+    const message =
+      `¡Hola! Quiero realizar el siguiente pedido 🛍️\n\n` +
+      `*Productos:*\n${lines}\n\n` +
+      `*Total: $${totalPrice} MXN*\n\n` +
+      `*Datos de entrega:*\n` +
+      `👤 Nombre: ${customerInfo.name}\n` +
+      `📱 WhatsApp: ${customerInfo.phone}\n` +
+      `📍 Ciudad: ${customerInfo.city}` +
+      (customerInfo.notes ? `\n📝 Notas: ${customerInfo.notes}` : '');
     window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -181,7 +191,7 @@ export default function App() {
               <Search className="text-primary cursor-pointer hover:opacity-70 transition-opacity" size={24} />
               <div 
                 className="relative w-11 h-11 rounded-full bg-secondary flex items-center justify-center cursor-pointer hover:scale-105 transition-transform shadow-lg shadow-secondary/20" 
-                onClick={() => setIsCartOpen(true)}
+                onClick={openCart}
               >
                 <SpeedyCartIcon className="text-white w-6 h-6" />
                 {totalItems > 0 && (
@@ -332,33 +342,153 @@ export default function App() {
         <AnimatePresence>
           {isCartOpen && (
             <>
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsCartOpen(false)} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]" />
-              <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} className="fixed right-0 top-0 h-full w-full max-w-md bg-background z-[70] shadow-2xl p-6 flex flex-col">
-                <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-2xl font-black text-primary font-headline">Tu Carrito</h2>
-                  <button onClick={() => setIsCartOpen(false)}><X size={24} className="text-primary" /></button>
-                </div>
-                <div className="flex-1 overflow-y-auto space-y-4">
-                  {cart.length === 0 ? (
-                    <div className="text-center py-20 text-primary/40"><ShoppingBag size={64} className="mx-auto mb-4" /> Tu carrito está vacío</div>
-                  ) : (
-                    cart.map(item => (
-                      <div key={item.id} className="flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm">
-                        <div className="flex-1">
-                          <h4 className="font-bold text-primary text-sm">{item.name}</h4>
-                          <p className="text-xs text-primary/60">Cant: {item.quantity} • ${item.price * item.quantity}</p>
-                        </div>
-                        <button onClick={() => removeFromCart(item.id)} className="text-red-500"><X size={18} /></button>
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                onClick={() => setIsCartOpen(false)}
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
+              />
+              <motion.div
+                initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+                className="fixed right-0 top-0 h-full w-full max-w-md bg-background z-[70] shadow-2xl flex flex-col overflow-hidden"
+              >
+                {/* ── Paso 1: Carrito ── */}
+                <AnimatePresence mode="wait">
+                  {cartStep === 'cart' ? (
+                    <motion.div key="cart" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} className="flex flex-col h-full p-6">
+                      <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl font-black text-primary font-headline">Tu Carrito</h2>
+                        <button onClick={() => setIsCartOpen(false)}><X size={24} className="text-primary" /></button>
                       </div>
-                    ))
+
+                      <div className="flex-1 overflow-y-auto space-y-3">
+                        {cart.length === 0 ? (
+                          <div className="text-center py-20 text-primary/40 flex flex-col items-center">
+                            <ShoppingBag size={64} className="mb-4" />
+                            <p className="font-bold text-sm">Tu carrito está vacío</p>
+                          </div>
+                        ) : (
+                          cart.map(item => (
+                            <div key={item.id} className="flex items-center gap-3 bg-white p-4 rounded-2xl shadow-sm">
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-primary text-sm truncate">{item.name}</h4>
+                                <p className="text-xs text-primary/50 font-medium mt-0.5">${item.price} c/u</p>
+                              </div>
+                              {/* Controles de cantidad */}
+                              <div className="flex items-center gap-2 shrink-0">
+                                <button
+                                  onClick={() => updateQuantity(item.id, -1)}
+                                  className="w-8 h-8 rounded-full bg-primary/5 border border-primary/10 flex items-center justify-center text-primary font-black text-lg leading-none hover:bg-secondary hover:text-white hover:border-secondary transition-all"
+                                >−</button>
+                                <span className="w-6 text-center font-black text-primary text-sm">{item.quantity}</span>
+                                <button
+                                  onClick={() => updateQuantity(item.id, 1)}
+                                  className="w-8 h-8 rounded-full bg-primary/5 border border-primary/10 flex items-center justify-center text-primary font-black text-lg leading-none hover:bg-secondary hover:text-white hover:border-secondary transition-all"
+                                >+</button>
+                              </div>
+                              {/* Subtotal */}
+                              <div className="text-right shrink-0 min-w-[60px]">
+                                <p className="font-black text-primary text-sm">${item.price * item.quantity}</p>
+                              </div>
+                              <button onClick={() => removeFromCart(item.id)} className="text-primary/20 hover:text-error transition-colors"><X size={16} /></button>
+                            </div>
+                          ))
+                        )}
+                      </div>
+
+                      {cart.length > 0 && (
+                        <div className="pt-5 border-t border-primary/5 space-y-4 mt-4">
+                          <div className="flex justify-between items-center">
+                            <span className="text-primary/50 font-medium text-sm">{totalItems} {totalItems === 1 ? 'artículo' : 'artículos'}</span>
+                            <span className="text-2xl font-black text-primary">${totalPrice} <span className="text-sm font-bold text-primary/40">MXN</span></span>
+                          </div>
+                          <button
+                            onClick={() => setCartStep('details')}
+                            className="w-full py-4 bg-secondary text-white rounded-2xl font-black text-base shadow-lg shadow-secondary/20 hover:bg-orange-600 transition-all flex items-center justify-center gap-3"
+                          >
+                            Siguiente — Datos de Entrega
+                            <ChevronRight size={20} strokeWidth={3} />
+                          </button>
+                        </div>
+                      )}
+                    </motion.div>
+                  ) : (
+                  /* ── Paso 2: Datos de entrega ── */
+                    <motion.div key="details" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} className="flex flex-col h-full p-6">
+                      <div className="flex items-center gap-3 mb-6">
+                        <button onClick={() => setCartStep('cart')} className="w-9 h-9 rounded-full bg-primary/5 flex items-center justify-center text-primary hover:bg-secondary hover:text-white transition-all">
+                          <ChevronRight size={18} className="rotate-180" />
+                        </button>
+                        <h2 className="text-xl font-black text-primary font-headline">Datos de Entrega</h2>
+                        <button onClick={() => setIsCartOpen(false)} className="ml-auto"><X size={22} className="text-primary/40" /></button>
+                      </div>
+
+                      {/* Resumen compacto */}
+                      <div className="bg-white rounded-2xl p-4 border border-primary/5 shadow-sm mb-6">
+                        {cart.map(item => (
+                          <div key={item.id} className="flex justify-between text-xs py-1">
+                            <span className="text-primary/60 truncate pr-2">{item.name} <span className="font-bold">x{item.quantity}</span></span>
+                            <span className="font-black text-primary shrink-0">${item.price * item.quantity}</span>
+                          </div>
+                        ))}
+                        <div className="border-t border-primary/5 mt-2 pt-2 flex justify-between">
+                          <span className="text-xs font-black text-primary/40 uppercase tracking-widest">Total</span>
+                          <span className="font-black text-secondary">${totalPrice} MXN</span>
+                        </div>
+                      </div>
+
+                      {/* Formulario */}
+                      <div className="flex-1 overflow-y-auto space-y-4">
+                        <div>
+                          <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1.5 block ml-1">Nombre Completo *</label>
+                          <input
+                            value={customerInfo.name}
+                            onChange={e => setCustomerInfo(p => ({ ...p, name: e.target.value }))}
+                            placeholder="Ej: María García López"
+                            className="w-full bg-white border border-primary/10 text-primary p-4 rounded-2xl text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1.5 block ml-1">Teléfono WhatsApp *</label>
+                          <input
+                            value={customerInfo.phone}
+                            onChange={e => setCustomerInfo(p => ({ ...p, phone: e.target.value }))}
+                            placeholder="10 dígitos"
+                            type="tel"
+                            className="w-full bg-white border border-primary/10 text-primary p-4 rounded-2xl text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1.5 block ml-1">Ciudad *</label>
+                          <input
+                            value={customerInfo.city}
+                            onChange={e => setCustomerInfo(p => ({ ...p, city: e.target.value }))}
+                            placeholder="Ej: Guadalajara, Jalisco"
+                            className="w-full bg-white border border-primary/10 text-primary p-4 rounded-2xl text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1.5 block ml-1">Notas Adicionales <span className="normal-case font-medium">(opcional)</span></label>
+                          <textarea
+                            value={customerInfo.notes}
+                            onChange={e => setCustomerInfo(p => ({ ...p, notes: e.target.value }))}
+                            placeholder="Color específico, medida, personalización..."
+                            rows={3}
+                            className="w-full bg-white border border-primary/10 text-primary p-4 rounded-2xl text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none transition-all resize-none"
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={handleFinalCheckout}
+                        disabled={!customerInfo.name || !customerInfo.phone || !customerInfo.city}
+                        className="mt-5 w-full py-4 bg-[#25D366] text-white rounded-2xl font-black text-base shadow-lg hover:bg-[#1DAD54] transition-all flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <MessageCircle size={22} fill="currentColor" />
+                        Finalizar Pedido vía WhatsApp
+                      </button>
+                    </motion.div>
                   )}
-                </div>
-                {cart.length > 0 && (
-                  <div className="pt-6 border-t border-primary/5 space-y-4">
-                    <div className="flex justify-between items-center"><span className="text-primary/60 font-medium">Total</span><span className="text-2xl font-black text-primary">${totalPrice}</span></div>
-                    <button onClick={handleCheckout} className="w-full py-4 bg-secondary text-white rounded-xl font-bold text-lg">Finalizar Pedido vía WhatsApp</button>
-                  </div>
-                )}
+                </AnimatePresence>
               </motion.div>
             </>
           )}
