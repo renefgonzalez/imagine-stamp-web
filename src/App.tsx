@@ -119,22 +119,15 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const categories = useMemo(() => {
-    const saved = localStorage.getItem('imagine_stamp_categories_v2');
-    if (!saved) return DEFAULT_CATEGORIES;
-    const parsed = JSON.parse(saved);
-    if (parsed.length === 0) return DEFAULT_CATEGORIES;
-    const dynamicCategories = parsed.map((cat: any) => ({
+    return DEFAULT_CATEGORIES.map(cat => ({
       ...cat,
       icon: ICON_MAP[cat.id] || ICON_MAP[cat.name] || Sparkles
     }));
-    return [DEFAULT_CATEGORIES[0], ...dynamicCategories];
   }, []);
 
   const filteredProducts = useMemo(() => {
-    const localProducts = JSON.parse(localStorage.getItem('imagine_stamp_products') || '[]');
-    const allProducts = [...PRODUCTS, ...localProducts];
-    if (selectedCategory === 'all') return allProducts;
-    return allProducts.filter(p => p.category === selectedCategory);
+    if (selectedCategory === 'all') return PRODUCTS;
+    return PRODUCTS.filter(p => p.category === selectedCategory);
   }, [selectedCategory]);
 
   const addToCart = (product: Product) => {

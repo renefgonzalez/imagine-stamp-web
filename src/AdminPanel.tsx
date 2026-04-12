@@ -150,7 +150,7 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
       <div className="max-w-6xl mx-auto p-4 md:p-8">
 
         {/* Top Nav */}
-        <div className="flex flex-col lg:flex-row gap-6 justify-between items-center mb-10 bg-surface p-5 rounded-2xl border border-primary/5 shadow-sm">
+        <div className="flex flex-col lg:flex-row gap-6 justify-between items-center mb-6 bg-surface p-5 rounded-2xl border border-primary/5 shadow-sm">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-secondary/10 rounded-xl">
               <Plus className="text-secondary" size={22} />
@@ -172,6 +172,19 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
             <button onClick={onLogout} className="p-3 text-primary/20 hover:text-error transition-colors ml-2">
               <LogOut size={20} />
             </button>
+          </div>
+        </div>
+
+        {/* Global Warning for Static Flow */}
+        <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 mb-8 flex items-start gap-4">
+          <div className="p-2 bg-amber-100 rounded-lg shrink-0">
+            <FileText className="text-amber-600" size={20} />
+          </div>
+          <div>
+            <p className="text-amber-900 text-xs font-black uppercase tracking-widest mb-1">⚠️ Flujo Estático (Modo "Por Ahí")</p>
+            <p className="text-amber-800/70 text-[11px] font-medium leading-relaxed">
+              Los cambios hechos aquí son <strong>temporales</strong>. Para que los productos y categorías aparezcan permanentemente para todos tus clientes, debes añadirlos al archivo <code className="bg-amber-100/50 px-1 rounded text-amber-900">src/data/products.ts</code> y hacer un <strong>Push a GitHub</strong>.
+            </p>
           </div>
         </div>
 
@@ -223,9 +236,9 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
           {/* ─── NUEVO PRODUCTO ───────────────────────────────────────────── */}
           {activeTab === 'add' && (
             <div className="max-w-3xl mx-auto">
-              <div className="mb-8 px-2">
-                <h2 className="text-2xl font-black text-primary font-headline uppercase">Nuevo Diseño / Servicio</h2>
-                <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1">Aparecerá en "Nuestros Servicios" de la tienda</p>
+              <div className="mb-6 px-2">
+                <h2 className="text-2xl font-black text-primary font-headline uppercase">Simular Nuevo Artículo</h2>
+                <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1 italic">Usa esto para previsualizar antes de editar el código.</p>
               </div>
               <form onSubmit={(e) => {
                 e.preventDefault();
@@ -323,8 +336,8 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
           {activeTab === 'categories' && (
             <div className="max-w-4xl mx-auto space-y-6">
               <div className="px-2">
-                <h2 className="text-2xl font-black text-primary font-headline uppercase">Gestión de Categorías</h2>
-                <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1">Edita nombres y subcategorías mostradas en "Nuestros Servicios"</p>
+                <h2 className="text-2xl font-black text-primary font-headline uppercase">Borrador de Categorías</h2>
+                <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1 italic">Los cambios aquí no afectan la tienda permanentemente.</p>
               </div>
 
               {/* Lista editable */}

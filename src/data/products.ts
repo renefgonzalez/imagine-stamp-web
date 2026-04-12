@@ -80,5 +80,14 @@ export const PRODUCTS: Product[] = [
     price: 190,
     category: "Papelería Creativa",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuD5Mf-k5cfgoiylxavEk6Sx3m--1ongF21d9iKQlhRnJnTUm83jQQ9TeESCl4OYrlcFWv3ZA4uv7aPOi0KgK8e5ju9u-qTkMI6b1jvrwcU8hv5tK6iEMAXwiZXUwhbX5uuZGgtKE0Zjiia1Shz1ENVmnUN3UMk9XVScl6GaVURC0qorLbnfhqW1P7wy_Xm6bCCuTbSKUDbDjvalxKMiVTNgbw2HxdvBqRrH_wx5lMQE7GgrVZdRWO4bPFtD_LwXQ0YcqO8sXNN9-Q"
+  },
+  {
+    id: 9,
+    name: "Etiqueta Termoadhesiva 55 pzas",
+    description: "Etiqueta textil de 1.3 x 5.2 cm diseñada para identificación permanente en ropa mediante calor. Resistente a lavados.",
+    price: 110,
+    category: "Personalización",
+    subCategory: "Etiquetas",
+    image: "https://lh3.googleusercontent.com/pw/AP1GczO_Z7xPZk4x1T-_m_p0_FpYfV6g-m4k8E_k_uG_x_y-q-6Z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8" 
   }
 ];
