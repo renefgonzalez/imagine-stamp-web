@@ -115,7 +115,7 @@ export default function App() {
   const [cart, setCart] = useState<{ id: number; name: string; price: number; quantity: number }[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartStep, setCartStep] = useState<'cart' | 'details'>('cart');
-  const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', city: '', notes: '' });
+  const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo' });
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const categories = useMemo(() => {
@@ -154,6 +154,25 @@ export default function App() {
   const handleFinalCheckout = () => {
     const phoneNumber = '525650469993';
     const lines = cart.map(item => `  • ${item.name} x${item.quantity} = $${item.price * item.quantity} MXN`).join('\n');
+
+    // ── Crear pedido y guardarlo en localStorage ──────────────────────────
+    const newOrder = {
+      id: 'ORD-' + Date.now(),
+      date: new Date().toLocaleString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      customer: customerInfo.name,
+      phone: customerInfo.phone,
+      city: customerInfo.city,
+      deliveryNotes: customerInfo.notes,
+      paymentMethod: customerInfo.paymentMethod,
+      items: cart.map(item => ({ name: item.name, price: item.price, quantity: item.quantity })),
+      total: totalPrice,
+      status: 'pending',
+      internalNotes: []
+    };
+    const existing = JSON.parse(localStorage.getItem('imagine_stamp_orders') || '[]');
+    localStorage.setItem('imagine_stamp_orders', JSON.stringify([newOrder, ...existing]));
+
+    // ── Mensaje de WhatsApp ────────────────────────────────────────────────
     const message =
       `¡Hola! Quiero realizar el siguiente pedido 🛍️\n\n` +
       `*Productos:*\n${lines}\n\n` +
@@ -161,9 +180,16 @@ export default function App() {
       `*Datos de entrega:*\n` +
       `👤 Nombre: ${customerInfo.name}\n` +
       `📱 WhatsApp: ${customerInfo.phone}\n` +
-      `📍 Ciudad: ${customerInfo.city}` +
+      `📍 Ciudad: ${customerInfo.city}\n` +
+      `💳 Pago: ${customerInfo.paymentMethod}` +
       (customerInfo.notes ? `\n📝 Notas: ${customerInfo.notes}` : '');
     window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+
+    // ── Limpiar carrito y formulario ───────────────────────────────────────
+    setCart([]);
+    setCustomerInfo({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo' });
+    setCartStep('cart');
+    setIsCartOpen(false);
   };
 
   return (
@@ -463,12 +489,25 @@ export default function App() {
                                 />
                               </div>
                               <div>
+                                <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1.5 block ml-1">Forma de Pago *</label>
+                                <select
+                                  value={customerInfo.paymentMethod}
+                                  onChange={e => setCustomerInfo(p => ({ ...p, paymentMethod: e.target.value }))}
+                                  className="w-full bg-white border border-primary/10 text-primary p-4 rounded-2xl text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none transition-all cursor-pointer"
+                                >
+                                  <option value="Efectivo">💵 Efectivo</option>
+                                  <option value="Transferencia">🏦 Transferencia Bancaria</option>
+                                  <option value="Tarjeta">💳 Tarjeta</option>
+                                  <option value="Por Confirmar">⏳ Por Confirmar</option>
+                                </select>
+                              </div>
+                              <div>
                                 <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1.5 block ml-1">Notas Adicionales <span className="normal-case font-medium">(opcional)</span></label>
                                 <textarea
                                   value={customerInfo.notes}
                                   onChange={e => setCustomerInfo(p => ({ ...p, notes: e.target.value }))}
                                   placeholder="Color específico, medida, personalización..."
-                                  rows={3}
+                                  rows={2}
                                   className="w-full bg-white border border-primary/10 text-primary p-4 rounded-2xl text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none transition-all resize-none"
                                 />
                               </div>

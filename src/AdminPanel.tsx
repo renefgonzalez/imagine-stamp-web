@@ -55,12 +55,30 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
     localStorage.setItem('imagine_stamp_products', JSON.stringify(localOnly));
   }, [products]);
 
-  // ── PEDIDOS ──────────────────────────────────────────────────────────────
-  const [orders] = useState([
-    { id: 'ORD-001', customer: 'Ana Sánchez', phone: '5512345678', amount: 600, status: 'pending', items: '2x Playera Vintage', date: '12 Abr 2026' },
-    { id: 'ORD-002', customer: 'Luis Pérez', phone: '5598765432', amount: 450, status: 'pending', items: '1x Sudadera BTS', date: '12 Abr 2026' },
-    { id: 'ORD-003', customer: 'María Gómez', phone: '5533322211', amount: 150, status: 'delivered', items: '1x Playera María Félix', date: '10 Abr 2026' },
-  ]);
+  // ── PEDIDOS ──────────────────────────────────────────────────────────────────
+  const [orders, setOrders] = useState<any[]>(() =>
+    JSON.parse(localStorage.getItem('imagine_stamp_orders') || '[]')
+  );
+  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+  const [noteInputs, setNoteInputs] = useState<Record<string, string>>({});
+
+  // Persistir pedidos en localStorage cuando cambien
+  useEffect(() => {
+    localStorage.setItem('imagine_stamp_orders', JSON.stringify(orders));
+  }, [orders]);
+
+  // Detectar nuevos pedidos creados desde la tienda (mismo navegador, distinta pestaña)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const stored: any[] = JSON.parse(localStorage.getItem('imagine_stamp_orders') || '[]');
+      setOrders(prev => {
+        const existingIds = new Set(prev.map((o: any) => o.id));
+        const newOnes = stored.filter((o: any) => !existingIds.has(o.id));
+        return newOnes.length > 0 ? [...newOnes, ...prev] : prev;
+      });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   // ── ACCESO ───────────────────────────────────────────────────────────────
   if (!isAuthenticated) {
@@ -90,10 +108,40 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
     );
   }
 
-  const filteredOrders = orders.filter(o =>
-    o.status === orderTab &&
-    (o.customer.toLowerCase().includes(searchOrder.toLowerCase()) || o.phone.includes(searchOrder))
-  );
+  const filteredOrders = orders.filter(o => {
+    const matchesSearch =
+      (o.customer || '').toLowerCase().includes(searchOrder.toLowerCase()) ||
+      (o.phone || '').includes(searchOrder);
+    const matchesTab = orderTab === 'pending' ? o.status !== 'delivered' : o.status === 'delivered';
+    return matchesSearch && matchesTab;
+  });
+
+  // ── HELPERS DE PEDIDOS ─────────────────────────────────────────────────
+  const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border: string }> = {
+    pending:      { label: 'Pendiente',  color: 'text-orange-600',  bg: 'bg-orange-50',  border: 'border-orange-200' },
+    'in-process': { label: 'En Proceso', color: 'text-blue-600',    bg: 'bg-blue-50',    border: 'border-blue-200'   },
+    delayed:      { label: 'Demorado',   color: 'text-red-600',     bg: 'bg-red-50',     border: 'border-red-200'    },
+    delivered:    { label: 'Entregado',  color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200'},
+  };
+
+  const updateOrderStatus = (id: string, status: string) =>
+    setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
+
+  const deleteOrder = (id: string) =>
+    setOrders(prev => prev.filter(o => o.id !== id));
+
+  const addNote = (orderId: string) => {
+    const text = (noteInputs[orderId] || '').trim();
+    if (!text) return;
+    const entry = {
+      text,
+      date: new Date().toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
+    };
+    setOrders(prev => prev.map(o =>
+      o.id === orderId ? { ...o, internalNotes: [...(o.internalNotes || []), entry] } : o
+    ));
+    setNoteInputs(prev => ({ ...prev, [orderId]: '' }));
+  };
 
   // ── HELPERS DE CATEGORÍAS ────────────────────────────────────────────────
   const saveCatName = (id: string) => {
@@ -439,53 +487,159 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
 
           {/* ─── PEDIDOS ─────────────────────────────────────────────────── */}
           {activeTab === 'orders' && (
-            <div className="space-y-8">
-              <div className="flex flex-col md:flex-row justify-between md:items-end gap-6 px-2">
+            <div className="space-y-6">
+              <div className="flex flex-col md:flex-row justify-between md:items-end gap-4 px-2">
                 <div>
                   <h2 className="text-2xl font-black text-primary font-headline uppercase">Pedidos & Ventas</h2>
-                  <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1">Seguimiento de clientes</p>
+                  <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1">
+                    {orders.filter(o => o.status !== 'delivered').length} pendientes · {orders.filter(o => o.status === 'delivered').length} entregados
+                  </p>
                 </div>
                 <div className="relative w-full md:w-80">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={15} />
                   <input value={searchOrder} onChange={(e) => setSearchOrder(e.target.value)}
-                    placeholder="BUSCAR CLIENTE..."
+                    placeholder="BUSCAR POR NOMBRE O TELÉFONO..."
                     className="w-full bg-surface text-primary p-3.5 pl-11 rounded-2xl border border-primary/5 focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none text-[10px] font-black tracking-widest placeholder:text-primary/20" />
                 </div>
               </div>
+
+              {/* Tabs */}
               <div className="flex bg-surface p-1.5 rounded-2xl border border-primary/5 shadow-sm inline-flex">
                 <button onClick={() => setOrderTab('pending')}
                   className={`flex items-center gap-2 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${orderTab === 'pending' ? 'bg-secondary text-white shadow' : 'text-primary/40 hover:text-primary'}`}>
-                  <Clock size={13} /> Pendientes
+                  <Clock size={13} /> Pendientes ({orders.filter(o => o.status !== 'delivered').length})
                 </button>
                 <button onClick={() => setOrderTab('delivered')}
                   className={`flex items-center gap-2 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${orderTab === 'delivered' ? 'bg-emerald-500 text-white shadow' : 'text-primary/40 hover:text-primary'}`}>
-                  <CheckCircle size={13} /> Entregados
+                  <CheckCircle size={13} /> Entregados ({orders.filter(o => o.status === 'delivered').length})
                 </button>
               </div>
+
+              {/* Lista de pedidos */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {filteredOrders.length === 0 ? (
                   <div className="col-span-full py-20 bg-surface rounded-3xl border border-primary/5 text-center">
-                    <p className="text-primary/20 text-sm font-bold uppercase tracking-widest italic">Sin registros</p>
+                    <Package className="text-primary/10 mx-auto mb-4" size={48} />
+                    <p className="text-primary/20 text-sm font-bold uppercase tracking-widest italic">
+                      {searchOrder ? 'Sin resultados' : orderTab === 'pending' ? 'No hay pedidos pendientes' : 'No hay pedidos entregados'}
+                    </p>
                   </div>
-                ) : filteredOrders.map(order => (
-                  <div key={order.id} className="bg-surface border border-primary/5 rounded-3xl p-6 shadow-sm">
-                    <div className="flex justify-between items-start mb-4">
-                      <span className="text-[10px] font-black text-secondary bg-secondary/10 px-2 py-0.5 rounded tracking-widest uppercase">{order.id}</span>
-                      <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${order.status === 'pending' ? 'bg-orange-50 text-orange-600' : 'bg-emerald-50 text-emerald-600'}`}>
-                        {order.status === 'pending' ? 'Pendiente' : 'Listo'}
-                      </span>
+                ) : filteredOrders.map(order => {
+                  const cfg = STATUS_CONFIG[order.status] || STATUS_CONFIG.pending;
+                  const isExpanded = expandedOrder === order.id;
+                  return (
+                    <div key={order.id} className="bg-surface border border-primary/5 rounded-3xl shadow-sm overflow-hidden flex flex-col">
+                      {/* Cabecera del pedido */}
+                      <div className="flex flex-col gap-3 p-5 flex-1">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <span className={`text-[10px] font-black px-2 py-0.5 rounded tracking-widest uppercase border ${cfg.bg} ${cfg.color} ${cfg.border}`}>
+                              {(order.id || '').slice(-10)}
+                            </span>
+                            <p className="text-[10px] text-primary/30 font-bold mt-1">{order.date}</p>
+                          </div>
+                          <div className="flex gap-1.5">
+                            <button
+                              onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
+                              title="Ver notas internas"
+                              className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all ${
+                                isExpanded ? 'bg-secondary/10 border-secondary/30 text-secondary' : 'bg-background border-primary/5 text-primary/30 hover:text-primary'
+                              }`}
+                            >
+                              {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                            </button>
+                            <button
+                              onClick={() => deleteOrder(order.id)}
+                              title="Eliminar pedido"
+                              className="w-8 h-8 rounded-xl bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-error hover:border-error transition-all"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="text-primary font-black text-sm uppercase tracking-wide">{order.customer}</h4>
+                          <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
+                            <span className="text-[10px] text-primary/40 font-bold flex items-center gap-1">
+                              <Phone size={9} className="text-secondary" />{order.phone}
+                            </span>
+                            {order.city && <span className="text-[10px] text-primary/40 font-bold">📍 {order.city}</span>}
+                          </div>
+                        </div>
+
+                        {/* Forma de pago */}
+                        {order.paymentMethod && (
+                          <span className={`self-start text-[9px] font-black px-2 py-0.5 rounded-full border tracking-widest uppercase ${cfg.bg} ${cfg.border} ${cfg.color}`}>
+                            💳 {order.paymentMethod}
+                          </span>
+                        )}
+
+                        {/* Items */}
+                        <div className="bg-background/60 p-3 rounded-xl border border-primary/5 space-y-1">
+                          {(order.items || []).map((item: any, i: number) => (
+                            <div key={i} className="flex justify-between text-[11px]">
+                              <span className="text-primary/60 font-medium truncate pr-2">{item.name} <span className="font-black">x{item.quantity}</span></span>
+                              <span className="text-primary font-black shrink-0">${item.price * item.quantity}</span>
+                            </div>
+                          ))}
+                          {order.deliveryNotes && (
+                            <p className="text-[10px] text-primary/30 italic border-t border-primary/5 pt-1.5 mt-1">📝 {order.deliveryNotes}</p>
+                          )}
+                        </div>
+
+                        <div className="flex justify-between items-center">
+                          <span className="text-primary/20 text-[10px] font-black uppercase tracking-widest">Total</span>
+                          <span className="text-primary font-black text-lg">${order.total} <span className="text-[10px]">MXN</span></span>
+                        </div>
+
+                        {/* Selector de estatus */}
+                        <select
+                          value={order.status || 'pending'}
+                          onChange={e => updateOrderStatus(order.id, e.target.value)}
+                          className={`w-full p-3 rounded-xl border text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer transition-all ${cfg.bg} ${cfg.border} ${cfg.color}`}
+                        >
+                          <option value="pending">⏳ Pendiente</option>
+                          <option value="in-process">🔄 En Proceso</option>
+                          <option value="delayed">⚠️ Demorado</option>
+                          <option value="delivered">✅ Entregado</option>
+                        </select>
+                      </div>
+
+                      {/* Panel de notas internas (expandible) */}
+                      {isExpanded && (
+                        <div className="border-t border-primary/5 p-4 bg-background/30 space-y-3">
+                          <p className="text-[10px] font-black text-primary/30 uppercase tracking-[0.2em]">Notas Internas</p>
+                          <div className="space-y-2 max-h-36 overflow-y-auto">
+                            {(order.internalNotes || []).length === 0 ? (
+                              <p className="text-[11px] text-primary/20 italic">Sin notas todavía...</p>
+                            ) : (order.internalNotes || []).map((note: any, i: number) => (
+                              <div key={i} className="bg-white rounded-xl p-3 border border-primary/5">
+                                <p className="text-[9px] text-secondary font-black uppercase tracking-widest mb-1">{note.date}</p>
+                                <p className="text-xs text-primary/70 font-medium leading-relaxed">{note.text}</p>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex gap-2 pt-1">
+                            <input
+                              value={noteInputs[order.id] || ''}
+                              onChange={e => setNoteInputs(prev => ({ ...prev, [order.id]: e.target.value }))}
+                              onKeyDown={e => e.key === 'Enter' && addNote(order.id)}
+                              placeholder="Añadir nota interna..."
+                              className="flex-1 bg-white border border-primary/10 text-primary px-4 py-2.5 rounded-xl text-xs outline-none focus:border-secondary transition-all"
+                            />
+                            <button
+                              onClick={() => addNote(order.id)}
+                              className="px-3 py-2 bg-secondary text-white rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-orange-600 transition-all flex items-center gap-1"
+                            >
+                              <Save size={12} /> Guardar
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <h4 className="text-primary font-black text-base uppercase">{order.customer}</h4>
-                    <p className="text-xs text-primary/40 font-bold flex items-center gap-1.5 mt-1 mb-4"><Phone size={11} className="text-secondary" /> {order.phone}</p>
-                    <div className="bg-background/50 p-3 rounded-xl border border-primary/5 mb-4">
-                      <p className="text-[11px] text-primary/60 font-medium uppercase">"{order.items}"</p>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-primary/30 text-[10px] font-black uppercase tracking-widest">Total</span>
-                      <span className="text-primary font-black text-xl">${order.amount} <span className="text-[10px]">MXN</span></span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
