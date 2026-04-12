@@ -23,7 +23,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   }
 }
 
-const DEFAULT_CATEGORIES = [
+export const DEFAULT_CATEGORIES = [
   {
     id: 'all',
     name: 'VER TODO',
@@ -34,58 +34,68 @@ const DEFAULT_CATEGORIES = [
     submenus: []
   },
   {
-    id: 'Fiestas Infantiles',
+    id: 'Fiestas y Cumpleaños',
     name: 'Fiestas y Cumpleaños',
     icon: PartyPopper,
     bgColor: 'bg-purple-50',
     iconColor: 'text-purple-500',
     dotColor: 'bg-purple-500',
-    submenus: ['Ropa Personalizada', 'Decoración e Impresión', 'Recuerdos']
+    submenus: ['Boda', 'Quinceaños', 'Cumpleaños Infantil', 'Baby Shower']
   },
   {
-    id: 'Invitaciones Digitales',
+    id: 'Invitaciones',
     name: 'Invitaciones',
     icon: MailIcon,
     bgColor: 'bg-orange-50',
     iconColor: 'text-orange-500',
     dotColor: 'bg-orange-500',
-    submenus: ['Digital Web (RSVP, Galería)', 'Para WhatsApp (Video, Imagen)']
+    submenus: ['Invitación Web', 'Invitación WhatsApp']
   },
   {
-    id: 'Boutique Corporativa',
+    id: 'Empresarial',
     name: 'Empresarial',
     icon: Briefcase,
     bgColor: 'bg-amber-50',
     iconColor: 'text-amber-500',
     dotColor: 'bg-amber-500',
-    submenus: ['Kits Corporativos', 'Textil con Logo', 'Impresión Empresa']
+    submenus: ['Kits Corporativos', 'Textil con Logo', 'Impresión Empresarial']
   },
   {
-    id: 'Social & Eventos',
+    id: 'Personalización',
     name: 'Personalización',
     icon: Gift,
     bgColor: 'bg-green-50',
     iconColor: 'text-green-500',
     dotColor: 'bg-green-500',
-    submenus: ['Textil (Playeras, Sudaderas)', 'Accesorios (Termos, Libretas)', 'Vinil e Impresión']
+    submenus: ['Playeras', 'Sudaderas', 'Termos y Accesorios', 'Vinil e Impresión']
   },
   {
-    id: 'Portfolio',
-    name: 'Catálogo / Portfolio',
+    id: 'Páginas Web y Apps',
+    name: 'Páginas Web y Apps',
+    icon: Sparkles,
+    bgColor: 'bg-blue-50',
+    iconColor: 'text-blue-500',
+    dotColor: 'bg-blue-500',
+    submenus: ['Landing Pages', 'Tiendas en Línea', 'Apps Móviles']
+  },
+  {
+    id: 'Catálogo y Portafolio',
+    name: 'Catálogo y Portafolio',
     icon: Sparkles,
     bgColor: 'bg-indigo-50',
     iconColor: 'text-indigo-500',
     dotColor: 'bg-indigo-500',
-    submenus: ['Galería de Trabajos', 'Proyectos Especiales', 'Inspiración']
+    submenus: ['Galería de Trabajos', 'Proyectos Especiales']
   }
 ];
 
 const ICON_MAP: Record<string, any> = {
-  'Fiestas Infantiles': PartyPopper,
-  'Invitaciones Digitales': MailIcon,
-  'Boutique Corporativa': Briefcase,
-  'Social & Eventos': Gift,
-  'Portfolio': Sparkles,
+  'Fiestas y Cumpleaños': PartyPopper,
+  'Invitaciones': MailIcon,
+  'Empresarial': Briefcase,
+  'Personalización': Gift,
+  'Páginas Web y Apps': Sparkles,
+  'Catálogo y Portafolio': Sparkles,
   'all': LayoutGrid
 };
 
@@ -107,7 +117,7 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const categories = useMemo(() => {
-    const saved = localStorage.getItem('imagine_stamp_categories');
+    const saved = localStorage.getItem('imagine_stamp_categories_v2');
     if (!saved) return DEFAULT_CATEGORIES;
     
     const parsed = JSON.parse(saved);
@@ -115,7 +125,7 @@ export default function App() {
 
     const dynamicCategories = parsed.map((cat: any) => ({
       ...cat,
-      icon: ICON_MAP[cat.id] || Sparkles
+      icon: ICON_MAP[cat.id] || ICON_MAP[cat.name] || Sparkles
     }));
 
     return [DEFAULT_CATEGORIES[0], ...dynamicCategories];
@@ -212,7 +222,7 @@ export default function App() {
             <section className="mb-16">
               <h3 className="font-headline font-bold text-lg mb-8 text-primary flex items-center gap-2">
                 <span className="w-8 h-1 bg-secondary rounded-full"></span>
-                Explora nuestra Boutique
+                Nuestros Servicios
               </h3>
               <div className="flex items-start gap-10 overflow-x-auto hide-scrollbar pb-6 px-4">
                 {categories.map((cat) => (
