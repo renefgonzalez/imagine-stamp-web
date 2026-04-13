@@ -495,7 +495,7 @@ export default function App() {
                                   <span className={`text-sm font-medium transition-colors ${
                                     isActive ? 'text-secondary font-bold' : 'text-primary/70 group-hover:text-primary'
                                   }`}>{sub}</span>
-                                  {isActive && <span className="ml-auto text-[9px] font-black text-secondary uppercase tracking-widest">✕ Quitar</span>}
+                                  {isActive && <span className="ml-auto text-sm font-black text-secondary">✕</span>}
                                 </div>
                               );
                             })}
