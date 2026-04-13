@@ -268,7 +268,7 @@ export default function App() {
                       <span className="w-8 h-1 bg-secondary rounded-full"></span>
                       Nuestros Servicios
                     </h3>
-                    <div className="flex items-start gap-10 overflow-x-auto hide-scrollbar pb-6 px-4">
+                    <div className="flex items-start gap-10 overflow-x-auto hide-scrollbar py-4 px-4">
                       {categories.map((cat) => (
                         <div 
                           key={cat.id} 
@@ -279,7 +279,11 @@ export default function App() {
                           className="flex flex-col items-center gap-4 shrink-0 cursor-pointer group"
                         >
                           <div className={`w-20 h-20 rounded-full flex items-center justify-center transition-all ${cat.bgColor} ${selectedCategory === cat.id ? 'ring-4 ring-secondary ring-offset-4 scale-110 shadow-xl' : 'hover:scale-105 shadow-sm'}`}>
-                            <cat.icon className={`w-8 h-8 ${selectedCategory === cat.id ? 'text-secondary' : cat.iconColor}`} />
+                            {cat.image_url ? (
+                              <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover rounded-full" />
+                            ) : (
+                              <cat.icon className={`w-8 h-8 ${selectedCategory === cat.id ? 'text-secondary' : cat.iconColor}`} />
+                            )}
                           </div>
                           <span className={`text-[11px] font-black uppercase tracking-widest text-center max-w-[100px] ${selectedCategory === cat.id ? 'text-primary' : 'text-primary/40'}`}>
                             {cat.name}

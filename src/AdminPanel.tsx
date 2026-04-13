@@ -71,6 +71,7 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
   const [editingCatId, setEditingCatId] = useState<string | null>(null);
   const [editingCatName, setEditingCatName] = useState('');
+  const [catUploading, setCatUploading] = useState<string | null>(null);
   const [newSubInput, setNewSubInput] = useState<Record<string, string>>({});
   const [newCatName, setNewCatName] = useState('');
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
@@ -154,6 +155,33 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
   };
 
   // ── HELPERS DE CATEGORÍAS ────────────────────────────────────────────────
+  const uploadCategoryImg = async (catId: string, file: File) => {
+    try {
+      setCatUploading(catId);
+      const fileName = `cat-${catId}-${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+      const { error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(fileName);
+
+      const { error: updateError } = await supabase
+        .from('categories')
+        .update({ image_url: publicUrl })
+        .eq('id', catId);
+
+      if (updateError) throw updateError;
+      
+      loadCategories();
+    } catch (err: any) {
+      alert("Error al subir imagen: " + err.message);
+    } finally {
+      setCatUploading(null);
+    }
+  };
+
   const saveCatName = async (id: string) => {
     const { error } = await supabase.from('categories').update({ name: editingCatName }).eq('id', id);
     if (!error) {
@@ -458,6 +486,31 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                     
                     {/* Fila principal */}
                     <div className="flex items-center gap-4 p-4">
+                      {/* Imagen de Categoría */}
+                      <div className="relative group shrink-0">
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-primary/5 border border-primary/10 flex items-center justify-center relative">
+                          {cat.image_url ? (
+                            <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <ImageIcon className="text-primary/20" size={16} />
+                          )}
+                          {catUploading === cat.id && (
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                              <Clock className="animate-spin text-white" size={14} />
+                            </div>
+                          )}
+                        </div>
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) uploadCategoryImg(cat.id, file);
+                          }}
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                        />
+                      </div>
+
                       {editingCatId === cat.id ? (
                         <input
                           value={editingCatName}
@@ -467,7 +520,10 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                           onKeyDown={(e) => e.key === 'Enter' && saveCatName(cat.id)}
                         />
                       ) : (
-                        <span className="flex-1 text-sm font-black text-primary uppercase tracking-widest">{cat.name}</span>
+                        <div className="flex-1">
+                          <span className="text-sm font-black text-primary uppercase tracking-widest block leading-none">{cat.name}</span>
+                          <span className="text-[9px] font-bold text-primary/30 uppercase tracking-widest mt-1 block">Toca el círculo para subir imagen</span>
+                        </div>
                       )}
                       <div className="flex gap-2">
                         {editingCatId === cat.id ? (
