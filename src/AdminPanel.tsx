@@ -158,7 +158,11 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const uploadCategoryImg = async (catId: string, file: File) => {
     try {
       setCatUploading(catId);
-      const fileName = `cat-${catId}-${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+      // Sanitizar el nombre del archivo: quitar espacios, ñ, acentos, etc.
+      const safeCatId = catId.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '-');
+      const safeFileName = file.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9.]/g, '-');
+      const fileName = `cat-${safeCatId}-${Date.now()}-${safeFileName}`;
+      
       const { error: uploadError } = await supabase.storage
         .from('product-images')
         .upload(fileName, file);
