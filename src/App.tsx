@@ -68,6 +68,7 @@ export default function App() {
   const [categories, setCategories] = useState<any[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cartToast, setCartToast] = useState<{ name: string } | null>(null);
 
   // ── CARGAR DATOS DESDE SUPABASE ──────────────────────────────────────────
   useEffect(() => {
@@ -136,6 +137,9 @@ export default function App() {
       if (existing) return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
       return [...prev, { id: product.id, name: product.name, price: product.price, quantity: 1 }];
     });
+    // Mostrar toast de confirmación
+    setCartToast({ name: product.name });
+    setTimeout(() => setCartToast(null), 3500);
   };
 
   const updateQuantity = (id: number, delta: number) => {
@@ -296,32 +300,44 @@ export default function App() {
                   </div>
 
                   <section className="mb-16">
-                    <h3 className="font-headline font-bold text-lg mb-8 text-primary flex items-center gap-2">
+                    <h3 className="font-headline font-bold text-lg mb-4 text-primary flex items-center gap-2">
                       <span className="w-8 h-1 bg-secondary rounded-full"></span>
                       Nuestros Servicios
                     </h3>
-                    <div className="flex items-start gap-10 overflow-x-auto hide-scrollbar py-4 px-4">
-                      {categories.map((cat) => (
-                        <div 
-                          key={cat.id} 
-                          onClick={() => { 
-                            setSelectedCategory(cat.id); 
-                            setSelectedSubcategory(''); // resetear subcategoría al cambiar categoría
-                          }} 
-                          className="flex flex-col items-center gap-4 shrink-0 cursor-pointer group"
-                        >
-                          <div className={`w-20 h-20 rounded-full flex items-center justify-center transition-all ${cat.bgColor} ${selectedCategory === cat.id ? 'ring-4 ring-secondary ring-offset-4 scale-110 shadow-xl' : 'hover:scale-105 shadow-sm'}`}>
-                            {cat.image_url ? (
-                              <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover rounded-full" />
-                            ) : (
-                              <cat.icon className={`w-8 h-8 ${selectedCategory === cat.id ? 'text-secondary' : cat.iconColor}`} />
-                            )}
+                    {/* Contenedor con degradado para indicar scroll horizontal en móvil */}
+                    <div className="relative">
+                      <div className="flex items-start gap-5 md:gap-10 overflow-x-auto hide-scrollbar py-4 px-4">
+                        {categories.map((cat) => (
+                          <div 
+                            key={cat.id} 
+                            onClick={() => { 
+                              setSelectedCategory(cat.id); 
+                              setSelectedSubcategory('');
+                            }} 
+                            className="flex flex-col items-center gap-2 md:gap-4 shrink-0 cursor-pointer group"
+                          >
+                            {/* Círculo: pequeño en móvil, grande en escritorio */}
+                            <div className={`w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all ${cat.bgColor} ${
+                              selectedCategory === cat.id 
+                                ? 'ring-4 ring-secondary ring-offset-2 md:ring-offset-4 scale-110 shadow-xl' 
+                                : 'hover:scale-105 shadow-sm'
+                            }`}>
+                              {cat.image_url ? (
+                                <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover rounded-full" />
+                              ) : (
+                                <cat.icon className={`w-5 h-5 md:w-8 md:h-8 ${selectedCategory === cat.id ? 'text-secondary' : cat.iconColor}`} />
+                              )}
+                            </div>
+                            <span className={`text-[9px] md:text-[11px] font-black uppercase tracking-widest text-center max-w-[70px] md:max-w-[100px] leading-tight ${selectedCategory === cat.id ? 'text-primary' : 'text-primary/40'}`}>
+                              {cat.name}
+                            </span>
                           </div>
-                          <span className={`text-[11px] font-black uppercase tracking-widest text-center max-w-[100px] ${selectedCategory === cat.id ? 'text-primary' : 'text-primary/40'}`}>
-                            {cat.name}
-                          </span>
-                        </div>
-                      ))}
+                        ))}
+                        {/* Espaciado final para que el degradado no tape el último ítem */}
+                        <div className="shrink-0 w-4" />
+                      </div>
+                      {/* Degradado derecho — indica que hay más categorías */}
+                      <div className="pointer-events-none absolute top-0 right-0 h-full w-12 bg-gradient-to-l from-background to-transparent" />
                     </div>
 
                     <AnimatePresence mode="wait">
@@ -378,7 +394,7 @@ export default function App() {
                           <p className="text-[10px] text-primary/60 line-clamp-2 mb-2">{product.description}</p>
                           <div className="flex flex-col gap-2 mt-auto">
                             <span className="text-primary font-black text-lg">${product.price}</span>
-                            <button 
+                      <button 
                               onClick={() => addToCart(product)}
                               className="w-full py-2 bg-secondary text-white rounded-xl font-bold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                             >
@@ -391,6 +407,44 @@ export default function App() {
                   </div>
                 </div>
               </main>
+
+              {/* ── TOAST: Producto agregado ─────────────────────────────────── */}
+              <AnimatePresence>
+                {cartToast && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 80, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 80, scale: 0.9 }}
+                    className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[60] w-[90vw] max-w-sm"
+                  >
+                    <div className="bg-primary text-white rounded-2xl shadow-2xl px-5 py-4 flex flex-col gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                          <Plus size={16} className="text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-white/60">¡Agregado al carrito!</p>
+                          <p className="text-sm font-bold truncate">{cartToast.name}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => { setCartToast(null); openCart(); }}
+                          className="flex-1 py-2 bg-secondary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-500 transition-all"
+                        >
+                          Ver carrito
+                        </button>
+                        <button
+                          onClick={() => setCartToast(null)}
+                          className="flex-1 py-2 bg-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all"
+                        >
+                          Seguir comprando
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <footer className="bg-white border-t border-primary/5 pt-12 pb-32 px-6">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">

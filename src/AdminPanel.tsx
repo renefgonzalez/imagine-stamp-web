@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Lock, Package, DollarSign, Trash2, Edit2, Plus, LogOut, 
-  Tag, FileText, LayoutGrid, Box, Image as ImageIcon, Search, CheckCircle, Clock, Phone, List, X, Save, ChevronDown, ChevronUp
+  Tag, FileText, LayoutGrid, Box, Image as ImageIcon, Search, CheckCircle, Clock, Phone, List, X, Save, ChevronDown, ChevronUp, ArrowUp, ArrowDown
 } from 'lucide-react';
 import { DEFAULT_CATEGORIES } from './App';
 import { supabase } from './lib/supabase';
@@ -215,6 +215,25 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
       loadCategories();
       setEditingCatId(null);
     }
+  };
+
+  const reorderCategory = async (catId: string, direction: 'up' | 'down') => {
+    const idx = categories.findIndex(c => c.id === catId);
+    if (idx === -1) return;
+    if (direction === 'up' && idx === 0) return;
+    if (direction === 'down' && idx === categories.length - 1) return;
+
+    const newList = [...categories];
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    [newList[idx], newList[swapIdx]] = [newList[swapIdx], newList[idx]];
+    // Actualizar el estado local inmediatamente (UX instant)
+    setCategories(newList);
+    // Persistir sort_order en Supabase
+    await Promise.all(
+      newList.map((cat, i) => 
+        supabase.from('categories').update({ sort_order: i }).eq('id', cat.id)
+      )
+    );
   };
 
   const addSubmenu = async (catId: string) => {
@@ -553,6 +572,23 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                         </div>
                       )}
                       <div className="flex gap-2">
+                        {/* Botones de reordenamiento */}
+                        <div className="flex flex-col gap-1">
+                          <button 
+                            onClick={() => reorderCategory(cat.id, 'up')}
+                            title="Subir"
+                            className="w-9 h-4 rounded-t-lg bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-primary hover:border-primary/20 transition-all"
+                          >
+                            <ArrowUp size={10} />
+                          </button>
+                          <button 
+                            onClick={() => reorderCategory(cat.id, 'down')}
+                            title="Bajar"
+                            className="w-9 h-4 rounded-b-lg bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-primary hover:border-primary/20 transition-all"
+                          >
+                            <ArrowDown size={10} />
+                          </button>
+                        </div>
                         {editingCatId === cat.id ? (
                           <button onClick={() => saveCatName(cat.id)}
                             className="w-9 h-9 rounded-xl bg-secondary text-white flex items-center justify-center hover:bg-orange-600 transition-all shadow">
