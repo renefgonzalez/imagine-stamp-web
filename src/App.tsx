@@ -215,7 +215,13 @@ export default function App() {
                     <Search 
                       className="text-primary cursor-pointer hover:opacity-70 transition-opacity" 
                       size={24} 
-                      onClick={() => document.getElementById('main-search')?.focus()}
+                      onClick={() => {
+                        const element = document.getElementById('main-search');
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          setTimeout(() => element.focus(), 500);
+                        }
+                      }}
                     />
                     <div 
                       className="relative w-11 h-11 rounded-full bg-secondary flex items-center justify-center cursor-pointer hover:scale-105 transition-transform shadow-lg shadow-secondary/20" 
