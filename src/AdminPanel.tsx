@@ -315,7 +315,8 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
               </div>
             </div>
           )}
-
+          {activeTab === 'add' && (
+            <div className="max-w-2xl mx-auto">
               <div className="mb-6 px-2">
                 <h2 className="text-2xl font-black text-primary font-headline uppercase">Nuevo Diseño / Servicio</h2>
                 <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1">Se publicará instantáneamente en la tienda.</p>
