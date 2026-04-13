@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, ErrorInfo, ReactNode, Component } from 'react';
 import { supabase } from './lib/supabase';
 import { 
-  Search, Heart, Plus, Sparkles, X, 
+  Search, Heart, Plus, Sparkles, X, ShoppingBag,
   ChevronRight, Instagram, Facebook, Mail as MailIcon, 
   PartyPopper, Gift, Briefcase, LayoutGrid, Lock, MessageCircle
 } from 'lucide-react';
