@@ -234,8 +234,8 @@ export default function App() {
                 <div className="flex justify-between items-center px-4 md:px-6 h-20 w-full max-w-7xl mx-auto">
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-14 w-14 flex items-center justify-center overflow-hidden">
-                        <img src={logo} alt="Imagine & Stamp Logo" className="h-14 w-auto object-contain" />
+                      <div className="h-16 w-16 flex items-center justify-center overflow-hidden transition-all">
+                        <img src={logo} alt="Imagine & Stamp Logo" className="h-full w-auto object-contain" />
                       </div>
                       <h1 className="text-lg md:text-xl font-black text-primary font-headline tracking-tighter hidden sm:block">Imagine & Stamp</h1>
                     </div>
