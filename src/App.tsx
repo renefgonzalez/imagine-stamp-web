@@ -412,7 +412,7 @@ export default function App() {
                     </h3>
                     {/* Contenedor con degradado para indicar scroll horizontal en móvil */}
                     <div className="relative">
-                      <div className="flex items-start gap-6 md:gap-10 overflow-x-auto hide-scrollbar py-4 px-4">
+                      <div className="flex items-start gap-6 md:gap-8 overflow-x-auto hide-scrollbar py-4 px-4">
                         {categories.map((cat) => (
                           <div 
                             key={cat.id} 
@@ -420,7 +420,7 @@ export default function App() {
                               setSelectedCategory(cat.id); 
                               setSelectedSubcategory('');
                             }} 
-                            className="flex flex-col items-center gap-2 md:gap-4 shrink-0 cursor-pointer group"
+                            className="flex flex-col items-center gap-2 md:gap-3 shrink-0 cursor-pointer group"
                           >
                             {/* Círculo: pequeño en móvil, grande en escritorio */}
                             <div className={`w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all ${cat.bgColor} ${
@@ -434,7 +434,7 @@ export default function App() {
                                 <cat.icon className={`w-5 h-5 md:w-8 md:h-8 ${selectedCategory === cat.id ? 'text-secondary' : cat.iconColor}`} />
                               )}
                             </div>
-                            <span className={`text-[9.5px] md:text-[11px] font-black uppercase tracking-widest text-center w-[85px] md:w-[110px] leading-tight break-words ${selectedCategory === cat.id ? 'text-primary' : 'text-primary/40'}`}>
+                            <span className={`text-[9.5px] md:text-[11px] font-black uppercase tracking-wider text-center w-max max-w-[95px] md:max-w-[160px] leading-tight break-keep ${selectedCategory === cat.id ? 'text-primary' : 'text-primary/40'}`}>
                               {cat.name}
                             </span>
                           </div>
