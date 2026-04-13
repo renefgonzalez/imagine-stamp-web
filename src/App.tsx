@@ -64,11 +64,21 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSubcategory, setSelectedSubcategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const [categories, setCategories] = useState<any[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [cartToast, setCartToast] = useState<{ name: string } | null>(null);
+  const [favorites, setFavorites] = useState<(string | number)[]>(() => {
+    const saved = localStorage.getItem('imagine_stamp_favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('imagine_stamp_favorites', JSON.stringify(favorites));
+  }, [favorites]);
 
   // ── CARGAR DATOS DESDE SUPABASE ──────────────────────────────────────────
   useEffect(() => {
@@ -106,6 +116,12 @@ export default function App() {
 
   const filteredProducts = useMemo(() => {
     let result = products;
+
+    // Filtro por favoritos
+    if (showOnlyFavorites) {
+      result = result.filter(p => favorites.includes(p.id));
+    }
+
     // Búsqueda global (ignora acentos y mayúsculas)
     if (searchQuery.trim() !== '') {
       const q = searchQuery.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -150,6 +166,14 @@ export default function App() {
 
   const removeFromCart = (id: string | number) => {
     setCart(prev => prev.filter(item => String(item.id) !== String(id)));
+  };
+
+  const toggleFavorite = (productId: string | number) => {
+    setFavorites(prev => 
+      prev.includes(productId) 
+        ? prev.filter(id => id !== productId) 
+        : [...prev, productId]
+    );
   };
 
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
@@ -256,6 +280,24 @@ export default function App() {
                       }}
                     />
                     <div 
+                      className={`relative w-11 h-11 rounded-full flex items-center justify-center cursor-pointer transition-all ${showOnlyFavorites ? 'bg-accent-magenta text-white shadow-lg shadow-accent-magenta/30' : 'bg-primary/5 text-primary/40 hover:bg-accent-magenta/10 hover:text-accent-magenta'}`}
+                      title="Mis Favoritos"
+                      onClick={() => {
+                        setShowOnlyFavorites(!showOnlyFavorites);
+                        if (!showOnlyFavorites) {
+                          setSelectedCategory('all');
+                          setSearchQuery('');
+                        }
+                      }}
+                    >
+                      <Heart size={22} fill={showOnlyFavorites ? "currentColor" : favorites.length > 0 ? "rgba(255, 0, 255, 0.1)" : "none"} />
+                      {favorites.length > 0 && (
+                        <span className={`absolute -top-1 -right-1 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center border-2 border-white ${showOnlyFavorites ? 'bg-white text-accent-magenta' : 'bg-accent-magenta text-white'}`}>
+                          {favorites.length}
+                        </span>
+                      )}
+                    </div>
+                    <div 
                       className="relative w-11 h-11 rounded-full bg-secondary flex items-center justify-center cursor-pointer hover:scale-105 transition-transform shadow-lg shadow-secondary/20" 
                       onClick={openCart}
                     >
@@ -288,17 +330,79 @@ export default function App() {
                 </section>
 
                 <div className="px-4">
-                  <div className="mb-10">
-                    <div className="relative flex items-center bg-white rounded-full px-5 py-3 shadow-sm border border-primary/10">
-                      <Search className="text-primary/40 mr-3" size={20} />
+                  <div className="mb-10 relative">
+                    <div className={`relative flex items-center bg-white rounded-2xl px-5 py-4 shadow-sm border transition-all ${isSearchFocused ? 'border-secondary ring-4 ring-secondary/5' : 'border-primary/10'}`}>
+                      <Search className={`${isSearchFocused ? 'text-secondary' : 'text-primary/40'} mr-3`} size={20} />
                       <input 
                         id="main-search"
                         value={searchQuery}
+                        onFocus={() => setIsSearchFocused(true)}
+                        onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="bg-transparent border-none focus:outline-none w-full text-sm" 
+                        className="bg-transparent border-none focus:outline-none w-full text-sm font-medium" 
                         placeholder="Busca productos, categorías, o palabras clave..." 
                       />
+                      {searchQuery && (
+                        <button 
+                          onClick={() => setSearchQuery('')}
+                          className="p-1 hover:bg-primary/5 rounded-full transition-colors"
+                        >
+                          <X size={16} className="text-primary/40" />
+                        </button>
+                      )}
                     </div>
+
+                    {/* Sugerencias de búsqueda instantáneas */}
+                    <AnimatePresence>
+                      {isSearchFocused && searchQuery.trim().length > 0 && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-primary/5 z-[60] overflow-hidden"
+                        >
+                          <div className="p-2 max-h-[300px] overflow-y-auto">
+                            {filteredProducts.length > 0 ? (
+                              <div className="grid grid-cols-1 gap-1">
+                                {filteredProducts.slice(0, 6).map((product) => (
+                                  <button
+                                    key={product.id}
+                                    onClick={() => {
+                                      setSearchQuery(product.name);
+                                      setIsSearchFocused(false);
+                                      const element = document.getElementById(`product-${product.id}`);
+                                      if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    }}
+                                    className="flex items-center gap-3 p-3 hover:bg-primary/5 rounded-xl transition-all text-left group"
+                                  >
+                                    <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-primary/5">
+                                      <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-bold text-primary truncate group-hover:text-secondary">{product.name}</p>
+                                      <p className="text-[10px] text-primary/40 font-black uppercase tracking-widest">${product.price} MXN</p>
+                                    </div>
+                                    <ChevronRight size={16} className="text-primary/20 group-hover:text-secondary group-hover:translate-x-1 transition-all" />
+                                  </button>
+                                ))}
+                                {filteredProducts.length > 6 && (
+                                  <div className="p-3 text-center border-t border-primary/5">
+                                    <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest">
+                                      Y {filteredProducts.length - 6} resultados más...
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="p-8 text-center">
+                                <Search size={32} className="mx-auto text-primary/10 mb-2" />
+                                <p className="text-sm font-bold text-primary/40">No se encontraron coincidencias</p>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   <section className="mb-16">
@@ -308,7 +412,7 @@ export default function App() {
                     </h3>
                     {/* Contenedor con degradado para indicar scroll horizontal en móvil */}
                     <div className="relative">
-                      <div className="flex items-start gap-5 md:gap-10 overflow-x-auto hide-scrollbar py-4 px-4">
+                      <div className="flex items-start gap-6 md:gap-10 overflow-x-auto hide-scrollbar py-4 px-4">
                         {categories.map((cat) => (
                           <div 
                             key={cat.id} 
@@ -330,7 +434,7 @@ export default function App() {
                                 <cat.icon className={`w-5 h-5 md:w-8 md:h-8 ${selectedCategory === cat.id ? 'text-secondary' : cat.iconColor}`} />
                               )}
                             </div>
-                            <span className={`text-[9px] md:text-[11px] font-black uppercase tracking-widest text-center max-w-[70px] md:max-w-[100px] leading-tight ${selectedCategory === cat.id ? 'text-primary' : 'text-primary/40'}`}>
+                            <span className={`text-[9.5px] md:text-[11px] font-black uppercase tracking-widest text-center w-[85px] md:w-[110px] leading-tight break-words ${selectedCategory === cat.id ? 'text-primary' : 'text-primary/40'}`}>
                               {cat.name}
                             </span>
                           </div>
@@ -343,7 +447,34 @@ export default function App() {
                     </div>
 
                     <AnimatePresence mode="wait">
-                      {selectedCategory !== 'all' && (
+                      {showOnlyFavorites && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="bg-accent-magenta/5 border border-accent-magenta/20 rounded-2xl p-4 mb-6 flex justify-between items-center"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-accent-magenta flex items-center justify-center text-white">
+                              <Heart size={20} fill="currentColor" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-accent-magenta">Viendo tus favoritos</p>
+                              <p className="text-[10px] font-medium text-accent-magenta/60 uppercase tracking-widest">
+                                {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''} guardado{filteredProducts.length !== 1 ? 's' : ''}
+                              </p>
+                            </div>
+                          </div>
+                          <button 
+                            onClick={() => setShowOnlyFavorites(false)}
+                            className="text-[10px] font-black uppercase tracking-widest px-4 py-2 border border-accent-magenta/30 text-accent-magenta rounded-xl hover:bg-accent-magenta hover:text-white transition-all"
+                          >
+                            Ver todo
+                          </button>
+                        </motion.div>
+                      )}
+
+                      {selectedCategory !== 'all' && !showOnlyFavorites && (
                         <motion.div
                           key={selectedCategory} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
                           className="mt-8 p-8 bg-white rounded-3xl border border-primary/5 shadow-sm mx-2"
@@ -383,13 +514,20 @@ export default function App() {
                     <AnimatePresence mode="popLayout">
                       {filteredProducts.map((product) => (
                         <motion.div 
-                          key={product.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                          key={product.id} id={`product-${product.id}`} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
                           className="masonry-item group bg-white rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all"
                         >
                           <div className="relative aspect-[3/4] rounded-2xl overflow-hidden mb-4">
                             <img alt={product.name} className="w-full h-full object-cover transition-transform group-hover:scale-110" src={product.image} />
-                            <button className="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-accent-magenta shadow-sm">
-                              <Heart size={20} fill="currentColor" />
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); toggleFavorite(product.id); }}
+                              className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm ${
+                                favorites.includes(product.id)
+                                  ? 'bg-accent-magenta text-white'
+                                  : 'bg-white/90 text-accent-magenta hover:scale-110'
+                              }`}
+                            >
+                              <Heart size={20} fill={favorites.includes(product.id) ? "currentColor" : "none"} />
                             </button>
                           </div>
                           <h3 className="font-headline font-bold text-primary text-sm mb-1">{product.name}</h3>
@@ -500,12 +638,12 @@ export default function App() {
                     />
                     <motion.div
                       initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-                      className="fixed right-0 top-0 h-full w-full max-w-md bg-background z-[70] shadow-2xl flex flex-col overflow-hidden"
+                      className="fixed right-0 top-0 h-[100dvh] w-full max-w-md bg-background z-[70] shadow-2xl flex flex-col overflow-hidden"
                     >
                       {/* ── Paso 1: Carrito ── */}
                       <AnimatePresence mode="wait">
                         {cartStep === 'cart' ? (
-                          <motion.div key="cart" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} className="flex flex-col h-full p-6">
+                          <motion.div key="cart" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} className="flex flex-col h-full p-4 md:p-6">
                             <div className="flex justify-between items-center mb-6">
                               <h2 className="text-2xl font-black text-primary font-headline">Tu Carrito</h2>
                               <button onClick={() => setIsCartOpen(false)}><X size={24} className="text-primary" /></button>
@@ -519,12 +657,11 @@ export default function App() {
                                 </div>
                               ) : (
                                 cart.map(item => (
-                                  <div key={item.id} className="flex items-center gap-3 bg-white p-4 rounded-2xl shadow-sm">
+                                  <div key={item.id} className="flex items-center gap-2 md:gap-3 bg-white p-3 md:p-4 rounded-2xl shadow-sm">
                                     <div className="flex-1 min-w-0">
                                       <h4 className="font-bold text-primary text-sm truncate">{item.name}</h4>
                                       <p className="text-xs text-primary/50 font-medium mt-0.5">${item.price} c/u</p>
                                     </div>
-                                    {/* Controles de cantidad */}
                                     <div className="flex items-center gap-2 shrink-0">
                                       <button
                                         onClick={() => updateQuantity(item.id, -1)}
@@ -536,7 +673,6 @@ export default function App() {
                                         className="w-8 h-8 rounded-full bg-primary/5 border border-primary/10 flex items-center justify-center text-primary font-black text-lg leading-none hover:bg-secondary hover:text-white hover:border-secondary transition-all"
                                       >+</button>
                                     </div>
-                                    {/* Subtotal */}
                                     <div className="text-right shrink-0 min-w-[60px]">
                                       <p className="font-black text-primary text-sm">${item.price * item.quantity}</p>
                                     </div>
@@ -547,7 +683,7 @@ export default function App() {
                             </div>
 
                             {cart.length > 0 && (
-                              <div className="pt-5 border-t border-primary/5 space-y-4 mt-4">
+                              <div className="pt-4 border-t border-primary/5 space-y-3 mt-auto pb-6 md:pb-4">
                                 <div className="flex justify-between items-center">
                                   <span className="text-primary/50 font-medium text-sm">{totalItems} {totalItems === 1 ? 'artículo' : 'artículos'}</span>
                                   <span className="text-2xl font-black text-primary">${totalPrice} <span className="text-sm font-bold text-primary/40">MXN</span></span>
@@ -564,7 +700,7 @@ export default function App() {
                           </motion.div>
                         ) : (
                         /* ── Paso 2: Datos de entrega ── */
-                          <motion.div key="details" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} className="flex flex-col h-full p-6">
+                          <motion.div key="details" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} className="flex flex-col h-full p-4 md:p-6">
                             <div className="flex items-center gap-3 mb-6">
                               <button onClick={() => setCartStep('cart')} className="w-9 h-9 rounded-full bg-primary/5 flex items-center justify-center text-primary hover:bg-secondary hover:text-white transition-all">
                                 <ChevronRight size={18} className="rotate-180" />
