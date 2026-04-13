@@ -75,7 +75,7 @@ export default function App() {
     async function loadData() {
       try {
         const [catRes, prodRes] = await Promise.all([
-          supabase.from('categories').select('*'),
+          supabase.from('categories').select('*').order('sort_order', { ascending: true }),
           supabase.from('products').select('*')
         ]);
 

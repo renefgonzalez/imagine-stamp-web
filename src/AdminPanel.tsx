@@ -54,7 +54,7 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
   };
 
   const loadCategories = async () => {
-    const { data } = await supabase.from('categories').select('*').order('name');
+    const { data } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
     if (data) setCategories(data);
   };
 
