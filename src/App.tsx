@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, ErrorInfo, ReactNode, Component } from 'react';
 import { supabase } from './lib/supabase';
 import { 
-  Menu, Search, Heart, Plus, ShoppingBag, Sparkles, X, 
+  Search, Heart, Plus, Sparkles, X, 
   ChevronRight, Instagram, Facebook, Mail as MailIcon, 
   PartyPopper, Gift, Briefcase, LayoutGrid, Lock, MessageCircle
 } from 'lucide-react';
@@ -202,9 +202,33 @@ export default function App() {
             <div className="min-h-screen flex flex-col bg-background">
               <header className="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-[10px] border-b border-primary/5">
                 <div className="flex justify-between items-center px-4 md:px-6 h-20 w-full max-w-7xl mx-auto">
-                  <div className="flex items-center gap-3 md:gap-4">
-                    <Menu className="text-primary cursor-pointer hover:opacity-70 transition-opacity" size={24} />
-                    <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5">
+                    {/* Redes Sociales — siempre visibles */}
+                    <a 
+                      href="https://www.instagram.com/personalizadosimagineandstamp"
+                      target="_blank" rel="noreferrer"
+                      title="Instagram"
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-primary/50 hover:text-[#E1306C] hover:bg-pink-50 transition-all"
+                    >
+                      <Instagram size={18} />
+                    </a>
+                    <a 
+                      href="https://www.facebook.com/share/1CFhhieFeV/?mibextid=wwXIfr"
+                      target="_blank" rel="noreferrer"
+                      title="Facebook"
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-primary/50 hover:text-[#1877F2] hover:bg-blue-50 transition-all"
+                    >
+                      <Facebook size={18} />
+                    </a>
+                    <a 
+                      href="https://wa.me/525650469993"
+                      target="_blank" rel="noreferrer"
+                      title="WhatsApp"
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-primary/50 hover:text-[#25D366] hover:bg-green-50 transition-all"
+                    >
+                      <MessageCircle size={18} />
+                    </a>
+                    <div className="flex items-center gap-3 ml-1">
                       <div className="h-14 w-14 flex items-center justify-center overflow-hidden">
                         <img src={logo} alt="Imagine & Stamp Logo" className="h-14 w-auto object-contain" />
                       </div>
