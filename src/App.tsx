@@ -1,4 +1,5 @@
-import React, { useState, useMemo, ErrorInfo, ReactNode, Component } from 'react';
+import React, { useState, useMemo, useEffect, ErrorInfo, ReactNode, Component } from 'react';
+import { supabase } from './lib/supabase';
 import { 
   Menu, Search, Heart, Plus, ShoppingBag, Store, Sparkles, User, X, 
   ChevronRight, Instagram, Facebook, Mail, Phone, Settings, ShoppingCart, 
@@ -24,69 +25,13 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 }
 
 export const DEFAULT_CATEGORIES = [
-  {
-    id: 'all',
-    name: 'VER TODO',
-    icon: LayoutGrid,
-    bgColor: 'bg-gray-100',
-    iconColor: 'text-gray-600',
-    dotColor: 'bg-gray-400',
-    submenus: []
-  },
-  {
-    id: 'Fiestas y Cumpleaños',
-    name: 'Fiestas y Cumpleaños',
-    icon: PartyPopper,
-    bgColor: 'bg-purple-50',
-    iconColor: 'text-purple-500',
-    dotColor: 'bg-purple-500',
-    submenus: ['Boda', 'Quinceaños', 'Cumpleaños Infantil', 'Baby Shower']
-  },
-  {
-    id: 'Invitaciones',
-    name: 'Invitaciones',
-    icon: MailIcon,
-    bgColor: 'bg-orange-50',
-    iconColor: 'text-orange-500',
-    dotColor: 'bg-orange-500',
-    submenus: ['Invitación Web', 'Invitación WhatsApp']
-  },
-  {
-    id: 'Empresarial',
-    name: 'Empresarial',
-    icon: Briefcase,
-    bgColor: 'bg-amber-50',
-    iconColor: 'text-amber-500',
-    dotColor: 'bg-amber-500',
-    submenus: ['Kits Corporativos', 'Textil con Logo', 'Impresión Empresarial']
-  },
-  {
-    id: 'Personalización',
-    name: 'Personalización',
-    icon: Gift,
-    bgColor: 'bg-green-50',
-    iconColor: 'text-green-500',
-    dotColor: 'bg-green-500',
-    submenus: ['Playeras', 'Sudaderas', 'Termos y Accesorios', 'Vinil e Impresión']
-  },
-  {
-    id: 'Páginas Web y Apps',
-    name: 'Páginas Web y Apps',
-    icon: Sparkles,
-    bgColor: 'bg-blue-50',
-    iconColor: 'text-blue-500',
-    dotColor: 'bg-blue-500',
-    submenus: ['Landing Pages', 'Tiendas en Línea', 'Apps Móviles']
-  },
-  {
-    id: 'Catálogo y Portafolio',
-    name: 'Catálogo y Portafolio',
-    icon: Sparkles,
-    bgColor: 'bg-indigo-50',
-    iconColor: 'text-indigo-500',
-    dotColor: 'bg-indigo-500',
-    submenus: ['Galería de Trabajos', 'Proyectos Especiales']
-  }
+  { id: 'all', name: 'VER TODO', icon: LayoutGrid, bgColor: 'bg-gray-100', iconColor: 'text-gray-600', dotColor: 'bg-gray-400', submenus: [] },
+  { id: 'fiestas-y-cumpleanos', name: 'Fiestas y Cumpleaños', icon: PartyPopper, bgColor: 'bg-purple-50', iconColor: 'text-purple-500', dotColor: 'bg-purple-500', submenus: [] },
+  { id: 'invitaciones', name: 'Invitaciones', icon: MailIcon, bgColor: 'bg-orange-50', iconColor: 'text-orange-500', dotColor: 'bg-orange-500', submenus: [] },
+  { id: 'empresarial', name: 'Empresarial', icon: Briefcase, bgColor: 'bg-amber-50', iconColor: 'text-amber-500', dotColor: 'bg-amber-500', submenus: [] },
+  { id: 'personalizacion', name: 'Personalización', icon: Gift, bgColor: 'bg-green-50', iconColor: 'text-green-500', dotColor: 'bg-green-500', submenus: [] },
+  { id: 'paginas-webs-y-apps', name: 'Páginas Web y Apps', icon: Sparkles, bgColor: 'bg-blue-50', iconColor: 'text-blue-500', dotColor: 'bg-blue-500', submenus: [] },
+  { id: 'catalogo-and-portafolio', name: 'Catálogo y Portafolio', icon: Sparkles, bgColor: 'bg-indigo-50', iconColor: 'text-indigo-500', dotColor: 'bg-indigo-500', submenus: [] }
 ];
 
 const ICON_MAP: Record<string, any> = {
@@ -117,18 +62,63 @@ export default function App() {
   const [cartStep, setCartStep] = useState<'cart' | 'details'>('cart');
   const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo' });
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const categories = useMemo(() => {
-    return DEFAULT_CATEGORIES.map(cat => ({
-      ...cat,
-      icon: ICON_MAP[cat.id] || ICON_MAP[cat.name] || Sparkles
-    }));
+  const [categories, setCategories] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // ── CARGAR DATOS DESDE SUPABASE ──────────────────────────────────────────
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [catRes, prodRes] = await Promise.all([
+          supabase.from('categories').select('*'),
+          supabase.from('products').select('*')
+        ]);
+
+        if (catRes.data) {
+          const apiCats = catRes.data.map((cat: any) => {
+            const dc = DEFAULT_CATEGORIES.find(c => c.id === cat.id || c.name === cat.name);
+            return {
+              ...cat,
+              bgColor: dc?.bgColor || 'bg-primary/5',
+              iconColor: dc?.iconColor || 'text-primary',
+              dotColor: dc?.dotColor || 'bg-primary',
+              icon: ICON_MAP[cat.id] || ICON_MAP[cat.name] || Sparkles
+            };
+          });
+          setCategories([DEFAULT_CATEGORIES[0], ...apiCats]); // ['VER TODO', ...otras]
+        }
+        if (prodRes.data) {
+          setProducts(prodRes.data);
+        }
+      } catch (err) {
+        console.error("Error cargando datos:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
   }, []);
 
   const filteredProducts = useMemo(() => {
-    if (selectedCategory === 'all') return PRODUCTS;
-    return PRODUCTS.filter(p => p.category === selectedCategory);
-  }, [selectedCategory]);
+    let result = products;
+    
+    // Si hay búsqueda, ignoramos la categoría seleccionada (búsqueda global)
+    if (searchQuery.trim() !== '') {
+      const q = searchQuery.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      result = result.filter(p => {
+        const name = p.name?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") || "";
+        const desc = p.description?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") || "";
+        return name.includes(q) || desc.includes(q);
+      });
+    } else if (selectedCategory !== 'all') {
+      result = result.filter(p => p.category?.toLowerCase() === selectedCategory.toLowerCase());
+    }
+    
+    return result;
+  }, [selectedCategory, products, searchQuery]);
 
   const addToCart = (product: Product) => {
     setCart(prev => {
@@ -155,22 +145,24 @@ export default function App() {
     const phoneNumber = '525650469993';
     const lines = cart.map(item => `  • ${item.name} x${item.quantity} = $${item.price * item.quantity} MXN`).join('\n');
 
-    // ── Crear pedido y guardarlo en localStorage ──────────────────────────
+    // ── Crear pedido y guardarlo en Supabase ─────────────────────────────
     const newOrder = {
       id: 'ORD-' + Date.now(),
-      date: new Date().toLocaleString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-      customer: customerInfo.name,
-      phone: customerInfo.phone,
-      city: customerInfo.city,
-      deliveryNotes: customerInfo.notes,
-      paymentMethod: customerInfo.paymentMethod,
+      customer_name: customerInfo.name,
+      customer_phone: customerInfo.phone,
+      customer_city: customerInfo.city,
+      delivery_notes: customerInfo.notes,
+      payment_method: customerInfo.paymentMethod,
       items: cart.map(item => ({ name: item.name, price: item.price, quantity: item.quantity })),
-      total: totalPrice,
+      total_amount: totalPrice,
       status: 'pending',
-      internalNotes: []
+      internal_notes: []
     };
-    const existing = JSON.parse(localStorage.getItem('imagine_stamp_orders') || '[]');
-    localStorage.setItem('imagine_stamp_orders', JSON.stringify([newOrder, ...existing]));
+
+    // GUARDAR EN SUPABASE
+    supabase.from('orders').insert([newOrder]).then(({ error }) => {
+      if (error) console.error("Error guardando pedido:", error);
+    });
 
     // ── Mensaje de WhatsApp ────────────────────────────────────────────────
     const message =
@@ -247,7 +239,12 @@ export default function App() {
                   <div className="mb-10">
                     <div className="relative flex items-center bg-white rounded-full px-5 py-3 shadow-sm border border-primary/10">
                       <Search className="text-primary/40 mr-3" size={20} />
-                      <input className="bg-transparent border-none focus:outline-none w-full text-sm" placeholder="Busca productos artísticos..." />
+                      <input 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="bg-transparent border-none focus:outline-none w-full text-sm" 
+                        placeholder="Busca productos, categorías, o palabras clave..." 
+                      />
                     </div>
                   </div>
 

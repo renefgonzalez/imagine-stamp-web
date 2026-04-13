@@ -1,12 +1,22 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Lock, Package, DollarSign, Trash2, Edit2, Plus, LogOut, 
   Tag, FileText, LayoutGrid, Box, Image as ImageIcon, Search, CheckCircle, Clock, Phone, List, X, Save, ChevronDown, ChevronUp
 } from 'lucide-react';
-import { PRODUCTS } from './data/products';
 import { DEFAULT_CATEGORIES } from './App';
+import { supabase } from './lib/supabase';
 
 const MASTER_PASSWORD = '1212';
+
+const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div className="flex flex-col gap-1.5 h-full">
+    <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest px-1 shrink-0">{label}</label>
+    <div className="h-full flex flex-col justify-center">
+      {children}
+    </div>
+  </div>
+);
 
 export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -15,70 +25,57 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const [orderTab, setOrderTab] = useState<'pending' | 'delivered'>('pending');
   const [searchOrder, setSearchOrder] = useState('');
 
-  // ── CATEGORÍAS ──────────────────────────────────────────────────────────
-  const [categories, setCategories] = useState<any[]>(() => {
-    const saved = localStorage.getItem('imagine_stamp_categories_v2');
-    if (saved) return JSON.parse(saved);
-    // Guardamos las default (sin el "all") para poder editarlas
-    return DEFAULT_CATEGORIES.filter(c => c.id !== 'all').map(c => ({
-      id: c.id,
-      name: c.name,
-      submenus: [...c.submenus]
-    }));
-  });
+  // ── ESTADOS DINÁMICOS (SUPABASE) ───────────────────────────────────────
+  const [categories, setCategories] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
-  // Para expandir/colapsar subcategorías en el panel
+  // ── CARGA INICIAL ──────────────────────────────────────────────────────
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadAllData();
+      
+      // Suscripción en tiempo real a pedidos
+      const channel = supabase
+        .channel('admin_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => loadOrders())
+        .subscribe();
+        
+      return () => { supabase.removeChannel(channel); };
+    }
+  }, [isAuthenticated]);
+
+  const loadAllData = async () => {
+    setLoading(true);
+    await Promise.all([loadCategories(), loadProducts(), loadOrders()]);
+    setLoading(false);
+  };
+
+  const loadCategories = async () => {
+    const { data } = await supabase.from('categories').select('*').order('name');
+    if (data) setCategories(data);
+  };
+
+  const loadProducts = async () => {
+    const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+    if (data) setProducts(data);
+  };
+
+  const loadOrders = async () => {
+    const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+    if (data) setOrders(data);
+  };
+
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
   const [editingCatId, setEditingCatId] = useState<string | null>(null);
   const [editingCatName, setEditingCatName] = useState('');
   const [newSubInput, setNewSubInput] = useState<Record<string, string>>({});
   const [newCatName, setNewCatName] = useState('');
-
-  useEffect(() => {
-    localStorage.setItem('imagine_stamp_categories_v2', JSON.stringify(categories));
-    // También actualizamos el formato antiguo por compatibilidad con la tienda
-    localStorage.setItem('imagine_stamp_categories', JSON.stringify(
-      categories.map(c => ({ ...c, bgColor: 'bg-blue-50', iconColor: 'text-blue-500', dotColor: 'bg-blue-500' }))
-    ));
-  }, [categories]);
-
-  // ── PRODUCTOS ────────────────────────────────────────────────────────────
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('imagine_stamp_products');
-    const localProducts = saved ? JSON.parse(saved) : [];
-    return [...PRODUCTS, ...localProducts];
-  });
-
-  useEffect(() => {
-    const baseIds = PRODUCTS.map(p => p.id);
-    const localOnly = products.filter((p: any) => !baseIds.includes(p.id));
-    localStorage.setItem('imagine_stamp_products', JSON.stringify(localOnly));
-  }, [products]);
-
-  // ── PEDIDOS ──────────────────────────────────────────────────────────────────
-  const [orders, setOrders] = useState<any[]>(() =>
-    JSON.parse(localStorage.getItem('imagine_stamp_orders') || '[]')
-  );
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [noteInputs, setNoteInputs] = useState<Record<string, string>>({});
-
-  // Persistir pedidos en localStorage cuando cambien
-  useEffect(() => {
-    localStorage.setItem('imagine_stamp_orders', JSON.stringify(orders));
-  }, [orders]);
-
-  // Detectar nuevos pedidos creados desde la tienda (mismo navegador, distinta pestaña)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const stored: any[] = JSON.parse(localStorage.getItem('imagine_stamp_orders') || '[]');
-      setOrders(prev => {
-        const existingIds = new Set(prev.map((o: any) => o.id));
-        const newOnes = stored.filter((o: any) => !existingIds.has(o.id));
-        return newOnes.length > 0 ? [...newOnes, ...prev] : prev;
-      });
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+  const [editingProduct, setEditingProduct] = useState<any | null>(null);
 
   // ── ACCESO ───────────────────────────────────────────────────────────────
   if (!isAuthenticated) {
@@ -124,65 +121,98 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
     delivered:    { label: 'Entregado',  color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200'},
   };
 
-  const updateOrderStatus = (id: string, status: string) =>
-    setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
+  const updateOrderStatus = async (id: string, status: string) => {
+    const { error } = await supabase.from('orders').update({ status }).eq('id', id);
+    if (!error) loadOrders();
+  };
 
-  const deleteOrder = (id: string) =>
-    setOrders(prev => prev.filter(o => o.id !== id));
+  const deleteOrder = async (id: string) => {
+    if (!confirm('¿Eliminar este pedido permanentemente?')) return;
+    const { error } = await supabase.from('orders').delete().eq('id', id);
+    if (!error) loadOrders();
+  };
 
-  const addNote = (orderId: string) => {
+  const addNote = async (orderId: string) => {
     const text = (noteInputs[orderId] || '').trim();
     if (!text) return;
-    const entry = {
+    
+    const order = orders.find(o => o.id === orderId);
+    const newNote = {
       text,
       date: new Date().toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
     };
-    setOrders(prev => prev.map(o =>
-      o.id === orderId ? { ...o, internalNotes: [...(o.internalNotes || []), entry] } : o
-    ));
-    setNoteInputs(prev => ({ ...prev, [orderId]: '' }));
+    
+    const { error } = await supabase
+      .from('orders')
+      .update({ internal_notes: [...(order.internal_notes || []), newNote] })
+      .eq('id', orderId);
+      
+    if (!error) {
+      loadOrders();
+      setNoteInputs(prev => ({ ...prev, [orderId]: '' }));
+    }
   };
 
   // ── HELPERS DE CATEGORÍAS ────────────────────────────────────────────────
-  const saveCatName = (id: string) => {
-    setCategories(cats => cats.map(c => c.id === id ? { ...c, name: editingCatName } : c));
-    setEditingCatId(null);
+  const saveCatName = async (id: string) => {
+    const { error } = await supabase.from('categories').update({ name: editingCatName }).eq('id', id);
+    if (!error) {
+      loadCategories();
+      setEditingCatId(null);
+    }
   };
 
-  const addSubmenu = (catId: string) => {
+  const addSubmenu = async (catId: string) => {
     const val = (newSubInput[catId] || '').trim();
     if (!val) return;
-    setCategories(cats => cats.map(c => {
-      if (c.id !== catId) return c;
-      if (c.submenus.includes(val)) return c;
-      return { ...c, submenus: [...c.submenus, val] };
-    }));
-    setNewSubInput(prev => ({ ...prev, [catId]: '' }));
+    const cat = categories.find(c => c.id === catId);
+    if (cat.submenus.includes(val)) return;
+    
+    const { error } = await supabase
+      .from('categories')
+      .update({ submenus: [...cat.submenus, val] })
+      .eq('id', catId);
+      
+    if (!error) {
+      loadCategories();
+      setNewSubInput(prev => ({ ...prev, [catId]: '' }));
+    }
   };
 
-  const removeSubmenu = (catId: string, sub: string) => {
-    setCategories(cats => cats.map(c =>
-      c.id === catId ? { ...c, submenus: c.submenus.filter((s: string) => s !== sub) } : c
-    ));
+  const removeSubmenu = async (catId: string, sub: string) => {
+    const cat = categories.find(c => c.id === catId);
+    const { error } = await supabase
+      .from('categories')
+      .update({ submenus: cat.submenus.filter((s: string) => s !== sub) })
+      .eq('id', catId);
+    if (!error) loadCategories();
   };
 
-  const editSubmenu = (catId: string, oldSub: string, newSub: string) => {
-    setCategories(cats => cats.map(c => {
-      if (c.id !== catId) return c;
-      return { ...c, submenus: c.submenus.map((s: string) => s === oldSub ? newSub.trim() : s) };
-    }));
+  const editSubmenu = async (catId: string, oldSub: string, newSub: string) => {
+    const cat = categories.find(c => c.id === catId);
+    const updated = cat.submenus.map((s: string) => s === oldSub ? newSub.trim() : s);
+    const { error } = await supabase
+      .from('categories')
+      .update({ submenus: updated })
+      .eq('id', catId);
+    if (!error) loadCategories();
   };
 
-  const addCategory = () => {
+  const addCategory = async () => {
     const name = newCatName.trim();
     if (!name) return;
-    const id = name + '-' + Date.now();
-    setCategories(prev => [...prev, { id, name, submenus: [] }]);
-    setNewCatName('');
+    const id = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
+    const { error } = await supabase.from('categories').insert([{ id, name, submenus: [] }]);
+    if (!error) {
+      loadCategories();
+      setNewCatName('');
+    }
   };
 
-  const removeCategory = (id: string) => {
-    setCategories(cats => cats.filter(c => c.id !== id));
+  const removeCategory = async (id: string) => {
+    if (!confirm('¿Eliminar esta categoría?')) return;
+    const { error } = await supabase.from('categories').delete().eq('id', id);
+    if (!error) loadCategories();
   };
 
   // ── UI ────────────────────────────────────────────────────────────────────
@@ -223,15 +253,15 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
           </div>
         </div>
 
-        {/* Global Warning for Static Flow */}
-        <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 mb-8 flex items-start gap-4">
-          <div className="p-2 bg-amber-100 rounded-lg shrink-0">
-            <FileText className="text-amber-600" size={20} />
+        {/* Supabase Status Banner */}
+        <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 mb-8 flex items-start gap-4">
+          <div className="p-2 bg-emerald-100 rounded-lg shrink-0">
+            <LayoutGrid className="text-emerald-600" size={20} />
           </div>
           <div>
-            <p className="text-amber-900 text-xs font-black uppercase tracking-widest mb-1">⚠️ Flujo Estático (Modo "Por Ahí")</p>
-            <p className="text-amber-800/70 text-[11px] font-medium leading-relaxed">
-              Los cambios hechos aquí son <strong>temporales</strong>. Para que los productos y categorías aparezcan permanentemente para todos tus clientes, debes añadirlos al archivo <code className="bg-amber-100/50 px-1 rounded text-amber-900">src/data/products.ts</code> y hacer un <strong>Push a GitHub</strong>.
+            <p className="text-emerald-900 text-xs font-black uppercase tracking-widest mb-1">✅ Conexión Activa: Supabase Realtime</p>
+            <p className="text-emerald-800/70 text-[11px] font-medium leading-relaxed">
+              Tu catálogo está sincronizado en la nube. Cualquier cambio que hagas aquí se verá <strong>al instante</strong> en todos los dispositivos sin necesidad de actualizar el código.
             </p>
           </div>
         </div>
@@ -258,8 +288,7 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                       <h3 className="font-black text-sm text-primary uppercase tracking-wide">{p.name}</h3>
                       <div className="flex flex-wrap justify-center sm:justify-start gap-1.5 mt-2">
                         <span className="text-[9px] font-black text-secondary bg-secondary/5 px-2 py-0.5 rounded border border-secondary/10 uppercase tracking-widest">{p.category}</span>
-                        {p.subCategory && <span className="text-[9px] font-bold text-primary/40 bg-primary/5 px-2 py-0.5 rounded uppercase tracking-widest">{p.subCategory}</span>}
-                        {p.subCategory2 && <span className="text-[9px] font-bold text-primary/40 bg-primary/5 px-2 py-0.5 rounded uppercase tracking-widest">{p.subCategory2}</span>}
+                        {p.sub_category && <span className="text-[9px] font-bold text-primary/40 bg-primary/5 px-2 py-0.5 rounded uppercase tracking-widest">{p.sub_category}</span>}
                       </div>
                     </div>
                     <div className="shrink-0 px-4 text-center sm:text-right">
@@ -267,10 +296,16 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                       <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">En Stock</span>
                     </div>
                     <div className="flex gap-2 shrink-0">
-                      <button className="w-10 h-10 rounded-xl bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-secondary hover:border-secondary transition-all">
+                      <button 
+                        onClick={() => setEditingProduct(p)}
+                        className="w-10 h-10 rounded-xl bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-secondary hover:border-secondary transition-all">
                         <Edit2 size={15} />
                       </button>
-                      <button onClick={() => setProducts(products.filter((item: any) => item.id !== p.id))}
+                      <button onClick={async () => {
+                        if (!confirm('¿Eliminar producto?')) return;
+                        const { error } = await supabase.from('products').delete().eq('id', p.id);
+                        if (!error) loadProducts();
+                      }}
                         className="w-10 h-10 rounded-xl bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-error hover:border-error transition-all">
                         <Trash2 size={15} />
                       </button>
@@ -281,28 +316,44 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
             </div>
           )}
 
-          {/* ─── NUEVO PRODUCTO ───────────────────────────────────────────── */}
-          {activeTab === 'add' && (
-            <div className="max-w-3xl mx-auto">
               <div className="mb-6 px-2">
-                <h2 className="text-2xl font-black text-primary font-headline uppercase">Simular Nuevo Artículo</h2>
-                <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1 italic">Usa esto para previsualizar antes de editar el código.</p>
+                <h2 className="text-2xl font-black text-primary font-headline uppercase">Nuevo Diseño / Servicio</h2>
+                <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1">Se publicará instantáneamente en la tienda.</p>
               </div>
-              <form onSubmit={(e) => {
+              <form onSubmit={async (e) => {
                 e.preventDefault();
+                setUploading(true);
                 const fd = new FormData(e.currentTarget);
+                const file = fd.get('imageFile') as File;
+                let imageUrl = fd.get('image') as string;
+
+                if (file && file.size > 0) {
+                  const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+                  const { error: uploadError } = await supabase.storage
+                    .from('product-images')
+                    .upload(fileName, file);
+                  
+                  if (!uploadError) {
+                    const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(fileName);
+                    imageUrl = publicUrl;
+                  }
+                }
+
                 const newProduct = {
-                  id: Date.now(),
                   name: fd.get('name') as string,
                   description: fd.get('description') as string,
-                  price: parseInt(fd.get('price') as string) || 0,
-                  image: (fd.get('image') as string) || 'https://picsum.photos/seed/new/800/1000',
+                  price: parseFloat(fd.get('price') as string) || 0,
+                  image: imageUrl || 'https://picsum.photos/seed/new/800/1000',
                   category: fd.get('category') as string,
-                  subCategory: fd.get('sub1') as string,
-                  subCategory2: fd.get('sub2') as string,
+                  sub_category: fd.get('sub1') as string,
                 };
-                setProducts((prev: any[]) => [newProduct, ...prev]);
-                setActiveTab('inventory');
+
+                const { error } = await supabase.from('products').insert([newProduct]);
+                setUploading(false);
+                if (!error) {
+                  loadProducts();
+                  setActiveTab('inventory');
+                }
               }} className="bg-surface border border-primary/5 p-8 rounded-3xl shadow-xl space-y-5">
 
                 {/* Nombre */}
@@ -350,31 +401,42 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                   <Field label="Sub-Categoría 1 (opcional)">
                     <div className="relative">
                       <Box className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={17} />
-                      <input name="sub1" placeholder="EJ: BODA"
-                        className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest uppercase transition-all" />
+                      <input name="sub1" placeholder="Ej: Boda"
+                        className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest transition-all" />
                     </div>
                   </Field>
                   <Field label="Sub-Categoría 2 (opcional)">
                     <div className="relative">
                       <Box className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={17} />
-                      <input name="sub2" placeholder="EJ: INVITACIÓN WEB"
-                        className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest uppercase transition-all" />
+                      <input name="sub2" placeholder="Ej: Invitación Web"
+                        className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest transition-all" />
                     </div>
                   </Field>
                 </div>
 
                 {/* Imagen */}
-                <Field label="URL de Imagen">
-                  <div className="relative">
-                    <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={17} />
-                    <input name="image" placeholder="HTTPS://..."
-                      className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-bold tracking-widest transition-all" />
+                <Field label="Foto del Producto">
+                  <div className="relative group">
+                    <div className="flex items-center gap-4 bg-background p-4 rounded-2xl border border-primary/5 hover:border-secondary transition-all cursor-pointer">
+                      <ImageIcon className="text-primary/20" size={20} />
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black text-primary/40">SELECCIONAR ARCHIVO</span>
+                        <input name="imageFile" type="file" accept="image/*"
+                          className="absolute inset-0 opacity-0 cursor-pointer" />
+                        <p className="text-[9px] text-primary/20 italic">Formatos: WebP, PNG, JPG (Máx 2MB)</p>
+                      </div>
+                    </div>
+                    <div className="mt-3">
+                      <input name="image" placeholder="O pega un link externo (opcional)"
+                        className="w-full bg-background text-primary p-3 px-4 rounded-xl border border-primary/5 focus:border-secondary outline-none text-[10px] font-bold" />
+                    </div>
                   </div>
                 </Field>
 
-                <button type="submit"
-                  className="w-full bg-secondary text-white p-5 rounded-2xl font-black hover:bg-orange-600 transition-all flex items-center justify-center gap-3 shadow-xl shadow-secondary/20 uppercase tracking-[0.2em] text-xs mt-4">
-                  <Plus size={18} strokeWidth={3} /> Publicar en la Tienda
+                <button type="submit" disabled={uploading}
+                  className={`w-full ${uploading ? 'bg-primary/20' : 'bg-secondary'} text-white p-5 rounded-2xl font-black hover:bg-orange-600 transition-all flex items-center justify-center gap-3 shadow-xl shadow-secondary/20 uppercase tracking-[0.2em] text-xs mt-4`}>
+                  {uploading ? <Clock className="animate-spin" size={18} /> : <Plus size={18} strokeWidth={3} />} 
+                  {uploading ? 'SUBIENDO...' : 'Publicar en la Tienda'}
                 </button>
               </form>
             </div>
@@ -644,6 +706,89 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
             </div>
           )}
 
+          {/* ─── MODAL EDITAR PRODUCTO ──────────────────────────────────── */}
+          <AnimatePresence>
+            {editingProduct && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-primary/20 backdrop-blur-sm">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="bg-surface w-full max-w-lg rounded-3xl shadow-2xl border border-primary/10 overflow-hidden"
+                >
+                  <div className="p-6 border-b border-primary/5 flex justify-between items-center bg-background/50">
+                    <h3 className="text-sm font-black text-primary uppercase tracking-widest">Editar Producto</h3>
+                    <button onClick={() => setEditingProduct(null)} className="text-primary/30 hover:text-primary"><X size={20}/></button>
+                  </div>
+                  <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    setUploading(true);
+                    const fd = new FormData(e.currentTarget);
+                    const file = fd.get('imageFile') as File;
+                    let imageUrl = fd.get('image') as string;
+
+                    if (file && file.size > 0) {
+                      const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+                      const { error: uploadError } = await supabase.storage
+                        .from('product-images')
+                        .upload(fileName, file);
+                      
+                      if (!uploadError) {
+                        const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(fileName);
+                        imageUrl = publicUrl;
+                      }
+                    }
+
+                    const updates = {
+                      name: fd.get('name') as string,
+                      price: parseFloat(fd.get('price') as string) || 0,
+                      category: fd.get('category') as string,
+                      sub_category: fd.get('sub_category') as string,
+                      image: imageUrl,
+                      description: fd.get('description') as string,
+                    };
+                    const { error } = await supabase.from('products').update(updates).eq('id', editingProduct.id);
+                    setUploading(false);
+                    if (!error) {
+                      loadProducts();
+                      setEditingProduct(null);
+                    }
+                  }} className="p-8 space-y-4 max-h-[70vh] overflow-y-auto">
+                    <Field label="Nombre"><input name="name" defaultValue={editingProduct.name} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold" /></Field>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Field label="Precio"><input name="price" type="number" defaultValue={editingProduct.price} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold" /></Field>
+                      <Field label="Categoría">
+                        <select name="category" defaultValue={editingProduct.category} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none">
+                          {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        </select>
+                      </Field>
+                    </div>
+                    <Field label="Subcategoría"><input name="sub_category" defaultValue={editingProduct.sub_category} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold outline-none" /></Field>
+                    
+                    <Field label="Nueva Foto (opcional)">
+                      <div className="relative group">
+                        <div className="flex items-center gap-3 bg-background p-3 rounded-xl border border-primary/5 hover:border-secondary transition-all cursor-pointer">
+                          <ImageIcon className="text-primary/20" size={16} />
+                          <div className="flex flex-col">
+                            <span className="text-[9px] font-black text-primary/40">CAMBIAR IMAGEN</span>
+                            <input name="imageFile" type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" />
+                          </div>
+                        </div>
+                        <input name="image" defaultValue={editingProduct.image} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-[10px] font-bold mt-2 outline-none italic text-primary/40 truncate" />
+                      </div>
+                    </Field>
+
+                    <Field label="Descripción"><textarea name="description" defaultValue={editingProduct.description} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-medium h-24 outline-none" /></Field>
+                    
+                    <button type="submit" disabled={uploading} className={`w-full ${uploading ? 'bg-primary/20' : 'bg-secondary'} text-white p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-secondary/20 hover:bg-orange-600 transition-all mt-4`}>
+                      {uploading ? 'SUBIENDO...' : 'Guardar Cambios'}
+                    </button>
+                  </form>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
+
         </div>
       </div>
     </div>
@@ -651,14 +796,6 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
 }
 
 // ── Componentes auxiliares ──────────────────────────────────────────────────
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-2">
-      <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest ml-1">{label}</label>
-      {children}
-    </div>
-  );
-}
 
 function SubChip({ value, onDelete, onEdit }: { value: string; onDelete: () => void; onEdit: (v: string) => void }) {
   const [editing, setEditing] = useState(false);
