@@ -62,6 +62,7 @@ export default function App() {
   const [cartStep, setCartStep] = useState<'cart' | 'details'>('cart');
   const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo' });
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedSubcategory, setSelectedSubcategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
   const [categories, setCategories] = useState<any[]>([]);
@@ -104,8 +105,7 @@ export default function App() {
 
   const filteredProducts = useMemo(() => {
     let result = products;
-    
-    // Si hay búsqueda, ignoramos la categoría seleccionada (búsqueda global)
+    // Búsqueda global (ignora acentos y mayúsculas)
     if (searchQuery.trim() !== '') {
       const q = searchQuery.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       result = result.filter(p => {
@@ -113,12 +113,22 @@ export default function App() {
         const desc = p.description?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") || "";
         return name.includes(q) || desc.includes(q);
       });
-    } else if (selectedCategory !== 'all') {
-      result = result.filter(p => p.category?.toLowerCase() === selectedCategory.toLowerCase());
+    } else {
+      // Filtrar por categoría
+      if (selectedCategory !== 'all') {
+        result = result.filter(p => p.category?.toLowerCase() === selectedCategory.toLowerCase());
+      }
+      // Filtrar por subcategoría (insensible a mayúsculas)
+      if (selectedSubcategory) {
+        result = result.filter(p => {
+          const sub = (p.sub_category || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const sel = selectedSubcategory.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          return sub.includes(sel) || sel.includes(sub);
+        });
+      }
     }
-    
     return result;
-  }, [selectedCategory, products, searchQuery]);
+  }, [selectedCategory, selectedSubcategory, products, searchQuery]);
 
   const addToCart = (product: Product) => {
     setCart(prev => {
@@ -202,7 +212,11 @@ export default function App() {
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <Search className="text-primary cursor-pointer hover:opacity-70 transition-opacity" size={24} />
+                    <Search 
+                      className="text-primary cursor-pointer hover:opacity-70 transition-opacity" 
+                      size={24} 
+                      onClick={() => document.getElementById('main-search')?.focus()}
+                    />
                     <div 
                       className="relative w-11 h-11 rounded-full bg-secondary flex items-center justify-center cursor-pointer hover:scale-105 transition-transform shadow-lg shadow-secondary/20" 
                       onClick={openCart}
@@ -240,6 +254,7 @@ export default function App() {
                     <div className="relative flex items-center bg-white rounded-full px-5 py-3 shadow-sm border border-primary/10">
                       <Search className="text-primary/40 mr-3" size={20} />
                       <input 
+                        id="main-search"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="bg-transparent border-none focus:outline-none w-full text-sm" 
@@ -255,7 +270,14 @@ export default function App() {
                     </h3>
                     <div className="flex items-start gap-10 overflow-x-auto hide-scrollbar pb-6 px-4">
                       {categories.map((cat) => (
-                        <div key={cat.id} onClick={() => setSelectedCategory(cat.id)} className="flex flex-col items-center gap-4 shrink-0 cursor-pointer group">
+                        <div 
+                          key={cat.id} 
+                          onClick={() => { 
+                            setSelectedCategory(cat.id); 
+                            setSelectedSubcategory(''); // resetear subcategoría al cambiar categoría
+                          }} 
+                          className="flex flex-col items-center gap-4 shrink-0 cursor-pointer group"
+                        >
                           <div className={`w-20 h-20 rounded-full flex items-center justify-center transition-all ${cat.bgColor} ${selectedCategory === cat.id ? 'ring-4 ring-secondary ring-offset-4 scale-110 shadow-xl' : 'hover:scale-105 shadow-sm'}`}>
                             <cat.icon className={`w-8 h-8 ${selectedCategory === cat.id ? 'text-secondary' : cat.iconColor}`} />
                           </div>
@@ -273,13 +295,31 @@ export default function App() {
                           className="mt-8 p-8 bg-white rounded-3xl border border-primary/5 shadow-sm mx-2"
                         >
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {categories.find(c => c.id === selectedCategory)?.submenus.map((sub, idx) => (
-                              <div key={idx} className="flex items-center gap-3 group cursor-pointer">
-                                <div className={`w-2 h-2 rounded-full shrink-0 ${categories.find(c => c.id === selectedCategory)?.dotColor}`} />
-                                <span className="text-sm font-medium text-primary/70 group-hover:text-primary transition-colors">{sub}</span>
-                              </div>
-                            ))}
+                            {categories.find(c => c.id === selectedCategory)?.submenus.map((sub: string, idx: number) => {
+                              const isActive = selectedSubcategory.toLowerCase() === sub.toLowerCase();
+                              const dotCat = categories.find(c => c.id === selectedCategory);
+                              return (
+                                <div 
+                                  key={idx} 
+                                  onClick={() => setSelectedSubcategory(isActive ? '' : sub)}
+                                  className={`flex items-center gap-3 group cursor-pointer rounded-xl px-3 py-2 transition-all ${
+                                    isActive ? 'bg-secondary/10 ring-1 ring-secondary/30' : 'hover:bg-primary/5'
+                                  }`}
+                                >
+                                  <div className={`w-2 h-2 rounded-full shrink-0 transition-all ${isActive ? 'bg-secondary scale-125' : dotCat?.dotColor}`} />
+                                  <span className={`text-sm font-medium transition-colors ${
+                                    isActive ? 'text-secondary font-bold' : 'text-primary/70 group-hover:text-primary'
+                                  }`}>{sub}</span>
+                                  {isActive && <span className="ml-auto text-[9px] font-black text-secondary uppercase tracking-widest">✕ Quitar</span>}
+                                </div>
+                              );
+                            })}
                           </div>
+                          {selectedSubcategory && (
+                            <p className="text-[10px] text-secondary font-black uppercase tracking-widest mt-4 px-3">
+                              Mostrando: {selectedSubcategory} ({filteredProducts.length} resultado{filteredProducts.length !== 1 ? 's' : ''})
+                            </p>
+                          )}
                         </motion.div>
                       )}
                     </AnimatePresence>
