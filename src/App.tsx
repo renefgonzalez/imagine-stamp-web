@@ -1,13 +1,13 @@
 import React, { useState, useMemo, useEffect, ErrorInfo, ReactNode, Component } from 'react';
 import { supabase } from './lib/supabase';
 import { 
-  Menu, Search, Heart, Plus, ShoppingBag, Store, Sparkles, User, X, 
-  ChevronRight, Instagram, Facebook, Mail, Phone, Settings, ShoppingCart, 
-  MessageCircle, Mail as MailIcon, PartyPopper, Gift, Briefcase, LayoutGrid, Lock
+  Menu, Search, Heart, Plus, ShoppingBag, Sparkles, X, 
+  ChevronRight, Instagram, Facebook, Mail as MailIcon, 
+  PartyPopper, Gift, Briefcase, LayoutGrid, Lock, MessageCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import { PRODUCTS, Product } from './data/products';
+import { Product } from './data/products';
 import logo from './logo.png';
 import AdminPanel from './AdminPanel';
 
