@@ -57,7 +57,7 @@ const SpeedyCartIcon = ({ className }: { className?: string }) => (
 );
 
 export default function App() {
-  const [cart, setCart] = useState<{ id: number; name: string; price: number; quantity: number }[]>([]);
+  const [cart, setCart] = useState<{ id: string | number; name: string; price: number; quantity: number }[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartStep, setCartStep] = useState<'cart' | 'details'>('cart');
   const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo' });
@@ -133,8 +133,8 @@ export default function App() {
 
   const addToCart = (product: Product) => {
     setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
-      if (existing) return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+      const existing = prev.find(item => String(item.id) === String(product.id));
+      if (existing) return prev.map(item => String(item.id) === String(product.id) ? { ...item, quantity: item.quantity + 1 } : item);
       return [...prev, { id: product.id, name: product.name, price: product.price, quantity: 1 }];
     });
     // Mostrar toast de confirmación
@@ -142,13 +142,15 @@ export default function App() {
     setTimeout(() => setCartToast(null), 3500);
   };
 
-  const updateQuantity = (id: number, delta: number) => {
+  const updateQuantity = (id: string | number, delta: number) => {
     setCart(prev => prev
-      .map(item => item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item)
+      .map(item => String(item.id) === String(id) ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item)
     );
   };
 
-  const removeFromCart = (id: number) => setCart(prev => prev.filter(item => item.id !== id));
+  const removeFromCart = (id: string | number) => {
+    setCart(prev => prev.filter(item => String(item.id) !== String(id)));
+  };
 
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
   const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
