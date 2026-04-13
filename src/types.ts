@@ -12,11 +12,11 @@ export interface Category {
 }
 
 export interface Product {
-  id: number;
+  id: number | string;
   name: string;
   price: number;
   image: string;
   category: string;
   description?: string;
-  subCategory?: string;
+  sub_category?: string;
 }

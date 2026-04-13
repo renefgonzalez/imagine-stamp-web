@@ -1,10 +1,10 @@
 export interface Product {
-  id: number;
+  id: number | string;
   name: string;
   description: string;
   price: number;
   category: string;
-  subCategory?: string;
+  sub_category?: string;
   image: string;
 }
 
@@ -16,7 +16,7 @@ export const PRODUCTS: Product[] = [
     description: "Invitación de boda con acabados en foil dorado y papel texturizado premium.",
     price: 450,
     category: "Invitaciones",
-    subCategory: "Boda",
+    sub_category: "Boda",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuA6YN5iUDjeduv8PK7ymk8mfRP_tRYmyf1uhQ2aqOusQG6qArD_VMPFXc_ZA3CZv8olqc-1D60VjjACoIa2cPaLcgJgTaaKl8nGPbTR9cUri_otDaUJEvKUbCuegwT2gOGvoMn_aQPr3hLbNU7nT3WoxoKmccH65aWvAiE2KHJm0tazCTer7uXhgy-gLK31MoDbkrvELontcbny_hR9rJ4B92Yd_w4y4WOXY5U87uTLEQVHfWtlJ9xWvPbQcfPDW5ChcqbOJ6mvaw"
   },
   {
@@ -25,7 +25,7 @@ export const PRODUCTS: Product[] = [
     description: "Diseño moderno con detalles en glitter y corte láser de alta precisión.",
     price: 380,
     category: "Invitaciones",
-    subCategory: "XV",
+    sub_category: "XV",
     image: "https://picsum.photos/seed/invitation-xv/800/1000"
   },
   {
@@ -34,7 +34,7 @@ export const PRODUCTS: Product[] = [
     description: "Divertida invitación temática de safari con colores vibrantes para los más pequeños.",
     price: 250,
     category: "Invitaciones",
-    subCategory: "Infantiles",
+    sub_category: "Infantiles",
     image: "https://picsum.photos/seed/invitation-child/800/1000"
   },
 
@@ -87,7 +87,7 @@ export const PRODUCTS: Product[] = [
     description: "Etiqueta textil de 1.3 x 5.2 cm diseñada para identificación permanente en ropa mediante calor. Resistente a lavados.",
     price: 110,
     category: "Personalización",
-    subCategory: "Etiquetas",
+    sub_category: "Etiquetas",
     image: "https://lh3.googleusercontent.com/pw/AP1GczO_Z7xPZk4x1T-_m_p0_FpYfV6g-m4k8E_k_uG_x_y-q-6Z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8z_u-q_z-8" 
   }
 ];
