@@ -65,7 +65,19 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
 
   const loadOrders = async () => {
     const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
-    if (data) setOrders(data);
+    if (data) {
+      const mapped = data.map((o: any) => ({
+        ...o,
+        customer: o.customer_name || o.customer,
+        phone: o.customer_phone || o.phone,
+        city: o.customer_city || o.city,
+        paymentMethod: o.payment_method || o.paymentMethod,
+        total: o.total_amount || o.total,
+        deliveryNotes: o.delivery_notes || o.deliveryNotes,
+        internalNotes: o.internal_notes || o.internalNotes || []
+      }));
+      setOrders(mapped);
+    }
   };
 
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
@@ -76,6 +88,7 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const [newCatName, setNewCatName] = useState('');
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [noteInputs, setNoteInputs] = useState<Record<string, string>>({});
+  const [paymentRefInputs, setPaymentRefInputs] = useState<Record<string, string>>({});
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
 
   // ── ACCESO ───────────────────────────────────────────────────────────────
@@ -148,9 +161,19 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
       .update({ internal_notes: [...(order.internal_notes || []), newNote] })
       .eq('id', orderId);
       
-    if (!error) {
-      loadOrders();
+    if (error) console.error("Error al guardar nota:", error);
+    else {
       setNoteInputs(prev => ({ ...prev, [orderId]: '' }));
+      loadOrders();
+    }
+  };
+  
+  const savePaymentRef = async (orderId: string) => {
+    const ref = (paymentRefInputs[orderId] || '').trim();
+    const { error } = await supabase.from('orders').update({ payment_reference: ref }).eq('id', orderId);
+    if (!error) {
+      alert("Referencia guardada!");
+      loadOrders();
     }
   };
 
@@ -693,9 +716,28 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
 
                         {/* Forma de pago */}
                         {order.paymentMethod && (
-                          <span className={`self-start text-[9px] font-black px-2 py-0.5 rounded-full border tracking-widest uppercase ${cfg.bg} ${cfg.border} ${cfg.color}`}>
-                            💳 {order.paymentMethod}
-                          </span>
+                          <div className="flex flex-col gap-2">
+                             <span className={`self-start text-[9px] font-black px-2 py-0.5 rounded-full border tracking-widest uppercase ${cfg.bg} ${cfg.border} ${cfg.color}`}>
+                              💳 {order.paymentMethod}
+                            </span>
+                            
+                            {(order.paymentMethod.toLowerCase().includes('transferencia') || order.paymentMethod.toLowerCase().includes('tarjeta') || order.payment_reference) && (
+                              <div className="flex gap-2">
+                                <input 
+                                  placeholder="REF: #000000"
+                                  defaultValue={order.payment_reference || ''}
+                                  onChange={(e) => setPaymentRefInputs(prev => ({ ...prev, [order.id]: e.target.value }))}
+                                  className="flex-1 bg-background border border-primary/5 p-1.5 rounded-lg text-[10px] uppercase font-bold outline-none focus:border-secondary"
+                                />
+                                <button 
+                                  onClick={() => savePaymentRef(order.id)}
+                                  className="bg-secondary text-white px-2 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all"
+                                >
+                                  OK
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         )}
 
                         {/* Items */}
