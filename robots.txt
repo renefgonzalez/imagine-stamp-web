@@ -1,0 +1,11 @@
+# ── Imagine and Stamp — robots.txt ──────────────────────────────────────────
+# https://imagineandstamp.site/
+
+User-agent: *
+Allow: /
+
+# No indexar el panel de administración
+Disallow: /#/admin
+
+# Sitemap
+Sitemap: https://imagineandstamp.site/sitemap.xml
