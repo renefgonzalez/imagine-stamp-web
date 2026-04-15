@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+          http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
   <!-- ── Página de Inicio ── -->
   <url>
@@ -9,7 +12,7 @@
     <priority>1.0</priority>
   </url>
 
-  <!-- ── Catálogo general (VER TODO) ── -->
+  <!-- ── Catálogo completo ── -->
   <url>
     <loc>https://imagineandstamp.site/#/</loc>
     <lastmod>2026-04-15</lastmod>
@@ -17,7 +20,15 @@
     <priority>0.9</priority>
   </url>
 
-  <!-- ── Categorías ── -->
+  <!-- ── Panel Admin (no indexado pero declarado) ── -->
+  <url>
+    <loc>https://imagineandstamp.site/#/admin</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.1</priority>
+  </url>
+
+  <!-- ── Categoría: Fiestas y Cumpleaños ── -->
   <url>
     <loc>https://imagineandstamp.site/#/?categoria=fiestas-y-cumpleanos</loc>
     <lastmod>2026-04-15</lastmod>
@@ -25,6 +36,7 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- ── Categoría: Invitaciones ── -->
   <url>
     <loc>https://imagineandstamp.site/#/?categoria=invitaciones</loc>
     <lastmod>2026-04-15</lastmod>
@@ -32,13 +44,7 @@
     <priority>0.8</priority>
   </url>
 
-  <url>
-    <loc>https://imagineandstamp.site/#/?categoria=empresarial</loc>
-    <lastmod>2026-04-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
+  <!-- ── Categoría: Personalización ── -->
   <url>
     <loc>https://imagineandstamp.site/#/?categoria=personalizacion</loc>
     <lastmod>2026-04-15</lastmod>
@@ -46,6 +52,15 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- ── Categoría: Empresarial ── -->
+  <url>
+    <loc>https://imagineandstamp.site/#/?categoria=empresarial</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- ── Categoría: Páginas Web y Apps ── -->
   <url>
     <loc>https://imagineandstamp.site/#/?categoria=paginas-webs-y-apps</loc>
     <lastmod>2026-04-15</lastmod>
@@ -53,6 +68,7 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- ── Categoría: Catálogo y Portafolio ── -->
   <url>
     <loc>https://imagineandstamp.site/#/?categoria=catalogo-and-portafolio</loc>
     <lastmod>2026-04-15</lastmod>
