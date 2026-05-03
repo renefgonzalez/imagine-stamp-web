@@ -454,7 +454,7 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                   <Field label="Precio ($)">
                     <div className="relative">
                       <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={17} />
-                      <input name="price" type="number" required placeholder="0.00"
+                      <input name="price" type="number" step="0.01" required placeholder="0.00"
                         className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest" />
                     </div>
                   </Field>
@@ -895,7 +895,7 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                   }} className="p-8 space-y-4 max-h-[70vh] overflow-y-auto">
                     <Field label="Nombre"><input name="name" defaultValue={editingProduct.name} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold" /></Field>
                     <div className="grid grid-cols-2 gap-4">
-                      <Field label="Precio"><input name="price" type="number" defaultValue={editingProduct.price} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold" /></Field>
+                      <Field label="Precio"><input name="price" type="number" step="0.01" defaultValue={editingProduct.price} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold" /></Field>
                       <Field label="Categoría">
                         <select name="category" defaultValue={editingProduct.category} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none">
                           {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
