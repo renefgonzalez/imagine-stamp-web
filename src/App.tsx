@@ -480,25 +480,32 @@ export default function App() {
                           className="mt-8 p-8 bg-white rounded-3xl border border-primary/5 shadow-sm mx-2"
                         >
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {categories.find(c => c.id === selectedCategory)?.submenus.map((sub: string, idx: number) => {
-                              const isActive = selectedSubcategory.toLowerCase() === sub.toLowerCase();
-                              const dotCat = categories.find(c => c.id === selectedCategory);
-                              return (
-                                <div 
-                                  key={idx} 
-                                  onClick={() => setSelectedSubcategory(isActive ? '' : sub)}
-                                  className={`flex items-center gap-3 group cursor-pointer rounded-xl px-3 py-2 transition-all ${
-                                    isActive ? 'bg-secondary/10 ring-1 ring-secondary/30' : 'hover:bg-primary/5'
-                                  }`}
-                                >
-                                  <div className={`w-2 h-2 rounded-full shrink-0 transition-all ${isActive ? 'bg-secondary scale-125' : dotCat?.dotColor}`} />
-                                  <span className={`text-sm font-medium transition-colors ${
-                                    isActive ? 'text-secondary font-bold' : 'text-primary/70 group-hover:text-primary'
-                                  }`}>{sub}</span>
-                                  {isActive && <span className="ml-auto text-sm font-black text-secondary">✕</span>}
-                                </div>
-                              );
-                            })}
+                            {(() => {
+                              const productsInCategory = products.filter(p => p.category?.toLowerCase() === selectedCategory.toLowerCase());
+                              const dynamicSubs = Array.from(new Set(productsInCategory.map(p => p.sub_category).filter(Boolean) as string[]));
+                              const staticSubs = categories.find(c => c.id === selectedCategory)?.submenus || [];
+                              const allSubs = Array.from(new Set([...staticSubs, ...dynamicSubs])).sort();
+                              
+                              return allSubs.map((sub: string, idx: number) => {
+                                const isActive = selectedSubcategory.toLowerCase() === sub.toLowerCase();
+                                const dotCat = categories.find(c => c.id === selectedCategory);
+                                return (
+                                  <div 
+                                    key={idx} 
+                                    onClick={() => setSelectedSubcategory(isActive ? '' : sub)}
+                                    className={`flex items-center gap-3 group cursor-pointer rounded-xl px-3 py-2 transition-all ${
+                                      isActive ? 'bg-secondary/10 ring-1 ring-secondary/30' : 'hover:bg-primary/5'
+                                    }`}
+                                  >
+                                    <div className={`w-2 h-2 rounded-full shrink-0 transition-all ${isActive ? 'bg-secondary scale-125' : dotCat?.dotColor}`} />
+                                    <span className={`text-sm font-medium transition-colors ${
+                                      isActive ? 'text-secondary font-bold' : 'text-primary/70 group-hover:text-primary'
+                                    }`}>{sub}</span>
+                                    {isActive && <span className="ml-auto text-sm font-black text-secondary">✕</span>}
+                                  </div>
+                                );
+                              });
+                            })()}
                           </div>
                           {selectedSubcategory && (
                             <p className="text-[10px] text-secondary font-black uppercase tracking-widest mt-4 px-3">
