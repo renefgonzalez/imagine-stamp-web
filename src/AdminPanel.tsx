@@ -90,6 +90,8 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const [noteInputs, setNoteInputs] = useState<Record<string, string>>({});
   const [paymentRefInputs, setPaymentRefInputs] = useState<Record<string, string>>({});
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
+  const [newProdCat, setNewProdCat] = useState('');
+  const [newProdSub1, setNewProdSub1] = useState('');
 
   // ── ACCESO ───────────────────────────────────────────────────────────────
   if (!isAuthenticated) {
@@ -236,15 +238,23 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
     );
   };
 
+  // Helper: normaliza submenus viejos (string[]) al formato nuevo ({name,children}[])
+  const normalizeSubs = (subs: any[]): {name:string; children:string[]}[] => {
+    if (!subs || subs.length === 0) return [];
+    if (typeof subs[0] === 'string') return subs.map((s: string) => ({ name: s, children: [] }));
+    return subs;
+  };
+
   const addSubmenu = async (catId: string) => {
     const val = (newSubInput[catId] || '').trim();
     if (!val) return;
     const cat = categories.find(c => c.id === catId);
-    if (cat.submenus.includes(val)) return;
+    const subs = normalizeSubs(cat.submenus);
+    if (subs.some((s: any) => s.name === val)) return;
     
     const { error } = await supabase
       .from('categories')
-      .update({ submenus: [...cat.submenus, val] })
+      .update({ submenus: [...subs, { name: val, children: [] }] })
       .eq('id', catId);
       
     if (!error) {
@@ -253,22 +263,44 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
     }
   };
 
-  const removeSubmenu = async (catId: string, sub: string) => {
+  const removeSubmenu = async (catId: string, subName: string) => {
     const cat = categories.find(c => c.id === catId);
+    const subs = normalizeSubs(cat.submenus);
     const { error } = await supabase
       .from('categories')
-      .update({ submenus: cat.submenus.filter((s: string) => s !== sub) })
+      .update({ submenus: subs.filter((s: any) => s.name !== subName) })
       .eq('id', catId);
     if (!error) loadCategories();
   };
 
-  const editSubmenu = async (catId: string, oldSub: string, newSub: string) => {
+  const editSubmenu = async (catId: string, oldName: string, newName: string) => {
     const cat = categories.find(c => c.id === catId);
-    const updated = cat.submenus.map((s: string) => s === oldSub ? newSub.trim() : s);
+    const subs = normalizeSubs(cat.submenus);
+    const updated = subs.map((s: any) => s.name === oldName ? { ...s, name: newName.trim() } : s);
     const { error } = await supabase
       .from('categories')
       .update({ submenus: updated })
       .eq('id', catId);
+    if (!error) loadCategories();
+  };
+
+  const addSubSubmenu = async (catId: string, subName: string, childVal: string) => {
+    const cat = categories.find(c => c.id === catId);
+    const subs = normalizeSubs(cat.submenus);
+    const updated = subs.map((s: any) => 
+      s.name === subName ? { ...s, children: [...(s.children || []), childVal] } : s
+    );
+    const { error } = await supabase.from('categories').update({ submenus: updated }).eq('id', catId);
+    if (!error) loadCategories();
+  };
+
+  const removeSubSubmenu = async (catId: string, subName: string, childVal: string) => {
+    const cat = categories.find(c => c.id === catId);
+    const subs = normalizeSubs(cat.submenus);
+    const updated = subs.map((s: any) => 
+      s.name === subName ? { ...s, children: (s.children || []).filter((c: string) => c !== childVal) } : s
+    );
+    const { error } = await supabase.from('categories').update({ submenus: updated }).eq('id', catId);
     if (!error) loadCategories();
   };
 
@@ -363,6 +395,7 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                       <div className="flex flex-wrap justify-center sm:justify-start gap-1.5 mt-2">
                         <span className="text-[9px] font-black text-secondary bg-secondary/5 px-2 py-0.5 rounded border border-secondary/10 uppercase tracking-widest">{p.category}</span>
                         {p.sub_category && <span className="text-[9px] font-bold text-primary/40 bg-primary/5 px-2 py-0.5 rounded uppercase tracking-widest">{p.sub_category}</span>}
+                        {p.sub_category_2 && <span className="text-[9px] font-bold text-primary/30 bg-primary/5 px-2 py-0.5 rounded uppercase tracking-widest">{p.sub_category_2}</span>}
                       </div>
                     </div>
                     <div className="shrink-0 px-4 text-center sm:text-right">
@@ -420,7 +453,8 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                   price: parseFloat(fd.get('price') as string) || 0,
                   image: imageUrl || 'https://picsum.photos/seed/new/800/1000',
                   category: fd.get('category') as string,
-                  sub_category: fd.get('sub1') as string,
+                  sub_category: fd.get('sub1') as string || '',
+                  sub_category_2: fd.get('sub2') as string || '',
                 };
 
                 const { error } = await supabase.from('products').insert([newProduct]);
@@ -462,7 +496,9 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                     <div className="relative">
                       <LayoutGrid className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={17} />
                       <select name="category"
+                        onChange={(e) => { setNewProdCat(e.target.value); setNewProdSub1(''); }}
                         className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest appearance-none cursor-pointer">
+                        <option value="">— Seleccionar —</option>
                         {categories.map((cat: any) => (
                           <option key={cat.id} value={cat.id}>{cat.name}</option>
                         ))}
@@ -471,20 +507,42 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                   </Field>
                 </div>
 
-                {/* Sub 1 + Sub 2 */}
+                {/* Sub 1 + Sub 2 (cascada) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <Field label="Sub-Categoría 1 (opcional)">
                     <div className="relative">
                       <Box className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={17} />
-                      <input name="sub1" placeholder="Ej: Boda"
-                        className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest transition-all" />
+                      <select name="sub1"
+                        value={newProdSub1}
+                        onChange={(e) => setNewProdSub1(e.target.value)}
+                        className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest appearance-none cursor-pointer">
+                        <option value="">— Seleccionar —</option>
+                        {(() => {
+                          const cat = categories.find(c => c.id === newProdCat);
+                          if (!cat) return null;
+                          return normalizeSubs(cat.submenus).map((s: any) => (
+                            <option key={s.name} value={s.name}>{s.name}</option>
+                          ));
+                        })()}
+                      </select>
                     </div>
                   </Field>
                   <Field label="Sub-Categoría 2 (opcional)">
                     <div className="relative">
                       <Box className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={17} />
-                      <input name="sub2" placeholder="Ej: Invitación Web"
-                        className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest transition-all" />
+                      <select name="sub2"
+                        className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest appearance-none cursor-pointer">
+                        <option value="">— Seleccionar —</option>
+                        {(() => {
+                          const cat = categories.find(c => c.id === newProdCat);
+                          if (!cat) return null;
+                          const sub = normalizeSubs(cat.submenus).find((s: any) => s.name === newProdSub1);
+                          if (!sub) return null;
+                          return (sub.children || []).map((child: string) => (
+                            <option key={child} value={child}>{child}</option>
+                          ));
+                        })()}
+                      </select>
                     </div>
                   </Field>
                 </div>
@@ -616,26 +674,66 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                       <div className="border-t border-primary/5 p-4 bg-background/40 space-y-3">
                         <p className="text-[10px] font-black text-primary/30 uppercase tracking-[0.2em] mb-3">Subcategorías de "{cat.name}"</p>
                         
-                        {/* Chips editables */}
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {cat.submenus.length === 0 && (
+                        {/* Lista jerárquica */}
+                        <div className="space-y-2 mb-4">
+                          {normalizeSubs(cat.submenus).length === 0 && (
                             <span className="text-xs text-primary/20 italic">Sin subcategorías todavía...</span>
                           )}
-                          {cat.submenus.map((sub: string) => (
-                            <SubChip key={sub} value={sub}
-                              onDelete={() => removeSubmenu(cat.id, sub)}
-                              onEdit={(newVal) => editSubmenu(cat.id, sub, newVal)}
-                            />
+                          {normalizeSubs(cat.submenus).map((sub: any) => (
+                            <div key={sub.name} className="bg-white border border-primary/10 rounded-xl overflow-hidden">
+                              {/* Sub-1 header */}
+                              <div className="flex items-center gap-2 px-3 py-2">
+                                <SubChip value={sub.name}
+                                  onDelete={() => removeSubmenu(cat.id, sub.name)}
+                                  onEdit={(newVal) => editSubmenu(cat.id, sub.name, newVal)}
+                                />
+                                <span className="text-[8px] text-primary/20 font-bold ml-auto">{(sub.children || []).length} sub-2</span>
+                              </div>
+                              {/* Sub-2 children */}
+                              <div className="bg-background/50 border-t border-primary/5 px-3 py-2 space-y-1.5">
+                                <p className="text-[8px] font-black text-primary/20 uppercase tracking-[0.15em]">Sub-categorías nivel 2:</p>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {(sub.children || []).map((child: string) => (
+                                    <span key={child} className="flex items-center gap-1 bg-white border border-primary/10 text-primary/60 px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider">
+                                      {child}
+                                      <button onClick={() => removeSubSubmenu(cat.id, sub.name, child)} className="text-primary/20 hover:text-error transition-colors">
+                                        <X size={8} strokeWidth={3} />
+                                      </button>
+                                    </span>
+                                  ))}
+                                </div>
+                                <div className="flex gap-1.5 mt-1">
+                                  <input
+                                    placeholder="Ej: Baby Shower..."
+                                    className="flex-1 bg-white border border-primary/10 text-primary px-3 py-1.5 rounded-lg text-[9px] font-bold tracking-widest uppercase outline-none focus:border-secondary transition-all"
+                                    onKeyDown={async (e) => {
+                                      if (e.key === 'Enter') {
+                                        const val = (e.target as HTMLInputElement).value.trim();
+                                        if (val) { await addSubSubmenu(cat.id, sub.name, val); (e.target as HTMLInputElement).value = ''; }
+                                      }
+                                    }}
+                                  />
+                                  <button
+                                    onClick={async (e) => {
+                                      const input = (e.currentTarget.previousElementSibling as HTMLInputElement);
+                                      const val = input.value.trim();
+                                      if (val) { await addSubSubmenu(cat.id, sub.name, val); input.value = ''; }
+                                    }}
+                                    className="px-3 py-1.5 bg-primary/80 text-white rounded-lg text-[8px] font-black tracking-widest uppercase hover:bg-primary transition-all"
+                                  >+ Sub-2</button>
+                                </div>
+                              </div>
+                            </div>
                           ))}
                         </div>
 
-                        {/* Agregar nueva */}
+                        {/* Agregar nueva sub-1 */}
                         <div className="flex gap-2">
                           <input
                             value={newSubInput[cat.id] || ''}
                             onChange={(e) => setNewSubInput(prev => ({ ...prev, [cat.id]: e.target.value }))}
                             onKeyDown={(e) => e.key === 'Enter' && addSubmenu(cat.id)}
-                            placeholder="NUEVA SUBCATEGORÍA..."
+                            placeholder="NUEVA SUBCATEGORÍA NIVEL 1..."
                             className="flex-1 bg-background border border-primary/10 text-primary px-4 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase outline-none focus:border-secondary transition-all"
                           />
                           <button onClick={() => addSubmenu(cat.id)}
@@ -882,7 +980,8 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                       name: fd.get('name') as string,
                       price: parseFloat(fd.get('price') as string) || 0,
                       category: fd.get('category') as string,
-                      sub_category: fd.get('sub_category') as string,
+                      sub_category: fd.get('sub_category') as string || '',
+                      sub_category_2: fd.get('sub_category_2') as string || '',
                       image: imageUrl,
                       description: fd.get('description') as string,
                     };
@@ -902,7 +1001,12 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                         </select>
                       </Field>
                     </div>
-                    <Field label="Subcategoría"><input name="sub_category" defaultValue={editingProduct.sub_category} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold outline-none" /></Field>
+                    <Field label="Subcategoría 1">
+                      <input name="sub_category" defaultValue={editingProduct.sub_category} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold outline-none" />
+                    </Field>
+                    <Field label="Subcategoría 2">
+                      <input name="sub_category_2" defaultValue={editingProduct.sub_category_2} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold outline-none" />
+                    </Field>
                     
                     <Field label="Nueva Foto (opcional)">
                       <div className="relative group">

@@ -57,12 +57,20 @@ const SpeedyCartIcon = ({ className }: { className?: string }) => (
 );
 
 export default function App() {
+  // Helper: normaliza submenus viejos (string[]) al formato nuevo ({name,children}[])
+  const normalizeSubs = (subs: any[]): {name:string; children:string[]}[] => {
+    if (!subs || subs.length === 0) return [];
+    if (typeof subs[0] === 'string') return subs.map((s: string) => ({ name: s, children: [] }));
+    return subs;
+  };
+
   const [cart, setCart] = useState<{ id: string | number; name: string; price: number; quantity: number }[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartStep, setCartStep] = useState<'cart' | 'details'>('cart');
   const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo' });
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSubcategory, setSelectedSubcategory] = useState('');
+  const [selectedSubcategory2, setSelectedSubcategory2] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
@@ -135,7 +143,7 @@ export default function App() {
       if (selectedCategory !== 'all') {
         result = result.filter(p => p.category?.toLowerCase() === selectedCategory.toLowerCase());
       }
-      // Filtrar por subcategoría (insensible a mayúsculas)
+      // Filtrar por subcategoría 1
       if (selectedSubcategory) {
         result = result.filter(p => {
           const sub = (p.sub_category || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -143,9 +151,17 @@ export default function App() {
           return sub.includes(sel) || sel.includes(sub);
         });
       }
+      // Filtrar por subcategoría 2
+      if (selectedSubcategory2) {
+        result = result.filter(p => {
+          const sub2 = ((p as any).sub_category_2 || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const sel2 = selectedSubcategory2.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          return sub2.includes(sel2) || sel2.includes(sub2);
+        });
+      }
     }
     return result;
-  }, [selectedCategory, selectedSubcategory, products, searchQuery]);
+  }, [selectedCategory, selectedSubcategory, selectedSubcategory2, products, searchQuery]);
 
   const addToCart = (product: Product) => {
     setCart(prev => {
@@ -419,6 +435,7 @@ export default function App() {
                             onClick={() => { 
                               setSelectedCategory(cat.id); 
                               setSelectedSubcategory('');
+                              setSelectedSubcategory2('');
                             }} 
                             className="flex flex-col items-center gap-2 md:gap-3 shrink-0 cursor-pointer group"
                           >
@@ -477,39 +494,68 @@ export default function App() {
                       {selectedCategory !== 'all' && !showOnlyFavorites && (
                         <motion.div
                           key={selectedCategory} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                          className="mt-8 p-8 bg-white rounded-3xl border border-primary/5 shadow-sm mx-2"
+                          className="mt-8 p-6 bg-white rounded-3xl border border-primary/5 shadow-sm mx-2"
                         >
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                          {/* Subcategoría Nivel 1 */}
+                          <p className="text-[9px] font-black text-primary/30 uppercase tracking-[0.2em] mb-3">Subcategoría</p>
+                          <div className="flex flex-wrap gap-2 mb-4">
                             {(() => {
-                              const productsInCategory = products.filter(p => p.category?.toLowerCase() === selectedCategory.toLowerCase());
-                              const dynamicSubs = Array.from(new Set(productsInCategory.map(p => p.sub_category).filter(Boolean) as string[]));
-                              const staticSubs = categories.find(c => c.id === selectedCategory)?.submenus || [];
-                              const allSubs = Array.from(new Set([...staticSubs, ...dynamicSubs])).sort();
-                              
-                              return allSubs.map((sub: string, idx: number) => {
-                                const isActive = selectedSubcategory.toLowerCase() === sub.toLowerCase();
-                                const dotCat = categories.find(c => c.id === selectedCategory);
+                              const cat = categories.find(c => c.id === selectedCategory);
+                              if (!cat) return null;
+                              const subs = normalizeSubs(cat.submenus || []);
+                              if (subs.length === 0) return <span className="text-xs text-primary/20 italic">Sin subcategorías</span>;
+                              return subs.map((sub: any) => {
+                                const isActive = selectedSubcategory.toLowerCase() === sub.name.toLowerCase();
                                 return (
-                                  <div 
-                                    key={idx} 
-                                    onClick={() => setSelectedSubcategory(isActive ? '' : sub)}
-                                    className={`flex items-center gap-3 group cursor-pointer rounded-xl px-3 py-2 transition-all ${
-                                      isActive ? 'bg-secondary/10 ring-1 ring-secondary/30' : 'hover:bg-primary/5'
+                                  <button
+                                    key={sub.name}
+                                    onClick={() => { setSelectedSubcategory(isActive ? '' : sub.name); setSelectedSubcategory2(''); }}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all border ${
+                                      isActive ? 'bg-secondary text-white border-secondary shadow-lg shadow-secondary/20' : 'bg-white text-primary/60 border-primary/10 hover:border-secondary/40 hover:text-primary'
                                     }`}
                                   >
-                                    <div className={`w-2 h-2 rounded-full shrink-0 transition-all ${isActive ? 'bg-secondary scale-125' : dotCat?.dotColor}`} />
-                                    <span className={`text-sm font-medium transition-colors ${
-                                      isActive ? 'text-secondary font-bold' : 'text-primary/70 group-hover:text-primary'
-                                    }`}>{sub}</span>
-                                    {isActive && <span className="ml-auto text-sm font-black text-secondary">✕</span>}
-                                  </div>
+                                    <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-white' : cat.dotColor}`} />
+                                    {sub.name}
+                                    {isActive && <span className="ml-1 text-white/80">✕</span>}
+                                  </button>
                                 );
                               });
                             })()}
                           </div>
-                          {selectedSubcategory && (
-                            <p className="text-[10px] text-secondary font-black uppercase tracking-widest mt-4 px-3">
-                              Mostrando: {selectedSubcategory} ({filteredProducts.length} resultado{filteredProducts.length !== 1 ? 's' : ''})
+
+                          {/* Subcategoría Nivel 2 (solo si hay sub-1 seleccionada) */}
+                          {selectedSubcategory && (() => {
+                            const cat = categories.find(c => c.id === selectedCategory);
+                            if (!cat) return null;
+                            const sub = normalizeSubs(cat.submenus || []).find((s: any) => s.name.toLowerCase() === selectedSubcategory.toLowerCase());
+                            if (!sub || !sub.children || sub.children.length === 0) return null;
+                            return (
+                              <div className="mt-3 pt-3 border-t border-primary/5">
+                                <p className="text-[9px] font-black text-primary/20 uppercase tracking-[0.2em] mb-2">Tipo</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {sub.children.map((child: string) => {
+                                    const isActive2 = selectedSubcategory2.toLowerCase() === child.toLowerCase();
+                                    return (
+                                      <button
+                                        key={child}
+                                        onClick={() => setSelectedSubcategory2(isActive2 ? '' : child)}
+                                        className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border ${
+                                          isActive2 ? 'bg-primary text-white border-primary' : 'bg-background text-primary/50 border-primary/10 hover:border-primary/30'
+                                        }`}
+                                      >
+                                        {child}
+                                        {isActive2 && <span className="ml-1">✕</span>}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            );
+                          })()}
+
+                          {(selectedSubcategory || selectedSubcategory2) && (
+                            <p className="text-[10px] text-secondary font-black uppercase tracking-widest mt-4 px-1">
+                              Mostrando: {selectedSubcategory}{selectedSubcategory2 ? ` › ${selectedSubcategory2}` : ''} ({filteredProducts.length} resultado{filteredProducts.length !== 1 ? 's' : ''})
                             </p>
                           )}
                         </motion.div>

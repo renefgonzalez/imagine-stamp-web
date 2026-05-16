@@ -1,5 +1,10 @@
 import { LucideIcon } from 'lucide-react';
 
+export interface SubMenu {
+  name: string;
+  children: string[];
+}
+
 export interface Category {
   id: string;
   name: string;
@@ -8,7 +13,7 @@ export interface Category {
   bgColor: string;
   iconColor: string;
   dotColor: string;
-  submenus: string[];
+  submenus: SubMenu[];
 }
 
 export interface Product {
@@ -19,4 +24,5 @@ export interface Product {
   category: string;
   description?: string;
   sub_category?: string;
+  sub_category_2?: string;
 }
