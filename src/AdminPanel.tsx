@@ -90,6 +90,9 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const [noteInputs, setNoteInputs] = useState<Record<string, string>>({});
   const [paymentRefInputs, setPaymentRefInputs] = useState<Record<string, string>>({});
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
+  const [editProdCat, setEditProdCat] = useState('');
+  const [editProdSub1, setEditProdSub1] = useState('');
+  const [editProdSub2, setEditProdSub2] = useState('');
   const [newProdCat, setNewProdCat] = useState('');
   const [newProdSub1, setNewProdSub1] = useState('');
 
@@ -304,6 +307,17 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
     if (!error) loadCategories();
   };
 
+  const editSubSubmenu = async (catId: string, subName: string, oldChild: string, newChild: string) => {
+    if (!newChild.trim() || oldChild === newChild.trim()) return;
+    const cat = categories.find(c => c.id === catId);
+    const subs = normalizeSubs(cat.submenus);
+    const updated = subs.map((s: any) => 
+      s.name === subName ? { ...s, children: (s.children || []).map((c: string) => c === oldChild ? newChild.trim() : c) } : s
+    );
+    const { error } = await supabase.from('categories').update({ submenus: updated }).eq('id', catId);
+    if (!error) loadCategories();
+  };
+
   const addCategory = async () => {
     const name = newCatName.trim();
     if (!name) return;
@@ -404,7 +418,12 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                     </div>
                     <div className="flex gap-2 shrink-0">
                       <button 
-                        onClick={() => setEditingProduct(p)}
+                        onClick={() => {
+                          setEditingProduct(p);
+                          setEditProdCat(p.category || '');
+                          setEditProdSub1(p.sub_category || '');
+                          setEditProdSub2(p.sub_category_2 || '');
+                        }}
                         className="w-10 h-10 rounded-xl bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-secondary hover:border-secondary transition-all">
                         <Edit2 size={15} />
                       </button>
@@ -694,12 +713,10 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                                 <p className="text-[8px] font-black text-primary/20 uppercase tracking-[0.15em]">Sub-categorías nivel 2:</p>
                                 <div className="flex flex-wrap gap-1.5">
                                   {(sub.children || []).map((child: string) => (
-                                    <span key={child} className="flex items-center gap-1 bg-white border border-primary/10 text-primary/60 px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider">
-                                      {child}
-                                      <button onClick={() => removeSubSubmenu(cat.id, sub.name, child)} className="text-primary/20 hover:text-error transition-colors">
-                                        <X size={8} strokeWidth={3} />
-                                      </button>
-                                    </span>
+                                    <SubChip key={child} value={child} variant="sub2"
+                                      onDelete={() => removeSubSubmenu(cat.id, sub.name, child)}
+                                      onEdit={(newVal) => editSubSubmenu(cat.id, sub.name, child, newVal)}
+                                    />
                                   ))}
                                 </div>
                                 <div className="flex gap-1.5 mt-1">
@@ -996,16 +1013,37 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                     <div className="grid grid-cols-2 gap-4">
                       <Field label="Precio"><input name="price" type="number" step="0.01" defaultValue={editingProduct.price} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold" /></Field>
                       <Field label="Categoría">
-                        <select name="category" defaultValue={editingProduct.category} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none">
+                        <select name="category" value={editProdCat} onChange={(e) => { setEditProdCat(e.target.value); setEditProdSub1(''); setEditProdSub2(''); }} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none cursor-pointer">
+                          <option value="">— Seleccionar —</option>
                           {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                       </Field>
                     </div>
                     <Field label="Subcategoría 1">
-                      <input name="sub_category" defaultValue={editingProduct.sub_category} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold outline-none" />
+                      <select name="sub_category" value={editProdSub1} onChange={(e) => { setEditProdSub1(e.target.value); setEditProdSub2(''); }} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none cursor-pointer">
+                        <option value="">— Seleccionar —</option>
+                        {(() => {
+                          const cat = categories.find(c => c.id === editProdCat);
+                          if (!cat) return null;
+                          return normalizeSubs(cat.submenus).map((s: any) => (
+                            <option key={s.name} value={s.name}>{s.name}</option>
+                          ));
+                        })()}
+                      </select>
                     </Field>
                     <Field label="Subcategoría 2">
-                      <input name="sub_category_2" defaultValue={editingProduct.sub_category_2} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold outline-none" />
+                      <select name="sub_category_2" value={editProdSub2} onChange={(e) => setEditProdSub2(e.target.value)} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none cursor-pointer">
+                        <option value="">— Seleccionar —</option>
+                        {(() => {
+                          const cat = categories.find(c => c.id === editProdCat);
+                          if (!cat) return null;
+                          const sub = normalizeSubs(cat.submenus).find((s: any) => s.name === editProdSub1);
+                          if (!sub) return null;
+                          return (sub.children || []).map((child: string) => (
+                            <option key={child} value={child}>{child}</option>
+                          ));
+                        })()}
+                      </select>
                     </Field>
                     
                     <Field label="Nueva Foto (opcional)">
@@ -1040,26 +1078,30 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
 
 // ── Componentes auxiliares ──────────────────────────────────────────────────
 
-function SubChip({ value, onDelete, onEdit }: { value: string; onDelete: () => void; onEdit: (v: string) => void }) {
+function SubChip({ value, onDelete, onEdit, variant = 'sub1' }: { value: string; onDelete: () => void; onEdit: (v: string) => void; variant?: 'sub1' | 'sub2' }) {
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(value);
   return editing ? (
     <input
       value={text}
       onChange={e => setText(e.target.value)}
-      onBlur={() => { onEdit(text); setEditing(false); }}
-      onKeyDown={e => { if (e.key === 'Enter') { onEdit(text); setEditing(false); } }}
+      onBlur={() => { if(text.trim() && text.trim() !== value) { onEdit(text); } setEditing(false); }}
+      onKeyDown={e => { if (e.key === 'Enter') { if(text.trim() && text.trim() !== value) { onEdit(text); } setEditing(false); } }}
       autoFocus
-      className="bg-white border border-secondary text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest outline-none w-40"
+      className={`bg-white border border-secondary text-primary px-3 py-1 outline-none ${variant === 'sub1' ? 'rounded-full text-[10px] font-black uppercase tracking-widest w-40' : 'rounded-lg text-[9px] font-bold uppercase tracking-wider w-32'}`}
     />
   ) : (
     <span
-      className="flex items-center gap-1.5 bg-white border border-primary/10 text-primary/70 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest cursor-pointer hover:border-secondary/40 transition-colors select-none"
-      onDoubleClick={() => setEditing(true)}
+      className={`flex items-center gap-1.5 bg-white border border-primary/10 hover:border-secondary/40 transition-colors select-none ${variant === 'sub1' ? 'text-primary/70 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest' : 'text-primary/60 px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider'}`}
+      onDoubleClick={() => { setText(value); setEditing(true); }}
+      title="Doble clic para editar"
     >
       {value}
-      <button onClick={onDelete} className="text-primary/20 hover:text-error transition-colors ml-1">
-        <X size={10} strokeWidth={3} />
+      <button onClick={() => { setText(value); setEditing(true); }} title="Editar" className="text-primary/30 hover:text-secondary transition-colors ml-1">
+        <Edit2 size={variant === 'sub1' ? 11 : 9} />
+      </button>
+      <button onClick={onDelete} title="Eliminar" className="text-primary/20 hover:text-error transition-colors ml-0.5">
+        <X size={variant === 'sub1' ? 11 : 9} strokeWidth={3} />
       </button>
     </span>
   );
