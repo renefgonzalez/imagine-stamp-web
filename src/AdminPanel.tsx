@@ -95,6 +95,32 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const [editProdSub2, setEditProdSub2] = useState('');
   const [newProdCat, setNewProdCat] = useState('');
   const [newProdSub1, setNewProdSub1] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showBulkPriceModal, setShowBulkPriceModal] = useState(false);
+  const [bulkCat, setBulkCat] = useState('');
+  const [bulkSub1, setBulkSub1] = useState('');
+  const [bulkSub2, setBulkSub2] = useState('');
+  const [bulkSearch, setBulkSearch] = useState('');
+  const [bulkNewPrice, setBulkNewPrice] = useState('');
+  const [bulkUpdating, setBulkUpdating] = useState(false);
+
+  const filteredProducts = products.filter((p: any) => {
+    const matchTerm = !searchTerm || 
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      p.category.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      (p.sub_category && p.sub_category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (p.sub_category_2 && p.sub_category_2.toLowerCase().includes(searchTerm.toLowerCase()));
+    return matchTerm;
+  });
+
+  const affectedProducts = products.filter((p: any) => {
+    if (!bulkCat && !bulkSub1 && !bulkSub2 && !bulkSearch) return false;
+    if (bulkCat && p.category !== bulkCat) return false;
+    if (bulkSub1 && p.sub_category !== bulkSub1) return false;
+    if (bulkSub2 && p.sub_category_2 !== bulkSub2) return false;
+    if (bulkSearch && !p.name.toLowerCase().includes(bulkSearch.toLowerCase()) && !p.category.toLowerCase().includes(bulkSearch.toLowerCase()) && !(p.sub_category || '').toLowerCase().includes(bulkSearch.toLowerCase()) && !(p.sub_category_2 || '').toLowerCase().includes(bulkSearch.toLowerCase())) return false;
+    return true;
+  });
 
   // ── ACCESO ───────────────────────────────────────────────────────────────
   if (!isAuthenticated) {
@@ -396,48 +422,87 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                   <h2 className="text-2xl font-black text-primary font-headline uppercase">Inventario General</h2>
                   <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1">Sincronizado con la tienda pública</p>
                 </div>
-                <span className="text-xs font-black text-secondary bg-secondary/10 border border-secondary/20 px-4 py-2 rounded-lg uppercase tracking-widest">{products.length} Productos</span>
+                <span className="text-xs font-black text-secondary bg-secondary/10 border border-secondary/20 px-4 py-2 rounded-lg uppercase tracking-widest">{filteredProducts.length} Productos</span>
               </div>
+
+              {/* Barra de búsqueda y botón de cambio masivo */}
+              <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-surface border border-primary/5 p-4 rounded-2xl shadow-sm">
+                <div className="relative w-full sm:w-72 md:w-96">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={18} />
+                  <input 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Buscar por nombre, categoría, sub..." 
+                    className="w-full bg-background border border-primary/5 focus:border-secondary p-3 pl-11 rounded-xl text-xs font-bold outline-none text-primary"
+                  />
+                  {searchTerm && (
+                    <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary/30 hover:text-primary">
+                      <X size={15} />
+                    </button>
+                  )}
+                </div>
+                <button 
+                  onClick={() => {
+                    setBulkCat('');
+                    setBulkSub1('');
+                    setBulkSub2('');
+                    setBulkSearch(searchTerm);
+                    setBulkNewPrice('');
+                    setShowBulkPriceModal(true);
+                  }}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-secondary text-white px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-secondary/20 hover:bg-orange-600 transition-all shrink-0"
+                >
+                  <Zap size={16} />
+                  <span>Cambio de Precio Masivo</span>
+                </button>
+              </div>
+
               <div className="grid grid-cols-1 gap-3">
-                {products.map((p: any) => (
-                  <div key={p.id} className="flex flex-col sm:flex-row items-center gap-5 bg-surface border border-primary/5 p-4 rounded-2xl hover:border-secondary/30 transition-all shadow-sm">
-                    <div className="w-20 h-20 bg-background rounded-xl overflow-hidden shrink-0 border border-primary/5 p-0.5">
-                      <img src={p.image} alt={p.name} className="w-full h-full object-cover rounded-lg" />
-                    </div>
-                    <div className="flex-1 min-w-0 text-center sm:text-left">
-                      <h3 className="font-black text-sm text-primary uppercase tracking-wide">{p.name}</h3>
-                      <div className="flex flex-wrap justify-center sm:justify-start gap-1.5 mt-2">
-                        <span className="text-[9px] font-black text-secondary bg-secondary/5 px-2 py-0.5 rounded border border-secondary/10 uppercase tracking-widest">{p.category}</span>
-                        {p.sub_category && <span className="text-[9px] font-bold text-primary/40 bg-primary/5 px-2 py-0.5 rounded uppercase tracking-widest">{p.sub_category}</span>}
-                        {p.sub_category_2 && <span className="text-[9px] font-bold text-primary/30 bg-primary/5 px-2 py-0.5 rounded uppercase tracking-widest">{p.sub_category_2}</span>}
+                {filteredProducts.length === 0 ? (
+                  <div className="bg-surface border border-primary/5 p-12 rounded-2xl text-center">
+                    <p className="text-sm font-bold text-primary/40 uppercase tracking-widest">No se encontraron productos coincidentes</p>
+                  </div>
+                ) : (
+                  filteredProducts.map((p: any) => (
+                    <div key={p.id} className="flex flex-col sm:flex-row items-center gap-5 bg-surface border border-primary/5 p-4 rounded-2xl hover:border-secondary/30 transition-all shadow-sm">
+                      <div className="w-20 h-20 bg-background rounded-xl overflow-hidden shrink-0 border border-primary/5 p-0.5">
+                        <img src={p.image} alt={p.name} className="w-full h-full object-cover rounded-lg" />
+                      </div>
+                      <div className="flex-1 min-w-0 text-center sm:text-left">
+                        <h3 className="font-black text-sm text-primary uppercase tracking-wide">{p.name}</h3>
+                        <div className="flex flex-wrap justify-center sm:justify-start gap-1.5 mt-2">
+                          <span className="text-[9px] font-black text-secondary bg-secondary/5 px-2 py-0.5 rounded border border-secondary/10 uppercase tracking-widest">{p.category}</span>
+                          {p.sub_category && <span className="text-[9px] font-bold text-primary/40 bg-primary/5 px-2 py-0.5 rounded uppercase tracking-widest">{p.sub_category}</span>}
+                          {p.sub_category_2 && <span className="text-[9px] font-bold text-primary/30 bg-primary/5 px-2 py-0.5 rounded uppercase tracking-widest">{p.sub_category_2}</span>}
+                        </div>
+                      </div>
+                      <div className="shrink-0 px-4 text-center sm:text-right">
+                        <p className="font-black text-primary text-lg">${p.price} <span className="text-[10px]">MXN</span></p>
+                        <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">En Stock</span>
+                      </div>
+                      <div className="flex gap-2 shrink-0">
+                        <button 
+                          onClick={() => {
+                            setEditingProduct(p);
+                            setEditProdCat(p.category || '');
+                            setEditProdSub1(p.sub_category || '');
+                            setEditProdSub2(p.sub_category_2 || '');
+                          }}
+                          className="w-10 h-10 rounded-xl bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-secondary hover:border-secondary transition-all">
+                          <Edit2 size={15} />
+                        </button>
+                        <button onClick={async () => {
+                          if (!confirm('¿Eliminar producto?')) return;
+                          const { error } = await supabase.from('products').delete().eq('id', p.id);
+                          if (!error) loadProducts();
+                        }}
+                          className="w-10 h-10 rounded-xl bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-error hover:border-error transition-all">
+                          <Trash2 size={15} />
+                        </button>
                       </div>
                     </div>
-                    <div className="shrink-0 px-4 text-center sm:text-right">
-                      <p className="font-black text-primary text-lg">${p.price} <span className="text-[10px]">MXN</span></p>
-                      <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">En Stock</span>
-                    </div>
-                    <div className="flex gap-2 shrink-0">
-                      <button 
-                        onClick={() => {
-                          setEditingProduct(p);
-                          setEditProdCat(p.category || '');
-                          setEditProdSub1(p.sub_category || '');
-                          setEditProdSub2(p.sub_category_2 || '');
-                        }}
-                        className="w-10 h-10 rounded-xl bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-secondary hover:border-secondary transition-all">
-                        <Edit2 size={15} />
-                      </button>
-                      <button onClick={async () => {
-                        if (!confirm('¿Eliminar producto?')) return;
-                        const { error } = await supabase.from('products').delete().eq('id', p.id);
-                        if (!error) loadProducts();
-                      }}
-                        className="w-10 h-10 rounded-xl bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-error hover:border-error transition-all">
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -1065,6 +1130,178 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                       {uploading ? 'SUBIENDO...' : 'Guardar Cambios'}
                     </button>
                   </form>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
+
+          {/* Modal de Cambio de Precio Masivo */}
+          <AnimatePresence>
+            {showBulkPriceModal && (
+              <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="bg-surface w-full max-w-xl rounded-3xl shadow-2xl border border-primary/10 overflow-hidden flex flex-col max-h-[90vh]"
+                >
+                  <div className="p-6 border-b border-primary/5 flex justify-between items-center bg-background/50">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-secondary/10 rounded-xl text-secondary">
+                        <Zap size={20} />
+                      </div>
+                      <h3 className="text-sm font-black text-primary uppercase tracking-widest">Cambio de Precio Masivo</h3>
+                    </div>
+                    <button onClick={() => setShowBulkPriceModal(false)} className="text-primary/30 hover:text-primary"><X size={20}/></button>
+                  </div>
+
+                  <div className="p-8 space-y-5 overflow-y-auto flex-1">
+                    <p className="text-xs text-primary/60 font-medium leading-relaxed">
+                      Selecciona los filtros para determinar a qué grupo de productos deseas cambiarles el precio de forma simultánea.
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Field label="Categoría Principal">
+                        <select 
+                          value={bulkCat} 
+                          onChange={(e) => { setBulkCat(e.target.value); setBulkSub1(''); setBulkSub2(''); }}
+                          className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none cursor-pointer"
+                        >
+                          <option value="">— Todas las Categorías —</option>
+                          {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        </select>
+                      </Field>
+
+                      <Field label="Subcategoría 1">
+                        <select 
+                          value={bulkSub1} 
+                          onChange={(e) => { setBulkSub1(e.target.value); setBulkSub2(''); }}
+                          className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none cursor-pointer"
+                        >
+                          <option value="">— Todas las Sub-1 —</option>
+                          {(() => {
+                            const cat = categories.find(c => c.id === bulkCat);
+                            if (!cat) return null;
+                            return normalizeSubs(cat.submenus).map((s: any) => (
+                              <option key={s.name} value={s.name}>{s.name}</option>
+                            ));
+                          })()}
+                        </select>
+                      </Field>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Field label="Subcategoría 2">
+                        <select 
+                          value={bulkSub2} 
+                          onChange={(e) => setBulkSub2(e.target.value)}
+                          className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none cursor-pointer"
+                        >
+                          <option value="">— Todas las Sub-2 —</option>
+                          {(() => {
+                            const cat = categories.find(c => c.id === bulkCat);
+                            if (!cat) return null;
+                            const sub = normalizeSubs(cat.submenus).find((s: any) => s.name === bulkSub1);
+                            if (!sub) return null;
+                            return (sub.children || []).map((child: string) => (
+                              <option key={child} value={child}>{child}</option>
+                            ));
+                          })()}
+                        </select>
+                      </Field>
+
+                      <Field label="Filtrar por Texto / Nombre">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/20" size={15} />
+                          <input 
+                            value={bulkSearch}
+                            onChange={(e) => setBulkSearch(e.target.value)}
+                            placeholder="Ej: Boda, GPS..."
+                            className="w-full bg-background border border-primary/10 p-3 pl-9 rounded-xl text-xs font-bold outline-none" 
+                          />
+                        </div>
+                      </Field>
+                    </div>
+
+                    <div className="border-t border-primary/5 pt-5">
+                      <Field label="NUEVO PRECIO UNITARIO ($ MXN)">
+                        <div className="relative">
+                          <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary" size={20} />
+                          <input 
+                            type="number" 
+                            step="0.01" 
+                            value={bulkNewPrice}
+                            onChange={(e) => setBulkNewPrice(e.target.value)}
+                            placeholder="0.00"
+                            className="w-full bg-background border-2 border-secondary/30 focus:border-secondary p-4 pl-12 rounded-2xl text-lg font-black outline-none text-primary"
+                          />
+                        </div>
+                      </Field>
+                    </div>
+
+                    {/* Recuadro de previsualización */}
+                    <div className={`p-4 rounded-2xl border ${affectedProducts.length === 0 ? 'bg-background border-primary/5' : !bulkCat && !bulkSub1 && !bulkSub2 && !bulkSearch ? 'bg-amber-50 border-amber-200' : 'bg-secondary/5 border-secondary/20'}`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className={`text-xs font-black uppercase tracking-widest ${!bulkCat && !bulkSub1 && !bulkSub2 && !bulkSearch ? 'text-amber-800' : 'text-primary'}`}>
+                          Productos Coincidentes: {affectedProducts.length}
+                        </span>
+                        {!bulkCat && !bulkSub1 && !bulkSub2 && !bulkSearch && (
+                          <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded uppercase">Todo el catálogo</span>
+                        )}
+                      </div>
+
+                      <div className="max-h-32 overflow-y-auto space-y-1.5 pr-2 divide-y divide-primary/5">
+                        {affectedProducts.length === 0 ? (
+                          <p className="text-xs text-primary/30 italic py-2">Ningún producto coincide con los filtros seleccionados.</p>
+                        ) : (
+                          affectedProducts.map((p: any) => (
+                            <div key={p.id} className="flex items-center justify-between py-1.5 text-xs">
+                              <div className="flex items-center gap-2 truncate pr-2">
+                                <span className="font-bold text-primary truncate">{p.name}</span>
+                                <span className="text-[9px] bg-primary/5 text-primary/40 px-1.5 py-0.5 rounded uppercase shrink-0">{p.category}</span>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0 font-bold">
+                                <span className="text-primary/40 line-through">${p.price}</span>
+                                <span className="text-secondary font-black">${parseFloat(bulkNewPrice) ? parseFloat(bulkNewPrice).toFixed(2) : '?.??'}</span>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    <button 
+                      disabled={bulkUpdating || affectedProducts.length === 0 || !bulkNewPrice || isNaN(parseFloat(bulkNewPrice))}
+                      onClick={async () => {
+                        const parsedPrice = parseFloat(bulkNewPrice);
+                        if (isNaN(parsedPrice)) return;
+                        if (!confirm(`¿Estás seguro de actualizar el precio de ${affectedProducts.length} productos a $${parsedPrice.toFixed(2)} MXN?`)) return;
+                        
+                        setBulkUpdating(true);
+                        const ids = affectedProducts.map((p: any) => p.id);
+                        const { error } = await supabase.from('products').update({ price: parsedPrice }).in('id', ids);
+                        setBulkUpdating(false);
+                        
+                        if (!error) {
+                          loadProducts();
+                          setShowBulkPriceModal(false);
+                          setBulkNewPrice('');
+                        } else {
+                          alert('Hubo un error al actualizar los precios.');
+                        }
+                      }}
+                      className={`w-full ${bulkUpdating || affectedProducts.length === 0 || !bulkNewPrice || isNaN(parseFloat(bulkNewPrice)) ? 'bg-primary/20 cursor-not-allowed' : 'bg-secondary hover:bg-orange-600'} text-white p-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-secondary/20 transition-all mt-4 flex items-center justify-center gap-2`}
+                    >
+                      {bulkUpdating ? (
+                        <span>ACTUALIZANDO PRECIOS...</span>
+                      ) : (
+                        <>
+                          <Zap size={16} />
+                          <span>Aplicar Precio de ${parseFloat(bulkNewPrice) ? parseFloat(bulkNewPrice).toFixed(2) : '0.00'} a {affectedProducts.length} Productos</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </motion.div>
               </div>
             )}
