@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Lock, Package, DollarSign, Trash2, Edit2, Plus, LogOut, 
-  Tag, FileText, LayoutGrid, Box, Image as ImageIcon, Search, CheckCircle, Clock, Phone, List, X, Save, ChevronDown, ChevronUp, ArrowUp, ArrowDown
+  Tag, FileText, LayoutGrid, Box, Image as ImageIcon, Search, CheckCircle, Clock, Phone, List, X, Save, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Zap
 } from 'lucide-react';
 import { DEFAULT_CATEGORIES } from './App';
 import { supabase } from './lib/supabase';
@@ -1315,7 +1315,7 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
 
 // ── Componentes auxiliares ──────────────────────────────────────────────────
 
-function SubChip({ value, onDelete, onEdit, variant = 'sub1' }: { value: string; onDelete: () => void; onEdit: (v: string) => void; variant?: 'sub1' | 'sub2' }) {
+function SubChip({ value, onDelete, onEdit, variant = 'sub1' }: { key?: React.Key; value: string; onDelete: () => void; onEdit: (v: string) => void; variant?: 'sub1' | 'sub2' }) {
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(value);
   return editing ? (
