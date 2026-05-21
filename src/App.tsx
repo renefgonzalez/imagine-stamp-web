@@ -10,6 +10,7 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Product } from './data/products';
 import logo from './logo.png';
 import AdminPanel from './AdminPanel';
+import DemoMenu from './DemoMenu';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   constructor(props: { children: ReactNode }) {
@@ -850,6 +851,7 @@ export default function App() {
           </ErrorBoundary>
         } />
         <Route path="/admin" element={<AdminPanel onLogout={() => window.location.hash = '/'} />} />
+        <Route path="/demo-menu" element={<DemoMenu />} />
       </Routes>
     </HashRouter>
   );
