@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save } from 'lucide-react';
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 interface MenuItem {
@@ -13,6 +13,7 @@ interface MenuItem {
   badge?: 'popular' | 'new' | 'veggie' | 'spicy';
   rating: number;
   calories: number;
+  soldOut?: boolean;
 }
 
 interface CartItem extends MenuItem {
@@ -30,7 +31,7 @@ const CATEGORIES = [
   { id: 'desserts',  label: 'Postres',     emoji: '🍫' },
 ];
 
-const MENU_ITEMS: MenuItem[] = [
+const INITIAL_MENU_ITEMS: MenuItem[] = [
   // BURGERS
   {
     id: 1,
@@ -145,6 +146,49 @@ const MENU_ITEMS: MenuItem[] = [
   },
 ];
 
+// ─── STOCK PHOTO LIBRARY ──────────────────────────────────────────────────────
+// Banco de imágenes "de stock" que el dueño puede asignar a cualquier platillo
+// desde el panel de admin. Se pueden ir generando con IA y sumar aquí.
+const STOCK_IMAGES: { url: string; label: string }[] = [
+  { url: './burger-classic.png',       label: 'Burger Clásica' },
+  { url: './burger-double-smash.png',  label: 'Double Smash' },
+  { url: './burger-bbq-bacon.png',     label: 'BBQ Bacon' },
+  { url: './burger-mushroom-swiss.png',label: 'Mushroom Swiss' },
+  { url: './fries-loaded.png',         label: 'Loaded Fries' },
+  { url: './onion-rings.png',          label: 'Onion Rings' },
+  { url: './chicken-fingers.png',      label: 'Chicken Fingers' },
+  { url: './milkshake-chocolate.png',  label: 'Malteada Chocolate' },
+  { url: './milkshake-strawberry.png', label: 'Malteada Fresa' },
+  { url: './brownie-sundae.png',       label: 'Brownie Sundae' },
+];
+
+// ─── GOOGLE SHEETS CONNECTION (PREPARADO) ─────────────────────────────────────
+// Para conectar este menú a una Hoja de Cálculo de Google:
+// 1. Publica tu Sheet como JSON usando opensheet.elk.sh, sheety.co o sheet.best.
+// 2. Reemplaza el body de `fetchMenuFromGoogleSheets` con el fetch real.
+// 3. Columnas sugeridas: id | name | description | price | image | category |
+//    badge | rating | calories | soldOut
+//
+// Ejemplo (descomenta cuando tengas el endpoint):
+// const SHEET_ENDPOINT = 'https://opensheet.elk.sh/<SHEET_ID>/menu';
+async function fetchMenuFromGoogleSheets(): Promise<MenuItem[]> {
+  // const res = await fetch(SHEET_ENDPOINT);
+  // const rows = await res.json();
+  // return rows.map((r: any) => ({
+  //   id: Number(r.id),
+  //   name: r.name,
+  //   description: r.description,
+  //   price: Number(r.price),
+  //   image: r.image,
+  //   category: r.category,
+  //   badge: r.badge || undefined,
+  //   rating: Number(r.rating),
+  //   calories: Number(r.calories),
+  //   soldOut: String(r.soldOut).toLowerCase() === 'true',
+  // }));
+  return INITIAL_MENU_ITEMS;
+}
+
 // ─── BADGE CONFIG ─────────────────────────────────────────────────────────────
 const BADGE_CONFIG = {
   popular: { label: 'Popular',  icon: Star,   bg: 'bg-amber-500',   text: 'text-white' },
@@ -164,9 +208,32 @@ export default function DemoMenu() {
   const [customerName, setCustomerName] = useState('');
   const [orderStep, setOrderStep] = useState<'cart' | 'confirm'>('cart');
 
+  // ── Catálogo dinámico (lista para Google Sheets) ──────────────────────────
+  const [menuItems, setMenuItems] = useState<MenuItem[]>(INITIAL_MENU_ITEMS);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [adminPickerForId, setAdminPickerForId] = useState<number | null>(null);
+
+  useEffect(() => {
+    // Al montar, intenta hidratar el catálogo desde la fuente externa (Sheets).
+    // Hoy regresa INITIAL_MENU_ITEMS; cuando configures el endpoint, jala datos reales.
+    fetchMenuFromGoogleSheets()
+      .then(setMenuItems)
+      .catch(err => console.warn('No se pudo cargar el menú remoto:', err));
+  }, []);
+
+  // ── Helpers de edición en vivo (modo admin) ────────────────────────────────
+  const updateItem = (id: number, patch: Partial<MenuItem>) => {
+    setMenuItems(prev => prev.map(i => i.id === id ? { ...i, ...patch } : i));
+  };
+
+  const resetMenu = () => {
+    setMenuItems(INITIAL_MENU_ITEMS);
+    setCart([]);
+  };
+
   // ── Filtered items
   const filteredItems = useMemo(() => {
-    let items = MENU_ITEMS;
+    let items = menuItems;
     if (activeCategory !== 'all') {
       items = items.filter(i => i.category === activeCategory);
     }
@@ -178,13 +245,14 @@ export default function DemoMenu() {
       );
     }
     return items;
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, menuItems]);
 
   // ── Cart logic
   const totalItems = cart.reduce((acc, i) => acc + i.quantity, 0);
   const totalPrice = cart.reduce((acc, i) => acc + i.price * i.quantity, 0);
 
   const addToCart = (item: MenuItem) => {
+    if (item.soldOut) return;
     setCart(prev => {
       const existing = prev.find(c => c.id === item.id);
       if (existing) return prev.map(c => c.id === item.id ? { ...c, quantity: c.quantity + 1 } : c);
@@ -453,14 +521,19 @@ export default function DemoMenu() {
                   transition={{ delay: idx * 0.04 }}
                   style={{
                     background: 'rgba(255,255,255,0.04)',
-                    border: qty > 0 ? '1px solid rgba(255, 106, 0, 0.4)' : '1px solid rgba(255,255,255,0.08)',
+                    border: item.soldOut
+                      ? '1px solid rgba(239, 68, 68, 0.35)'
+                      : qty > 0
+                        ? '1px solid rgba(255, 106, 0, 0.4)'
+                        : '1px solid rgba(255,255,255,0.08)',
                     borderRadius: '20px',
                     marginBottom: '12px',
                     overflow: 'hidden',
                     transition: 'border-color 0.2s ease',
-                    cursor: 'pointer',
+                    cursor: item.soldOut ? 'not-allowed' : 'pointer',
+                    opacity: item.soldOut ? 0.55 : 1,
                   }}
-                  onClick={() => setSelectedItem(item)}
+                  onClick={() => { if (!item.soldOut) setSelectedItem(item); }}
                 >
                   <div style={{ display: 'flex', gap: '0' }}>
                     {/* Content */}
@@ -509,7 +582,21 @@ export default function DemoMenu() {
                         </span>
 
                         {/* Quantity controls or add button */}
-                        {qty > 0 ? (
+                        {item.soldOut ? (
+                          <span
+                            style={{
+                              background: 'rgba(239, 68, 68, 0.15)',
+                              color: '#EF4444',
+                              border: '1px solid rgba(239, 68, 68, 0.35)',
+                              borderRadius: '12px',
+                              padding: '9px 14px',
+                              fontWeight: 900, fontSize: '11px',
+                              letterSpacing: '0.1em', textTransform: 'uppercase',
+                            }}
+                          >
+                            Agotado
+                          </span>
+                        ) : qty > 0 ? (
                           <div
                             onClick={e => e.stopPropagation()}
                             style={{
@@ -576,11 +663,30 @@ export default function DemoMenu() {
                         style={{
                           width: '100%', height: '100%', objectFit: 'cover',
                           transition: 'transform 0.4s ease',
+                          filter: item.soldOut ? 'grayscale(0.8)' : 'none',
                         }}
-                        onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.08)')}
+                        onMouseEnter={e => { if (!item.soldOut) e.currentTarget.style.transform = 'scale(1.08)'; }}
                         onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
                       />
-                      {qty > 0 && (
+                      {item.soldOut && (
+                        <div style={{
+                          position: 'absolute', inset: 0,
+                          background: 'rgba(0,0,0,0.45)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          <span style={{
+                            background: 'rgba(239, 68, 68, 0.95)',
+                            color: '#fff', padding: '4px 10px', borderRadius: '6px',
+                            fontWeight: 900, fontSize: '10px',
+                            letterSpacing: '0.12em', textTransform: 'uppercase',
+                            transform: 'rotate(-8deg)',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+                          }}>
+                            Agotado
+                          </span>
+                        </div>
+                      )}
+                      {!item.soldOut && qty > 0 && (
                         <div style={{
                           position: 'absolute', inset: 0,
                           background: 'rgba(255, 106, 0, 0.25)',
@@ -1068,6 +1174,341 @@ export default function DemoMenu() {
                   )}
                 </div>
               )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ── FLOATING ADMIN BUTTON (modo administrador) ───────────────────── */}
+      <button
+        id="open-admin-btn"
+        onClick={() => setIsAdminOpen(true)}
+        title="Modo administrador — Edita precios, imágenes y disponibilidad"
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          left: '16px',
+          zIndex: 55,
+          background: 'rgba(20, 20, 20, 0.85)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 140, 0, 0.35)',
+          borderRadius: '999px',
+          padding: '9px 14px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '7px',
+          color: 'rgba(255, 200, 140, 0.9)',
+          fontWeight: 700,
+          fontSize: '11px',
+          letterSpacing: '0.05em',
+          boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
+          transition: 'all 0.2s ease',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.background = 'rgba(255, 106, 0, 0.95)';
+          e.currentTarget.style.color = '#fff';
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.background = 'rgba(20, 20, 20, 0.85)';
+          e.currentTarget.style.color = 'rgba(255, 200, 140, 0.9)';
+        }}
+      >
+        <Settings size={14} />
+        Ver modo administrador
+      </button>
+
+      {/* ── ADMIN PANEL (gestión en vivo del catálogo) ───────────────────── */}
+      <AnimatePresence>
+        {isAdminOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => { setIsAdminOpen(false); setAdminPickerForId(null); }}
+              style={{
+                position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)',
+                backdropFilter: 'blur(6px)', zIndex: 80,
+              }}
+            />
+            <motion.div
+              initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 280 }}
+              style={{
+                position: 'fixed', left: 0, top: 0, bottom: 0,
+                width: '100%', maxWidth: '460px',
+                background: '#0F0F0F', zIndex: 81,
+                display: 'flex', flexDirection: 'column',
+                boxShadow: '20px 0 60px rgba(0,0,0,0.6)',
+                borderRight: '1px solid rgba(255, 140, 0, 0.15)',
+              }}
+            >
+              {/* Header */}
+              <div style={{
+                padding: '20px',
+                borderBottom: '1px solid rgba(255,255,255,0.08)',
+                background: 'linear-gradient(135deg, #1a0a00 0%, #2d1000 100%)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{
+                      width: 40, height: 40, borderRadius: '12px',
+                      background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: '0 4px 14px rgba(255, 106, 0, 0.4)',
+                    }}>
+                      <Settings size={20} color="#fff" />
+                    </div>
+                    <div>
+                      <h2 style={{ color: '#fff', fontWeight: 900, fontSize: '17px', margin: 0, letterSpacing: '-0.3px' }}>
+                        Modo administrador
+                      </h2>
+                      <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', margin: '2px 0 0' }}>
+                        Edita en vivo — cambios instantáneos
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => { setIsAdminOpen(false); setAdminPickerForId(null); }}
+                    style={{
+                      background: 'rgba(255,255,255,0.08)', border: 'none',
+                      borderRadius: '50%', width: '36px', height: '36px',
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}
+                  >
+                    <X size={18} color="rgba(255,255,255,0.7)" />
+                  </button>
+                </div>
+
+                <div style={{
+                  marginTop: '10px',
+                  background: 'rgba(255, 106, 0, 0.12)',
+                  border: '1px solid rgba(255, 106, 0, 0.25)',
+                  borderRadius: '10px',
+                  padding: '8px 12px',
+                  fontSize: '11px',
+                  color: 'rgba(255, 200, 140, 0.9)',
+                  lineHeight: 1.5,
+                }}>
+                  💡 Demo: el dueño edita precios y disponibilidad desde su celular.
+                  Conectado a Google Sheets, esto vive sincronizado en todos los dispositivos.
+                </div>
+              </div>
+
+              {/* Acciones globales */}
+              <div style={{
+                padding: '12px 20px',
+                borderBottom: '1px solid rgba(255,255,255,0.06)',
+                display: 'flex', gap: '8px',
+              }}>
+                <button
+                  onClick={resetMenu}
+                  style={{
+                    flex: 1,
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '10px',
+                    padding: '8px 10px',
+                    cursor: 'pointer',
+                    color: 'rgba(255,255,255,0.65)',
+                    fontWeight: 700, fontSize: '11px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                  }}
+                >
+                  <RefreshCw size={12} />
+                  Restaurar demo
+                </button>
+                <button
+                  onClick={() => { setIsAdminOpen(false); }}
+                  style={{
+                    flex: 1,
+                    background: 'linear-gradient(135deg, #22C55E, #16A34A)',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '8px 10px',
+                    cursor: 'pointer',
+                    color: '#fff',
+                    fontWeight: 800, fontSize: '11px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                    boxShadow: '0 4px 14px rgba(34, 197, 94, 0.3)',
+                  }}
+                >
+                  <Save size={12} />
+                  Ver menú actualizado
+                </button>
+              </div>
+
+              {/* Lista de productos editables */}
+              <div style={{ flex: 1, overflowY: 'auto', padding: '14px 16px 24px' }}>
+                {menuItems.map(item => (
+                  <div
+                    key={item.id}
+                    style={{
+                      background: item.soldOut ? 'rgba(239,68,68,0.06)' : 'rgba(255,255,255,0.04)',
+                      border: item.soldOut
+                        ? '1px solid rgba(239,68,68,0.25)'
+                        : '1px solid rgba(255,255,255,0.07)',
+                      borderRadius: '16px',
+                      padding: '12px',
+                      marginBottom: '10px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        style={{
+                          width: '54px', height: '54px',
+                          borderRadius: '10px', objectFit: 'cover',
+                          flexShrink: 0,
+                          filter: item.soldOut ? 'grayscale(0.7)' : 'none',
+                        }}
+                      />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{
+                          color: '#fff', fontWeight: 800, fontSize: '13px',
+                          margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>
+                          {item.name}
+                        </p>
+                        <p style={{
+                          color: 'rgba(255,255,255,0.35)', fontSize: '10px', margin: '2px 0 0',
+                          textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700,
+                        }}>
+                          {CATEGORIES.find(c => c.id === item.category)?.label || item.category}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Controles de edición */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '10px' }}>
+                      {/* Precio */}
+                      <div style={{
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: '10px',
+                        padding: '6px 10px',
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                      }}>
+                        <DollarSign size={14} color="#FF8C00" />
+                        <input
+                          id={`admin-price-${item.id}`}
+                          type="number"
+                          min="0"
+                          value={item.price}
+                          onChange={e => updateItem(item.id, { price: Number(e.target.value) || 0 })}
+                          style={{
+                            flex: 1, minWidth: 0,
+                            background: 'transparent', border: 'none', outline: 'none',
+                            color: '#fff', fontWeight: 800, fontSize: '13px',
+                            width: '100%',
+                          }}
+                        />
+                        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '10px', fontWeight: 700 }}>MXN</span>
+                      </div>
+
+                      {/* Toggle agotado */}
+                      <button
+                        id={`admin-soldout-${item.id}`}
+                        onClick={() => updateItem(item.id, { soldOut: !item.soldOut })}
+                        style={{
+                          background: item.soldOut ? 'rgba(239,68,68,0.18)' : 'rgba(34,197,94,0.12)',
+                          border: item.soldOut ? '1px solid rgba(239,68,68,0.35)' : '1px solid rgba(34,197,94,0.3)',
+                          borderRadius: '10px',
+                          padding: '6px 10px',
+                          cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                          color: item.soldOut ? '#EF4444' : '#22C55E',
+                          fontWeight: 800, fontSize: '11px',
+                          textTransform: 'uppercase', letterSpacing: '0.05em',
+                        }}
+                      >
+                        {item.soldOut ? <EyeOff size={13} /> : <Eye size={13} />}
+                        {item.soldOut ? 'Agotado' : 'Disponible'}
+                      </button>
+                    </div>
+
+                    {/* Cambio de imagen */}
+                    <button
+                      id={`admin-img-${item.id}`}
+                      onClick={() => setAdminPickerForId(adminPickerForId === item.id ? null : item.id)}
+                      style={{
+                        marginTop: '8px',
+                        width: '100%',
+                        background: adminPickerForId === item.id ? 'rgba(255, 106, 0, 0.18)' : 'rgba(255,255,255,0.05)',
+                        border: adminPickerForId === item.id ? '1px solid rgba(255, 106, 0, 0.4)' : '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: '10px',
+                        padding: '7px 10px',
+                        cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                        color: adminPickerForId === item.id ? '#FF8C00' : 'rgba(255,255,255,0.6)',
+                        fontWeight: 700, fontSize: '11px',
+                      }}
+                    >
+                      <ImageIcon size={13} />
+                      {adminPickerForId === item.id ? 'Cerrar galería' : 'Cambiar imagen (banco stock)'}
+                    </button>
+
+                    {/* Picker de stock */}
+                    <AnimatePresence>
+                      {adminPickerForId === item.id && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          style={{ overflow: 'hidden' }}
+                        >
+                          <div style={{
+                            marginTop: '8px',
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(4, 1fr)',
+                            gap: '6px',
+                          }}>
+                            {STOCK_IMAGES.map(stock => {
+                              const isActive = item.image === stock.url;
+                              return (
+                                <button
+                                  key={stock.url}
+                                  onClick={() => {
+                                    updateItem(item.id, { image: stock.url });
+                                    setAdminPickerForId(null);
+                                  }}
+                                  title={stock.label}
+                                  style={{
+                                    position: 'relative',
+                                    padding: 0,
+                                    background: 'transparent',
+                                    border: isActive ? '2px solid #FF8C00' : '2px solid transparent',
+                                    borderRadius: '10px',
+                                    cursor: 'pointer',
+                                    overflow: 'hidden',
+                                    aspectRatio: '1 / 1',
+                                  }}
+                                >
+                                  <img
+                                    src={stock.url}
+                                    alt={stock.label}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                                  />
+                                  {isActive && (
+                                    <div style={{
+                                      position: 'absolute', top: 2, right: 2,
+                                      background: '#FF6A00', borderRadius: '50%',
+                                      width: '16px', height: '16px',
+                                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    }}>
+                                      <Check size={10} color="#fff" strokeWidth={3} />
+                                    </div>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ))}
+              </div>
             </motion.div>
           </>
         )}
