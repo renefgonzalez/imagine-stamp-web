@@ -9,8 +9,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Lock, Package, Plus, LogOut, Tag, FileText, DollarSign,
   Trash2, Edit2, Save, X, Star, Flame, ShoppingBag, Search,
-  Eye, EyeOff, RefreshCw, Check, ChevronDown, Image as ImageIcon,
-  Folder, ClipboardList, ArrowUp, ArrowDown
+  Eye, EyeOff, RefreshCw, Check, ChevronDown, ChevronUp, Image as ImageIcon,
+  Folder, ClipboardList, ArrowUp, ArrowDown, Phone, Clock, CheckCircle
 } from 'lucide-react';
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
@@ -393,30 +393,79 @@ export default function AdminHalloween({
   const [orders, setOrders] = useState([
     {
       id: 'ORD-001',
-      client: 'María López',
+      customer: 'María López',
       phone: '55 1234 5678',
+      city: 'CDMX',
       paymentMethod: 'TRANSFERENCIA',
-      status: 'PENDIENTE',
-      products: [
-        { name: 'Bruja Escarlata', qty: 1, price: 850 },
-        { name: 'Telaraña Deco', qty: 2, price: 150 }
+      payment_reference: 'REF-88392',
+      status: 'pending',
+      date: '26/may 14:15',
+      items: [
+        { name: 'Bruja Escarlata', quantity: 1, price: 850 },
+        { name: 'Telaraña Deco', quantity: 2, price: 150 }
       ],
-      total: 1150
+      total: 1150,
+      deliveryNotes: 'Dejar con el portero.',
+      internalNotes: [
+        { date: '26/may 14:16', text: 'Confirmó pago por transferencia.' }
+      ]
     },
     {
       id: 'ORD-002',
-      client: 'Carlos Ramírez',
+      customer: 'Carlos Ramírez',
       phone: '55 9876 5432',
+      city: 'Guadalajara',
       paymentMethod: 'TRANSFERENCIA',
-      status: 'ENTREGADO',
-      products: [
-        { name: 'Máscara Jason', qty: 1, price: 450 }
+      payment_reference: '',
+      status: 'delivered',
+      date: '25/may 11:30',
+      items: [
+        { name: 'Máscara Jason', quantity: 1, price: 450 }
       ],
-      total: 450
+      total: 450,
+      deliveryNotes: '',
+      internalNotes: []
     }
   ]);
   const [orderSearch, setOrderSearch] = useState('');
-  const [orderFilter, setOrderFilter] = useState<'ALL' | 'PENDIENTE' | 'ENTREGADO'>('PENDIENTE');
+  const [orderTab, setOrderTab] = useState<'pending' | 'delivered'>('pending');
+  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+  const [noteInputs, setNoteInputs] = useState<Record<string, string>>({});
+  const [paymentRefInputs, setPaymentRefInputs] = useState<Record<string, string>>({});
+
+  const updateOrderStatus = (id: string, status: string) => {
+    setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
+  };
+
+  const deleteOrder = (id: string) => {
+    if (confirm('¿Eliminar este pedido permanentemente?')) {
+      setOrders(prev => prev.filter(o => o.id !== id));
+    }
+  };
+
+  const addNote = (orderId: string) => {
+    const text = (noteInputs[orderId] || '').trim();
+    if (!text) return;
+    const newNote = {
+      text,
+      date: new Date().toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
+    };
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, internalNotes: [...(o.internalNotes || []), newNote] } : o));
+    setNoteInputs(prev => ({ ...prev, [orderId]: '' }));
+  };
+
+  const savePaymentRef = (orderId: string) => {
+    const ref = (paymentRefInputs[orderId] || '').trim();
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, payment_reference: ref } : o));
+    alert("Referencia guardada!");
+  };
+
+  const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border: string }> = {
+    pending:      { label: 'Pendiente',  color: 'text-orange-400',  bg: 'bg-orange-950/30',  border: 'border-orange-500/30' },
+    'in-process': { label: 'En Proceso', color: 'text-blue-400',    bg: 'bg-blue-950/30',    border: 'border-blue-500/30'   },
+    delayed:      { label: 'Demorado',   color: 'text-red-400',     bg: 'bg-red-950/30',     border: 'border-red-500/30'    },
+    delivered:    { label: 'Entregado',  color: 'text-emerald-400', bg: 'bg-emerald-950/30', border: 'border-emerald-500/30'},
+  };
 
 
   // ── Login screen ──────────────────────────────────────────────────────────
@@ -542,89 +591,35 @@ export default function AdminHalloween({
     <div style={{ minHeight: '100vh', background: '#0a0a0a', fontFamily: "'Inter', sans-serif", paddingBottom: 80 }}>
 
       {/* ── TOP NAV */}
-      <div style={{
-        padding: '16px',
-        position: 'sticky', top: 0, zIndex: 50,
-      }}>
-        <div style={{
-          maxWidth: 900, margin: '0 auto', padding: '0 16px',
-          height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
-          background: '#fff', borderRadius: 20,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-        }}>
-          {/* Brand */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{
-              width: 38, height: 38, borderRadius: 10,
-              background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 20, boxShadow: '0 4px 16px rgba(255,106,0,0.35)',
-            }}>
-              🎃
-            </div>
-            <div>
-              <p style={{ color: '#0a0a0a', fontWeight: 900, fontSize: 14, lineHeight: 1, margin: 0 }}>
-                MUNDO DE HALLOWEEN
-              </p>
-              <p style={{ color: '#FF6A00', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>
-                Panel de Control
-              </p>
-            </div>
+      <div className="flex flex-col lg:flex-row gap-6 justify-between items-center mb-6 bg-[#1a1a1a] p-5 rounded-2xl border border-white/5 shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-[#FF6A00]/10 rounded-xl">
+            <span style={{ fontSize: '22px' }}>🎃</span>
           </div>
-
-          {/* Tabs */}
-          <nav style={{
-            display: 'flex', background: 'rgba(0,0,0,0.04)',
-            borderRadius: 12, padding: 4, gap: 4,
-          }}>
+          <div>
+            <p className="text-xl font-black text-white font-headline tracking-tight uppercase">MUNDO DE HALLOWEEN</p>
+            <p className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase">Panel de Control</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <nav className="flex bg-[#111] p-1.5 rounded-xl border border-white/5">
             {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => { setActiveTab(tab.id as any); setEditingId(null); }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '8px 14px', borderRadius: 9,
-                  border: 'none', cursor: 'pointer',
-                  background: activeTab === tab.id ? 'linear-gradient(135deg, #FF6A00, #FF8C00)' : 'transparent',
-                  color: activeTab === tab.id ? '#fff' : '#666',
-                  fontWeight: 800, fontSize: 11,
-                  textTransform: 'uppercase', letterSpacing: '0.1em',
-                  transition: 'all 0.2s',
-                }}
-              >
-                <tab.icon size={12} />
-                <span style={{ display: window.innerWidth < 600 ? 'none' : undefined }}>{tab.label}</span>
+              <button key={tab.id} onClick={() => { setActiveTab(tab.id as any); setEditingId(null); }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest ${activeTab === tab.id ? 'bg-[#FF6A00] text-white shadow' : 'text-white/40 hover:text-white/70'}`}>
+                <tab.icon size={12} /> <span>{tab.label}</span>
               </button>
             ))}
           </nav>
-
-          {/* Actions */}
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              onClick={() => { if (confirm('¿Restaurar catálogo de demo?')) onReset(); }}
-              title="Restaurar demo"
-              style={{
-                width: 36, height: 36, borderRadius: 10, border: 'none', cursor: 'pointer',
-                background: 'rgba(0,0,0,0.04)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#666', transition: 'all 0.2s',
-              }}
-            >
-              <RefreshCw size={16} />
-            </button>
-            <button
-              onClick={onClose}
-              title="Cerrar panel"
-              style={{
-                width: 36, height: 36, borderRadius: 10, border: 'none', cursor: 'pointer',
-                background: 'rgba(0,0,0,0.04)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#666', transition: 'all 0.2s',
-              }}
-            >
-              <LogOut size={16} />
-            </button>
-          </div>
+          <button
+            onClick={() => { if (confirm('¿Restaurar catálogo de demo?')) onReset(); }}
+            title="Restaurar demo"
+            className="p-3 text-white/20 hover:text-[#FF6A00] transition-colors ml-2"
+          >
+            <RefreshCw size={20} />
+          </button>
+          <button onClick={onClose} className="p-3 text-white/20 hover:text-[#FF6A00] transition-colors ml-1">
+            <LogOut size={20} />
+          </button>
         </div>
       </div>
 
@@ -866,33 +861,25 @@ export default function AdminHalloween({
 
         {/* ── CATEGORÍAS TAB */}
         {activeTab === 'categories' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <div>
-              <h2 style={{ color: '#fff', fontWeight: 900, fontSize: 20, margin: '0 0 4px', textTransform: 'uppercase' }}>
-                Borrador de Categorías
-              </h2>
-              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', margin: 0 }}>
-                Gestiona las categorías principales del catálogo
-              </p>
+          <div className="space-y-6">
+            <div className="px-2">
+              <h2 className="text-2xl font-black text-white font-headline uppercase">Borrador de Categorías</h2>
+              <p className="text-xs text-white/40 font-bold uppercase tracking-widest mt-1">Gestiona las categorías principales del catálogo</p>
             </div>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div className="space-y-3">
               {categories.map((cat, i) => (
                 <motion.div
                   key={cat.id} layout
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    background: '#fff', borderRadius: 16, padding: '12px 16px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                  }}
+                  className="bg-[#1a1a1a] border border-white/5 rounded-2xl shadow-sm flex items-center justify-between p-4"
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                      <button onClick={() => reorderCategory(i, 'up')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ccc', padding: 0 }} disabled={i === 0}>
-                        <ArrowUp size={14} color={i === 0 ? 'transparent' : '#999'} />
+                  <div className="flex items-center gap-3">
+                    <div className="flex flex-col gap-1">
+                      <button onClick={() => reorderCategory(i, 'up')} className="text-white/20 hover:text-white" disabled={i === 0}>
+                        <ArrowUp size={12} className={i === 0 ? 'opacity-0' : ''} />
                       </button>
-                      <button onClick={() => reorderCategory(i, 'down')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ccc', padding: 0 }} disabled={i === categories.length - 1}>
-                        <ArrowDown size={14} color={i === categories.length - 1 ? 'transparent' : '#999'} />
+                      <button onClick={() => reorderCategory(i, 'down')} className="text-white/20 hover:text-white" disabled={i === categories.length - 1}>
+                        <ArrowDown size={12} className={i === categories.length - 1 ? 'opacity-0' : ''} />
                       </button>
                     </div>
                     {editingCatId === cat.id ? (
@@ -905,34 +892,29 @@ export default function AdminHalloween({
                             setEditingCatId(null);
                           }
                         }}
-                        style={{ background: '#f5f5f5', border: '1px solid #ddd', borderRadius: 8, padding: '4px 8px', fontSize: 14, fontWeight: 800, color: '#0a0a0a', outline: 'none' }}
+                        className="bg-[#111] border border-[#FF6A00] rounded-xl px-4 py-2 text-xs font-black text-white tracking-widest uppercase outline-none"
                         autoFocus
                       />
                     ) : (
-                      <span style={{ color: '#0a0a0a', fontWeight: 800, fontSize: 14 }}>{cat.label}</span>
+                      <span className="text-white font-black text-sm uppercase tracking-widest leading-none">{cat.label}</span>
                     )}
                   </div>
-                  <div style={{ display: 'flex', gap: 8 }}>
+                  <div className="flex gap-2">
                     {editingCatId === cat.id ? (
                       <button
                         onClick={() => {
                           setCategories(categories.map(c => c.id === cat.id ? { ...c, label: editingCatName } : c));
                           setEditingCatId(null);
                         }}
-                        style={{
-                          width: 32, height: 32, borderRadius: 8, border: 'none', background: '#10B981', cursor: 'pointer',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff',
-                        }}
+                        className="w-9 h-9 rounded-xl bg-[#10B981] text-white flex items-center justify-center hover:bg-emerald-600 transition-all shadow"
                       >
                         <Save size={14} />
                       </button>
                     ) : (
                       <button 
                         onClick={() => { setEditingCatId(cat.id); setEditingCatName(cat.label); }}
-                        style={{
-                          width: 32, height: 32, borderRadius: 8, border: 'none', background: '#f5f5f5', cursor: 'pointer',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666',
-                        }}>
+                        className="w-9 h-9 rounded-xl bg-[#111] border border-white/5 flex items-center justify-center text-white/30 hover:text-[#FF6A00] hover:border-[#FF6A00]/40 transition-all"
+                      >
                         <Edit2 size={14} />
                       </button>
                     )}
@@ -942,10 +924,7 @@ export default function AdminHalloween({
                           setCategories(categories.filter(c => c.id !== cat.id));
                         }
                       }}
-                      style={{
-                        width: 32, height: 32, borderRadius: 8, border: 'none', background: '#fee2e2', cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444',
-                      }}
+                      className="w-9 h-9 rounded-xl bg-[#111] border border-white/5 flex items-center justify-center text-white/20 hover:text-red-500 hover:border-red-500/40 transition-all"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -955,147 +934,227 @@ export default function AdminHalloween({
             </div>
 
             {/* Nueva Categoría */}
-            <div style={{ marginTop: 10, display: 'flex', gap: 10 }}>
-              <input
-                style={{
-                  flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 14, padding: '0 16px', color: '#fff', fontSize: 13, outline: 'none',
-                }}
-                placeholder="Nombre de la categoría..."
-                value={newCategoryName}
-                onChange={e => setNewCategoryName(e.target.value)}
-              />
-              <button
-                onClick={() => {
-                  if (newCategoryName.trim()) {
-                    const id = newCategoryName.trim().toLowerCase().replace(/\s+/g, '-');
-                    setCategories([...categories, { id, label: newCategoryName.trim() }]);
-                    setNewCategoryName('');
-                  }
-                }}
-                style={{
-                  background: '#3b82f6', border: 'none', borderRadius: 14, padding: '14px 20px', cursor: 'pointer',
-                  color: '#fff', fontWeight: 800, fontSize: 12, display: 'flex', alignItems: 'center', gap: 6,
-                }}
-              >
-                <Plus size={16} /> Crear
-              </button>
+            <div className="bg-[#1a1a1a] border border-dashed border-white/10 rounded-2xl p-6">
+              <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-4">+ Nueva Categoría Principal</p>
+              <div className="flex gap-3">
+                <input 
+                  value={newCategoryName} 
+                  onChange={e => setNewCategoryName(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && newCategoryName.trim()) {
+                      const id = newCategoryName.trim().toLowerCase().replace(/\s+/g, '-');
+                      setCategories([...categories, { id, label: newCategoryName.trim() }]);
+                      setNewCategoryName('');
+                    }
+                  }}
+                  placeholder="EJ: TERROR EXTREMO..."
+                  className="flex-1 bg-[#111] border border-white/10 text-white px-4 py-3 rounded-xl text-[10px] font-black tracking-widest uppercase outline-none focus:border-[#FF6A00] transition-all"
+                />
+                <button 
+                  onClick={() => {
+                    if (newCategoryName.trim()) {
+                      const id = newCategoryName.trim().toLowerCase().replace(/\s+/g, '-');
+                      setCategories([...categories, { id, label: newCategoryName.trim() }]);
+                      setNewCategoryName('');
+                    }
+                  }}
+                  className="px-6 py-3 bg-[#3b82f6] text-white rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-blue-600 transition-all flex items-center gap-2"
+                >
+                  <Plus size={13} /> Crear
+                </button>
+              </div>
             </div>
           </div>
         )}
 
+
         {/* ── PEDIDOS TAB */}
         {activeTab === 'orders' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+          <div className="space-y-6">
+            {/* Header / Buscador */}
+            <div className="flex flex-col md:flex-row justify-between md:items-end gap-4 px-2">
               <div>
-                <h2 style={{ color: '#fff', fontWeight: 900, fontSize: 20, margin: '0 0 4px', textTransform: 'uppercase' }}>
-                  Pedidos & Ventas
-                </h2>
-                <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', margin: 0 }}>
-                  Gestión en tiempo real
+                <h2 className="text-2xl font-black text-white font-headline uppercase">Pedidos & Ventas</h2>
+                <p className="text-xs text-white/40 font-bold uppercase tracking-widest mt-1">
+                  {orders.filter(o => o.status !== 'delivered').length} pendientes · {orders.filter(o => o.status === 'delivered').length} entregados
                 </p>
               </div>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 10,
-                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 12, padding: '9px 14px', minWidth: 200,
-              }}>
-                <Search size={15} color="rgba(255,255,255,0.3)" />
-                <input
-                  style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 13, width: '100%' }}
-                  placeholder="Buscar folio o cliente..."
-                  value={orderSearch}
-                  onChange={e => setOrderSearch(e.target.value)}
+              <div className="relative w-full md:w-80">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={15} />
+                <input 
+                  value={orderSearch} 
+                  onChange={(e) => setOrderSearch(e.target.value)}
+                  placeholder="BUSCAR POR NOMBRE O TELÉFONO..."
+                  className="w-full bg-[#111] text-white p-3.5 pl-11 rounded-2xl border border-white/5 focus:border-[#FF6A00] focus:ring-4 focus:ring-[#FF6A00]/5 outline-none text-[10px] font-black tracking-widest placeholder:text-white/20" 
                 />
               </div>
             </div>
 
-            {/* Filters */}
-            <div style={{ display: 'flex', gap: 10 }}>
-              {[
-                { id: 'PENDIENTE', label: 'Pendientes', count: orders.filter(o => o.status === 'PENDIENTE').length },
-                { id: 'ENTREGADO', label: 'Entregados', count: orders.filter(o => o.status === 'ENTREGADO').length }
-              ].map(f => (
-                <button
-                  key={f.id}
-                  onClick={() => setOrderFilter(f.id as any)}
-                  style={{
-                    flex: 1, padding: '12px', borderRadius: 12, cursor: 'pointer',
-                    background: orderFilter === f.id ? 'rgba(255,106,0,0.15)' : 'rgba(255,255,255,0.05)',
-                    border: `1px solid ${orderFilter === f.id ? 'rgba(255,106,0,0.3)' : 'transparent'}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    color: orderFilter === f.id ? '#FF6A00' : 'rgba(255,255,255,0.5)',
-                    fontWeight: 800, fontSize: 12, textTransform: 'uppercase',
-                  }}
-                >
-                  {f.label}
-                  <span style={{
-                    background: '#FF6A00', color: '#fff', padding: '2px 6px', borderRadius: 6, fontSize: 10,
-                  }}>
-                    {f.count}
-                  </span>
-                </button>
-              ))}
+            {/* Filtros de estado */}
+            <div className="flex bg-[#111] p-1.5 rounded-2xl border border-white/5 shadow-sm inline-flex">
+              <button 
+                onClick={() => setOrderTab('pending')}
+                className={`flex items-center gap-2 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${orderTab === 'pending' ? 'bg-[#FF6A00] text-white shadow' : 'text-white/40 hover:text-white'}`}
+              >
+                <Clock size={13} /> Pendientes ({orders.filter(o => o.status !== 'delivered').length})
+              </button>
+              <button 
+                onClick={() => setOrderTab('delivered')}
+                className={`flex items-center gap-2 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${orderTab === 'delivered' ? 'bg-emerald-500 text-white shadow' : 'text-white/40 hover:text-white'}`}
+              >
+                <CheckCircle size={13} /> Entregados ({orders.filter(o => o.status === 'delivered').length})
+              </button>
             </div>
 
-            {/* Orders List */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {/* Lista de Pedidos */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {orders
-                .filter(o => orderFilter === 'ALL' || o.status === orderFilter)
-                .filter(o => !orderSearch || o.client.toLowerCase().includes(orderSearch.toLowerCase()) || o.id.toLowerCase().includes(orderSearch.toLowerCase()))
-                .map(order => (
-                  <div key={order.id} style={{
-                    background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: 16, overflow: 'hidden',
-                  }}>
-                    {/* Order Header */}
-                    <div style={{
-                      padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.05)',
-                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      background: 'rgba(255,255,255,0.01)',
-                    }}>
-                      <div>
-                        <div style={{ color: '#fff', fontWeight: 900, fontSize: 15 }}>{order.id}</div>
-                        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>{order.client} • {order.phone}</div>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ color: '#FF8C00', fontWeight: 900, fontSize: 16 }}>${order.total} MXN</div>
-                        <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: 800 }}>{order.paymentMethod}</div>
-                      </div>
-                    </div>
-                    {/* Products */}
-                    <div style={{ padding: '12px 16px', background: 'rgba(0,0,0,0.2)' }}>
-                      {order.products.map((p, i) => (
-                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
-                          <span style={{ color: 'rgba(255,255,255,0.7)' }}>{p.qty}x {p.name}</span>
-                          <span style={{ color: 'rgba(255,255,255,0.5)' }}>${p.price * p.qty}</span>
-                        </div>
-                      ))}
-                    </div>
-                    {/* Status Update */}
-                    <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', fontWeight: 700 }}>Estado del Pedido</span>
-                      <select
-                        value={order.status}
-                        onChange={e => {
-                          const val = e.target.value;
-                          setOrders(orders.map(o => o.id === order.id ? { ...o, status: val } : o));
-                        }}
-                        style={{
-                          background: order.status === 'PENDIENTE' ? 'rgba(245,158,11,0.15)' : 'rgba(16,185,129,0.15)',
-                          color: order.status === 'PENDIENTE' ? '#F59E0B' : '#10B981',
-                          border: `1px solid ${order.status === 'PENDIENTE' ? '#F59E0B' : '#10B981'}40`,
-                          borderRadius: 8, padding: '6px 10px', fontSize: 11, fontWeight: 800,
-                          outline: 'none', cursor: 'pointer', appearance: 'none',
-                        }}
-                      >
-                        <option value="PENDIENTE">PENDIENTE</option>
-                        <option value="ENTREGADO">ENTREGADO</option>
-                      </select>
-                    </div>
+                .filter(o => orderTab === 'pending' ? o.status !== 'delivered' : o.status === 'delivered')
+                .filter(o => !orderSearch || o.customer.toLowerCase().includes(orderSearch.toLowerCase()) || o.phone.includes(orderSearch))
+                .length === 0 ? (
+                  <div className="col-span-full py-20 bg-[#1a1a1a] rounded-3xl border border-white/5 text-center">
+                    <Package className="text-white/10 mx-auto mb-4" size={48} />
+                    <p className="text-white/20 text-sm font-bold uppercase tracking-widest italic">
+                      {orderSearch ? 'Sin resultados' : orderTab === 'pending' ? 'No hay pedidos pendientes' : 'No hay pedidos entregados'}
+                    </p>
                   </div>
-                ))}
+                ) : orders
+                  .filter(o => orderTab === 'pending' ? o.status !== 'delivered' : o.status === 'delivered')
+                  .filter(o => !orderSearch || o.customer.toLowerCase().includes(orderSearch.toLowerCase()) || o.phone.includes(orderSearch))
+                  .map(order => {
+                    const cfg = STATUS_CONFIG[order.status] || STATUS_CONFIG.pending;
+                    const isExpanded = expandedOrder === order.id;
+                    return (
+                      <div key={order.id} className="bg-[#1a1a1a] border border-white/5 rounded-3xl shadow-sm overflow-hidden flex flex-col">
+                        <div className="flex flex-col gap-3 p-5 flex-1">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <span className={`text-[10px] font-black px-2 py-0.5 rounded tracking-widest uppercase border ${cfg.bg} ${cfg.color} ${cfg.border}`}>
+                                {order.id}
+                              </span>
+                              <p className="text-[10px] text-white/30 font-bold mt-1">{order.date}</p>
+                            </div>
+                            <div className="flex gap-1.5">
+                              <button
+                                onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
+                                title="Ver notas internas"
+                                className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all ${
+                                  isExpanded ? 'bg-[#FF6A00]/10 border-[#FF6A00]/30 text-[#FF6A00]' : 'bg-[#111] border-white/5 text-white/30 hover:text-white'
+                                }`}
+                              >
+                                {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                              </button>
+                              <button
+                                onClick={() => deleteOrder(order.id)}
+                                title="Eliminar pedido"
+                                className="w-8 h-8 rounded-xl bg-[#111] border border-white/5 flex items-center justify-center text-white/20 hover:text-red-500 hover:border-red-500/40 transition-all"
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h4 className="text-white font-black text-sm uppercase tracking-wide">{order.customer}</h4>
+                            <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
+                              <span className="text-[10px] text-white/40 font-bold flex items-center gap-1">
+                                <Phone size={9} className="text-[#FF6A00]" />{order.phone}
+                              </span>
+                              {order.city && <span className="text-[10px] text-white/40 font-bold">📍 {order.city}</span>}
+                            </div>
+                          </div>
+
+                          {/* Forma de pago */}
+                          {order.paymentMethod && (
+                            <div className="flex flex-col gap-2">
+                              <span className={`self-start text-[9px] font-black px-2 py-0.5 rounded-full border tracking-widest uppercase ${cfg.bg} ${cfg.border} ${cfg.color}`}>
+                                💳 {order.paymentMethod}
+                              </span>
+                              
+                              {(order.paymentMethod.toLowerCase().includes('transferencia') || order.paymentMethod.toLowerCase().includes('tarjeta') || order.payment_reference) && (
+                                <div className="flex gap-2">
+                                  <input 
+                                    placeholder="REF: #000000"
+                                    defaultValue={order.payment_reference || ''}
+                                    onChange={(e) => setPaymentRefInputs(prev => ({ ...prev, [order.id]: e.target.value }))}
+                                    className="flex-1 bg-[#111] border border-white/5 p-1.5 rounded-lg text-[10px] uppercase font-bold outline-none focus:border-[#FF6A00] text-white"
+                                  />
+                                  <button 
+                                    onClick={() => savePaymentRef(order.id)}
+                                    className="bg-[#FF6A00] text-white px-2 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all"
+                                  >
+                                    OK
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Items / Desglose de totales */}
+                          <div className="bg-[#111] p-3 rounded-xl border border-white/5 space-y-1">
+                            {(order.items || []).map((item: any, i: number) => (
+                              <div key={i} className="flex justify-between text-[11px]">
+                                <span className="text-white/60 font-medium truncate pr-2">{item.name} <span className="font-black">x{item.quantity}</span></span>
+                                <span className="text-white font-black shrink-0">${item.price * item.quantity}</span>
+                              </div>
+                            ))}
+                            {order.deliveryNotes && (
+                              <p className="text-[10px] text-white/30 italic border-t border-white/5 pt-1.5 mt-1">📝 {order.deliveryNotes}</p>
+                            )}
+                          </div>
+
+                          <div className="flex justify-between items-center">
+                            <span className="text-white/20 text-[10px] font-black uppercase tracking-widest">Total</span>
+                            <span className="text-[#FF8C00] font-black text-lg">${order.total} <span className="text-[10px] text-white/40">MXN</span></span>
+                          </div>
+
+                          {/* Selector de estatus */}
+                          <select
+                            value={order.status || 'pending'}
+                            onChange={e => updateOrderStatus(order.id, e.target.value)}
+                            className={`w-full p-3 rounded-xl border text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer transition-all ${cfg.bg} ${cfg.border} ${cfg.color}`}
+                          >
+                            <option value="pending" style={{ background: '#111' }}>⏳ Pendiente</option>
+                            <option value="in-process" style={{ background: '#111' }}>🔄 En Proceso</option>
+                            <option value="delayed" style={{ background: '#111' }}>⚠️ Demorado</option>
+                            <option value="delivered" style={{ background: '#111' }}>✅ Entregado</option>
+                          </select>
+                        </div>
+
+                        {/* Panel de notas internas (expandible) */}
+                        {isExpanded && (
+                          <div className="border-t border-white/5 p-4 bg-black/30 space-y-3">
+                            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Notas Internas</p>
+                            <div className="space-y-2 max-h-36 overflow-y-auto">
+                              {(order.internalNotes || []).length === 0 ? (
+                                <p className="text-[11px] text-white/20 italic">Sin notas todavía...</p>
+                              ) : (order.internalNotes || []).map((note: any, i: number) => (
+                                <div key={i} className="bg-[#111] rounded-xl p-3 border border-white/5">
+                                  <p className="text-[9px] text-[#FF6A00] font-black uppercase tracking-widest mb-1">{note.date}</p>
+                                  <p className="text-xs text-white/70 font-medium leading-relaxed">{note.text}</p>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="flex gap-2 pt-1">
+                              <input
+                                value={noteInputs[order.id] || ''}
+                                onChange={e => setNoteInputs(prev => ({ ...prev, [order.id]: e.target.value }))}
+                                onKeyDown={e => e.key === 'Enter' && addNote(order.id)}
+                                placeholder="Añadir nota interna..."
+                                className="flex-1 bg-[#111] border border-white/10 text-white px-4 py-2.5 rounded-xl text-xs outline-none focus:border-[#FF6A00] transition-all"
+                              />
+                              <button
+                                onClick={() => addNote(order.id)}
+                                className="px-3 py-2 bg-[#FF6A00] text-white rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-orange-600 transition-all flex items-center gap-1"
+                              >
+                                <Save size={12} /> Guardar
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
             </div>
           </div>
         )}

@@ -337,22 +337,19 @@ export default function MundoHalloween() {
 
           <div className="flex items-start justify-between">
             <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div style={{
-                  width: 48, height: 48, borderRadius: '14px',
-                  background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '24px', flexShrink: 0,
-                  boxShadow: '0 4px 20px rgba(255, 106, 0, 0.4)',
-                }}>
-                  🎃
-                </div>
+              <div className="flex items-center gap-4 mb-2">
+                <img
+                  src="/logo-halloween.png"
+                  alt="Mundo de Halloween Logo"
+                  className="h-12 w-auto object-contain md:h-16 shrink-0"
+                  style={{ filter: 'drop-shadow(0 0 10px rgba(255, 106, 0, 0.3))' }}
+                />
                 <div>
                   <h1 style={{ color: '#fff', fontSize: '26px', fontWeight: 900, lineHeight: 1, letterSpacing: '-0.5px' }}>
                     Mundo de Halloween
                   </h1>
-                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginTop: '2px' }}>
-                    Menú Digital Interactivo
+                  <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', marginTop: '4px', fontWeight: 600 }}>
+                    Tu Pasaporte al Terror y la Diversión
                   </p>
                 </div>
               </div>
@@ -541,12 +538,19 @@ export default function MundoHalloween() {
                             style={{
                               background: 'rgba(255,255,255,0.08)',
                               border: '1px solid rgba(255,255,255,0.1)',
-                              borderRadius: '12px', padding: '9px 12px',
-                              color: '#fff', cursor: 'pointer',
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              transition: 'transform 0.15s ease',
+                              borderRadius: '50%',
+                              width: '36px',
+                              height: '36px',
+                              color: '#fff',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              transition: 'transform 0.15s ease, background-color 0.2s',
+                              flexShrink: 0,
                             }}
-                            onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.95)')}
+                            className="hover:bg-white/15"
+                            onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.92)')}
                             onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
                           >
                             <Share2 size={16} />
@@ -640,19 +644,19 @@ export default function MundoHalloween() {
                         onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
                       />
                       {/* Badges on image */}
-                      <div className="absolute top-2 right-2 flex flex-col gap-1 z-20 items-end">
+                      <div className="absolute top-2 right-2 flex flex-col gap-1 z-40 items-end">
                         {isPopular && (
                           <div className="bg-[#FF6A00] text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow flex items-center gap-1 uppercase">
                             🔥 MÁS VENDIDO
                           </div>
                         )}
                         {isNew && (
-                          <div className="bg-blue-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow uppercase">
+                          <div className="bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow uppercase">
                             NOVEDAD
                           </div>
                         )}
                         {isOnSale && (
-                          <div className="bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow uppercase">
+                          <div className="bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow uppercase">
                             EN OFERTA
                           </div>
                         )}
@@ -819,10 +823,18 @@ export default function MundoHalloween() {
                       style={{
                         background: 'rgba(255,255,255,0.08)',
                         border: '1px solid rgba(255,255,255,0.1)',
-                        borderRadius: '14px', padding: '14px',
-                        color: '#fff', cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        borderRadius: '50%',
+                        width: '52px',
+                        height: '52px',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'transform 0.15s ease, background-color 0.2s',
+                        flexShrink: 0,
                       }}
+                      className="hover:bg-white/15"
                     >
                       <Share2 size={20} />
                     </button>
@@ -874,10 +886,18 @@ export default function MundoHalloween() {
                       style={{
                         background: 'rgba(255,255,255,0.08)',
                         border: '1px solid rgba(255,255,255,0.1)',
-                        borderRadius: '14px', padding: '16px',
-                        color: '#fff', cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        borderRadius: '50%',
+                        width: '52px',
+                        height: '52px',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'transform 0.15s ease, background-color 0.2s',
+                        flexShrink: 0,
                       }}
+                      className="hover:bg-white/15"
                     >
                       <Share2 size={20} />
                     </button>
