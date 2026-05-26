@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from './lib/supabase';
 import AdminHalloween from './AdminHalloween';
-import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save, Lock, Instagram, Facebook, Mail as MailIcon, Share2 } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save, Lock, Instagram, Facebook, Mail as MailIcon, Share2, SlidersHorizontal } from 'lucide-react';
 import logo from './logo.png';
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
@@ -167,6 +167,7 @@ export default function MundoHalloween() {
   const [menuItems, setCostumes] = useState<Costume[]>(INITIAL_MENU_ITEMS);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [adminPickerForId, setAdminPickerForId] = useState<string | null>(null);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   useEffect(() => {
     const hashParts = window.location.hash.split('?');
@@ -434,43 +435,103 @@ export default function MundoHalloween() {
         </div>
       </div>
 
-      {/* ── CATEGORY TABS */}
-      <div style={{
-        background: '#111',
-        padding: '0 16px 12px',
-        overflowX: 'auto',
-        display: 'flex',
-        gap: '8px',
-        scrollbarWidth: 'none',
-        position: 'sticky',
-        top: '57px',
-        zIndex: 39,
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-      }}>
-        {CATEGORIES.map(cat => (
+      {/* ── CATEGORY BAR + GRID PANEL */}
+      <div style={{ background: '#111', position: 'sticky', top: '57px', zIndex: 39, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+
+        {/* Scrollable pill row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 16px 12px', overflowX: 'auto', scrollbarWidth: 'none' }}>
+
+          {/* Grid toggle button */}
           <button
-            key={cat.id}
-            id={`cat-${cat.id}`}
-            onClick={() => { setActiveCategory(cat.id.toString()); setSearchQuery(''); }}
+            id="category-grid-toggle"
+            onClick={() => setIsCategoryOpen(o => !o)}
             style={{
               flexShrink: 0,
-              padding: '8px 16px',
+              width: '38px', height: '34px',
               borderRadius: '50px',
-              border: 'none',
+              border: isCategoryOpen ? '1.5px solid #FF6A00' : '1.5px solid rgba(255,255,255,0.15)',
+              background: isCategoryOpen ? 'rgba(255,106,0,0.15)' : 'rgba(255,255,255,0.07)',
+              color: isCategoryOpen ? '#FF6A00' : 'rgba(255,255,255,0.6)',
               cursor: 'pointer',
-              fontWeight: 700,
-              fontSize: '13px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all 0.2s ease',
-              background: activeCategory === cat.id
-                ? 'linear-gradient(135deg, #FF6A00, #FF8C00)'
-                : 'rgba(255,255,255,0.07)',
-              color: activeCategory === cat.id ? '#fff' : 'rgba(255,255,255,0.5)',
-              boxShadow: activeCategory === cat.id ? '0 4px 12px rgba(255, 106, 0, 0.35)' : 'none',
             }}
+            title="Ver todas las categorías"
           >
-            {cat.emoji} {cat.label}
+            <SlidersHorizontal size={15} />
           </button>
-        ))}
+
+          {/* Pill chips */}
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat.id}
+              id={`cat-${cat.id}`}
+              onClick={() => { setActiveCategory(cat.id); setSearchQuery(''); setIsCategoryOpen(false); }}
+              style={{
+                flexShrink: 0,
+                padding: '8px 16px',
+                borderRadius: '50px',
+                border: 'none',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '13px',
+                transition: 'all 0.2s ease',
+                background: activeCategory === cat.id
+                  ? 'linear-gradient(135deg, #FF6A00, #FF8C00)'
+                  : 'rgba(255,255,255,0.07)',
+                color: activeCategory === cat.id ? '#fff' : 'rgba(255,255,255,0.5)',
+                boxShadow: activeCategory === cat.id ? '0 4px 12px rgba(255,106,0,0.35)' : 'none',
+              }}
+            >
+              {cat.emoji} {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Collapsible grid panel */}
+        <AnimatePresence>
+          {isCategoryOpen && (
+            <motion.div
+              key="cat-grid"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
+              style={{ overflow: 'hidden', borderTop: '1px solid rgba(255,255,255,0.06)' }}
+            >
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '8px',
+                padding: '14px 16px 16px',
+                background: '#0d0d0d',
+              }}>
+                {CATEGORIES.map(cat => (
+                  <button
+                    key={`grid-${cat.id}`}
+                    onClick={() => { setActiveCategory(cat.id); setSearchQuery(''); setIsCategoryOpen(false); }}
+                    style={{
+                      padding: '10px 8px',
+                      borderRadius: '12px',
+                      border: activeCategory === cat.id ? '1.5px solid #FF6A00' : '1px solid rgba(255,255,255,0.08)',
+                      background: activeCategory === cat.id ? 'rgba(255,106,0,0.15)' : 'rgba(255,255,255,0.04)',
+                      color: activeCategory === cat.id ? '#FF8C00' : 'rgba(255,255,255,0.6)',
+                      cursor: 'pointer',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      lineHeight: 1.3,
+                      textAlign: 'center',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <div style={{ fontSize: '20px', marginBottom: '4px' }}>{cat.emoji}</div>
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* ── MENU GRID */}
@@ -1026,6 +1087,16 @@ export default function MundoHalloween() {
                                 <p style={{ color: '#FF8C00', fontWeight: 800, fontSize: '14px', margin: '2px 0 0' }}>
                                   ${item.price * item.quantity}
                                 </p>
+                                {/* Size label */}
+                                {item.sizes && item.sizes.length > 0 ? (
+                                  <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '11px', margin: '2px 0 0', fontWeight: 600 }}>
+                                    Talla: {item.selectedSize || item.sizes[0]}
+                                  </p>
+                                ) : (
+                                  <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '11px', margin: '2px 0 0', fontWeight: 600 }}>
+                                    Talla: Adulto (Unitalla)
+                                  </p>
+                                )}
                               </div>
                               <div style={{
                                 display: 'flex', alignItems: 'center', gap: '6px',
@@ -1313,7 +1384,14 @@ export default function MundoHalloween() {
             <div className="space-y-3 text-sm text-white/60">
               <div className="flex items-start gap-3">
                 <span className="text-[#FF8C00] shrink-0 mt-0.5 text-base">📍</span>
-                <span>Ignacio Allende 45, Del Carmen, Coyoacán, 04100 Ciudad de México, CDMX</span>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Ignacio+Allende+45+Del+Carmen+Coyoac%C3%A1n+04100+Ciudad+de+M%C3%A9xico"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-[#FF8C00] transition-colors underline-offset-2 hover:underline"
+                >
+                  Ignacio Allende 45, Del Carmen, Coyoacán, 04100 Ciudad de México, CDMX
+                </a>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-[#FF8C00] shrink-0 text-base">🕐</span>
