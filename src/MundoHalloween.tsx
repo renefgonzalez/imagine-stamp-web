@@ -2,7 +2,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from './lib/supabase';
 import AdminHalloween from './AdminHalloween';
-import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save, Lock, Instagram, Facebook, Mail as MailIcon } from 'lucide-react';
+import logo from './logo.png';
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 interface Costume {
@@ -36,7 +37,53 @@ const CATEGORIES = [
   { id: 'accesorios',  label: 'Accesorios',  emoji: '🎭' },
 ];
 
-const INITIAL_MENU_ITEMS: Costume[] = [];
+const INITIAL_MENU_ITEMS: Costume[] = [
+  {
+    id: 'mock-1',
+    name: 'Traje Spider-Man Vengador',
+    description: 'Disfraz fotorrealista de alta calidad, perfecto para los fans de Marvel.',
+    price: 850,
+    rentalPrice: 350,
+    image: 'https://images.unsplash.com/photo-1534385984626-444f21d3f9e9?q=80&w=600&auto=format&fit=crop',
+    category: 'superheroes',
+    type: 'Renta y Venta',
+    sizes: ['M', 'L'],
+    badge: 'MÁS VENDIDO'
+  },
+  {
+    id: 'mock-2',
+    name: 'Máscara Catrina Premium',
+    description: 'Elegante y detallada máscara tradicional para Día de Muertos.',
+    price: 450,
+    image: 'https://images.unsplash.com/photo-1542103565-df01b702ec4d?q=80&w=600&auto=format&fit=crop',
+    category: 'accesorios',
+    type: 'Venta',
+    sizes: ['Unitalla'],
+    badge: 'NOVEDAD'
+  },
+  {
+    id: 'mock-3',
+    name: 'Disfraz Pirata Bucanero',
+    description: 'Atuendo completo de pirata con sombrero, saco y accesorios.',
+    price: 1200,
+    rentalPrice: 500,
+    image: 'https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=600&auto=format&fit=crop',
+    category: 'terror',
+    type: 'Renta y Venta',
+    sizes: ['L', 'XL'],
+    badge: 'EN OFERTA'
+  },
+  {
+    id: 'mock-4',
+    name: 'Disfraz Vampirito Infantil',
+    description: 'Disfraz clásico de vampiro, cómodo para niños.',
+    price: 650,
+    image: 'https://images.unsplash.com/photo-1509557965875-b88c97052f0e?q=80&w=600&auto=format&fit=crop',
+    category: 'infantiles',
+    type: 'Venta',
+    sizes: ['4-6', '7-9'],
+  }
+];
 
 // ─── STOCK PHOTO LIBRARY ──────────────────────────────────────────────────────
 // Banco de imágenes "de stock" que el dueño puede asignar a cualquier platillo
@@ -166,7 +213,7 @@ export default function MundoHalloween() {
     const name = customerName.trim() || 'Cliente';
 
     const message =
-      `🍔 *Pedido en Burger & Co*\n\n` +
+      `🎃 *Pedido en Mundo de Halloween*\n\n` +
       `Hola! Soy *${name}* y quiero ordenar:\n\n` +
       `${lines}\n\n` +
       `*Total: $${totalPrice} MXN*\n\n` +
@@ -187,7 +234,7 @@ export default function MundoHalloween() {
   return (
     <div className="min-h-screen" style={{ background: '#0D0D0D', fontFamily: "'Inter', sans-serif" }}>
       {/* ── SEO Meta */}
-      <title>Burger & Co | Mundo de Halloween Demo — Imagine & Stamp</title>
+      <title>Mundo de Halloween | Menú Digital Interactivo</title>
 
       {/* ── HERO HEADER */}
       <header
@@ -229,30 +276,16 @@ export default function MundoHalloween() {
                   fontSize: '24px', flexShrink: 0,
                   boxShadow: '0 4px 20px rgba(255, 106, 0, 0.4)',
                 }}>
-                  🍔
+                  🎃
                 </div>
                 <div>
                   <h1 style={{ color: '#fff', fontSize: '26px', fontWeight: 900, lineHeight: 1, letterSpacing: '-0.5px' }}>
-                    Burger & Co
+                    Mundo de Halloween
                   </h1>
                   <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginTop: '2px' }}>
-                    Mundo de Halloween Interactivo
+                    Menú Digital Interactivo
                   </p>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-4 mt-3">
-                <span style={{ color: '#FF8C00', fontSize: '12px', fontWeight: 700 }}>
-                  ⭐ 4.8 (2.4k reseñas)
-                </span>
-                <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px' }}>•</span>
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>
-                  🕐 20–35 min
-                </span>
-                <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px' }}>•</span>
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>
-                  📍 Demo
-                </span>
               </div>
             </div>
 
@@ -294,21 +327,7 @@ export default function MundoHalloween() {
             </button>
           </div>
 
-          {/* Demo badge */}
-          <div style={{
-            marginTop: '16px',
-            background: 'rgba(255, 106, 0, 0.15)',
-            border: '1px solid rgba(255, 106, 0, 0.3)',
-            borderRadius: '10px',
-            padding: '8px 12px',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-          }}>
-            <span style={{ fontSize: '11px', color: '#FF8C00', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              ✨ Demo por Imagine & Stamp — Tu menú digital conectado a WhatsApp
-            </span>
-          </div>
+
         </div>
       </header>
 
@@ -829,7 +848,7 @@ export default function MundoHalloween() {
                     <motion.div key="cart-items" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                       {cart.length === 0 ? (
                         <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.3)' }}>
-                          <div style={{ fontSize: '56px', marginBottom: '12px' }}>🍔</div>
+                          <div style={{ fontSize: '56px', marginBottom: '12px' }}>🎃</div>
                           <p style={{ fontWeight: 700, fontSize: '15px' }}>Tu pedido está vacío</p>
                           <p style={{ fontSize: '13px', marginTop: '6px' }}>Agrega algo del menú para comenzar</p>
                         </div>
@@ -1051,45 +1070,6 @@ export default function MundoHalloween() {
           </>
         )}
       </AnimatePresence>
-
-      {/* ── FLOATING ADMIN BUTTON (modo administrador) ───────────────────── */}
-      <button
-        id="open-admin-btn"
-        onClick={() => setIsAdminOpen(true)}
-        title="Modo administrador — Edita precios, imágenes y disponibilidad"
-        style={{
-          position: 'fixed',
-          bottom: '24px',
-          left: '16px',
-          zIndex: 55,
-          background: 'rgba(20, 20, 20, 0.85)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 140, 0, 0.35)',
-          borderRadius: '999px',
-          padding: '9px 14px',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '7px',
-          color: 'rgba(255, 200, 140, 0.9)',
-          fontWeight: 700,
-          fontSize: '11px',
-          letterSpacing: '0.05em',
-          boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
-          transition: 'all 0.2s ease',
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.background = 'rgba(255, 106, 0, 0.95)';
-          e.currentTarget.style.color = '#fff';
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.background = 'rgba(20, 20, 20, 0.85)';
-          e.currentTarget.style.color = 'rgba(255, 200, 140, 0.9)';
-        }}
-      >
-        <Settings size={14} />
-        Ver modo administrador
-      </button>
 
       {/* ── ADMIN PANEL (gestión en vivo del catálogo) ───────────────────── */}
       <AnimatePresence>
@@ -1387,16 +1367,38 @@ export default function MundoHalloween() {
         )}
       </AnimatePresence>
 
-      {/* ── FOOTER DEMO BADGE */}
-      <div style={{
-        textAlign: 'center', padding: '16px', paddingBottom: '100px',
-        color: 'rgba(255,255,255,0.2)', fontSize: '11px',
-      }}>
-        Menú digital demo creado con ❤️ por{' '}
-        <a href="/#/" style={{ color: 'rgba(255, 140, 0, 0.6)', textDecoration: 'none' }}>
-          Imagine & Stamp
-        </a>
-      </div>
+      {/* ── CORPORATE FOOTER */}
+      <footer className="bg-[#111] border-t border-white/5 pt-12 pb-32 px-6 mt-12">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <img src={logo} alt="Logo" className="h-[50px] w-auto brightness-0 invert opacity-80" />
+              <h2 className="text-2xl font-black text-white font-headline tracking-tighter">Imagine & Stamp</h2>
+            </div>
+            <p className="text-white/60 text-sm max-w-xs">Personalizamos tus momentos más especiales con diseños creativos y alta calidad.</p>
+          </div>
+          <div className="space-y-6">
+            <h3 className="font-headline font-bold text-white text-lg">Contacto</h3>
+            <div className="space-y-4 text-sm text-white/70">
+              <a href="https://wa.me/525650469993" target="_blank" rel="noreferrer" className="flex items-center gap-3"><MessageCircle size={18} /> WhatsApp</a>
+              <a href="mailto:imagineandstamp@gmail.com" className="flex items-center gap-3"><MailIcon size={18} /> imagineandstamp@gmail.com</a>
+            </div>
+          </div>
+          <div className="space-y-6">
+            <h3 className="font-headline font-bold text-white text-lg">Síguenos</h3>
+            <div className="flex gap-4">
+              <a href="https://www.instagram.com/personalizadosimagineandstamp" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white"><Instagram size={22} /></a>
+              <a href="https://www.facebook.com/share/1CFhhieFeV/?mibextid=wwXIfr" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white"><Facebook size={22} /></a>
+            </div>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-white/5 text-center">
+          <p className="text-white/30 text-[10px] uppercase tracking-widest">© 2026 Imagine & Stamp. Todos los derechos reservados.</p>
+          <button onClick={() => setIsAdminOpen(true)} className="mt-4 text-white/10 hover:text-white/40 transition-colors flex items-center justify-center mx-auto" aria-label="Admin Access">
+            <Lock size={16} />
+          </button>
+        </div>
+      </footer>
     </div>
   );
 }
