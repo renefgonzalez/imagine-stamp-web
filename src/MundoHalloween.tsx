@@ -17,6 +17,12 @@ interface Costume {
   type: 'Renta' | 'Venta' | 'Renta y Venta';
   sizes: string[];
   badge?: 'NOVEDAD' | 'EN OFERTA' | 'MÁS VENDIDO';
+  is_popular?: boolean;
+  isPopular?: boolean;
+  is_new?: boolean;
+  isNew?: boolean;
+  is_on_sale?: boolean;
+  isOnSale?: boolean;
   soldOut?: boolean;
 }
 
@@ -432,7 +438,9 @@ export default function MundoHalloween() {
           <AnimatePresence mode="popLayout">
             {filteredItems.map((item, idx) => {
               const qty = getItemQty(item.id);
-              const badge = item.badge ? BADGE_CONFIG[item.badge] : null;
+              const isPopular = item.is_popular || item.isPopular || item.badge === 'MÁS VENDIDO';
+              const isNew = item.is_new || item.isNew || item.badge === 'NOVEDAD';
+              const isOnSale = item.is_on_sale || item.isOnSale || item.badge === 'EN OFERTA';
 
               return (
                 <motion.div
@@ -462,24 +470,7 @@ export default function MundoHalloween() {
                   <div style={{ display: 'flex', gap: '0' }}>
                     {/* Content */}
                     <div style={{ flex: 1, padding: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      {/* Badge */}
-                      {badge && (
-                        <div style={{
-                          display: 'inline-flex', alignItems: 'center', gap: '4px',
-                          padding: '3px 8px', borderRadius: '6px',
-                          background: item.badge === 'MÁS VENDIDO' ? 'rgba(245,158,11,0.2)' :
-                                      item.badge === 'NOVEDAD' ? 'rgba(16,185,129,0.2)' :
-                                      item.badge === 'EN OFERTA' ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)',
-                          color: item.badge === 'MÁS VENDIDO' ? '#F59E0B' :
-                                 item.badge === 'NOVEDAD' ? '#10B981' :
-                                 item.badge === 'EN OFERTA' ? '#EF4444' : '#22C55E',
-                          fontSize: '10px', fontWeight: 800, textTransform: 'uppercase',
-                          letterSpacing: '0.06em', width: 'fit-content',
-                        }}>
-                          {item.badge === 'MÁS VENDIDO' ? '⭐' : item.badge === 'NOVEDAD' ? '✨' : item.badge === 'EN OFERTA' ? '🌶' : '🌿'}
-                          {' '}{badge.label}
-                        </div>
-                      )}
+
 
                       <h3 style={{ color: '#fff', fontWeight: 800, fontSize: '16px', lineHeight: 1.2, margin: 0 }}>
                         {item.name}
@@ -586,6 +577,24 @@ export default function MundoHalloween() {
                         onMouseEnter={e => { if (!item.soldOut) e.currentTarget.style.transform = 'scale(1.08)'; }}
                         onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
                       />
+                      {/* Badges on image */}
+                      <div className="absolute top-2 right-2 flex flex-col gap-1 z-20 items-end">
+                        {isPopular && (
+                          <div className="bg-[#FF6A00] text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow flex items-center gap-1 uppercase">
+                            🔥 MÁS VENDIDO
+                          </div>
+                        )}
+                        {isNew && (
+                          <div className="bg-blue-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow uppercase">
+                            NOVEDAD
+                          </div>
+                        )}
+                        {isOnSale && (
+                          <div className="bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow uppercase">
+                            EN OFERTA
+                          </div>
+                        )}
+                      </div>
                       {item.soldOut && (
                         <div style={{
                           position: 'absolute', inset: 0,
