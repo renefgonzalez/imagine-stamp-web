@@ -1,1353 +1,845 @@
-import React, { useState, useEffect } from 'react';
+/**
+ * AdminHalloween.tsx
+ * Panel de administración para Mundo de Halloween.
+ * Diseño premium oscuro con acento naranja #FF6A00 — idéntico en estructura
+ * al AdminPanel principal de Imagine & Stamp, adaptado para disfraces.
+ */
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Lock, Package, DollarSign, Trash2, Edit2, Plus, LogOut, 
-  Tag, FileText, LayoutGrid, Box, Image as ImageIcon, Search, CheckCircle, Clock, Phone, List, X, Save, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Zap
+import {
+  Lock, Package, Plus, LogOut, Tag, FileText, DollarSign,
+  Trash2, Edit2, Save, X, Star, Flame, ShoppingBag, Search,
+  Eye, EyeOff, RefreshCw, Check, ChevronDown, Image as ImageIcon,
 } from 'lucide-react';
-import { DEFAULT_CATEGORIES } from './App';
-import { supabase } from './lib/supabase';
 
+// ─── TYPES ────────────────────────────────────────────────────────────────────
+interface Costume {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  rentalPrice?: number;
+  image: string;
+  category: string;
+  type: 'Renta' | 'Venta' | 'Renta y Venta';
+  sizes: string[];
+  badge?: 'NOVEDAD' | 'EN OFERTA' | 'MÁS VENDIDO';
+  soldOut?: boolean;
+}
+
+interface AdminHalloweenProps {
+  costumes: Costume[];
+  onUpdate: (id: string, patch: Partial<Costume>) => void;
+  onAdd: (costume: Costume) => void;
+  onDelete: (id: string) => void;
+  onReset: () => void;
+  onClose: () => void;
+}
+
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const MASTER_PASSWORD = '1212';
+const HALLOWEEN_PASSWORD = 'halloween';
 
-const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div className="flex flex-col gap-1.5 h-full">
-    <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest px-1 shrink-0">{label}</label>
-    <div className="h-full flex flex-col justify-center">
-      {children}
-    </div>
+const HALLOWEEN_CATEGORIES = [
+  { id: 'terror',      label: '💀 Terror' },
+  { id: 'superheroes', label: '🦸 Superhéroes' },
+  { id: 'infantiles',  label: '🧸 Infantiles' },
+  { id: 'accesorios',  label: '🎭 Accesorios' },
+];
+
+const BADGE_OPTIONS = [
+  { value: '', label: '— Sin insignia —' },
+  { value: 'NOVEDAD', label: '✨ NOVEDAD' },
+  { value: 'EN OFERTA', label: '🏷️ EN OFERTA' },
+  { value: 'MÁS VENDIDO', label: '🔥 MÁS VENDIDO' },
+];
+
+const COMMON_SIZES = [
+  'CH', 'M', 'G', 'XG', 'Unitalla',
+  'Infantil T2', 'Infantil T4', 'Infantil T6', 'Infantil T8', 'Infantil T10',
+  '4-6', '7-9', '10-12',
+];
+
+const EMPTY_FORM: Omit<Costume, 'id'> = {
+  name: '',
+  description: '',
+  price: 0,
+  rentalPrice: undefined,
+  image: '',
+  category: 'terror',
+  type: 'Renta y Venta',
+  sizes: ['M', 'G'],
+  badge: undefined,
+  soldOut: false,
+};
+
+// ─── BADGE PILL ───────────────────────────────────────────────────────────────
+const BadgePill = ({ badge }: { badge?: string }) => {
+  if (!badge) return null;
+  const cfg: Record<string, { bg: string; color: string; icon: string }> = {
+    'NOVEDAD':    { bg: 'rgba(16,185,129,0.15)',  color: '#10B981', icon: '✨' },
+    'EN OFERTA':  { bg: 'rgba(239,68,68,0.15)',   color: '#EF4444', icon: '🏷️' },
+    'MÁS VENDIDO':{ bg: 'rgba(245,158,11,0.15)', color: '#F59E0B', icon: '🔥' },
+  };
+  const c = cfg[badge];
+  if (!c) return null;
+  return (
+    <span
+      style={{
+        background: c.bg, color: c.color,
+        border: `1px solid ${c.color}40`,
+        borderRadius: 6, padding: '2px 8px',
+        fontSize: 10, fontWeight: 800,
+        textTransform: 'uppercase', letterSpacing: '0.06em',
+        display: 'inline-flex', alignItems: 'center', gap: 4,
+      }}
+    >
+      {c.icon} {badge}
+    </span>
+  );
+};
+
+// ─── INPUT FIELD WRAPPER ──────────────────────────────────────────────────────
+const DarkField = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+    <label style={{
+      fontSize: 10, fontWeight: 800, textTransform: 'uppercase',
+      letterSpacing: '0.15em', color: 'rgba(255,255,255,0.35)',
+    }}>
+      {label}
+    </label>
+    {children}
   </div>
 );
 
-export default function AdminHalloween({ onLogout }: { onLogout: () => void }) {
+const inputStyle: React.CSSProperties = {
+  width: '100%', background: 'rgba(255,255,255,0.06)',
+  border: '1px solid rgba(255,255,255,0.1)',
+  borderRadius: 12, padding: '12px 14px',
+  color: '#fff', fontSize: 13, fontWeight: 600,
+  outline: 'none', transition: 'border-color 0.2s',
+  boxSizing: 'border-box',
+};
+
+// ─── COSTUME FORM ─────────────────────────────────────────────────────────────
+const CostumeForm = ({
+  initial,
+  onSave,
+  onCancel,
+  title,
+}: {
+  initial: Omit<Costume, 'id'>;
+  onSave: (data: Omit<Costume, 'id'>) => void;
+  onCancel: () => void;
+  title: string;
+}) => {
+  const [form, setForm] = useState(initial);
+  const [sizeInput, setSizeInput] = useState('');
+
+  const set = (k: keyof typeof form, v: any) => setForm(prev => ({ ...prev, [k]: v }));
+
+  const addSize = (s: string) => {
+    const val = s.trim();
+    if (val && !form.sizes.includes(val)) set('sizes', [...form.sizes, val]);
+    setSizeInput('');
+  };
+  const removeSize = (s: string) => set('sizes', form.sizes.filter(x => x !== s));
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+      style={{
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,106,0,0.25)',
+        borderRadius: 20, padding: 24,
+        display: 'flex', flexDirection: 'column', gap: 18,
+      }}
+    >
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h3 style={{ color: '#FF6A00', fontWeight: 900, fontSize: 16, margin: 0 }}>{title}</h3>
+        <button onClick={onCancel} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)' }}>
+          <X size={20} />
+        </button>
+      </div>
+
+      {/* Nombre */}
+      <DarkField label="Nombre del disfraz *">
+        <input
+          style={inputStyle} value={form.name} required
+          placeholder="Ej: Batman Dark Knight"
+          onChange={e => set('name', e.target.value)}
+          onFocus={e => (e.target.style.borderColor = '#FF6A00')}
+          onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+        />
+      </DarkField>
+
+      {/* Descripción */}
+      <DarkField label="Descripción">
+        <textarea
+          style={{ ...inputStyle, minHeight: 72, resize: 'vertical' }}
+          value={form.description}
+          placeholder="Describe el disfraz brevemente..."
+          onChange={e => set('description', e.target.value)}
+          onFocus={e => (e.target.style.borderColor = '#FF6A00')}
+          onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+        />
+      </DarkField>
+
+      {/* Precio Venta + Precio Renta */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <DarkField label="Precio de Venta ($) *">
+          <input
+            style={inputStyle} type="number" min="0" step="0.01"
+            value={form.price || ''} required
+            placeholder="850"
+            onChange={e => set('price', parseFloat(e.target.value) || 0)}
+            onFocus={e => (e.target.style.borderColor = '#FF6A00')}
+            onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+          />
+        </DarkField>
+        <DarkField label="Precio de Renta ($)">
+          <input
+            style={inputStyle} type="number" min="0" step="0.01"
+            value={form.rentalPrice || ''}
+            placeholder="350 (opcional)"
+            onChange={e => set('rentalPrice', e.target.value ? parseFloat(e.target.value) : undefined)}
+            onFocus={e => (e.target.style.borderColor = '#7c3aed')}
+            onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+          />
+        </DarkField>
+      </div>
+
+      {/* Categoría + Tipo */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <DarkField label="Categoría *">
+          <select
+            style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
+            value={form.category}
+            onChange={e => set('category', e.target.value)}
+          >
+            {HALLOWEEN_CATEGORIES.map(c => (
+              <option key={c.id} value={c.id} style={{ background: '#1a1a1a' }}>{c.label}</option>
+            ))}
+          </select>
+        </DarkField>
+        <DarkField label="Tipo de Operación">
+          <select
+            style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
+            value={form.type}
+            onChange={e => set('type', e.target.value as Costume['type'])}
+          >
+            <option style={{ background: '#1a1a1a' }} value="Renta y Venta">Renta y Venta</option>
+            <option style={{ background: '#1a1a1a' }} value="Renta">Solo Renta</option>
+            <option style={{ background: '#1a1a1a' }} value="Venta">Solo Venta</option>
+          </select>
+        </DarkField>
+      </div>
+
+      {/* Insignia */}
+      <DarkField label="Insignia / Badge">
+        <select
+          style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
+          value={form.badge || ''}
+          onChange={e => set('badge', e.target.value || undefined)}
+        >
+          {BADGE_OPTIONS.map(b => (
+            <option key={b.value} value={b.value} style={{ background: '#1a1a1a' }}>{b.label}</option>
+          ))}
+        </select>
+      </DarkField>
+
+      {/* Tallas */}
+      <DarkField label="Tallas disponibles">
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+          {form.sizes.map(s => (
+            <span key={s} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              background: 'rgba(255,106,0,0.18)', color: '#FF8C00',
+              border: '1px solid rgba(255,106,0,0.35)',
+              borderRadius: 8, padding: '4px 10px',
+              fontSize: 11, fontWeight: 700,
+            }}>
+              {s}
+              <button onClick={() => removeSize(s)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', display: 'flex', padding: 0 }}>
+                <X size={11} />
+              </button>
+            </span>
+          ))}
+        </div>
+        {/* Tallas rápidas */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 8 }}>
+          {COMMON_SIZES.filter(s => !form.sizes.includes(s)).map(s => (
+            <button key={s} onClick={() => addSize(s)} style={{
+              background: 'rgba(255,255,255,0.05)', border: '1px dashed rgba(255,255,255,0.15)',
+              borderRadius: 7, padding: '3px 9px', cursor: 'pointer',
+              color: 'rgba(255,255,255,0.45)', fontSize: 11, fontWeight: 600,
+            }}>
+              + {s}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input
+            style={{ ...inputStyle, flex: 1 }}
+            placeholder="Talla personalizada y Enter..."
+            value={sizeInput}
+            onChange={e => setSizeInput(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSize(sizeInput); } }}
+            onFocus={e => (e.target.style.borderColor = '#FF6A00')}
+            onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+          />
+          <button
+            onClick={() => addSize(sizeInput)}
+            style={{
+              background: 'rgba(255,106,0,0.2)', border: '1px solid rgba(255,106,0,0.3)',
+              borderRadius: 10, padding: '0 14px', cursor: 'pointer', color: '#FF6A00',
+              display: 'flex', alignItems: 'center',
+            }}
+          >
+            <Plus size={16} />
+          </button>
+        </div>
+      </DarkField>
+
+      {/* URL de imagen */}
+      <DarkField label="URL de Imagen">
+        <input
+          style={inputStyle}
+          placeholder="https://... o ./disfraz-local.png"
+          value={form.image}
+          onChange={e => set('image', e.target.value)}
+          onFocus={e => (e.target.style.borderColor = '#FF6A00')}
+          onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+        />
+      </DarkField>
+
+      {/* Agotado toggle */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600 }}>Marcar como Agotado</span>
+        <button
+          onClick={() => set('soldOut', !form.soldOut)}
+          style={{
+            width: 48, height: 26, borderRadius: 13,
+            background: form.soldOut ? '#EF4444' : 'rgba(255,255,255,0.1)',
+            border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.2s',
+          }}
+        >
+          <div style={{
+            position: 'absolute', top: 3,
+            left: form.soldOut ? 25 : 3,
+            width: 20, height: 20, borderRadius: '50%',
+            background: '#fff', transition: 'left 0.2s',
+          }} />
+        </button>
+      </div>
+
+      {/* Guardar */}
+      <button
+        onClick={() => {
+          if (!form.name || !form.price) return;
+          onSave(form);
+        }}
+        style={{
+          width: '100%', padding: '14px',
+          background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+          border: 'none', borderRadius: 14, cursor: 'pointer',
+          color: '#fff', fontWeight: 900, fontSize: 14,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+          boxShadow: '0 8px 24px rgba(255,106,0,0.4)',
+          letterSpacing: '0.05em', textTransform: 'uppercase',
+        }}
+      >
+        <Save size={18} /> Guardar Disfraz
+      </button>
+    </motion.div>
+  );
+};
+
+// ─── MAIN ADMIN PANEL ─────────────────────────────────────────────────────────
+export default function AdminHalloween({
+  costumes,
+  onUpdate,
+  onAdd,
+  onDelete,
+  onReset,
+  onClose,
+}: AdminHalloweenProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<'inventory' | 'add' | 'orders' | 'categories'>('inventory');
-  const [orderTab, setOrderTab] = useState<'pending' | 'delivered'>('pending');
-  const [searchOrder, setSearchOrder] = useState('');
-
-  // ── ESTADOS DINÁMICOS (SUPABASE) ───────────────────────────────────────
-  const [categories, setCategories] = useState<any[]>([]);
-  const [products, setProducts] = useState<any[]>([]);
-  const [orders, setOrders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
-
-  // ── CARGA INICIAL ──────────────────────────────────────────────────────
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadAllData();
-      
-      // Suscripción en tiempo real a pedidos
-      const channel = supabase
-        .channel('admin_changes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => loadOrders())
-        .subscribe();
-        
-      return () => { supabase.removeChannel(channel); };
-    }
-  }, [isAuthenticated]);
-
-  const loadAllData = async () => {
-    setLoading(true);
-    await Promise.all([loadCategories(), loadProducts(), loadOrders()]);
-    setLoading(false);
-  };
-
-  const loadCategories = async () => {
-    const { data } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
-    if (data) setCategories(data);
-  };
-
-  const loadProducts = async () => {
-    const { data } = await supabase.from('costumes').select('*').order('created_at', { ascending: false });
-    if (data) setProducts(data);
-  };
-
-  const loadOrders = async () => {
-    const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
-    if (data) {
-      const mapped = data.map((o: any) => ({
-        ...o,
-        customer: o.customer_name || o.customer,
-        phone: o.customer_phone || o.phone,
-        city: o.customer_city || o.city,
-        paymentMethod: o.payment_method || o.paymentMethod,
-        total: o.total_amount || o.total,
-        deliveryNotes: o.delivery_notes || o.deliveryNotes,
-        internalNotes: o.internal_notes || o.internalNotes || []
-      }));
-      setOrders(mapped);
-    }
-  };
-
-  const [expandedCat, setExpandedCat] = useState<string | null>(null);
-  const [editingCatId, setEditingCatId] = useState<string | null>(null);
-  const [editingCatName, setEditingCatName] = useState('');
-  const [catUploading, setCatUploading] = useState<string | null>(null);
-  const [newSubInput, setNewSubInput] = useState<Record<string, string>>({});
-  const [newCatName, setNewCatName] = useState('');
-  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
-  const [noteInputs, setNoteInputs] = useState<Record<string, string>>({});
-  const [paymentRefInputs, setPaymentRefInputs] = useState<Record<string, string>>({});
-  const [editingProduct, setEditingProduct] = useState<any | null>(null);
-  const [editProdCat, setEditProdCat] = useState('');
-  const [editProdSub1, setEditProdSub1] = useState('');
-  const [editProdSub2, setEditProdSub2] = useState('');
-  const [newProdCat, setNewProdCat] = useState('');
-  const [newProdSub1, setNewProdSub1] = useState('');
+  const [authError, setAuthError] = useState(false);
+  const [activeTab, setActiveTab] = useState<'inventory' | 'add'>('inventory');
   const [searchTerm, setSearchTerm] = useState('');
-  const [showBulkPriceModal, setShowBulkPriceModal] = useState(false);
-  const [bulkCat, setBulkCat] = useState('');
-  const [bulkSub1, setBulkSub1] = useState('');
-  const [bulkSub2, setBulkSub2] = useState('');
-  const [bulkSearch, setBulkSearch] = useState('');
-  const [bulkNewPrice, setBulkNewPrice] = useState('');
-  const [bulkUpdating, setBulkUpdating] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const filteredProducts = products.filter((p: any) => {
-    const matchTerm = !searchTerm || 
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      p.category.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      (p.sub_category && p.sub_category.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (p.sub_category_2 && p.sub_category_2.toLowerCase().includes(searchTerm.toLowerCase()));
-    return matchTerm;
-  });
-
-  const affectedProducts = products.filter((p: any) => {
-    if (!bulkCat && !bulkSub1 && !bulkSub2 && !bulkSearch) return false;
-    if (bulkCat && p.category !== bulkCat) return false;
-    if (bulkSub1 && p.sub_category !== bulkSub1) return false;
-    if (bulkSub2 && p.sub_category_2 !== bulkSub2) return false;
-    if (bulkSearch && !p.name.toLowerCase().includes(bulkSearch.toLowerCase()) && !p.category.toLowerCase().includes(bulkSearch.toLowerCase()) && !(p.sub_category || '').toLowerCase().includes(bulkSearch.toLowerCase()) && !(p.sub_category_2 || '').toLowerCase().includes(bulkSearch.toLowerCase())) return false;
-    return true;
-  });
-
-  // ── ACCESO ───────────────────────────────────────────────────────────────
+  // ── Login screen ──────────────────────────────────────────────────────────
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="bg-surface border border-primary/10 shadow-xl p-10 rounded-2xl w-full max-w-sm">
-          <div className="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Lock className="text-secondary" size={40} />
+      <div style={{
+        minHeight: '100vh', background: '#0a0a0a',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 20,
+      }}>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,106,0,0.2)',
+            borderRadius: 24, padding: 40,
+            width: '100%', maxWidth: 360,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24,
+          }}
+        >
+          {/* Back button */}
+          <button
+            onClick={onClose}
+            style={{
+              alignSelf: 'flex-start', background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10,
+              padding: '6px 14px', cursor: 'pointer',
+              color: 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: 700,
+            }}
+          >
+            ← Volver
+          </button>
+
+          {/* Icon */}
+          <div style={{
+            width: 72, height: 72, borderRadius: '50%',
+            background: 'rgba(255,106,0,0.12)',
+            border: '2px solid rgba(255,106,0,0.25)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Lock size={32} color="#FF6A00" />
           </div>
-          <h2 className="text-primary text-center text-2xl font-headline font-black tracking-tight mb-8">Acceso Admin</h2>
+
+          <div style={{ textAlign: 'center' }}>
+            <h2 style={{ color: '#fff', fontWeight: 900, fontSize: 22, margin: '0 0 4px' }}>
+              Panel Admin
+            </h2>
+            <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, margin: 0 }}>
+              🎃 Mundo de Halloween
+            </p>
+          </div>
+
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full bg-white text-primary p-4 rounded-xl border border-primary/10 focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all text-center text-2xl tracking-[0.5em] mb-4"
+            onChange={e => { setPassword(e.target.value); setAuthError(false); }}
             placeholder="••••"
-            onKeyDown={(e) => e.key === 'Enter' && password === MASTER_PASSWORD && setIsAuthenticated(true)}
+            style={{
+              width: '100%', background: 'rgba(255,255,255,0.06)',
+              border: `1px solid ${authError ? '#EF4444' : 'rgba(255,255,255,0.12)'}`,
+              borderRadius: 14, padding: '14px 18px',
+              color: '#fff', fontSize: 24, fontWeight: 900,
+              textAlign: 'center', letterSpacing: '0.5em',
+              outline: 'none', boxSizing: 'border-box',
+              transition: 'border-color 0.2s',
+            }}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                if (password === MASTER_PASSWORD || password === HALLOWEEN_PASSWORD) {
+                  setIsAuthenticated(true);
+                } else {
+                  setAuthError(true);
+                }
+              }
+            }}
           />
+
+          {authError && (
+            <p style={{ color: '#EF4444', fontSize: 12, fontWeight: 700, margin: '-12px 0' }}>
+              Contraseña incorrecta
+            </p>
+          )}
+
           <button
-            onClick={() => password === MASTER_PASSWORD && setIsAuthenticated(true)}
-            className="w-full bg-secondary text-white p-4 rounded-xl font-bold hover:bg-orange-600 transition shadow-lg shadow-secondary/20 uppercase tracking-widest text-sm"
+            onClick={() => {
+              if (password === MASTER_PASSWORD || password === HALLOWEEN_PASSWORD) {
+                setIsAuthenticated(true);
+              } else {
+                setAuthError(true);
+              }
+            }}
+            style={{
+              width: '100%', padding: '14px',
+              background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+              border: 'none', borderRadius: 14, cursor: 'pointer',
+              color: '#fff', fontWeight: 900, fontSize: 14,
+              letterSpacing: '0.1em', textTransform: 'uppercase',
+              boxShadow: '0 8px 24px rgba(255,106,0,0.35)',
+            }}
           >
-            Entrar
+            Ingresar
           </button>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
-  const filteredOrders = orders.filter(o => {
-    const matchesSearch =
-      (o.customer || '').toLowerCase().includes(searchOrder.toLowerCase()) ||
-      (o.phone || '').includes(searchOrder);
-    const matchesTab = orderTab === 'pending' ? o.status !== 'delivered' : o.status === 'delivered';
-    return matchesSearch && matchesTab;
-  });
+  // ── Authenticated Panel ───────────────────────────────────────────────────
+  const filtered = costumes.filter(c =>
+    !searchTerm ||
+    c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  // ── HELPERS DE PEDIDOS ─────────────────────────────────────────────────
-  const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border: string }> = {
-    pending:      { label: 'Pendiente',  color: 'text-orange-600',  bg: 'bg-orange-50',  border: 'border-orange-200' },
-    'in-process': { label: 'En Proceso', color: 'text-blue-600',    bg: 'bg-blue-50',    border: 'border-blue-200'   },
-    delayed:      { label: 'Demorado',   color: 'text-red-600',     bg: 'bg-red-50',     border: 'border-red-200'    },
-    delivered:    { label: 'Entregado',  color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200'},
-  };
-
-  const updateOrderStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from('orders').update({ status }).eq('id', id);
-    if (!error) loadOrders();
-  };
-
-  const deleteOrder = async (id: string) => {
-    if (!confirm('¿Eliminar este pedido permanentemente?')) return;
-    const { error } = await supabase.from('orders').delete().eq('id', id);
-    if (!error) loadOrders();
-  };
-
-  const addNote = async (orderId: string) => {
-    const text = (noteInputs[orderId] || '').trim();
-    if (!text) return;
-    
-    const order = orders.find(o => o.id === orderId);
-    const newNote = {
-      text,
-      date: new Date().toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
-    };
-    
-    const { error } = await supabase
-      .from('orders')
-      .update({ internal_notes: [...(order.internal_notes || []), newNote] })
-      .eq('id', orderId);
-      
-    if (error) console.error("Error al guardar nota:", error);
-    else {
-      setNoteInputs(prev => ({ ...prev, [orderId]: '' }));
-      loadOrders();
-    }
-  };
-  
-  const savePaymentRef = async (orderId: string) => {
-    const ref = (paymentRefInputs[orderId] || '').trim();
-    const { error } = await supabase.from('orders').update({ payment_reference: ref }).eq('id', orderId);
-    if (!error) {
-      alert("Referencia guardada!");
-      loadOrders();
-    }
-  };
-
-  // ── HELPERS DE CATEGORÍAS ────────────────────────────────────────────────
-  const uploadCategoryImg = async (catId: string, file: File) => {
-    try {
-      setCatUploading(catId);
-      // Sanitizar el nombre del archivo: quitar espacios, ñ, acentos, etc.
-      const safeCatId = catId.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '-');
-      const safeFileName = file.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9.]/g, '-');
-      const fileName = `cat-${safeCatId}-${Date.now()}-${safeFileName}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('product-images')
-        .upload(fileName, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(fileName);
-
-      const { error: updateError } = await supabase
-        .from('categories')
-        .update({ image_url: publicUrl })
-        .eq('id', catId);
-
-      if (updateError) throw updateError;
-      
-      loadCategories();
-    } catch (err: any) {
-      alert("Error al subir imagen: " + err.message);
-    } finally {
-      setCatUploading(null);
-    }
-  };
-
-  const saveCatName = async (id: string) => {
-    const { error } = await supabase.from('categories').update({ name: editingCatName }).eq('id', id);
-    if (!error) {
-      loadCategories();
-      setEditingCatId(null);
-    }
-  };
-
-  const reorderCategory = async (catId: string, direction: 'up' | 'down') => {
-    const idx = categories.findIndex(c => c.id === catId);
-    if (idx === -1) return;
-    if (direction === 'up' && idx === 0) return;
-    if (direction === 'down' && idx === categories.length - 1) return;
-
-    const newList = [...categories];
-    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
-    [newList[idx], newList[swapIdx]] = [newList[swapIdx], newList[idx]];
-    // Actualizar el estado local inmediatamente (UX instant)
-    setCategories(newList);
-    // Persistir sort_order en Supabase
-    await Promise.all(
-      newList.map((cat, i) => 
-        supabase.from('categories').update({ sort_order: i }).eq('id', cat.id)
-      )
-    );
-  };
-
-  // Helper: normaliza submenus viejos (string[]) al formato nuevo ({name,children}[])
-  const normalizeSubs = (subs: any[]): {name:string; children:string[]}[] => {
-    if (!subs || subs.length === 0) return [];
-    if (typeof subs[0] === 'string') return subs.map((s: string) => ({ name: s, children: [] }));
-    return subs;
-  };
-
-  const addSubmenu = async (catId: string) => {
-    const val = (newSubInput[catId] || '').trim();
-    if (!val) return;
-    const cat = categories.find(c => c.id === catId);
-    const subs = normalizeSubs(cat.submenus);
-    if (subs.some((s: any) => s.name === val)) return;
-    
-    const { error } = await supabase
-      .from('categories')
-      .update({ submenus: [...subs, { name: val, children: [] }] })
-      .eq('id', catId);
-      
-    if (!error) {
-      loadCategories();
-      setNewSubInput(prev => ({ ...prev, [catId]: '' }));
-    }
-  };
-
-  const removeSubmenu = async (catId: string, subName: string) => {
-    const cat = categories.find(c => c.id === catId);
-    const subs = normalizeSubs(cat.submenus);
-    const { error } = await supabase
-      .from('categories')
-      .update({ submenus: subs.filter((s: any) => s.name !== subName) })
-      .eq('id', catId);
-    if (!error) loadCategories();
-  };
-
-  const editSubmenu = async (catId: string, oldName: string, newName: string) => {
-    const cat = categories.find(c => c.id === catId);
-    const subs = normalizeSubs(cat.submenus);
-    const updated = subs.map((s: any) => s.name === oldName ? { ...s, name: newName.trim() } : s);
-    const { error } = await supabase
-      .from('categories')
-      .update({ submenus: updated })
-      .eq('id', catId);
-    if (!error) loadCategories();
-  };
-
-  const addSubSubmenu = async (catId: string, subName: string, childVal: string) => {
-    const cat = categories.find(c => c.id === catId);
-    const subs = normalizeSubs(cat.submenus);
-    const updated = subs.map((s: any) => 
-      s.name === subName ? { ...s, children: [...(s.children || []), childVal] } : s
-    );
-    const { error } = await supabase.from('categories').update({ submenus: updated }).eq('id', catId);
-    if (!error) loadCategories();
-  };
-
-  const removeSubSubmenu = async (catId: string, subName: string, childVal: string) => {
-    const cat = categories.find(c => c.id === catId);
-    const subs = normalizeSubs(cat.submenus);
-    const updated = subs.map((s: any) => 
-      s.name === subName ? { ...s, children: (s.children || []).filter((c: string) => c !== childVal) } : s
-    );
-    const { error } = await supabase.from('categories').update({ submenus: updated }).eq('id', catId);
-    if (!error) loadCategories();
-  };
-
-  const editSubSubmenu = async (catId: string, subName: string, oldChild: string, newChild: string) => {
-    if (!newChild.trim() || oldChild === newChild.trim()) return;
-    const cat = categories.find(c => c.id === catId);
-    const subs = normalizeSubs(cat.submenus);
-    const updated = subs.map((s: any) => 
-      s.name === subName ? { ...s, children: (s.children || []).map((c: string) => c === oldChild ? newChild.trim() : c) } : s
-    );
-    const { error } = await supabase.from('categories').update({ submenus: updated }).eq('id', catId);
-    if (!error) loadCategories();
-  };
-
-  const addCategory = async () => {
-    const name = newCatName.trim();
-    if (!name) return;
-    const id = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
-    const { error } = await supabase.from('categories').insert([{ id, name, submenus: [] }]);
-    if (!error) {
-      loadCategories();
-      setNewCatName('');
-    }
-  };
-
-  const removeCategory = async (id: string) => {
-    if (!confirm('¿Eliminar esta categoría?')) return;
-    const { error } = await supabase.from('categories').delete().eq('id', id);
-    if (!error) loadCategories();
-  };
-
-  // ── UI ────────────────────────────────────────────────────────────────────
   const tabs = [
     { id: 'inventory', icon: Package, label: 'Inventario' },
-    { id: 'add', icon: Plus, label: 'Nuevo' },
-    { id: 'categories', icon: List, label: 'Categorías' },
-    { id: 'orders', icon: DollarSign, label: 'Pedidos' }
+    { id: 'add', icon: Plus, label: 'Nuevo Disfraz' },
   ];
 
   return (
-    <div className="min-h-screen bg-background text-on-background font-sans pb-20">
-      <div className="max-w-6xl mx-auto p-4 md:p-8">
+    <div style={{ minHeight: '100vh', background: '#0a0a0a', fontFamily: "'Inter', sans-serif", paddingBottom: 80 }}>
 
-        {/* Top Nav */}
-        <div className="flex flex-col lg:flex-row gap-6 justify-between items-center mb-6 bg-surface p-5 rounded-2xl border border-primary/5 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-secondary/10 rounded-xl">
-              <Plus className="text-secondary" size={22} />
+      {/* ── TOP NAV */}
+      <div style={{
+        background: 'rgba(10,10,10,0.95)',
+        borderBottom: '1px solid rgba(255,106,0,0.15)',
+        position: 'sticky', top: 0, zIndex: 50,
+        backdropFilter: 'blur(12px)',
+      }}>
+        <div style={{
+          maxWidth: 760, margin: '0 auto', padding: '0 16px',
+          height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+        }}>
+          {/* Brand */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{
+              width: 38, height: 38, borderRadius: 10,
+              background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 20, boxShadow: '0 4px 16px rgba(255,106,0,0.35)',
+            }}>
+              🎃
             </div>
             <div>
-              <p className="text-xl font-black text-primary font-headline tracking-tight uppercase">Imagine & Stamp</p>
-              <p className="text-[10px] font-bold text-primary/40 tracking-[0.2em] uppercase">Panel de Control</p>
+              <p style={{ color: '#fff', fontWeight: 900, fontSize: 14, lineHeight: 1, margin: 0 }}>
+                Mundo de Halloween
+              </p>
+              <p style={{ color: 'rgba(255,106,0,0.7)', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>
+                Panel de Control
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <nav className="flex bg-background p-1.5 rounded-xl border border-primary/5">
-              {tabs.map(tab => (
-                <button key={tab.id} onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest ${activeTab === tab.id ? 'bg-secondary text-white shadow' : 'text-primary/40 hover:text-primary/70'}`}>
-                  <tab.icon size={12} /> <span>{tab.label}</span>
-                </button>
-              ))}
-            </nav>
-            <button onClick={onLogout} className="p-3 text-primary/20 hover:text-error transition-colors ml-2">
-              <LogOut size={20} />
+
+          {/* Tabs */}
+          <nav style={{
+            display: 'flex', background: 'rgba(255,255,255,0.04)',
+            borderRadius: 12, padding: 4, gap: 4,
+            border: '1px solid rgba(255,255,255,0.06)',
+          }}>
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => { setActiveTab(tab.id as any); setEditingId(null); }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '8px 14px', borderRadius: 9,
+                  border: 'none', cursor: 'pointer',
+                  background: activeTab === tab.id ? 'linear-gradient(135deg, #FF6A00, #FF8C00)' : 'transparent',
+                  color: activeTab === tab.id ? '#fff' : 'rgba(255,255,255,0.35)',
+                  fontWeight: 800, fontSize: 11,
+                  textTransform: 'uppercase', letterSpacing: '0.1em',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <tab.icon size={12} />
+                <span style={{ display: window.innerWidth < 400 ? 'none' : undefined }}>{tab.label}</span>
+              </button>
+            ))}
+          </nav>
+
+          {/* Actions */}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              onClick={() => { if (confirm('¿Restaurar catálogo de demo?')) onReset(); }}
+              title="Restaurar demo"
+              style={{
+                width: 36, height: 36, borderRadius: 10, border: 'none', cursor: 'pointer',
+                background: 'rgba(255,255,255,0.06)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'rgba(255,255,255,0.35)', transition: 'all 0.2s',
+              }}
+            >
+              <RefreshCw size={16} />
+            </button>
+            <button
+              onClick={onClose}
+              title="Cerrar panel"
+              style={{
+                width: 36, height: 36, borderRadius: 10, border: 'none', cursor: 'pointer',
+                background: 'rgba(255,255,255,0.06)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'rgba(255,255,255,0.35)', transition: 'all 0.2s',
+              }}
+            >
+              <LogOut size={16} />
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Supabase Status Banner */}
-        <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 mb-8 flex items-start gap-4">
-          <div className="p-2 bg-emerald-100 rounded-lg shrink-0">
-            <LayoutGrid className="text-emerald-600" size={20} />
-          </div>
-          <div>
-            <p className="text-emerald-900 text-xs font-black uppercase tracking-widest mb-1">✅ Conexión Activa: Supabase Realtime</p>
-            <p className="text-emerald-800/70 text-[11px] font-medium leading-relaxed">
-              Tu catálogo está sincronizado en la nube. Cualquier cambio que hagas aquí se verá <strong>al instante</strong> en todos los dispositivos sin necesidad de actualizar el código.
-            </p>
-          </div>
+      {/* ── CONTENT */}
+      <div style={{ maxWidth: 760, margin: '0 auto', padding: '24px 16px' }}>
+
+        {/* Stats bar */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24,
+        }}>
+          {[
+            { label: 'Disfraces', value: costumes.length, color: '#FF6A00', icon: '🎃' },
+            { label: 'Disponibles', value: costumes.filter(c => !c.soldOut).length, color: '#10B981', icon: '✅' },
+            { label: 'Agotados', value: costumes.filter(c => c.soldOut).length, color: '#EF4444', icon: '❌' },
+          ].map(stat => (
+            <div key={stat.label} style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: 16, padding: '16px 12px',
+              textAlign: 'center',
+            }}>
+              <div style={{ fontSize: 24, marginBottom: 4 }}>{stat.icon}</div>
+              <div style={{ color: stat.color, fontWeight: 900, fontSize: 22, lineHeight: 1 }}>{stat.value}</div>
+              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 2 }}>{stat.label}</div>
+            </div>
+          ))}
         </div>
 
-        <div className="animate-in fade-in duration-300">
-
-          {/* ─── INVENTARIO ──────────────────────────────────────────────── */}
-          {activeTab === 'inventory' && (
-            <div className="space-y-6">
-              <div className="flex justify-between items-end px-2">
-                <div>
-                  <h2 className="text-2xl font-black text-primary font-headline uppercase">Inventario General</h2>
-                  <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1">Sincronizado con la tienda pública</p>
-                </div>
-                <span className="text-xs font-black text-secondary bg-secondary/10 border border-secondary/20 px-4 py-2 rounded-lg uppercase tracking-widest">{filteredProducts.length} Productos</span>
+        {/* ── INVENTARIO TAB */}
+        {activeTab === 'inventory' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+              <div>
+                <h2 style={{ color: '#fff', fontWeight: 900, fontSize: 20, margin: '0 0 2px', textTransform: 'uppercase', letterSpacing: '-0.3px' }}>
+                  Inventario
+                </h2>
+                <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>
+                  {filtered.length} disfraces
+                </p>
               </div>
-
-              {/* Barra de búsqueda y botón de cambio masivo */}
-              <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-surface border border-primary/5 p-4 rounded-2xl shadow-sm">
-                <div className="relative w-full sm:w-72 md:w-96">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={18} />
-                  <input 
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Buscar por nombre, categoría, sub..." 
-                    className="w-full bg-background border border-primary/5 focus:border-secondary p-3 pl-11 rounded-xl text-xs font-bold outline-none text-primary"
-                  />
-                  {searchTerm && (
-                    <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary/30 hover:text-primary">
-                      <X size={15} />
-                    </button>
-                  )}
-                </div>
-                <button 
-                  onClick={() => {
-                    setBulkCat('');
-                    setBulkSub1('');
-                    setBulkSub2('');
-                    setBulkSearch(searchTerm);
-                    setBulkNewPrice('');
-                    setShowBulkPriceModal(true);
-                  }}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-secondary text-white px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-secondary/20 hover:bg-orange-600 transition-all shrink-0"
-                >
-                  <Zap size={16} />
-                  <span>Cambio de Precio Masivo</span>
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3">
-                {filteredProducts.length === 0 ? (
-                  <div className="bg-surface border border-primary/5 p-12 rounded-2xl text-center">
-                    <p className="text-sm font-bold text-primary/40 uppercase tracking-widest">No se encontraron productos coincidentes</p>
-                  </div>
-                ) : (
-                  filteredProducts.map((p: any) => (
-                    <div key={p.id} className="flex flex-col sm:flex-row items-center gap-5 bg-surface border border-primary/5 p-4 rounded-2xl hover:border-secondary/30 transition-all shadow-sm">
-                      <div className="w-20 h-20 bg-background rounded-xl overflow-hidden shrink-0 border border-primary/5 p-0.5">
-                        <img src={p.image} alt={p.name} className="w-full h-full object-cover rounded-lg" />
-                      </div>
-                      <div className="flex-1 min-w-0 text-center sm:text-left">
-                        <h3 className="font-black text-sm text-primary uppercase tracking-wide">{p.name}</h3>
-                        <div className="flex flex-wrap justify-center sm:justify-start gap-1.5 mt-2">
-                          <span className="text-[9px] font-black text-secondary bg-secondary/5 px-2 py-0.5 rounded border border-secondary/10 uppercase tracking-widest">{p.category}</span>
-                          {p.sub_category && <span className="text-[9px] font-bold text-primary/40 bg-primary/5 px-2 py-0.5 rounded uppercase tracking-widest">{p.sub_category}</span>}
-                          {p.sub_category_2 && <span className="text-[9px] font-bold text-primary/30 bg-primary/5 px-2 py-0.5 rounded uppercase tracking-widest">{p.sub_category_2}</span>}
-                        </div>
-                      </div>
-                      <div className="shrink-0 px-4 text-center sm:text-right">
-                        <p className="font-black text-primary text-lg">${p.price} <span className="text-[10px]">MXN</span></p>
-                        <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">En Stock</span>
-                      </div>
-                      <div className="flex gap-2 shrink-0">
-                        <button 
-                          onClick={() => {
-                            setEditingProduct(p);
-                            setEditProdCat(p.category || '');
-                            setEditProdSub1(p.sub_category || '');
-                            setEditProdSub2(p.sub_category_2 || '');
-                          }}
-                          className="w-10 h-10 rounded-xl bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-secondary hover:border-secondary transition-all">
-                          <Edit2 size={15} />
-                        </button>
-                        <button onClick={async () => {
-                          if (!confirm('¿Eliminar producto?')) return;
-                          const { error } = await supabase.from('costumes').delete().eq('id', p.id);
-                          if (!error) loadProducts();
-                        }}
-                          className="w-10 h-10 rounded-xl bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-error hover:border-error transition-all">
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    </div>
-                  ))
+              {/* Search */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 12, padding: '9px 14px',
+                minWidth: 200,
+              }}>
+                <Search size={15} color="rgba(255,255,255,0.3)" />
+                <input
+                  style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 13, width: '100%' }}
+                  placeholder="Buscar..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                />
+                {searchTerm && (
+                  <button onClick={() => setSearchTerm('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'rgba(255,255,255,0.3)', display: 'flex' }}>
+                    <X size={14} />
+                  </button>
                 )}
               </div>
             </div>
-          )}
-          {activeTab === 'add' && (
-            <div className="max-w-2xl mx-auto">
-              <div className="mb-6 px-2">
-                <h2 className="text-2xl font-black text-primary font-headline uppercase">Nuevo Diseño / Servicio</h2>
-                <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1">Se publicará instantáneamente en la tienda.</p>
-              </div>
-              <form onSubmit={async (e) => {
-                e.preventDefault();
-                setUploading(true);
-                const fd = new FormData(e.currentTarget);
-                const file = fd.get('imageFile') as File;
-                let imageUrl = fd.get('image') as string;
 
-                if (file && file.size > 0) {
-                  const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-                  const { error: uploadError } = await supabase.storage
-                    .from('product-images')
-                    .upload(fileName, file);
-                  
-                  if (!uploadError) {
-                    const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(fileName);
-                    imageUrl = publicUrl;
-                  }
-                }
-
-                const newProduct = {
-                  name: fd.get('name') as string,
-                  description: fd.get('description') as string,
-                  price: parseFloat(fd.get('price') as string) || 0,
-                  rentalPrice: parseFloat(fd.get('rentalPrice') as string) || 0,
-                  image: imageUrl || 'https://picsum.photos/seed/new/800/1000',
-                  category: fd.get('category') as string,
-                  type: fd.get('type') as string || 'Venta',
-                  sizes: (fd.get('sizes') as string).split(',').map(s => s.trim()).filter(s => s),
-                  badge: fd.get('badge') as string || '',
-                };
-
-                const { error } = await supabase.from('costumes').insert([newProduct]);
-                setUploading(false);
-                if (!error) {
-                  loadProducts();
-                  setActiveTab('inventory');
-                }
-              }} className="bg-surface border border-primary/5 p-8 rounded-3xl shadow-xl space-y-5">
-
-                {/* Nombre */}
-                <Field label="Nombre del artículo">
-                  <div className="relative">
-                    <Tag className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={17} />
-                    <input name="name" required placeholder="EJ: INVITACIÓN BODA ELEGANCE"
-                      className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none text-xs font-black tracking-widest uppercase transition-all" />
-                  </div>
-                </Field>
-
-                {/* Descripción */}
-                <Field label="Descripción corta">
-                  <div className="relative">
-                    <FileText className="absolute left-4 top-5 text-primary/20" size={17} />
-                    <textarea name="description" placeholder="TEXTO QUE VE EL CLIENTE EN LA TIENDA..."
-                      className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none text-xs font-bold tracking-widest min-h-[90px] transition-all" />
-                  </div>
-                </Field>
-
-                {/* Precios */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <Field label="Precio Venta ($)">
-                    <div className="relative">
-                      <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={17} />
-                      <input name="price" type="number" step="0.01" required placeholder="0.00"
-                        className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest" />
-                    </div>
-                  </Field>
-                  <Field label="Precio Renta ($)">
-                    <div className="relative">
-                      <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={17} />
-                      <input name="rentalPrice" type="number" step="0.01" placeholder="0.00 (Opcional)"
-                        className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest" />
-                    </div>
-                  </Field>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {filtered.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '40px 20px', color: 'rgba(255,255,255,0.2)' }}>
+                  <div style={{ fontSize: 40, marginBottom: 10 }}>🔍</div>
+                  <p style={{ fontWeight: 700 }}>No hay resultados</p>
                 </div>
-
-                {/* Categoría y Modalidad */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <Field label="Categoría">
-                    <div className="relative">
-                      <LayoutGrid className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={17} />
-                      <select name="category"
-                        className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest appearance-none cursor-pointer">
-                        <option value="">— Seleccionar —</option>
-                        <option value="Todo">🎃 Todo</option>
-                        <option value="Terror">🧟‍♂️ Terror</option>
-                        <option value="Superhéroes">🦸‍♂️ Superhéroes</option>
-                        <option value="Infantiles">🧸 Infantiles</option>
-                        <option value="Accesorios">🎭 Accesorios</option>
-                      </select>
-                    </div>
-                  </Field>
-                  <Field label="Modalidad">
-                    <div className="relative">
-                      <Box className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={17} />
-                      <select name="type"
-                        className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest appearance-none cursor-pointer">
-                        <option value="Venta">Venta</option>
-                        <option value="Renta">Renta</option>
-                        <option value="Renta y Venta">Renta y Venta</option>
-                      </select>
-                    </div>
-                  </Field>
-                </div>
-
-                {/* Tallas y Etiqueta */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <Field label="Tallas (separadas por coma)">
-                    <div className="relative">
-                      <Tag className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={17} />
-                      <input name="sizes" placeholder="S, M, L, XL"
-                        className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest" />
-                    </div>
-                  </Field>
-                  <Field label="Etiqueta Visual">
-                    <div className="relative">
-                      <Box className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={17} />
-                      <select name="badge"
-                        className="w-full bg-background text-primary p-4 pl-12 rounded-2xl border border-primary/5 focus:border-secondary outline-none text-xs font-black tracking-widest appearance-none cursor-pointer">
-                        <option value="">Ninguna</option>
-                        <option value="NOVEDAD">Nuevo (NOVEDAD)</option>
-                        <option value="EN OFERTA">En Oferta (EN OFERTA)</option>
-                        <option value="MÁS VENDIDO">Más Vendido (🔥 MÁS VENDIDO)</option>
-                      </select>
-                    </div>
-                  </Field>
-                </div>
-
-                {/* Imagen */}
-                <Field label="Foto del Producto">
-                  <div className="relative group">
-                    <div className="flex items-center gap-4 bg-background p-4 rounded-2xl border border-primary/5 hover:border-secondary transition-all cursor-pointer">
-                      <ImageIcon className="text-primary/20" size={20} />
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-primary/40">SELECCIONAR ARCHIVO</span>
-                        <input name="imageFile" type="file" accept="image/*"
-                          className="absolute inset-0 opacity-0 cursor-pointer" />
-                        <p className="text-[9px] text-primary/20 italic">Formatos: WebP, PNG, JPG (Máx 2MB)</p>
-                      </div>
-                    </div>
-                    <div className="mt-3">
-                      <input name="image" placeholder="O pega un link externo (opcional)"
-                        className="w-full bg-background text-primary p-3 px-4 rounded-xl border border-primary/5 focus:border-secondary outline-none text-[10px] font-bold" />
-                    </div>
-                  </div>
-                </Field>
-
-                <button type="submit" disabled={uploading}
-                  className={`w-full ${uploading ? 'bg-primary/20' : 'bg-secondary'} text-white p-5 rounded-2xl font-black hover:bg-orange-600 transition-all flex items-center justify-center gap-3 shadow-xl shadow-secondary/20 uppercase tracking-[0.2em] text-xs mt-4`}>
-                  {uploading ? <Clock className="animate-spin" size={18} /> : <Plus size={18} strokeWidth={3} />} 
-                  {uploading ? 'SUBIENDO...' : 'Publicar en la Tienda'}
-                </button>
-              </form>
-            </div>
-          )}
-
-          {/* ─── CATEGORÍAS EDITABLES ─────────────────────────────────────── */}
-          {activeTab === 'categories' && (
-            <div className="max-w-4xl mx-auto space-y-6">
-              <div className="px-2">
-                <h2 className="text-2xl font-black text-primary font-headline uppercase">Borrador de Categorías</h2>
-                <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1 italic">Los cambios aquí no afectan la tienda permanentemente.</p>
-              </div>
-
-              {/* Lista editable */}
-              <div className="space-y-3">
-                {categories.map((cat: any) => (
-                  <div key={cat.id} className="bg-surface border border-primary/5 rounded-2xl shadow-sm overflow-hidden">
-                    
-                    {/* Fila principal */}
-                    <div className="flex items-center gap-4 p-4">
-                      {/* Imagen de Categoría */}
-                      <div className="relative group shrink-0">
-                        <div className="w-12 h-12 rounded-full overflow-hidden bg-primary/5 border border-primary/10 flex items-center justify-center relative">
-                          {cat.image_url ? (
-                            <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <ImageIcon className="text-primary/20" size={16} />
-                          )}
-                          {catUploading === cat.id && (
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                              <Clock className="animate-spin text-white" size={14} />
-                            </div>
-                          )}
-                        </div>
-                        <input 
-                          type="file" 
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) uploadCategoryImg(cat.id, file);
-                          }}
-                          className="absolute inset-0 opacity-0 cursor-pointer"
-                        />
-                      </div>
-
-                      {editingCatId === cat.id ? (
-                        <input
-                          value={editingCatName}
-                          onChange={(e) => setEditingCatName(e.target.value)}
-                          className="flex-1 bg-background border border-secondary rounded-xl px-4 py-2 text-xs font-black text-primary tracking-widest uppercase outline-none"
-                          autoFocus
-                          onKeyDown={(e) => e.key === 'Enter' && saveCatName(cat.id)}
-                        />
+              )}
+              {filtered.map(costume => (
+                <div key={costume.id}>
+                  {/* Row */}
+                  <motion.div
+                    layout
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 14,
+                      background: editingId === costume.id ? 'rgba(255,106,0,0.06)' : 'rgba(255,255,255,0.03)',
+                      border: `1px solid ${editingId === costume.id ? 'rgba(255,106,0,0.3)' : 'rgba(255,255,255,0.07)'}`,
+                      borderRadius: 16, padding: '12px 16px',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    {/* Thumbnail */}
+                    <div style={{
+                      width: 56, height: 60, borderRadius: 10,
+                      overflow: 'hidden', flexShrink: 0,
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                    }}>
+                      {costume.image ? (
+                        <img src={costume.image} alt={costume.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : (
-                        <div className="flex-1">
-                          <span className="text-sm font-black text-primary uppercase tracking-widest block leading-none">{cat.name}</span>
-                          <span className="text-[9px] font-bold text-primary/30 uppercase tracking-widest mt-1 block">Toca el círculo para subir imagen</span>
-                        </div>
-                      )}
-                      <div className="flex gap-2">
-                        {/* Botones de reordenamiento */}
-                        <div className="flex flex-col gap-1">
-                          <button 
-                            onClick={() => reorderCategory(cat.id, 'up')}
-                            title="Subir"
-                            className="w-9 h-4 rounded-t-lg bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-primary hover:border-primary/20 transition-all"
-                          >
-                            <ArrowUp size={10} />
-                          </button>
-                          <button 
-                            onClick={() => reorderCategory(cat.id, 'down')}
-                            title="Bajar"
-                            className="w-9 h-4 rounded-b-lg bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-primary hover:border-primary/20 transition-all"
-                          >
-                            <ArrowDown size={10} />
-                          </button>
-                        </div>
-                        {editingCatId === cat.id ? (
-                          <button onClick={() => saveCatName(cat.id)}
-                            className="w-9 h-9 rounded-xl bg-secondary text-white flex items-center justify-center hover:bg-orange-600 transition-all shadow">
-                            <Save size={14} />
-                          </button>
-                        ) : (
-                          <button onClick={() => { setEditingCatId(cat.id); setEditingCatName(cat.name); }}
-                            className="w-9 h-9 rounded-xl bg-background border border-primary/5 flex items-center justify-center text-primary/30 hover:text-secondary hover:border-secondary transition-all">
-                            <Edit2 size={14} />
-                          </button>
-                        )}
-                        <button onClick={() => setExpandedCat(expandedCat === cat.id ? null : cat.id)}
-                          className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all ${expandedCat === cat.id ? 'bg-primary/5 border-primary/10 text-primary' : 'bg-background border-primary/5 text-primary/30 hover:text-primary'}`}>
-                          {expandedCat === cat.id ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                        </button>
-                        <button onClick={() => removeCategory(cat.id)}
-                          className="w-9 h-9 rounded-xl bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-error hover:border-error transition-all">
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Panel de subcategorías */}
-                    {expandedCat === cat.id && (
-                      <div className="border-t border-primary/5 p-4 bg-background/40 space-y-3">
-                        <p className="text-[10px] font-black text-primary/30 uppercase tracking-[0.2em] mb-3">Subcategorías de "{cat.name}"</p>
-                        
-                        {/* Lista jerárquica */}
-                        <div className="space-y-2 mb-4">
-                          {normalizeSubs(cat.submenus).length === 0 && (
-                            <span className="text-xs text-primary/20 italic">Sin subcategorías todavía...</span>
-                          )}
-                          {normalizeSubs(cat.submenus).map((sub: any) => (
-                            <div key={sub.name} className="bg-white border border-primary/10 rounded-xl overflow-hidden">
-                              {/* Sub-1 header */}
-                              <div className="flex items-center gap-2 px-3 py-2">
-                                <SubChip value={sub.name}
-                                  onDelete={() => removeSubmenu(cat.id, sub.name)}
-                                  onEdit={(newVal) => editSubmenu(cat.id, sub.name, newVal)}
-                                />
-                                <span className="text-[8px] text-primary/20 font-bold ml-auto">{(sub.children || []).length} sub-2</span>
-                              </div>
-                              {/* Sub-2 children */}
-                              <div className="bg-background/50 border-t border-primary/5 px-3 py-2 space-y-1.5">
-                                <p className="text-[8px] font-black text-primary/20 uppercase tracking-[0.15em]">Sub-categorías nivel 2:</p>
-                                <div className="flex flex-wrap gap-1.5">
-                                  {(sub.children || []).map((child: string) => (
-                                    <SubChip key={child} value={child} variant="sub2"
-                                      onDelete={() => removeSubSubmenu(cat.id, sub.name, child)}
-                                      onEdit={(newVal) => editSubSubmenu(cat.id, sub.name, child, newVal)}
-                                    />
-                                  ))}
-                                </div>
-                                <div className="flex gap-1.5 mt-1">
-                                  <input
-                                    placeholder="Ej: Baby Shower..."
-                                    className="flex-1 bg-white border border-primary/10 text-primary px-3 py-1.5 rounded-lg text-[9px] font-bold tracking-widest uppercase outline-none focus:border-secondary transition-all"
-                                    onKeyDown={async (e) => {
-                                      if (e.key === 'Enter') {
-                                        const val = (e.target as HTMLInputElement).value.trim();
-                                        if (val) { await addSubSubmenu(cat.id, sub.name, val); (e.target as HTMLInputElement).value = ''; }
-                                      }
-                                    }}
-                                  />
-                                  <button
-                                    onClick={async (e) => {
-                                      const input = (e.currentTarget.previousElementSibling as HTMLInputElement);
-                                      const val = input.value.trim();
-                                      if (val) { await addSubSubmenu(cat.id, sub.name, val); input.value = ''; }
-                                    }}
-                                    className="px-3 py-1.5 bg-primary/80 text-white rounded-lg text-[8px] font-black tracking-widest uppercase hover:bg-primary transition-all"
-                                  >+ Sub-2</button>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Agregar nueva sub-1 */}
-                        <div className="flex gap-2">
-                          <input
-                            value={newSubInput[cat.id] || ''}
-                            onChange={(e) => setNewSubInput(prev => ({ ...prev, [cat.id]: e.target.value }))}
-                            onKeyDown={(e) => e.key === 'Enter' && addSubmenu(cat.id)}
-                            placeholder="NUEVA SUBCATEGORÍA NIVEL 1..."
-                            className="flex-1 bg-background border border-primary/10 text-primary px-4 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase outline-none focus:border-secondary transition-all"
-                          />
-                          <button onClick={() => addSubmenu(cat.id)}
-                            className="px-4 py-2 bg-secondary text-white rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-orange-600 transition-all flex items-center gap-1">
-                            <Plus size={12} /> Añadir
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Añadir categoría */}
-              <div className="bg-surface border border-dashed border-primary/20 rounded-2xl p-6">
-                <p className="text-[10px] font-black text-primary/30 uppercase tracking-[0.2em] mb-4">+ Nueva Categoría Principal</p>
-                <div className="flex gap-3">
-                  <input value={newCatName} onChange={e => setNewCatName(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && addCategory()}
-                    placeholder="EJ: REDES SOCIALES Y CONTENIDO..."
-                    className="flex-1 bg-background border border-primary/10 text-primary px-4 py-3 rounded-xl text-[10px] font-black tracking-widest uppercase outline-none focus:border-secondary transition-all"
-                  />
-                  <button onClick={addCategory}
-                    className="px-6 py-3 bg-primary text-white rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-primary/90 transition-all flex items-center gap-2">
-                    <Plus size={13} /> Crear
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ─── PEDIDOS ─────────────────────────────────────────────────── */}
-          {activeTab === 'orders' && (
-            <div className="space-y-6">
-              <div className="flex flex-col md:flex-row justify-between md:items-end gap-4 px-2">
-                <div>
-                  <h2 className="text-2xl font-black text-primary font-headline uppercase">Pedidos & Ventas</h2>
-                  <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1">
-                    {orders.filter(o => o.status !== 'delivered').length} pendientes · {orders.filter(o => o.status === 'delivered').length} entregados
-                  </p>
-                </div>
-                <div className="relative w-full md:w-80">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/20" size={15} />
-                  <input value={searchOrder} onChange={(e) => setSearchOrder(e.target.value)}
-                    placeholder="BUSCAR POR NOMBRE O TELÉFONO..."
-                    className="w-full bg-surface text-primary p-3.5 pl-11 rounded-2xl border border-primary/5 focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none text-[10px] font-black tracking-widest placeholder:text-primary/20" />
-                </div>
-              </div>
-
-              {/* Tabs */}
-              <div className="flex bg-surface p-1.5 rounded-2xl border border-primary/5 shadow-sm inline-flex">
-                <button onClick={() => setOrderTab('pending')}
-                  className={`flex items-center gap-2 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${orderTab === 'pending' ? 'bg-secondary text-white shadow' : 'text-primary/40 hover:text-primary'}`}>
-                  <Clock size={13} /> Pendientes ({orders.filter(o => o.status !== 'delivered').length})
-                </button>
-                <button onClick={() => setOrderTab('delivered')}
-                  className={`flex items-center gap-2 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${orderTab === 'delivered' ? 'bg-emerald-500 text-white shadow' : 'text-primary/40 hover:text-primary'}`}>
-                  <CheckCircle size={13} /> Entregados ({orders.filter(o => o.status === 'delivered').length})
-                </button>
-              </div>
-
-              {/* Lista de pedidos */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {filteredOrders.length === 0 ? (
-                  <div className="col-span-full py-20 bg-surface rounded-3xl border border-primary/5 text-center">
-                    <Package className="text-primary/10 mx-auto mb-4" size={48} />
-                    <p className="text-primary/20 text-sm font-bold uppercase tracking-widest italic">
-                      {searchOrder ? 'Sin resultados' : orderTab === 'pending' ? 'No hay pedidos pendientes' : 'No hay pedidos entregados'}
-                    </p>
-                  </div>
-                ) : filteredOrders.map(order => {
-                  const cfg = STATUS_CONFIG[order.status] || STATUS_CONFIG.pending;
-                  const isExpanded = expandedOrder === order.id;
-                  return (
-                    <div key={order.id} className="bg-surface border border-primary/5 rounded-3xl shadow-sm overflow-hidden flex flex-col">
-                      {/* Cabecera del pedido */}
-                      <div className="flex flex-col gap-3 p-5 flex-1">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <span className={`text-[10px] font-black px-2 py-0.5 rounded tracking-widest uppercase border ${cfg.bg} ${cfg.color} ${cfg.border}`}>
-                              {(order.id || '').slice(-10)}
-                            </span>
-                            <p className="text-[10px] text-primary/30 font-bold mt-1">{order.date}</p>
-                          </div>
-                          <div className="flex gap-1.5">
-                            <button
-                              onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
-                              title="Ver notas internas"
-                              className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all ${
-                                isExpanded ? 'bg-secondary/10 border-secondary/30 text-secondary' : 'bg-background border-primary/5 text-primary/30 hover:text-primary'
-                              }`}
-                            >
-                              {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-                            </button>
-                            <button
-                              onClick={() => deleteOrder(order.id)}
-                              title="Eliminar pedido"
-                              className="w-8 h-8 rounded-xl bg-background border border-primary/5 flex items-center justify-center text-primary/20 hover:text-error hover:border-error transition-all"
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h4 className="text-primary font-black text-sm uppercase tracking-wide">{order.customer}</h4>
-                          <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
-                            <span className="text-[10px] text-primary/40 font-bold flex items-center gap-1">
-                              <Phone size={9} className="text-secondary" />{order.phone}
-                            </span>
-                            {order.city && <span className="text-[10px] text-primary/40 font-bold">📍 {order.city}</span>}
-                          </div>
-                        </div>
-
-                        {/* Forma de pago */}
-                        {order.paymentMethod && (
-                          <div className="flex flex-col gap-2">
-                             <span className={`self-start text-[9px] font-black px-2 py-0.5 rounded-full border tracking-widest uppercase ${cfg.bg} ${cfg.border} ${cfg.color}`}>
-                              💳 {order.paymentMethod}
-                            </span>
-                            
-                            {(order.paymentMethod.toLowerCase().includes('transferencia') || order.paymentMethod.toLowerCase().includes('tarjeta') || order.payment_reference) && (
-                              <div className="flex gap-2">
-                                <input 
-                                  placeholder="REF: #000000"
-                                  defaultValue={order.payment_reference || ''}
-                                  onChange={(e) => setPaymentRefInputs(prev => ({ ...prev, [order.id]: e.target.value }))}
-                                  className="flex-1 bg-background border border-primary/5 p-1.5 rounded-lg text-[10px] uppercase font-bold outline-none focus:border-secondary"
-                                />
-                                <button 
-                                  onClick={() => savePaymentRef(order.id)}
-                                  className="bg-secondary text-white px-2 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all"
-                                >
-                                  OK
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {/* Items */}
-                        <div className="bg-background/60 p-3 rounded-xl border border-primary/5 space-y-1">
-                          {(order.items || []).map((item: any, i: number) => (
-                            <div key={i} className="flex justify-between text-[11px]">
-                              <span className="text-primary/60 font-medium truncate pr-2">{item.name} <span className="font-black">x{item.quantity}</span></span>
-                              <span className="text-primary font-black shrink-0">${item.price * item.quantity}</span>
-                            </div>
-                          ))}
-                          {order.deliveryNotes && (
-                            <p className="text-[10px] text-primary/30 italic border-t border-primary/5 pt-1.5 mt-1">📝 {order.deliveryNotes}</p>
-                          )}
-                        </div>
-
-                        <div className="flex justify-between items-center">
-                          <span className="text-primary/20 text-[10px] font-black uppercase tracking-widest">Total</span>
-                          <span className="text-primary font-black text-lg">${order.total} <span className="text-[10px]">MXN</span></span>
-                        </div>
-
-                        {/* Selector de estatus */}
-                        <select
-                          value={order.status || 'pending'}
-                          onChange={e => updateOrderStatus(order.id, e.target.value)}
-                          className={`w-full p-3 rounded-xl border text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer transition-all ${cfg.bg} ${cfg.border} ${cfg.color}`}
-                        >
-                          <option value="pending">⏳ Pendiente</option>
-                          <option value="in-process">🔄 En Proceso</option>
-                          <option value="delayed">⚠️ Demorado</option>
-                          <option value="delivered">✅ Entregado</option>
-                        </select>
-                      </div>
-
-                      {/* Panel de notas internas (expandible) */}
-                      {isExpanded && (
-                        <div className="border-t border-primary/5 p-4 bg-background/30 space-y-3">
-                          <p className="text-[10px] font-black text-primary/30 uppercase tracking-[0.2em]">Notas Internas</p>
-                          <div className="space-y-2 max-h-36 overflow-y-auto">
-                            {(order.internalNotes || []).length === 0 ? (
-                              <p className="text-[11px] text-primary/20 italic">Sin notas todavía...</p>
-                            ) : (order.internalNotes || []).map((note: any, i: number) => (
-                              <div key={i} className="bg-white rounded-xl p-3 border border-primary/5">
-                                <p className="text-[9px] text-secondary font-black uppercase tracking-widest mb-1">{note.date}</p>
-                                <p className="text-xs text-primary/70 font-medium leading-relaxed">{note.text}</p>
-                              </div>
-                            ))}
-                          </div>
-                          <div className="flex gap-2 pt-1">
-                            <input
-                              value={noteInputs[order.id] || ''}
-                              onChange={e => setNoteInputs(prev => ({ ...prev, [order.id]: e.target.value }))}
-                              onKeyDown={e => e.key === 'Enter' && addNote(order.id)}
-                              placeholder="Añadir nota interna..."
-                              className="flex-1 bg-white border border-primary/10 text-primary px-4 py-2.5 rounded-xl text-xs outline-none focus:border-secondary transition-all"
-                            />
-                            <button
-                              onClick={() => addNote(order.id)}
-                              className="px-3 py-2 bg-secondary text-white rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-orange-600 transition-all flex items-center gap-1"
-                            >
-                              <Save size={12} /> Guardar
-                            </button>
-                          </div>
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <ImageIcon size={20} color="rgba(255,255,255,0.2)" />
                         </div>
                       )}
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
 
-          {/* ─── MODAL EDITAR PRODUCTO ──────────────────────────────────── */}
-          <AnimatePresence>
-            {editingProduct && (
-              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-primary/20 backdrop-blur-sm">
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-surface w-full max-w-lg rounded-3xl shadow-2xl border border-primary/10 overflow-hidden"
-                >
-                  <div className="p-6 border-b border-primary/5 flex justify-between items-center bg-background/50">
-                    <h3 className="text-sm font-black text-primary uppercase tracking-widest">Editar Producto</h3>
-                    <button onClick={() => setEditingProduct(null)} className="text-primary/30 hover:text-primary"><X size={20}/></button>
-                  </div>
-                  <form onSubmit={async (e) => {
-                    e.preventDefault();
-                    setUploading(true);
-                    const fd = new FormData(e.currentTarget);
-                    const file = fd.get('imageFile') as File;
-                    let imageUrl = fd.get('image') as string;
-
-                    if (file && file.size > 0) {
-                      const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-                      const { error: uploadError } = await supabase.storage
-                        .from('product-images')
-                        .upload(fileName, file);
-                      
-                      if (!uploadError) {
-                        const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(fileName);
-                        imageUrl = publicUrl;
-                      }
-                    }
-
-                    const updates = {
-                      name: fd.get('name') as string,
-                      price: parseFloat(fd.get('price') as string) || 0,
-                      category: fd.get('category') as string,
-                      sub_category: fd.get('sub_category') as string || '',
-                      sub_category_2: fd.get('sub_category_2') as string || '',
-                      image: imageUrl,
-                      description: fd.get('description') as string,
-                    };
-                    const { error } = await supabase.from('costumes').update(updates).eq('id', editingProduct.id);
-                    setUploading(false);
-                    if (!error) {
-                      loadProducts();
-                      setEditingProduct(null);
-                    }
-                  }} className="p-8 space-y-4 max-h-[70vh] overflow-y-auto">
-                    <Field label="Nombre"><input name="name" defaultValue={editingProduct.name} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold" /></Field>
-                    <div className="grid grid-cols-2 gap-4">
-                      <Field label="Precio"><input name="price" type="number" step="0.01" defaultValue={editingProduct.price} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold" /></Field>
-                      <Field label="Categoría">
-                        <select name="category" value={editProdCat} onChange={(e) => { setEditProdCat(e.target.value); setEditProdSub1(''); setEditProdSub2(''); }} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none cursor-pointer">
-                          <option value="">— Seleccionar —</option>
-                          {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                        </select>
-                      </Field>
-                    </div>
-                    <Field label="Subcategoría 1">
-                      <select name="sub_category" value={editProdSub1} onChange={(e) => { setEditProdSub1(e.target.value); setEditProdSub2(''); }} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none cursor-pointer">
-                        <option value="">— Seleccionar —</option>
-                        {(() => {
-                          const cat = categories.find(c => c.id === editProdCat);
-                          if (!cat) return null;
-                          return normalizeSubs(cat.submenus).map((s: any) => (
-                            <option key={s.name} value={s.name}>{s.name}</option>
-                          ));
-                        })()}
-                      </select>
-                    </Field>
-                    <Field label="Subcategoría 2">
-                      <select name="sub_category_2" value={editProdSub2} onChange={(e) => setEditProdSub2(e.target.value)} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none cursor-pointer">
-                        <option value="">— Seleccionar —</option>
-                        {(() => {
-                          const cat = categories.find(c => c.id === editProdCat);
-                          if (!cat) return null;
-                          const sub = normalizeSubs(cat.submenus).find((s: any) => s.name === editProdSub1);
-                          if (!sub) return null;
-                          return (sub.children || []).map((child: string) => (
-                            <option key={child} value={child}>{child}</option>
-                          ));
-                        })()}
-                      </select>
-                    </Field>
-                    
-                    <Field label="Nueva Foto (opcional)">
-                      <div className="relative group">
-                        <div className="flex items-center gap-3 bg-background p-3 rounded-xl border border-primary/5 hover:border-secondary transition-all cursor-pointer">
-                          <ImageIcon className="text-primary/20" size={16} />
-                          <div className="flex flex-col">
-                            <span className="text-[9px] font-black text-primary/40">CAMBIAR IMAGEN</span>
-                            <input name="imageFile" type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" />
-                          </div>
-                        </div>
-                        <input name="image" defaultValue={editingProduct.image} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-[10px] font-bold mt-2 outline-none italic text-primary/40 truncate" />
+                    {/* Info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                        <span style={{ color: '#fff', fontWeight: 800, fontSize: 14 }}>{costume.name}</span>
+                        {costume.soldOut && (
+                          <span style={{ background: 'rgba(239,68,68,0.15)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 6, padding: '2px 7px', fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                            AGOTADO
+                          </span>
+                        )}
+                        <BadgePill badge={costume.badge} />
                       </div>
-                    </Field>
-
-                    <Field label="Descripción"><textarea name="description" defaultValue={editingProduct.description} className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-medium h-24 outline-none" /></Field>
-                    
-                    <button type="submit" disabled={uploading} className={`w-full ${uploading ? 'bg-primary/20' : 'bg-secondary'} text-white p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-secondary/20 hover:bg-orange-600 transition-all mt-4`}>
-                      {uploading ? 'SUBIENDO...' : 'Guardar Cambios'}
-                    </button>
-                  </form>
-                </motion.div>
-              </div>
-            )}
-          </AnimatePresence>
-
-          {/* Modal de Cambio de Precio Masivo */}
-          <AnimatePresence>
-            {showBulkPriceModal && (
-              <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-surface w-full max-w-xl rounded-3xl shadow-2xl border border-primary/10 overflow-hidden flex flex-col max-h-[90vh]"
-                >
-                  <div className="p-6 border-b border-primary/5 flex justify-between items-center bg-background/50">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 bg-secondary/10 rounded-xl text-secondary">
-                        <Zap size={20} />
-                      </div>
-                      <h3 className="text-sm font-black text-primary uppercase tracking-widest">Cambio de Precio Masivo</h3>
-                    </div>
-                    <button onClick={() => setShowBulkPriceModal(false)} className="text-primary/30 hover:text-primary"><X size={20}/></button>
-                  </div>
-
-                  <div className="p-8 space-y-5 overflow-y-auto flex-1">
-                    <p className="text-xs text-primary/60 font-medium leading-relaxed">
-                      Selecciona los filtros para determinar a qué grupo de productos deseas cambiarles el precio de forma simultánea.
-                    </p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Field label="Categoría Principal">
-                        <select 
-                          value={bulkCat} 
-                          onChange={(e) => { setBulkCat(e.target.value); setBulkSub1(''); setBulkSub2(''); }}
-                          className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none cursor-pointer"
-                        >
-                          <option value="">— Todas las Categorías —</option>
-                          {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                        </select>
-                      </Field>
-
-                      <Field label="Subcategoría 1">
-                        <select 
-                          value={bulkSub1} 
-                          onChange={(e) => { setBulkSub1(e.target.value); setBulkSub2(''); }}
-                          className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none cursor-pointer"
-                        >
-                          <option value="">— Todas las Sub-1 —</option>
-                          {(() => {
-                            const cat = categories.find(c => c.id === bulkCat);
-                            if (!cat) return null;
-                            return normalizeSubs(cat.submenus).map((s: any) => (
-                              <option key={s.name} value={s.name}>{s.name}</option>
-                            ));
-                          })()}
-                        </select>
-                      </Field>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Field label="Subcategoría 2">
-                        <select 
-                          value={bulkSub2} 
-                          onChange={(e) => setBulkSub2(e.target.value)}
-                          className="w-full bg-background border border-primary/10 p-3 rounded-xl text-xs font-bold uppercase outline-none cursor-pointer"
-                        >
-                          <option value="">— Todas las Sub-2 —</option>
-                          {(() => {
-                            const cat = categories.find(c => c.id === bulkCat);
-                            if (!cat) return null;
-                            const sub = normalizeSubs(cat.submenus).find((s: any) => s.name === bulkSub1);
-                            if (!sub) return null;
-                            return (sub.children || []).map((child: string) => (
-                              <option key={child} value={child}>{child}</option>
-                            ));
-                          })()}
-                        </select>
-                      </Field>
-
-                      <Field label="Filtrar por Texto / Nombre">
-                        <div className="relative">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/20" size={15} />
-                          <input 
-                            value={bulkSearch}
-                            onChange={(e) => setBulkSearch(e.target.value)}
-                            placeholder="Ej: Boda, GPS..."
-                            className="w-full bg-background border border-primary/10 p-3 pl-9 rounded-xl text-xs font-bold outline-none" 
-                          />
-                        </div>
-                      </Field>
-                    </div>
-
-                    <div className="border-t border-primary/5 pt-5">
-                      <Field label="NUEVO PRECIO UNITARIO ($ MXN)">
-                        <div className="relative">
-                          <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary" size={20} />
-                          <input 
-                            type="number" 
-                            step="0.01" 
-                            value={bulkNewPrice}
-                            onChange={(e) => setBulkNewPrice(e.target.value)}
-                            placeholder="0.00"
-                            className="w-full bg-background border-2 border-secondary/30 focus:border-secondary p-4 pl-12 rounded-2xl text-lg font-black outline-none text-primary"
-                          />
-                        </div>
-                      </Field>
-                    </div>
-
-                    {/* Recuadro de previsualización */}
-                    <div className={`p-4 rounded-2xl border ${affectedProducts.length === 0 ? 'bg-background border-primary/5' : !bulkCat && !bulkSub1 && !bulkSub2 && !bulkSearch ? 'bg-amber-50 border-amber-200' : 'bg-secondary/5 border-secondary/20'}`}>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className={`text-xs font-black uppercase tracking-widest ${!bulkCat && !bulkSub1 && !bulkSub2 && !bulkSearch ? 'text-amber-800' : 'text-primary'}`}>
-                          Productos Coincidentes: {affectedProducts.length}
+                      <div style={{ display: 'flex', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>
+                          {HALLOWEEN_CATEGORIES.find(c => c.id === costume.category)?.label || costume.category}
                         </span>
-                        {!bulkCat && !bulkSub1 && !bulkSub2 && !bulkSearch && (
-                          <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded uppercase">Todo el catálogo</span>
-                        )}
-                      </div>
-
-                      <div className="max-h-32 overflow-y-auto space-y-1.5 pr-2 divide-y divide-primary/5">
-                        {affectedProducts.length === 0 ? (
-                          <p className="text-xs text-primary/30 italic py-2">Ningún producto coincide con los filtros seleccionados.</p>
-                        ) : (
-                          affectedProducts.map((p: any) => (
-                            <div key={p.id} className="flex items-center justify-between py-1.5 text-xs">
-                              <div className="flex items-center gap-2 truncate pr-2">
-                                <span className="font-bold text-primary truncate">{p.name}</span>
-                                <span className="text-[9px] bg-primary/5 text-primary/40 px-1.5 py-0.5 rounded uppercase shrink-0">{p.category}</span>
-                              </div>
-                              <div className="flex items-center gap-2 shrink-0 font-bold">
-                                <span className="text-primary/40 line-through">${p.price}</span>
-                                <span className="text-secondary font-black">${parseFloat(bulkNewPrice) ? parseFloat(bulkNewPrice).toFixed(2) : '?.??'}</span>
-                              </div>
-                            </div>
-                          ))
-                        )}
+                        <span style={{ fontSize: 10, color: 'rgba(124,58,237,0.7)', fontWeight: 700 }}>
+                          {costume.type}
+                        </span>
+                        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', fontWeight: 600 }}>
+                          Tallas: {costume.sizes.join(', ')}
+                        </span>
                       </div>
                     </div>
 
-                    <button 
-                      disabled={bulkUpdating || affectedProducts.length === 0 || !bulkNewPrice || isNaN(parseFloat(bulkNewPrice))}
-                      onClick={async () => {
-                        const parsedPrice = parseFloat(bulkNewPrice);
-                        if (isNaN(parsedPrice)) return;
-                        if (!confirm(`¿Estás seguro de actualizar el precio de ${affectedProducts.length} productos a $${parsedPrice.toFixed(2)} MXN?`)) return;
-                        
-                        setBulkUpdating(true);
-                        const ids = affectedProducts.map((p: any) => p.id);
-                        const { error } = await supabase.from('costumes').update({ price: parsedPrice }).in('id', ids);
-                        setBulkUpdating(false);
-                        
-                        if (!error) {
-                          loadProducts();
-                          setShowBulkPriceModal(false);
-                          setBulkNewPrice('');
-                        } else {
-                          alert('Hubo un error al actualizar los precios.');
-                        }
-                      }}
-                      className={`w-full ${bulkUpdating || affectedProducts.length === 0 || !bulkNewPrice || isNaN(parseFloat(bulkNewPrice)) ? 'bg-primary/20 cursor-not-allowed' : 'bg-secondary hover:bg-orange-600'} text-white p-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-secondary/20 transition-all mt-4 flex items-center justify-center gap-2`}
-                    >
-                      {bulkUpdating ? (
-                        <span>ACTUALIZANDO PRECIOS...</span>
-                      ) : (
-                        <>
-                          <Zap size={16} />
-                          <span>Aplicar Precio de ${parseFloat(bulkNewPrice) ? parseFloat(bulkNewPrice).toFixed(2) : '0.00'} a {affectedProducts.length} Productos</span>
-                        </>
+                    {/* Price */}
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div style={{ color: '#FF8C00', fontWeight: 900, fontSize: 16 }}>
+                        ${costume.price}
+                      </div>
+                      {costume.rentalPrice && (
+                        <div style={{ color: '#a855f7', fontSize: 11, fontWeight: 700 }}>
+                          Renta ${costume.rentalPrice}
+                        </div>
                       )}
-                    </button>
-                  </div>
-                </motion.div>
-              </div>
-            )}
-          </AnimatePresence>
+                    </div>
 
-        </div>
+                    {/* Actions */}
+                    <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                      <button
+                        onClick={() => onUpdate(costume.id, { soldOut: !costume.soldOut })}
+                        title={costume.soldOut ? 'Marcar disponible' : 'Marcar agotado'}
+                        style={{
+                          width: 34, height: 34, borderRadius: 9,
+                          background: 'rgba(255,255,255,0.05)',
+                          border: '1px solid rgba(255,255,255,0.08)',
+                          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: costume.soldOut ? '#10B981' : 'rgba(239,68,68,0.6)',
+                        }}
+                      >
+                        {costume.soldOut ? <Eye size={14} /> : <EyeOff size={14} />}
+                      </button>
+                      <button
+                        onClick={() => setEditingId(editingId === costume.id ? null : costume.id)}
+                        title="Editar"
+                        style={{
+                          width: 34, height: 34, borderRadius: 9,
+                          background: editingId === costume.id ? 'rgba(255,106,0,0.2)' : 'rgba(255,255,255,0.05)',
+                          border: `1px solid ${editingId === costume.id ? 'rgba(255,106,0,0.4)' : 'rgba(255,255,255,0.08)'}`,
+                          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: editingId === costume.id ? '#FF6A00' : 'rgba(255,255,255,0.3)',
+                        }}
+                      >
+                        <Edit2 size={14} />
+                      </button>
+                      <button
+                        onClick={() => { if (confirm(`¿Eliminar "${costume.name}"?`)) onDelete(costume.id); }}
+                        title="Eliminar"
+                        style={{
+                          width: 34, height: 34, borderRadius: 9,
+                          background: 'rgba(255,255,255,0.05)',
+                          border: '1px solid rgba(255,255,255,0.08)',
+                          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: 'rgba(239,68,68,0.5)',
+                        }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </motion.div>
+
+                  {/* Edit form inline */}
+                  <AnimatePresence>
+                    {editingId === costume.id && (
+                      <motion.div
+                        key={`edit-${costume.id}`}
+                        initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                        style={{ overflow: 'hidden', marginTop: 6 }}
+                      >
+                        <CostumeForm
+                          title={`Editar: ${costume.name}`}
+                          initial={{
+                            name: costume.name,
+                            description: costume.description,
+                            price: costume.price,
+                            rentalPrice: costume.rentalPrice,
+                            image: costume.image,
+                            category: costume.category,
+                            type: costume.type,
+                            sizes: [...costume.sizes],
+                            badge: costume.badge,
+                            soldOut: costume.soldOut,
+                          }}
+                          onSave={data => {
+                            onUpdate(costume.id, data);
+                            setEditingId(null);
+                          }}
+                          onCancel={() => setEditingId(null)}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── NUEVO DISFRAZ TAB */}
+        {activeTab === 'add' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div>
+              <h2 style={{ color: '#fff', fontWeight: 900, fontSize: 20, margin: '0 0 4px', textTransform: 'uppercase' }}>
+                Nuevo Disfraz
+              </h2>
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', margin: 0 }}>
+                Se agrega al catálogo de forma local
+              </p>
+            </div>
+            <CostumeForm
+              title="Agregar al Catálogo"
+              initial={{ ...EMPTY_FORM }}
+              onSave={data => {
+                onAdd({ id: `custom-${Date.now()}`, ...data });
+                setActiveTab('inventory');
+              }}
+              onCancel={() => setActiveTab('inventory')}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* ── DEMO BANNER */}
+      <div style={{
+        position: 'fixed', bottom: 0, left: 0, right: 0,
+        background: 'rgba(10,10,10,0.98)',
+        borderTop: '1px solid rgba(255,106,0,0.15)',
+        padding: '10px 20px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        backdropFilter: 'blur(10px)', zIndex: 40,
+      }}>
+        <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10, fontWeight: 700, margin: 0, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+          🎃 Modo Demo — Los cambios son locales (sesión actual)
+        </p>
+        <button
+          onClick={onClose}
+          style={{
+            background: 'rgba(255,106,0,0.15)', border: '1px solid rgba(255,106,0,0.25)',
+            borderRadius: 8, padding: '6px 14px', cursor: 'pointer',
+            color: '#FF6A00', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em',
+          }}
+        >
+          Ver Tienda
+        </button>
       </div>
     </div>
-  );
-}
-
-// ── Componentes auxiliares ──────────────────────────────────────────────────
-
-function SubChip({ value, onDelete, onEdit, variant = 'sub1' }: { key?: React.Key; value: string; onDelete: () => void; onEdit: (v: string) => void; variant?: 'sub1' | 'sub2' }) {
-  const [editing, setEditing] = useState(false);
-  const [text, setText] = useState(value);
-  return editing ? (
-    <input
-      value={text}
-      onChange={e => setText(e.target.value)}
-      onBlur={() => { if(text.trim() && text.trim() !== value) { onEdit(text); } setEditing(false); }}
-      onKeyDown={e => { if (e.key === 'Enter') { if(text.trim() && text.trim() !== value) { onEdit(text); } setEditing(false); } }}
-      autoFocus
-      className={`bg-white border border-secondary text-primary px-3 py-1 outline-none ${variant === 'sub1' ? 'rounded-full text-[10px] font-black uppercase tracking-widest w-40' : 'rounded-lg text-[9px] font-bold uppercase tracking-wider w-32'}`}
-    />
-  ) : (
-    <span
-      className={`flex items-center gap-1.5 bg-white border border-primary/10 hover:border-secondary/40 transition-colors select-none ${variant === 'sub1' ? 'text-primary/70 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest' : 'text-primary/60 px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider'}`}
-      onDoubleClick={() => { setText(value); setEditing(true); }}
-      title="Doble clic para editar"
-    >
-      {value}
-      <button onClick={() => { setText(value); setEditing(true); }} title="Editar" className="text-primary/30 hover:text-secondary transition-colors ml-1">
-        <Edit2 size={variant === 'sub1' ? 11 : 9} />
-      </button>
-      <button onClick={onDelete} title="Eliminar" className="text-primary/20 hover:text-error transition-colors ml-0.5">
-        <X size={variant === 'sub1' ? 11 : 9} strokeWidth={3} />
-      </button>
-    </span>
   );
 }
