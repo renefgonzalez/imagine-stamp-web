@@ -10,6 +10,7 @@ import {
   Lock, Package, Plus, LogOut, Tag, FileText, DollarSign,
   Trash2, Edit2, Save, X, Star, Flame, ShoppingBag, Search,
   Eye, EyeOff, RefreshCw, Check, ChevronDown, Image as ImageIcon,
+  Folder, ClipboardList, ArrowUp, ArrowDown
 } from 'lucide-react';
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
@@ -41,6 +42,7 @@ const MASTER_PASSWORD = '1212';
 const HALLOWEEN_PASSWORD = 'halloween';
 
 const HALLOWEEN_CATEGORIES = [
+  { id: 'all',         label: '🎃 Todo' },
   { id: 'terror',      label: '💀 Terror' },
   { id: 'superheroes', label: '🦸 Superhéroes' },
   { id: 'infantiles',  label: '🧸 Infantiles' },
@@ -368,9 +370,54 @@ export default function AdminHalloween({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState(false);
-  const [activeTab, setActiveTab] = useState<'inventory' | 'add'>('inventory');
+  const [activeTab, setActiveTab] = useState<'inventory' | 'add' | 'categories' | 'orders'>('inventory');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  // Categories state
+  const [categories, setCategories] = useState(HALLOWEEN_CATEGORIES);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [editingCatId, setEditingCatId] = useState<string | null>(null);
+  const [editingCatName, setEditingCatName] = useState('');
+
+  const reorderCategory = (index: number, direction: 'up' | 'down') => {
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === categories.length - 1) return;
+    const newCats = [...categories];
+    const swap = direction === 'up' ? index - 1 : index + 1;
+    [newCats[index], newCats[swap]] = [newCats[swap], newCats[index]];
+    setCategories(newCats);
+  };
+  
+  // Orders state
+  const [orders, setOrders] = useState([
+    {
+      id: 'ORD-001',
+      client: 'María López',
+      phone: '55 1234 5678',
+      paymentMethod: 'TRANSFERENCIA',
+      status: 'PENDIENTE',
+      products: [
+        { name: 'Bruja Escarlata', qty: 1, price: 850 },
+        { name: 'Telaraña Deco', qty: 2, price: 150 }
+      ],
+      total: 1150
+    },
+    {
+      id: 'ORD-002',
+      client: 'Carlos Ramírez',
+      phone: '55 9876 5432',
+      paymentMethod: 'TRANSFERENCIA',
+      status: 'ENTREGADO',
+      products: [
+        { name: 'Máscara Jason', qty: 1, price: 450 }
+      ],
+      total: 450
+    }
+  ]);
+  const [orderSearch, setOrderSearch] = useState('');
+  const [orderFilter, setOrderFilter] = useState<'ALL' | 'PENDIENTE' | 'ENTREGADO'>('PENDIENTE');
+
 
   // ── Login screen ──────────────────────────────────────────────────────────
   if (!isAuthenticated) {
@@ -485,8 +532,10 @@ export default function AdminHalloween({
   );
 
   const tabs = [
-    { id: 'inventory', icon: Package, label: 'Inventario' },
-    { id: 'add', icon: Plus, label: 'Nuevo Disfraz' },
+    { id: 'inventory', icon: Package, label: '📦 INVENTARIO' },
+    { id: 'add', icon: Plus, label: '➕ NUEVO' },
+    { id: 'categories', icon: Folder, label: '📁 CATEGORÍAS' },
+    { id: 'orders', icon: DollarSign, label: '💰 PEDIDOS' },
   ];
 
   return (
@@ -494,14 +543,14 @@ export default function AdminHalloween({
 
       {/* ── TOP NAV */}
       <div style={{
-        background: 'rgba(10,10,10,0.95)',
-        borderBottom: '1px solid rgba(255,106,0,0.15)',
+        padding: '16px',
         position: 'sticky', top: 0, zIndex: 50,
-        backdropFilter: 'blur(12px)',
       }}>
         <div style={{
-          maxWidth: 760, margin: '0 auto', padding: '0 16px',
+          maxWidth: 900, margin: '0 auto', padding: '0 16px',
           height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+          background: '#fff', borderRadius: 20,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
         }}>
           {/* Brand */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -514,10 +563,10 @@ export default function AdminHalloween({
               🎃
             </div>
             <div>
-              <p style={{ color: '#fff', fontWeight: 900, fontSize: 14, lineHeight: 1, margin: 0 }}>
-                Mundo de Halloween
+              <p style={{ color: '#0a0a0a', fontWeight: 900, fontSize: 14, lineHeight: 1, margin: 0 }}>
+                MUNDO DE HALLOWEEN
               </p>
-              <p style={{ color: 'rgba(255,106,0,0.7)', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>
+              <p style={{ color: '#FF6A00', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>
                 Panel de Control
               </p>
             </div>
@@ -525,9 +574,8 @@ export default function AdminHalloween({
 
           {/* Tabs */}
           <nav style={{
-            display: 'flex', background: 'rgba(255,255,255,0.04)',
+            display: 'flex', background: 'rgba(0,0,0,0.04)',
             borderRadius: 12, padding: 4, gap: 4,
-            border: '1px solid rgba(255,255,255,0.06)',
           }}>
             {tabs.map(tab => (
               <button
@@ -538,14 +586,14 @@ export default function AdminHalloween({
                   padding: '8px 14px', borderRadius: 9,
                   border: 'none', cursor: 'pointer',
                   background: activeTab === tab.id ? 'linear-gradient(135deg, #FF6A00, #FF8C00)' : 'transparent',
-                  color: activeTab === tab.id ? '#fff' : 'rgba(255,255,255,0.35)',
+                  color: activeTab === tab.id ? '#fff' : '#666',
                   fontWeight: 800, fontSize: 11,
                   textTransform: 'uppercase', letterSpacing: '0.1em',
                   transition: 'all 0.2s',
                 }}
               >
                 <tab.icon size={12} />
-                <span style={{ display: window.innerWidth < 400 ? 'none' : undefined }}>{tab.label}</span>
+                <span style={{ display: window.innerWidth < 600 ? 'none' : undefined }}>{tab.label}</span>
               </button>
             ))}
           </nav>
@@ -557,9 +605,9 @@ export default function AdminHalloween({
               title="Restaurar demo"
               style={{
                 width: 36, height: 36, borderRadius: 10, border: 'none', cursor: 'pointer',
-                background: 'rgba(255,255,255,0.06)',
+                background: 'rgba(0,0,0,0.04)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'rgba(255,255,255,0.35)', transition: 'all 0.2s',
+                color: '#666', transition: 'all 0.2s',
               }}
             >
               <RefreshCw size={16} />
@@ -569,9 +617,9 @@ export default function AdminHalloween({
               title="Cerrar panel"
               style={{
                 width: 36, height: 36, borderRadius: 10, border: 'none', cursor: 'pointer',
-                background: 'rgba(255,255,255,0.06)',
+                background: 'rgba(0,0,0,0.04)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'rgba(255,255,255,0.35)', transition: 'all 0.2s',
+                color: '#666', transition: 'all 0.2s',
               }}
             >
               <LogOut size={16} />
@@ -813,6 +861,242 @@ export default function AdminHalloween({
               }}
               onCancel={() => setActiveTab('inventory')}
             />
+          </div>
+        )}
+
+        {/* ── CATEGORÍAS TAB */}
+        {activeTab === 'categories' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div>
+              <h2 style={{ color: '#fff', fontWeight: 900, fontSize: 20, margin: '0 0 4px', textTransform: 'uppercase' }}>
+                Borrador de Categorías
+              </h2>
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', margin: 0 }}>
+                Gestiona las categorías principales del catálogo
+              </p>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {categories.map((cat, i) => (
+                <motion.div
+                  key={cat.id} layout
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    background: '#fff', borderRadius: 16, padding: '12px 16px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <button onClick={() => reorderCategory(i, 'up')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ccc', padding: 0 }} disabled={i === 0}>
+                        <ArrowUp size={14} color={i === 0 ? 'transparent' : '#999'} />
+                      </button>
+                      <button onClick={() => reorderCategory(i, 'down')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ccc', padding: 0 }} disabled={i === categories.length - 1}>
+                        <ArrowDown size={14} color={i === categories.length - 1 ? 'transparent' : '#999'} />
+                      </button>
+                    </div>
+                    {editingCatId === cat.id ? (
+                      <input
+                        value={editingCatName}
+                        onChange={e => setEditingCatName(e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            setCategories(categories.map(c => c.id === cat.id ? { ...c, label: editingCatName } : c));
+                            setEditingCatId(null);
+                          }
+                        }}
+                        style={{ background: '#f5f5f5', border: '1px solid #ddd', borderRadius: 8, padding: '4px 8px', fontSize: 14, fontWeight: 800, color: '#0a0a0a', outline: 'none' }}
+                        autoFocus
+                      />
+                    ) : (
+                      <span style={{ color: '#0a0a0a', fontWeight: 800, fontSize: 14 }}>{cat.label}</span>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    {editingCatId === cat.id ? (
+                      <button
+                        onClick={() => {
+                          setCategories(categories.map(c => c.id === cat.id ? { ...c, label: editingCatName } : c));
+                          setEditingCatId(null);
+                        }}
+                        style={{
+                          width: 32, height: 32, borderRadius: 8, border: 'none', background: '#10B981', cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff',
+                        }}
+                      >
+                        <Save size={14} />
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={() => { setEditingCatId(cat.id); setEditingCatName(cat.label); }}
+                        style={{
+                          width: 32, height: 32, borderRadius: 8, border: 'none', background: '#f5f5f5', cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666',
+                        }}>
+                        <Edit2 size={14} />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        if (confirm(`¿Eliminar categoría "${cat.label}"?`)) {
+                          setCategories(categories.filter(c => c.id !== cat.id));
+                        }
+                      }}
+                      style={{
+                        width: 32, height: 32, borderRadius: 8, border: 'none', background: '#fee2e2', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444',
+                      }}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Nueva Categoría */}
+            <div style={{ marginTop: 10, display: 'flex', gap: 10 }}>
+              <input
+                style={{
+                  flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 14, padding: '0 16px', color: '#fff', fontSize: 13, outline: 'none',
+                }}
+                placeholder="Nombre de la categoría..."
+                value={newCategoryName}
+                onChange={e => setNewCategoryName(e.target.value)}
+              />
+              <button
+                onClick={() => {
+                  if (newCategoryName.trim()) {
+                    const id = newCategoryName.trim().toLowerCase().replace(/\s+/g, '-');
+                    setCategories([...categories, { id, label: newCategoryName.trim() }]);
+                    setNewCategoryName('');
+                  }
+                }}
+                style={{
+                  background: '#3b82f6', border: 'none', borderRadius: 14, padding: '14px 20px', cursor: 'pointer',
+                  color: '#fff', fontWeight: 800, fontSize: 12, display: 'flex', alignItems: 'center', gap: 6,
+                }}
+              >
+                <Plus size={16} /> Crear
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── PEDIDOS TAB */}
+        {activeTab === 'orders' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+              <div>
+                <h2 style={{ color: '#fff', fontWeight: 900, fontSize: 20, margin: '0 0 4px', textTransform: 'uppercase' }}>
+                  Pedidos & Ventas
+                </h2>
+                <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', margin: 0 }}>
+                  Gestión en tiempo real
+                </p>
+              </div>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 12, padding: '9px 14px', minWidth: 200,
+              }}>
+                <Search size={15} color="rgba(255,255,255,0.3)" />
+                <input
+                  style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 13, width: '100%' }}
+                  placeholder="Buscar folio o cliente..."
+                  value={orderSearch}
+                  onChange={e => setOrderSearch(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Filters */}
+            <div style={{ display: 'flex', gap: 10 }}>
+              {[
+                { id: 'PENDIENTE', label: 'Pendientes', count: orders.filter(o => o.status === 'PENDIENTE').length },
+                { id: 'ENTREGADO', label: 'Entregados', count: orders.filter(o => o.status === 'ENTREGADO').length }
+              ].map(f => (
+                <button
+                  key={f.id}
+                  onClick={() => setOrderFilter(f.id as any)}
+                  style={{
+                    flex: 1, padding: '12px', borderRadius: 12, cursor: 'pointer',
+                    background: orderFilter === f.id ? 'rgba(255,106,0,0.15)' : 'rgba(255,255,255,0.05)',
+                    border: `1px solid ${orderFilter === f.id ? 'rgba(255,106,0,0.3)' : 'transparent'}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    color: orderFilter === f.id ? '#FF6A00' : 'rgba(255,255,255,0.5)',
+                    fontWeight: 800, fontSize: 12, textTransform: 'uppercase',
+                  }}
+                >
+                  {f.label}
+                  <span style={{
+                    background: '#FF6A00', color: '#fff', padding: '2px 6px', borderRadius: 6, fontSize: 10,
+                  }}>
+                    {f.count}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Orders List */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {orders
+                .filter(o => orderFilter === 'ALL' || o.status === orderFilter)
+                .filter(o => !orderSearch || o.client.toLowerCase().includes(orderSearch.toLowerCase()) || o.id.toLowerCase().includes(orderSearch.toLowerCase()))
+                .map(order => (
+                  <div key={order.id} style={{
+                    background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 16, overflow: 'hidden',
+                  }}>
+                    {/* Order Header */}
+                    <div style={{
+                      padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.05)',
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      background: 'rgba(255,255,255,0.01)',
+                    }}>
+                      <div>
+                        <div style={{ color: '#fff', fontWeight: 900, fontSize: 15 }}>{order.id}</div>
+                        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>{order.client} • {order.phone}</div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ color: '#FF8C00', fontWeight: 900, fontSize: 16 }}>${order.total} MXN</div>
+                        <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: 800 }}>{order.paymentMethod}</div>
+                      </div>
+                    </div>
+                    {/* Products */}
+                    <div style={{ padding: '12px 16px', background: 'rgba(0,0,0,0.2)' }}>
+                      {order.products.map((p, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
+                          <span style={{ color: 'rgba(255,255,255,0.7)' }}>{p.qty}x {p.name}</span>
+                          <span style={{ color: 'rgba(255,255,255,0.5)' }}>${p.price * p.qty}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Status Update */}
+                    <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', fontWeight: 700 }}>Estado del Pedido</span>
+                      <select
+                        value={order.status}
+                        onChange={e => {
+                          const val = e.target.value;
+                          setOrders(orders.map(o => o.id === order.id ? { ...o, status: val } : o));
+                        }}
+                        style={{
+                          background: order.status === 'PENDIENTE' ? 'rgba(245,158,11,0.15)' : 'rgba(16,185,129,0.15)',
+                          color: order.status === 'PENDIENTE' ? '#F59E0B' : '#10B981',
+                          border: `1px solid ${order.status === 'PENDIENTE' ? '#F59E0B' : '#10B981'}40`,
+                          borderRadius: 8, padding: '6px 10px', fontSize: 11, fontWeight: 800,
+                          outline: 'none', cursor: 'pointer', appearance: 'none',
+                        }}
+                      >
+                        <option value="PENDIENTE">PENDIENTE</option>
+                        <option value="ENTREGADO">ENTREGADO</option>
+                      </select>
+                    </div>
+                  </div>
+                ))}
+            </div>
           </div>
         )}
       </div>
