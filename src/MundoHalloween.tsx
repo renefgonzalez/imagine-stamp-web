@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from './lib/supabase';
 import AdminHalloween from './AdminHalloween';
-import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save, Lock, Instagram, Facebook, Mail as MailIcon } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save, Lock, Instagram, Facebook, Mail as MailIcon, Share2 } from 'lucide-react';
 import logo from './logo.png';
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
@@ -143,11 +143,56 @@ export default function MundoHalloween() {
   const [orderSent, setOrderSent] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [orderStep, setOrderStep] = useState<'cart' | 'confirm'>('cart');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [initialItemToOpen, setInitialItemToOpen] = useState<string | null>(null);
 
   // ── Catálogo dinámico (lista para Google Sheets) ──────────────────────────
   const [menuItems, setCostumes] = useState<Costume[]>(INITIAL_MENU_ITEMS);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [adminPickerForId, setAdminPickerForId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const hashParts = window.location.hash.split('?');
+    if (hashParts.length > 1) {
+      const params = new URLSearchParams(hashParts[1]);
+      const itemId = params.get('item');
+      if (itemId) {
+        setInitialItemToOpen(itemId);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (initialItemToOpen && menuItems.length > 0) {
+      const item = menuItems.find(i => i.id === initialItemToOpen);
+      if (item) {
+        setSelectedItem(item);
+        setInitialItemToOpen(null);
+      }
+    }
+  }, [initialItemToOpen, menuItems]);
+
+  const handleShare = async (costume: Costume, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const shareUrl = `${window.location.origin}${window.location.pathname}#/mundo-halloween?item=${costume.id}`;
+    const shareText = `¡Mira este disfraz en Mundo de Halloween!: ${costume.name} - $${costume.price} MXN`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Mundo de Halloween',
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (err) {
+        console.error('Error al compartir', err);
+      }
+    } else {
+      navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+      setToastMessage('¡Enlace copiado al portapapeles! 🎃');
+      setTimeout(() => setToastMessage(null), 3000);
+    }
+  };
 
   useEffect(() => {
     // Intenta cargar desde Supabase. Si la tabla está vacía o hay error,
@@ -490,6 +535,22 @@ export default function MundoHalloween() {
                           <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', fontWeight: 500 }}> MXN</span>
                         </span>
 
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <button
+                            onClick={e => handleShare(item, e)}
+                            style={{
+                              background: 'rgba(255,255,255,0.08)',
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              borderRadius: '12px', padding: '9px 12px',
+                              color: '#fff', cursor: 'pointer',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              transition: 'transform 0.15s ease',
+                            }}
+                            onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.95)')}
+                            onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
+                          >
+                            <Share2 size={16} />
+                          </button>
                         {/* Quantity controls or add button */}
                         {item.soldOut ? (
                           <span
@@ -561,6 +622,7 @@ export default function MundoHalloween() {
                             Agregar
                           </button>
                         )}
+                        </div>
                       </div>
                     </div>
 
@@ -752,6 +814,18 @@ export default function MundoHalloween() {
                 {/* Action */}
                 {getItemQty(selectedItem.id) > 0 ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button
+                      onClick={() => handleShare(selectedItem)}
+                      style={{
+                        background: 'rgba(255,255,255,0.08)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '14px', padding: '14px',
+                        color: '#fff', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}
+                    >
+                      <Share2 size={20} />
+                    </button>
                     <div style={{
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0',
                       background: 'rgba(255, 106, 0, 0.12)',
@@ -794,21 +868,35 @@ export default function MundoHalloween() {
                     </button>
                   </div>
                 ) : (
-                  <button
-                    onClick={() => { addToCart(selectedItem); setSelectedItem(null); }}
-                    style={{
-                      width: '100%',
-                      background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
-                      border: 'none', borderRadius: '14px',
-                      padding: '16px', cursor: 'pointer',
-                      color: '#fff', fontWeight: 900, fontSize: '16px',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-                      boxShadow: '0 4px 20px rgba(255, 106, 0, 0.4)',
-                    }}
-                  >
-                    <Plus size={20} />
-                    Agregar al pedido — ${selectedItem.price} MXN
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={() => handleShare(selectedItem)}
+                      style={{
+                        background: 'rgba(255,255,255,0.08)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '14px', padding: '16px',
+                        color: '#fff', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}
+                    >
+                      <Share2 size={20} />
+                    </button>
+                    <button
+                      onClick={() => { addToCart(selectedItem); setSelectedItem(null); }}
+                      style={{
+                        flex: 1,
+                        background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                        border: 'none', borderRadius: '14px',
+                        padding: '16px', cursor: 'pointer',
+                        color: '#fff', fontWeight: 900, fontSize: '16px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                        boxShadow: '0 4px 20px rgba(255, 106, 0, 0.4)',
+                      }}
+                    >
+                      <Plus size={20} />
+                      Agregar al pedido — ${selectedItem.price} MXN
+                    </button>
+                  </div>
                 )}
               </div>
             </motion.div>
@@ -1113,6 +1201,35 @@ export default function MundoHalloween() {
               onReset={resetMenu}
               onClose={() => setIsAdminOpen(false)}
             />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── TOAST NOTIFICATION ── */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: 50, x: '-50%' }}
+            style={{
+              position: 'fixed',
+              bottom: '24px',
+              left: '50%',
+              background: '#FF6A00',
+              color: '#fff',
+              padding: '12px 24px',
+              borderRadius: '50px',
+              fontWeight: 800,
+              fontSize: '14px',
+              zIndex: 100,
+              boxShadow: '0 8px 32px rgba(255, 106, 0, 0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            {toastMessage}
           </motion.div>
         )}
       </AnimatePresence>
