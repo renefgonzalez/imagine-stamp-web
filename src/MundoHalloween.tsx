@@ -1,787 +1,1050 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  Search, X, ShoppingBag, MessageCircle, ChevronLeft,
-  Plus, Minus, Trash2, ShoppingCart, Star, Tag
-} from 'lucide-react';
+import { supabase } from './lib/supabase';
+import AdminHalloween from './AdminHalloween';
+import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save } from 'lucide-react';
 
-// ─── TYPES ────────────────────────────────────────────────────────────────────
-type CostumeType = 'Renta' | 'Venta' | 'Renta y Venta';
-type CategoryId = 'all' | 'terror' | 'superheroes' | 'infantiles' | 'accesorios';
-
+// ─── TYPES ───────────────────────────────────────────────────────────────────
 interface Costume {
   id: string;
   name: string;
   description: string;
-  image: string;
-  category: CategoryId;
-  type: CostumeType;
-  sizes: string[];
   price: number;
   rentalPrice?: number;
-  featured?: boolean;
-}
-
-interface CartItem {
-  costumeId: string;
-  name: string;
-  size: string;
-  type: 'Renta' | 'Venta';
-  price: number;
   image: string;
+  category: string;
+  type: 'Renta' | 'Venta' | 'Renta y Venta';
+  sizes: string[];
+  badge?: 'NOVEDAD' | 'EN OFERTA' | 'MÁS VENDIDO';
+  soldOut?: boolean;
 }
 
-// ─── CATALOG DATA ─────────────────────────────────────────────────────────────
-const COSTUMES: Costume[] = [
-  {
-    id: 'michael-myers',
-    name: 'Michael Myers',
-    description: 'El icónico asesino de Halloween. Incluye máscara original, overol oscuro y cuchillo de plástico decorativo. Ideal para eventos y fiestas de terror.',
-    image: './disfraz-michael-myers.png',
-    category: 'terror',
-    type: 'Renta y Venta',
-    sizes: ['CH', 'M', 'G', 'XG'],
-    price: 450,
-    rentalPrice: 180,
-    featured: true,
-  },
-  {
-    id: 'bruja',
-    name: 'Bruja Clásica',
-    description: 'Elegante disfraz de bruja con vestido largo, sombrero cónico y capa de terciopelo. Perfecto para Halloween con toque de magia oscura.',
-    image: './disfraz-bruja.png',
-    category: 'terror',
-    type: 'Renta y Venta',
-    sizes: ['CH', 'M', 'G'],
-    price: 380,
-    rentalPrice: 150,
-    featured: true,
-  },
-  {
-    id: 'payaso',
-    name: 'Payaso del Terror',
-    description: 'El payaso más aterrador de la temporada. Traje colorido con detalles oscuros, peluca y maquillaje incluido. ¡Hará temblar a todos!',
-    image: './disfraz-payaso.png',
-    category: 'terror',
-    type: 'Renta y Venta',
-    sizes: ['M', 'G', 'XG'],
-    price: 420,
-    rentalPrice: 170,
-  },
-  {
-    id: 'zombie',
-    name: 'Zombie Apocalíptico',
-    description: 'Disfraz de zombie con ropa desgarrada, efectos especiales de látex y maquillaje incluido. Perfecto para el apocalipsis zombie más realista.',
-    image: './disfraz-zombie.png',
-    category: 'terror',
-    type: 'Renta y Venta',
-    sizes: ['CH', 'M', 'G'],
-    price: 390,
-    rentalPrice: 160,
-  },
-  {
-    id: 'spiderman',
-    name: 'Spider-Man',
-    description: 'El amigable vecino Spider-Man en su traje clásico rojo y azul con detalles de telaraña. Incluye guantes y máscara. ¡Trepa paredes!',
-    image: './disfraz-spiderman.png',
-    category: 'superheroes',
-    type: 'Renta y Venta',
-    sizes: ['CH', 'M', 'G', 'Infantil T4', 'Infantil T6', 'Infantil T8'],
-    price: 480,
-    rentalPrice: 200,
-    featured: true,
-  },
-  {
-    id: 'batman',
-    name: 'Batman Dark Knight',
-    description: 'El caballero de la noche en su armadura completa. Incluye capa, máscara con orejas y cinturón de utilidades decorativo de alta calidad.',
-    image: './disfraz-batman.png',
-    category: 'superheroes',
-    type: 'Renta y Venta',
-    sizes: ['M', 'G', 'XG', 'Infantil T4', 'Infantil T6'],
-    price: 520,
-    rentalPrice: 220,
-    featured: true,
-  },
-  {
-    id: 'princesa',
-    name: 'Princesa Encantada',
-    description: 'Vestido de princesa con volantes de tul en rosa y azul pastel, brillantina y tiara incluida. Para la pequeña princesa de tu vida.',
-    image: './disfraz-princesa.png',
-    category: 'infantiles',
-    type: 'Renta y Venta',
-    sizes: ['Infantil T2', 'Infantil T4', 'Infantil T6', 'Infantil T8'],
-    price: 320,
-    rentalPrice: 130,
-    featured: true,
-  },
-  {
-    id: 'unicornio',
-    name: 'Unicornio Mágico',
-    description: 'Adorable disfraz de unicornio todo en uno con cuerno arcoíris, melena de colores y cola. ¡El más tierno de toda la fiesta!',
-    image: './disfraz-unicornio.png',
-    category: 'infantiles',
-    type: 'Renta y Venta',
-    sizes: ['Infantil T2', 'Infantil T4', 'Infantil T6'],
-    price: 280,
-    rentalPrice: 110,
-  },
-  {
-    id: 'mascaras',
-    name: 'Kit de Máscaras Premium',
-    description: 'Set de 3 máscaras de alta calidad: calavera veneciana, demonio y criatura del inframundo. Pintadas a mano con detalles dorados.',
-    image: './mascara-halloween.png',
-    category: 'accesorios',
-    type: 'Venta',
-    sizes: ['Talla Única'],
-    price: 290,
-  },
-];
+interface CartItem extends Costume {
+  quantity: number;
+  selectedSize?: string;
+  selectedType?: 'Renta' | 'Venta';
+}
 
-// ─── CATEGORIES CONFIG ────────────────────────────────────────────────────────
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const WHATSAPP_NUMBER = '525650469993'; // Your WhatsApp number
+
 const CATEGORIES = [
-  { id: 'all' as CategoryId, label: 'Todos', emoji: '🎃', color: 'from-orange-500 to-orange-700' },
-  { id: 'terror' as CategoryId, label: 'Terror', emoji: '💀', color: 'from-red-700 to-red-900' },
-  { id: 'superheroes' as CategoryId, label: 'Superhéroes', emoji: '🦸', color: 'from-blue-600 to-purple-700' },
-  { id: 'infantiles' as CategoryId, label: 'Infantiles', emoji: '🧸', color: 'from-pink-500 to-purple-500' },
-  { id: 'accesorios' as CategoryId, label: 'Accesorios', emoji: '🎭', color: 'from-yellow-500 to-orange-500' },
+  { id: 'all',         label: 'Todo',        emoji: '🎃' },
+  { id: 'terror',      label: 'Terror',      emoji: '🧟‍♂️' },
+  { id: 'superheroes', label: 'Superhéroes', emoji: '🦸‍♂️' },
+  { id: 'infantiles',  label: 'Infantiles',  emoji: '🧸' },
+  { id: 'accesorios',  label: 'Accesorios',  emoji: '🎭' },
 ];
 
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-const normalize = (str: string) =>
-  str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const INITIAL_MENU_ITEMS: Costume[] = [];
 
-const WHATSAPP_NUMBER = '525650469993';
+// ─── STOCK PHOTO LIBRARY ──────────────────────────────────────────────────────
+// Banco de imágenes "de stock" que el dueño puede asignar a cualquier platillo
+// desde el panel de admin. Se pueden ir generando con IA y sumar aquí.
+const STOCK_IMAGES: { url: string; label: string }[] = [
+  { url: './burger-classic.png',       label: 'Burger Clásica' },
+  { url: './burger-double-smash.png',  label: 'Double Smash' },
+  { url: './burger-bbq-bacon.png',     label: 'BBQ Bacon' },
+  { url: './burger-mushroom-swiss.png',label: 'Mushroom Swiss' },
+  { url: './fries-loaded.png',         label: 'Loaded Fries' },
+  { url: './onion-rings.png',          label: 'Onion Rings' },
+  { url: './chicken-fingers.png',      label: 'Chicken Fingers' },
+  { url: './milkshake-chocolate.png',  label: 'Malteada Chocolate' },
+  { url: './milkshake-strawberry.png', label: 'Malteada Fresa' },
+  { url: './brownie-sundae.png',       label: 'Brownie Sundae' },
+];
 
-// ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
+// ─── GOOGLE SHEETS CONNECTION (PREPARADO) ─────────────────────────────────────
+// Para conectar este menú a una Hoja de Cálculo de Google:
+// 1. Publica tu Sheet como JSON usando opensheet.elk.sh, sheety.co o sheet.best.
+// 2. Reemplaza el body de `fetchCostumesFromSupabase` con el fetch real.
+// 3. Columnas sugeridas: id | name | description | price | image | category |
+//    badge | rating | calories | soldOut
+//
+// Ejemplo (descomenta cuando tengas el endpoint):
+// const SHEET_ENDPOINT = 'https://opensheet.elk.sh/<SHEET_ID>/menu';
+async function fetchCostumesFromSupabase(): Promise<Costume[]> {
+  const { data, error } = await supabase.from('costumes').select('*').order('created_at', { ascending: false });
+  if (error) {
+    console.error('Error fetching costumes:', error);
+    return [];
+  }
+  return data as Costume[];
+}
+
+// ─── BADGE CONFIG ─────────────────────────────────────────────────────────────
+const BADGE_CONFIG = {
+  popular: { label: 'Popular',  icon: Star,   bg: 'bg-amber-500',   text: 'text-white' },
+  new:     { label: 'Nuevo',    icon: Flame,  bg: 'bg-emerald-500', text: 'text-white' },
+  veggie:  { label: 'Veggie',   icon: Leaf,   bg: 'bg-green-500',   text: 'text-white' },
+  spicy:   { label: 'Picante',  icon: Flame,  bg: 'bg-red-500',     text: 'text-white' },
+};
+
+// ─── COMPONENT ────────────────────────────────────────────────────────────────
 export default function MundoHalloween() {
-  const [activeCategory, setActiveCategory] = useState<CategoryId>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('all');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [selectedCostume, setSelectedCostume] = useState<Costume | null>(null);
-  const [selectedSize, setSelectedSize] = useState('');
-  const [selectedOperationType, setSelectedOperationType] = useState<'Renta' | 'Venta'>('Renta');
-  const [toast, setToast] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedItem, setSelectedItem] = useState<Costume | null>(null);
+  const [orderSent, setOrderSent] = useState(false);
+  const [customerName, setCustomerName] = useState('');
+  const [orderStep, setOrderStep] = useState<'cart' | 'confirm'>('cart');
 
-  // ── Filtering ──
-  const filteredCostumes = useMemo(() => {
-    let result = COSTUMES;
-    if (activeCategory !== 'all') {
-      result = result.filter(c => c.category === activeCategory);
-    }
-    if (searchQuery.trim()) {
-      const q = normalize(searchQuery.trim());
-      result = result.filter(c =>
-        normalize(c.name).includes(q) ||
-        normalize(c.description).includes(q) ||
-        normalize(c.category).includes(q)
-      );
-    }
-    return result;
-  }, [activeCategory, searchQuery]);
+  // ── Catálogo dinámico (lista para Google Sheets) ──────────────────────────
+  const [menuItems, setCostumes] = useState<Costume[]>(INITIAL_MENU_ITEMS);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [adminPickerForId, setAdminPickerForId] = useState<string | null>(null);
 
-  // ── Cart logic ──
-  const showToast = useCallback((msg: string) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 3000);
+  useEffect(() => {
+    // Al montar, intenta hidratar el catálogo desde la fuente externa (Sheets).
+    // Hoy regresa INITIAL_MENU_ITEMS; cuando configures el endpoint, jala datos reales.
+    fetchCostumesFromSupabase()
+      .then(setCostumes)
+      .catch(err => console.warn('No se pudo cargar el menú remoto:', err));
   }, []);
 
-  const openDetail = (costume: Costume) => {
-    setSelectedCostume(costume);
-    setSelectedSize(costume.sizes[0] || '');
-    // Default: Renta if available, else Venta
-    if (costume.type === 'Venta') setSelectedOperationType('Venta');
-    else setSelectedOperationType('Renta');
+  // ── Helpers de edición en vivo (modo admin) ────────────────────────────────
+  const updateItem = (id: string, patch: Partial<Costume>) => {
+    setCostumes(prev => prev.map(i => i.id === id ? { ...i, ...patch } : i));
   };
 
-  const addToCart = () => {
-    if (!selectedCostume || !selectedSize) return;
-    const price =
-      selectedOperationType === 'Renta' && selectedCostume.rentalPrice
-        ? selectedCostume.rentalPrice
-        : selectedCostume.price;
-
-    const item: CartItem = {
-      costumeId: `${selectedCostume.id}-${selectedSize}-${selectedOperationType}-${Date.now()}`,
-      name: selectedCostume.name,
-      size: selectedSize,
-      type: selectedOperationType,
-      price,
-      image: selectedCostume.image,
-    };
-    setCart(prev => [...prev, item]);
-    setSelectedCostume(null);
-    showToast(`¡${selectedCostume.name} agregado al carrito! 🎃`);
-  };
-
-  const removeFromCart = (id: string) => {
-    setCart(prev => prev.filter(i => i.costumeId !== id));
-  };
-
-  const totalPrice = cart.reduce((acc, i) => acc + i.price, 0);
-
-  const sendWhatsApp = () => {
-    const lines = cart
-      .map(i => `  • ${i.name} | Talla: ${i.size} | ${i.type} = $${i.price} MXN`)
-      .join('\n');
-    const message =
-      `👻 ¡Hola! Me interesa reservar los siguientes disfraces en *Mundo de Halloween*:\n\n` +
-      `*🎃 Disfraces Seleccionados:*\n${lines}\n\n` +
-      `*💰 Total Estimado: $${totalPrice} MXN*\n\n` +
-      `¿Cuál es la disponibilidad? ¡Gracias!`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+  const resetMenu = () => {
+    setCostumes(INITIAL_MENU_ITEMS);
     setCart([]);
-    setIsCartOpen(false);
-    showToast('¡Mensaje enviado a WhatsApp! 🎉');
   };
 
-  // ── Type label helper ──
-  const getTypeInfo = (costume: Costume) => {
-    if (costume.type === 'Venta') return { label: 'VENTA', color: 'bg-orange-500' };
-    if (costume.type === 'Renta') return { label: 'RENTA', color: 'bg-purple-600' };
-    return { label: 'RENTA / VENTA', color: 'bg-gradient-to-r from-purple-600 to-orange-500' };
+  // ── Filtered items
+  const filteredItems = useMemo(() => {
+    let items = menuItems;
+    if (activeCategory !== 'all') {
+      items = items.filter(i => i.category === activeCategory);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      items = items.filter(i =>
+        i.name.toLowerCase().includes(q) ||
+        i.description.toLowerCase().includes(q)
+      );
+    }
+    return items;
+  }, [activeCategory, searchQuery, menuItems]);
+
+  // ── Cart logic
+  const totalItems = cart.reduce((acc, i) => acc + i.quantity, 0);
+  const totalPrice = cart.reduce((acc, i) => {
+    const t = i.selectedType || i.type || 'Venta';
+    const p = t === 'Renta' ? (i.rentalPrice || i.price) : i.price;
+    return acc + p * i.quantity;
+  }, 0);
+
+  const addToCart = (item: Costume) => {
+    if (item.soldOut) return;
+    setCart(prev => {
+      const existing = prev.find(c => c.id === item.id);
+      if (existing) return prev.map(c => c.id === item.id ? { ...c, quantity: c.quantity + 1 } : c);
+      return [...prev, { ...item, quantity: 1 }];
+    });
   };
 
-  // ─── RENDER ────────────────────────────────────────────────────────────────
+  const updateQty = (id: string, delta: number) => {
+    setCart(prev =>
+      prev
+        .map(c => c.id === id ? { ...c, quantity: c.quantity + delta } : c)
+        .filter(c => c.quantity > 0)
+    );
+  };
+
+  const getItemQty = (id: string) => cart.find(c => c.id === id)?.quantity ?? 0;
+
+  // ── WhatsApp checkout
+  const handleCheckout = () => {
+    const lines = cart
+      .map(i => `  • ${i.name} x${i.quantity} — $${i.price * i.quantity} MXN`)
+      .join('\n');
+
+    const name = customerName.trim() || 'Cliente';
+
+    const message =
+      `🍔 *Pedido en Burger & Co*\n\n` +
+      `Hola! Soy *${name}* y quiero ordenar:\n\n` +
+      `${lines}\n\n` +
+      `*Total: $${totalPrice} MXN*\n\n` +
+      `_Pedido generado desde el menú digital de Imagine & Stamp_ ✨`;
+
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+
+    setOrderSent(true);
+    setTimeout(() => {
+      setCart([]);
+      setOrderSent(false);
+      setOrderStep('cart');
+      setIsCartOpen(false);
+      setCustomerName('');
+    }, 2500);
+  };
+
   return (
-    <div className="min-h-screen" style={{ background: '#0a0a0a', fontFamily: "'Inter', sans-serif" }}>
-      {/* ── Google Font ──────────────────────────────── */}
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-      />
+    <div className="min-h-screen" style={{ background: '#0D0D0D', fontFamily: "'Inter', sans-serif" }}>
+      {/* ── SEO Meta */}
+      <title>Burger & Co | Mundo de Halloween Demo — Imagine & Stamp</title>
 
-      {/* ══ HEADER ══════════════════════════════════════════════════════════ */}
-      <header className="fixed top-0 left-0 right-0 z-50" style={{ background: 'rgba(10,10,10,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,106,0,0.15)' }}>
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          {/* Logo + back */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => (window.location.hash = '/')}
-              className="w-9 h-9 rounded-xl flex items-center justify-center transition-all"
-              style={{ background: 'rgba(255,106,0,0.12)', color: '#ff6a00' }}
-              title="Volver al inicio"
-            >
-              <ChevronLeft size={20} strokeWidth={2.5} />
-            </button>
+      {/* ── HERO HEADER */}
+      <header
+        className="relative overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, #1a0a00 0%, #2d1000 40%, #1a0600 100%)',
+          minHeight: '220px',
+        }}
+      >
+        {/* Decorative circles */}
+        <div style={{
+          position: 'absolute', top: '-60px', right: '-60px',
+          width: '240px', height: '240px', borderRadius: '50%',
+          background: 'rgba(255, 100, 0, 0.12)',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: '-40px', left: '-40px',
+          width: '180px', height: '180px', borderRadius: '50%',
+          background: 'rgba(255, 140, 0, 0.08)',
+        }} />
+
+        <div className="relative z-10 px-5 pt-10 pb-8">
+          {/* Back link */}
+          <a
+            href="/#/"
+            className="inline-flex items-center gap-1.5 text-white/50 hover:text-white transition-colors mb-6 text-sm"
+          >
+            <ArrowLeft size={16} />
+            Volver a Imagine & Stamp
+          </a>
+
+          <div className="flex items-start justify-between">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'rgba(255,106,0,0.6)' }}>
-                Demo — Giro de Disfraces
-              </p>
-              <h1 className="text-sm font-black leading-none" style={{ color: '#fff' }}>
-                🎃 Mundo de Halloween
-              </h1>
+              <div className="flex items-center gap-3 mb-2">
+                <div style={{
+                  width: 48, height: 48, borderRadius: '14px',
+                  background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '24px', flexShrink: 0,
+                  boxShadow: '0 4px 20px rgba(255, 106, 0, 0.4)',
+                }}>
+                  🍔
+                </div>
+                <div>
+                  <h1 style={{ color: '#fff', fontSize: '26px', fontWeight: 900, lineHeight: 1, letterSpacing: '-0.5px' }}>
+                    Burger & Co
+                  </h1>
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginTop: '2px' }}>
+                    Mundo de Halloween Interactivo
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 mt-3">
+                <span style={{ color: '#FF8C00', fontSize: '12px', fontWeight: 700 }}>
+                  ⭐ 4.8 (2.4k reseñas)
+                </span>
+                <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px' }}>•</span>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>
+                  🕐 20–35 min
+                </span>
+                <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px' }}>•</span>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>
+                  📍 Demo
+                </span>
+              </div>
             </div>
+
+            {/* Cart button in header */}
+            <button
+              id="cart-open-btn"
+              onClick={() => { setIsCartOpen(true); setOrderStep('cart'); }}
+              style={{
+                position: 'relative',
+                background: totalItems > 0 ? 'linear-gradient(135deg, #FF6A00, #FF8C00)' : 'rgba(255,255,255,0.1)',
+                border: 'none',
+                borderRadius: '16px',
+                padding: '10px 14px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.2s ease',
+                boxShadow: totalItems > 0 ? '0 4px 20px rgba(255, 106, 0, 0.4)' : 'none',
+              }}
+            >
+              <ShoppingCart size={20} color={totalItems > 0 ? '#fff' : 'rgba(255,255,255,0.6)'} />
+              {totalItems > 0 && (
+                <>
+                  <span style={{ color: '#fff', fontWeight: 800, fontSize: '14px' }}>
+                    ${totalPrice}
+                  </span>
+                  <span style={{
+                    position: 'absolute', top: '-8px', right: '-8px',
+                    background: '#fff', color: '#FF6A00',
+                    borderRadius: '50%', width: '22px', height: '22px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '11px', fontWeight: 900,
+                  }}>
+                    {totalItems}
+                  </span>
+                </>
+              )}
+            </button>
           </div>
 
-          {/* Cart button */}
-          <button
-            onClick={() => setIsCartOpen(true)}
-            className="relative flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all"
-            style={{ background: cart.length > 0 ? '#ff6a00' : 'rgba(255,106,0,0.12)', color: cart.length > 0 ? '#fff' : '#ff6a00' }}
-          >
-            <ShoppingCart size={18} />
-            <span className="hidden sm:block">{cart.length > 0 ? `${cart.length} en carrito` : 'Carrito'}</span>
-            {cart.length > 0 && (
-              <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center" style={{ background: '#7c3aed', color: '#fff' }}>
-                {cart.length}
-              </span>
-            )}
-          </button>
+          {/* Demo badge */}
+          <div style={{
+            marginTop: '16px',
+            background: 'rgba(255, 106, 0, 0.15)',
+            border: '1px solid rgba(255, 106, 0, 0.3)',
+            borderRadius: '10px',
+            padding: '8px 12px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}>
+            <span style={{ fontSize: '11px', color: '#FF8C00', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              ✨ Demo por Imagine & Stamp — Tu menú digital conectado a WhatsApp
+            </span>
+          </div>
         </div>
       </header>
 
-      {/* ══ HERO ════════════════════════════════════════════════════════════ */}
-      <section className="pt-16 relative overflow-hidden">
-        <div
-          className="relative w-full flex flex-col items-center justify-center py-16 px-4 text-center"
-          style={{ background: 'linear-gradient(135deg, #0a0a0a 0%, #1a0a00 50%, #0d0014 100%)' }}
-        >
-          {/* Decorative glow orbs */}
-          <div className="absolute top-8 left-1/4 w-64 h-64 rounded-full opacity-20 blur-3xl pointer-events-none" style={{ background: '#ff6a00' }} />
-          <div className="absolute bottom-0 right-1/4 w-64 h-64 rounded-full opacity-15 blur-3xl pointer-events-none" style={{ background: '#7c3aed' }} />
-
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="relative z-10">
-            <div className="text-6xl mb-4 select-none">🎃</div>
-            <h2 className="text-3xl sm:text-5xl font-black mb-3 leading-none" style={{ color: '#fff' }}>
-              Mundo de{' '}
-              <span style={{ color: '#ff6a00', WebkitTextStroke: '1px rgba(255,106,0,0.3)' }}>Halloween</span>
-            </h2>
-            <p className="text-base sm:text-lg max-w-md mx-auto mb-2" style={{ color: 'rgba(255,255,255,0.55)' }}>
-              Renta o compra el disfraz perfecto para tu noche de terror
-            </p>
-            <div className="flex items-center justify-center gap-2 mt-4">
-              <span className="px-3 py-1 rounded-full text-xs font-bold" style={{ background: 'rgba(124,58,237,0.25)', color: '#a855f7', border: '1px solid rgba(124,58,237,0.3)' }}>
-                🔮 Renta desde $110 MXN
-              </span>
-              <span className="px-3 py-1 rounded-full text-xs font-bold" style={{ background: 'rgba(255,106,0,0.15)', color: '#ff6a00', border: '1px solid rgba(255,106,0,0.25)' }}>
-                🛒 Venta y Renta
-              </span>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ══ SEARCH BAR ══════════════════════════════════════════════════════ */}
-      <div className="sticky top-16 z-40 px-4 py-3" style={{ background: 'rgba(10,10,10,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-        <div className="max-w-5xl mx-auto">
-          <div
-            className="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all"
+      {/* ── SEARCH BAR */}
+      <div style={{ background: '#111', padding: '12px 16px', position: 'sticky', top: 0, zIndex: 40, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '10px',
+          background: 'rgba(255,255,255,0.07)', borderRadius: '12px',
+          padding: '10px 14px', border: '1px solid rgba(255,255,255,0.1)',
+        }}>
+          <Search size={16} color="rgba(255,255,255,0.4)" />
+          <input
+            id="menu-search"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Buscar en el menú..."
             style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: isSearchFocused ? '1.5px solid #ff6a00' : '1.5px solid rgba(255,255,255,0.08)',
-              boxShadow: isSearchFocused ? '0 0 20px rgba(255,106,0,0.15)' : 'none',
+              background: 'transparent', border: 'none', outline: 'none',
+              color: '#fff', fontSize: '14px', width: '100%',
             }}
-          >
-            <Search size={18} style={{ color: isSearchFocused ? '#ff6a00' : 'rgba(255,255,255,0.3)', flexShrink: 0 }} />
-            <input
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
-              placeholder="Busca disfraces, superhéroes, terror..."
-              className="flex-1 bg-transparent outline-none text-sm"
-              style={{ color: '#fff', caretColor: '#ff6a00' }}
-            />
-            {searchQuery && (
-              <button onClick={() => setSearchQuery('')} className="transition-opacity hover:opacity-70">
-                <X size={16} style={{ color: 'rgba(255,255,255,0.4)' }} />
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ══ CATEGORY TABS ═══════════════════════════════════════════════════ */}
-      <div className="px-4 py-4 max-w-5xl mx-auto">
-        <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
-          {CATEGORIES.map(cat => {
-            const isActive = activeCategory === cat.id;
-            return (
-              <motion.button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm whitespace-nowrap transition-all flex-shrink-0"
-                style={{
-                  background: isActive
-                    ? 'linear-gradient(135deg, #ff6a00, #b84500)'
-                    : 'rgba(255,255,255,0.05)',
-                  color: isActive ? '#fff' : 'rgba(255,255,255,0.45)',
-                  border: isActive ? 'none' : '1px solid rgba(255,255,255,0.08)',
-                  boxShadow: isActive ? '0 4px 20px rgba(255,106,0,0.35)' : 'none',
-                }}
-              >
-                <span>{cat.emoji}</span>
-                <span>{cat.label}</span>
-                <span
-                  className="text-[10px] px-1.5 py-0.5 rounded-full font-black"
-                  style={{
-                    background: isActive ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.06)',
-                    color: isActive ? '#fff' : 'rgba(255,255,255,0.3)',
-                  }}
-                >
-                  {cat.id === 'all' ? COSTUMES.length : COSTUMES.filter(c => c.category === cat.id).length}
-                </span>
-              </motion.button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ══ PRODUCT GRID ════════════════════════════════════════════════════ */}
-      <main className="px-4 pb-32 max-w-5xl mx-auto">
-        {/* Results count */}
-        <div className="mb-4 flex items-center justify-between">
-          <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.25)' }}>
-            {filteredCostumes.length} disfraces disponibles
-          </p>
+          />
           {searchQuery && (
-            <p className="text-xs" style={{ color: '#ff6a00' }}>
-              Resultados para: "{searchQuery}"
-            </p>
+            <button onClick={() => setSearchQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <X size={16} color="rgba(255,255,255,0.4)" />
+            </button>
           )}
         </div>
+      </div>
 
-        <AnimatePresence mode="popLayout">
-          {filteredCostumes.length === 0 ? (
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-center py-24 flex flex-col items-center gap-4"
-            >
-              <div className="text-5xl">😱</div>
-              <p className="font-bold text-lg" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                No encontramos ese disfraz
-              </p>
-              <button
-                onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}
-                className="px-4 py-2 rounded-xl text-sm font-bold transition-all"
-                style={{ background: 'rgba(255,106,0,0.15)', color: '#ff6a00' }}
-              >
-                Ver todos los disfraces
-              </button>
-            </motion.div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-              {filteredCostumes.map((costume, idx) => {
-                const typeInfo = getTypeInfo(costume);
-                return (
-                  <motion.div
-                    key={costume.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ delay: idx * 0.04 }}
-                    onClick={() => openDetail(costume)}
-                    className="rounded-2xl overflow-hidden cursor-pointer group relative"
-                    style={{
-                      background: 'rgba(255,255,255,0.04)',
-                      border: '1px solid rgba(255,255,255,0.06)',
-                      transition: 'all 0.25s',
-                    }}
-                    whileHover={{ scale: 1.02, boxShadow: '0 8px 32px rgba(255,106,0,0.2)' }}
-                  >
-                    {/* Image */}
-                    <div className="relative aspect-[3/4] overflow-hidden">
-                      <img
-                        src={costume.image}
-                        alt={costume.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        style={{ filter: 'brightness(0.85)' }}
-                      />
-                      {/* Gradient overlay */}
-                      <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(10,10,10,0.95) 0%, transparent 60%)' }} />
+      {/* ── CATEGORY TABS */}
+      <div style={{
+        background: '#111',
+        padding: '0 16px 12px',
+        overflowX: 'auto',
+        display: 'flex',
+        gap: '8px',
+        scrollbarWidth: 'none',
+        position: 'sticky',
+        top: '57px',
+        zIndex: 39,
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+      }}>
+        {CATEGORIES.map(cat => (
+          <button
+            key={cat.id}
+            id={`cat-${cat.id}`}
+            onClick={() => { setActiveCategory(cat.id.toString()); setSearchQuery(''); }}
+            style={{
+              flexShrink: 0,
+              padding: '8px 16px',
+              borderRadius: '50px',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 700,
+              fontSize: '13px',
+              transition: 'all 0.2s ease',
+              background: activeCategory === cat.id
+                ? 'linear-gradient(135deg, #FF6A00, #FF8C00)'
+                : 'rgba(255,255,255,0.07)',
+              color: activeCategory === cat.id ? '#fff' : 'rgba(255,255,255,0.5)',
+              boxShadow: activeCategory === cat.id ? '0 4px 12px rgba(255, 106, 0, 0.35)' : 'none',
+            }}
+          >
+            {cat.emoji} {cat.label}
+          </button>
+        ))}
+      </div>
 
-                      {/* Featured badge */}
-                      {costume.featured && (
-                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider flex items-center gap-1"
-                          style={{ background: 'rgba(255,106,0,0.9)', color: '#fff' }}>
-                          <Star size={8} fill="currentColor" />
-                          TOP
+      {/* ── MENU GRID */}
+      <main style={{ padding: '20px 16px 120px', maxWidth: '600px', margin: '0 auto' }}>
+        {/* Category title */}
+        {activeCategory !== 'all' && (
+          <h2 style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '16px' }}>
+            {CATEGORIES.find(c => c.id === activeCategory)?.emoji} {CATEGORIES.find(c => c.id === activeCategory)?.label} — {filteredItems.length} opciones
+          </h2>
+        )}
+
+        {filteredItems.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.3)' }}>
+            <div style={{ fontSize: '48px', marginBottom: '12px' }}>🔍</div>
+            <p style={{ fontWeight: 700 }}>No hay resultados para "{searchQuery}"</p>
+          </div>
+        ) : (
+          <AnimatePresence mode="popLayout">
+            {filteredItems.map((item, idx) => {
+              const qty = getItemQty(item.id);
+              const badge = item.badge ? BADGE_CONFIG[item.badge] : null;
+
+              return (
+                <motion.div
+                  key={item.id}
+                  id={`menu-item-${item.id}`}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ delay: idx * 0.04 }}
+                  style={{
+                    background: 'rgba(255,255,255,0.04)',
+                    border: item.soldOut
+                      ? '1px solid rgba(239, 68, 68, 0.35)'
+                      : qty > 0
+                        ? '1px solid rgba(255, 106, 0, 0.4)'
+                        : '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: '20px',
+                    marginBottom: '12px',
+                    overflow: 'hidden',
+                    transition: 'border-color 0.2s ease',
+                    cursor: item.soldOut ? 'not-allowed' : 'pointer',
+                    opacity: item.soldOut ? 0.55 : 1,
+                  }}
+                  onClick={() => { if (!item.soldOut) setSelectedItem(item); }}
+                >
+                  <div style={{ display: 'flex', gap: '0' }}>
+                    {/* Content */}
+                    <div style={{ flex: 1, padding: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {/* Badge */}
+                      {badge && (
+                        <div style={{
+                          display: 'inline-flex', alignItems: 'center', gap: '4px',
+                          padding: '3px 8px', borderRadius: '6px',
+                          background: item.badge === 'MÁS VENDIDO' ? 'rgba(245,158,11,0.2)' :
+                                      item.badge === 'NOVEDAD' ? 'rgba(16,185,129,0.2)' :
+                                      item.badge === 'EN OFERTA' ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)',
+                          color: item.badge === 'MÁS VENDIDO' ? '#F59E0B' :
+                                 item.badge === 'NOVEDAD' ? '#10B981' :
+                                 item.badge === 'EN OFERTA' ? '#EF4444' : '#22C55E',
+                          fontSize: '10px', fontWeight: 800, textTransform: 'uppercase',
+                          letterSpacing: '0.06em', width: 'fit-content',
+                        }}>
+                          {item.badge === 'MÁS VENDIDO' ? '⭐' : item.badge === 'NOVEDAD' ? '✨' : item.badge === 'EN OFERTA' ? '🌶' : '🌿'}
+                          {' '}{badge.label}
                         </div>
                       )}
 
-                      {/* Type badge */}
-                      <div className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${typeInfo.color}`}
-                        style={{ color: '#fff' }}>
-                        <Tag size={8} className="inline mr-0.5 -mt-0.5" />
-                        {costume.type === 'Renta y Venta' ? 'R/V' : typeInfo.label}
+                      <h3 style={{ color: '#fff', fontWeight: 800, fontSize: '16px', lineHeight: 1.2, margin: 0 }}>
+                        {item.name}
+                      </h3>
+                      <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '12px', lineHeight: 1.5, margin: 0 }}>
+                        {item.description}
+                      </p>
+
+                      {/* Stats */}
+                      <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
                       </div>
 
-                      {/* Price on image */}
-                      <div className="absolute bottom-0 left-0 right-0 p-2.5">
-                        <p className="text-xs font-black leading-none" style={{ color: '#fff' }}>
-                          {costume.name}
-                        </p>
-                        <div className="flex items-center gap-1.5 mt-1">
-                          {costume.rentalPrice && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md"
-                              style={{ background: 'rgba(124,58,237,0.7)', color: '#e9d5ff' }}>
-                              Renta ${costume.rentalPrice}
-                            </span>
-                          )}
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md"
-                            style={{ background: 'rgba(255,106,0,0.7)', color: '#fff' }}>
-                            Venta ${costume.price}
+                      {/* Price + Add button */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '8px' }}>
+                        <span style={{ color: '#FF8C00', fontWeight: 900, fontSize: '20px' }}>
+                          ${item.price}
+                          <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', fontWeight: 500 }}> MXN</span>
+                        </span>
+
+                        {/* Quantity controls or add button */}
+                        {item.soldOut ? (
+                          <span
+                            style={{
+                              background: 'rgba(239, 68, 68, 0.15)',
+                              color: '#EF4444',
+                              border: '1px solid rgba(239, 68, 68, 0.35)',
+                              borderRadius: '12px',
+                              padding: '9px 14px',
+                              fontWeight: 900, fontSize: '11px',
+                              letterSpacing: '0.1em', textTransform: 'uppercase',
+                            }}
+                          >
+                            Agotado
                           </span>
-                        </div>
+                        ) : qty > 0 ? (
+                          <div
+                            onClick={e => e.stopPropagation()}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: '0',
+                              background: 'rgba(255, 106, 0, 0.15)',
+                              borderRadius: '12px', overflow: 'hidden',
+                              border: '1px solid rgba(255, 106, 0, 0.3)',
+                            }}
+                          >
+                            <button
+                              id={`qty-minus-${item.id}`}
+                              onClick={() => updateQty(item.id, -1)}
+                              style={{
+                                background: 'none', border: 'none', cursor: 'pointer',
+                                padding: '8px 12px', color: '#FF8C00', fontWeight: 900, fontSize: '16px',
+                                display: 'flex', alignItems: 'center',
+                              }}
+                            >
+                              <Minus size={14} />
+                            </button>
+                            <span style={{ color: '#fff', fontWeight: 800, fontSize: '15px', minWidth: '20px', textAlign: 'center' }}>
+                              {qty}
+                            </span>
+                            <button
+                              id={`qty-plus-${item.id}`}
+                              onClick={() => updateQty(item.id, 1)}
+                              style={{
+                                background: 'none', border: 'none', cursor: 'pointer',
+                                padding: '8px 12px', color: '#FF8C00', fontWeight: 900, fontSize: '16px',
+                                display: 'flex', alignItems: 'center',
+                              }}
+                            >
+                              <Plus size={14} />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            id={`add-to-cart-${item.id}`}
+                            onClick={e => { e.stopPropagation(); addToCart(item); }}
+                            style={{
+                              background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                              border: 'none', borderRadius: '12px',
+                              padding: '9px 16px', cursor: 'pointer',
+                              display: 'flex', alignItems: 'center', gap: '6px',
+                              color: '#fff', fontWeight: 800, fontSize: '13px',
+                              boxShadow: '0 4px 12px rgba(255, 106, 0, 0.35)',
+                              transition: 'transform 0.15s ease',
+                            }}
+                            onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.95)')}
+                            onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
+                          >
+                            <Plus size={14} />
+                            Agregar
+                          </button>
+                        )}
                       </div>
                     </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
-        </AnimatePresence>
+
+                    {/* Image */}
+                    <div style={{ width: '130px', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        style={{
+                          width: '100%', height: '100%', objectFit: 'cover',
+                          transition: 'transform 0.4s ease',
+                          filter: item.soldOut ? 'grayscale(0.8)' : 'none',
+                        }}
+                        onMouseEnter={e => { if (!item.soldOut) e.currentTarget.style.transform = 'scale(1.08)'; }}
+                        onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+                      />
+                      {item.soldOut && (
+                        <div style={{
+                          position: 'absolute', inset: 0,
+                          background: 'rgba(0,0,0,0.45)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          <span style={{
+                            background: 'rgba(239, 68, 68, 0.95)',
+                            color: '#fff', padding: '4px 10px', borderRadius: '6px',
+                            fontWeight: 900, fontSize: '10px',
+                            letterSpacing: '0.12em', textTransform: 'uppercase',
+                            transform: 'rotate(-8deg)',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+                          }}>
+                            Agotado
+                          </span>
+                        </div>
+                      )}
+                      {!item.soldOut && qty > 0 && (
+                        <div style={{
+                          position: 'absolute', inset: 0,
+                          background: 'rgba(255, 106, 0, 0.25)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          <div style={{
+                            background: '#FF6A00', borderRadius: '50%',
+                            width: '32px', height: '32px',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}>
+                            <Check size={16} color="#fff" strokeWidth={3} />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        )}
       </main>
 
-      {/* ══ FLOATING WHATSAPP BTN ════════════════════════════════════════════ */}
-      <div className="fixed bottom-6 right-4 z-40">
-        <motion.a
-          href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('👻 ¡Hola! Me interesa conocer los disfraces disponibles en Mundo de Halloween.')}`}
-          target="_blank"
-          rel="noreferrer"
-          whileHover={{ scale: 1.06 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-2 px-5 py-3 rounded-full font-bold text-sm shadow-2xl"
-          style={{ background: '#25D366', color: '#fff', boxShadow: '0 8px 32px rgba(37,211,102,0.4)' }}
-        >
-          <span>¡Cotiza aquí!</span>
-          <MessageCircle size={22} fill="currentColor" />
-        </motion.a>
-      </div>
-
-      {/* ══ PRODUCT DETAIL MODAL ════════════════════════════════════════════ */}
+      {/* ── FLOATING CART BUTTON (mobile) */}
       <AnimatePresence>
-        {selectedCostume && (
+        {totalItems > 0 && !isCartOpen && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            style={{
+              position: 'fixed', bottom: '24px', left: '16px', right: '16px',
+              zIndex: 50, maxWidth: '568px', margin: '0 auto',
+            }}
+          >
+            <button
+              id="floating-cart-btn"
+              onClick={() => { setIsCartOpen(true); setOrderStep('cart'); }}
+              style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                border: 'none', borderRadius: '18px', padding: '16px 24px',
+                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                boxShadow: '0 8px 32px rgba(255, 106, 0, 0.5)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  background: 'rgba(0,0,0,0.2)', borderRadius: '10px',
+                  padding: '4px 8px', color: '#fff', fontWeight: 900, fontSize: '13px',
+                }}>
+                  {totalItems}
+                </div>
+                <span style={{ color: '#fff', fontWeight: 800, fontSize: '15px' }}>Ver mi pedido</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 900, fontSize: '16px' }}>
+                  ${totalPrice} MXN
+                </span>
+                <ChevronRight size={20} color="rgba(255,255,255,0.8)" />
+              </div>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── ITEM DETAIL MODAL */}
+      <AnimatePresence>
+        {selectedItem && (
           <>
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setSelectedCostume(null)}
-              className="fixed inset-0 z-50"
-              style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
+              onClick={() => setSelectedItem(null)}
+              style={{
+                position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)',
+                backdropFilter: 'blur(4px)', zIndex: 60,
+              }}
             />
             <motion.div
-              initial={{ y: '100%', opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: '100%', opacity: 0 }}
-              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 z-50 max-h-[92vh] overflow-y-auto rounded-t-3xl"
-              style={{ background: '#0f0f0f', border: '1px solid rgba(255,106,0,0.2)' }}
+              initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+              style={{
+                position: 'fixed', bottom: 0, left: 0, right: 0,
+                background: '#1a1a1a', borderRadius: '24px 24px 0 0',
+                zIndex: 61, maxHeight: '90vh', overflow: 'auto',
+                maxWidth: '600px', margin: '0 auto',
+              }}
             >
-              {/* Handle bar */}
-              <div className="flex justify-center pt-4 pb-2">
-                <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }} />
-              </div>
-
-              <div className="px-4 pb-8">
-                {/* Image */}
-                <div className="relative rounded-2xl overflow-hidden mb-5" style={{ aspectRatio: '16/9' }}>
-                  <img
-                    src={selectedCostume.image}
-                    alt={selectedCostume.name}
-                    className="w-full h-full object-cover"
-                    style={{ filter: 'brightness(0.9)' }}
-                  />
-                  <button
-                    onClick={() => setSelectedCostume(null)}
-                    className="absolute top-3 right-3 w-9 h-9 rounded-xl flex items-center justify-center"
-                    style={{ background: 'rgba(0,0,0,0.6)', color: '#fff' }}
-                  >
-                    <X size={18} />
-                  </button>
-                  <div className="absolute bottom-3 left-3 flex gap-2">
-                    {getTypeInfo(selectedCostume).label && (
-                      <span className="px-2 py-1 rounded-lg text-xs font-black"
-                        style={{ background: 'rgba(124,58,237,0.85)', color: '#fff' }}>
-                        🎃 {selectedCostume.type}
-                      </span>
-                    )}
-                    {selectedCostume.featured && (
-                      <span className="px-2 py-1 rounded-lg text-xs font-black flex items-center gap-1"
-                        style={{ background: 'rgba(255,106,0,0.9)', color: '#fff' }}>
-                        <Star size={10} fill="currentColor" /> Destacado
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Name & description */}
-                <h3 className="text-xl font-black mb-2" style={{ color: '#fff' }}>
-                  {selectedCostume.name}
-                </h3>
-                <p className="text-sm mb-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                  {selectedCostume.description}
-                </p>
-
-                {/* Renta / Venta toggle */}
-                {selectedCostume.type === 'Renta y Venta' && (
-                  <div className="mb-4">
-                    <p className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                      ¿Renta o Venta?
-                    </p>
-                    <div className="flex gap-2">
-                      {(['Renta', 'Venta'] as const).map(t => (
-                        <button
-                          key={t}
-                          onClick={() => setSelectedOperationType(t)}
-                          className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all"
-                          style={{
-                            background: selectedOperationType === t
-                              ? t === 'Renta' ? '#7c3aed' : '#ff6a00'
-                              : 'rgba(255,255,255,0.06)',
-                            color: selectedOperationType === t ? '#fff' : 'rgba(255,255,255,0.4)',
-                            border: selectedOperationType === t ? 'none' : '1px solid rgba(255,255,255,0.08)',
-                          }}
-                        >
-                          {t === 'Renta' ? '🔮' : '🛒'} {t}
-                          {t === 'Renta' && selectedCostume.rentalPrice && ` — $${selectedCostume.rentalPrice}`}
-                          {t === 'Venta' && ` — $${selectedCostume.price}`}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Size selector */}
-                <div className="mb-5">
-                  <p className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                    Talla
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCostume.sizes.map(size => (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        className="px-4 py-2 rounded-xl text-sm font-bold transition-all"
-                        style={{
-                          background: selectedSize === size ? '#ff6a00' : 'rgba(255,255,255,0.06)',
-                          color: selectedSize === size ? '#fff' : 'rgba(255,255,255,0.5)',
-                          border: selectedSize === size ? 'none' : '1px solid rgba(255,255,255,0.08)',
-                          boxShadow: selectedSize === size ? '0 4px 16px rgba(255,106,0,0.35)' : 'none',
-                        }}
-                      >
-                        {size}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Price display */}
-                <div className="flex items-center justify-between mb-5 p-4 rounded-2xl" style={{ background: 'rgba(255,106,0,0.08)', border: '1px solid rgba(255,106,0,0.15)' }}>
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                      Precio {selectedOperationType}
-                    </p>
-                    <p className="text-2xl font-black" style={{ color: '#ff6a00' }}>
-                      ${selectedOperationType === 'Renta' && selectedCostume.rentalPrice ? selectedCostume.rentalPrice : selectedCostume.price}
-                      <span className="text-sm font-bold ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>MXN</span>
-                    </p>
-                  </div>
-                  {selectedCostume.rentalPrice && selectedCostume.type !== 'Venta' && (
-                    <div className="text-right">
-                      <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>Renta:</p>
-                      <p className="text-sm font-black" style={{ color: '#a855f7' }}>${selectedCostume.rentalPrice}</p>
-                      <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>Venta:</p>
-                      <p className="text-sm font-black" style={{ color: '#ff6a00' }}>${selectedCostume.price}</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Add to cart button */}
-                <motion.button
-                  onClick={addToCart}
-                  whileTap={{ scale: 0.97 }}
-                  disabled={!selectedSize}
-                  className="w-full py-4 rounded-2xl font-black text-base flex items-center justify-center gap-3 transition-all"
+              {/* Image */}
+              <div style={{ position: 'relative', height: '260px', overflow: 'hidden', borderRadius: '24px 24px 0 0' }}>
+                <img
+                  src={selectedItem.image}
+                  alt={selectedItem.name}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  background: 'linear-gradient(to top, rgba(26,26,26,1) 0%, rgba(26,26,26,0) 50%)',
+                }} />
+                <button
+                  onClick={() => setSelectedItem(null)}
                   style={{
-                    background: selectedSize ? 'linear-gradient(135deg, #ff6a00, #b84500)' : 'rgba(255,255,255,0.06)',
-                    color: selectedSize ? '#fff' : 'rgba(255,255,255,0.25)',
-                    boxShadow: selectedSize ? '0 8px 32px rgba(255,106,0,0.4)' : 'none',
-                    cursor: selectedSize ? 'pointer' : 'not-allowed',
+                    position: 'absolute', top: '16px', right: '16px',
+                    background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%',
+                    width: '36px', height: '36px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    backdropFilter: 'blur(4px)',
                   }}
                 >
-                  <ShoppingCart size={20} />
-                  Agregar al Carrito
-                </motion.button>
+                  <X size={18} color="#fff" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div style={{ padding: '20px 20px 40px' }}>
+                <h2 style={{ color: '#fff', fontWeight: 900, fontSize: '24px', margin: '0 0 8px' }}>
+                  {selectedItem.name}
+                </h2>
+                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', lineHeight: 1.6, margin: '0 0 16px' }}>
+                  {selectedItem.description}
+                </p>
+
+                {/* Stats row */}
+                <div style={{
+                  display: 'flex', gap: '12px',
+                  background: 'rgba(255,255,255,0.05)', borderRadius: '14px', padding: '12px 16px',
+                  marginBottom: '24px',
+                }}>
+                  
+                  <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }} />
+                  <div style={{ textAlign: 'center', flex: 1 }}>
+                    <div style={{ color: '#fff', fontWeight: 800, fontSize: '18px' }}>${selectedItem.price}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>MXN</div>
+                  </div>
+                </div>
+
+                {/* Action */}
+                {getItemQty(selectedItem.id) > 0 ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0',
+                      background: 'rgba(255, 106, 0, 0.12)',
+                      border: '1px solid rgba(255, 106, 0, 0.3)',
+                      borderRadius: '14px', overflow: 'hidden',
+                    }}>
+                      <button
+                        onClick={() => updateQty(selectedItem.id, -1)}
+                        style={{
+                          flex: 1, background: 'none', border: 'none', cursor: 'pointer',
+                          padding: '14px', color: '#FF8C00', fontWeight: 900, fontSize: '20px',
+                        }}
+                      >
+                        <Minus size={18} />
+                      </button>
+                      <span style={{ color: '#fff', fontWeight: 900, fontSize: '20px', minWidth: '30px', textAlign: 'center' }}>
+                        {getItemQty(selectedItem.id)}
+                      </span>
+                      <button
+                        onClick={() => updateQty(selectedItem.id, 1)}
+                        style={{
+                          flex: 1, background: 'none', border: 'none', cursor: 'pointer',
+                          padding: '14px', color: '#FF8C00', fontWeight: 900, fontSize: '20px',
+                        }}
+                      >
+                        <Plus size={18} />
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => setSelectedItem(null)}
+                      style={{
+                        background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                        border: 'none', borderRadius: '14px',
+                        padding: '14px 20px', cursor: 'pointer',
+                        color: '#fff', fontWeight: 800, fontSize: '15px',
+                        boxShadow: '0 4px 20px rgba(255, 106, 0, 0.4)',
+                      }}
+                    >
+                      ✓ Listo
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => { addToCart(selectedItem); setSelectedItem(null); }}
+                    style={{
+                      width: '100%',
+                      background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                      border: 'none', borderRadius: '14px',
+                      padding: '16px', cursor: 'pointer',
+                      color: '#fff', fontWeight: 900, fontSize: '16px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                      boxShadow: '0 4px 20px rgba(255, 106, 0, 0.4)',
+                    }}
+                  >
+                    <Plus size={20} />
+                    Agregar al pedido — ${selectedItem.price} MXN
+                  </button>
+                )}
               </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
 
-      {/* ══ CART DRAWER ═════════════════════════════════════════════════════ */}
+      {/* ── CART DRAWER */}
       <AnimatePresence>
         {isCartOpen && (
           <>
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setIsCartOpen(false)}
-              className="fixed inset-0 z-50"
-              style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
+              style={{
+                position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+                backdropFilter: 'blur(4px)', zIndex: 70,
+              }}
             />
             <motion.div
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="fixed right-0 top-0 h-[100dvh] w-full max-w-sm z-50 flex flex-col"
-              style={{ background: '#0f0f0f', borderLeft: '1px solid rgba(255,106,0,0.15)' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              style={{
+                position: 'fixed', right: 0, top: 0, bottom: 0,
+                width: '100%', maxWidth: '420px',
+                background: '#111', zIndex: 71,
+                display: 'flex', flexDirection: 'column',
+                boxShadow: '-20px 0 60px rgba(0,0,0,0.5)',
+              }}
             >
               {/* Cart Header */}
-              <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <div className="flex items-center gap-2">
-                  <ShoppingBag size={20} style={{ color: '#ff6a00' }} />
-                  <h2 className="text-lg font-black" style={{ color: '#fff' }}>Tu Carrito</h2>
-                  {cart.length > 0 && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black" style={{ background: '#ff6a00', color: '#fff' }}>
-                      {cart.length}
-                    </span>
+              <div style={{
+                padding: '20px',
+                borderBottom: '1px solid rgba(255,255,255,0.08)',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}>
+                <div>
+                  <h2 style={{ color: '#fff', fontWeight: 900, fontSize: '22px', margin: 0 }}>
+                    {orderStep === 'cart' ? '🛒 Tu Pedido' : '📱 Confirmar'}
+                  </h2>
+                  {orderStep === 'cart' && cart.length > 0 && (
+                    <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', margin: '2px 0 0' }}>
+                      {totalItems} {totalItems === 1 ? 'artículo' : 'artículos'}
+                    </p>
                   )}
                 </div>
-                <button onClick={() => setIsCartOpen(false)}>
-                  <X size={22} style={{ color: 'rgba(255,255,255,0.4)' }} />
+                <button
+                  onClick={() => setIsCartOpen(false)}
+                  style={{
+                    background: 'rgba(255,255,255,0.08)', border: 'none',
+                    borderRadius: '50%', width: '40px', height: '40px',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}
+                >
+                  <X size={20} color="rgba(255,255,255,0.7)" />
                 </button>
               </div>
 
-              {/* Cart Items */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                {cart.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <div className="text-5xl">🎃</div>
-                    <p className="text-base font-bold" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                      Tu carrito está vacío
-                    </p>
-                    <button
-                      onClick={() => setIsCartOpen(false)}
-                      className="px-4 py-2 rounded-xl text-sm font-bold"
-                      style={{ background: 'rgba(255,106,0,0.15)', color: '#ff6a00' }}
-                    >
-                      Explorar disfraces
-                    </button>
-                  </div>
-                ) : (
-                  cart.map(item => (
-                    <div
-                      key={item.costumeId}
-                      className="flex items-center gap-3 p-3 rounded-2xl"
-                      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
-                    >
-                      <div className="w-14 h-16 rounded-xl overflow-hidden flex-shrink-0">
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold truncate" style={{ color: '#fff' }}>{item.name}</p>
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold"
-                            style={{ background: item.type === 'Renta' ? 'rgba(124,58,237,0.4)' : 'rgba(255,106,0,0.3)', color: item.type === 'Renta' ? '#c4b5fd' : '#fdba74' }}>
-                            {item.type}
-                          </span>
-                          <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                            Talla: {item.size}
-                          </span>
+              {/* Cart Content */}
+              <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+                <AnimatePresence mode="wait">
+                  {/* STEP 1: Cart Items */}
+                  {orderStep === 'cart' && (
+                    <motion.div key="cart-items" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                      {cart.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.3)' }}>
+                          <div style={{ fontSize: '56px', marginBottom: '12px' }}>🍔</div>
+                          <p style={{ fontWeight: 700, fontSize: '15px' }}>Tu pedido está vacío</p>
+                          <p style={{ fontSize: '13px', marginTop: '6px' }}>Agrega algo del menú para comenzar</p>
                         </div>
-                        <p className="text-base font-black mt-1" style={{ color: '#ff6a00' }}>${item.price} MXN</p>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {cart.map(item => (
+                            <motion.div
+                              key={item.id}
+                              layout
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              style={{
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,255,255,0.08)',
+                                borderRadius: '16px', padding: '12px 14px',
+                                display: 'flex', alignItems: 'center', gap: '12px',
+                              }}
+                            >
+                              <img
+                                src={item.image}
+                                alt={item.name}
+                                style={{ width: '52px', height: '52px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0 }}
+                              />
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <p style={{ color: '#fff', fontWeight: 700, fontSize: '14px', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                  {item.name}
+                                </p>
+                                <p style={{ color: '#FF8C00', fontWeight: 800, fontSize: '14px', margin: '2px 0 0' }}>
+                                  ${item.price * item.quantity}
+                                </p>
+                              </div>
+                              <div style={{
+                                display: 'flex', alignItems: 'center', gap: '6px',
+                                background: 'rgba(255,255,255,0.06)', borderRadius: '10px', padding: '4px',
+                              }}>
+                                <button
+                                  onClick={() => updateQty(item.id, -1)}
+                                  style={{
+                                    background: 'none', border: 'none', cursor: 'pointer',
+                                    width: '28px', height: '28px', borderRadius: '8px',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    color: 'rgba(255,255,255,0.6)',
+                                  }}
+                                >
+                                  <Minus size={14} />
+                                </button>
+                                <span style={{ color: '#fff', fontWeight: 800, fontSize: '14px', minWidth: '18px', textAlign: 'center' }}>
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  onClick={() => updateQty(item.id, 1)}
+                                  style={{
+                                    background: 'rgba(255, 106, 0, 0.2)', border: 'none', cursor: 'pointer',
+                                    width: '28px', height: '28px', borderRadius: '8px',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    color: '#FF8C00',
+                                  }}
+                                >
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+
+                  {/* STEP 2: Confirm + Name */}
+                  {orderStep === 'confirm' && (
+                    <motion.div key="confirm" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                      {/* Order summary */}
+                      <div style={{
+                        background: 'rgba(255, 106, 0, 0.08)',
+                        border: '1px solid rgba(255, 106, 0, 0.2)',
+                        borderRadius: '16px', padding: '16px', marginBottom: '20px',
+                      }}>
+                        <p style={{ color: '#FF8C00', fontWeight: 700, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 12px' }}>
+                          Resumen del pedido
+                        </p>
+                        {cart.map(item => (
+                          <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px' }}>
+                              {item.name} x{item.quantity}
+                            </span>
+                            <span style={{ color: '#fff', fontWeight: 700, fontSize: '13px' }}>
+                              ${item.price * item.quantity}
+                            </span>
+                          </div>
+                        ))}
+                        <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '12px', paddingTop: '12px', display: 'flex', justifyContent: 'space-between' }}>
+                          <span style={{ color: '#fff', fontWeight: 900, fontSize: '15px' }}>Total</span>
+                          <span style={{ color: '#FF8C00', fontWeight: 900, fontSize: '18px' }}>${totalPrice} MXN</span>
+                        </div>
                       </div>
-                      <button
-                        onClick={() => removeFromCart(item.costumeId)}
-                        className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all hover:scale-110"
-                        style={{ background: 'rgba(239,68,68,0.15)', color: '#f87171' }}
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  ))
-                )}
+
+                      {/* Name input */}
+                      <div style={{ marginBottom: '16px' }}>
+                        <label style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: '8px' }}>
+                          Tu nombre (opcional)
+                        </label>
+                        <input
+                          id="customer-name-input"
+                          value={customerName}
+                          onChange={e => setCustomerName(e.target.value)}
+                          placeholder="Ej: Juan García"
+                          style={{
+                            width: '100%', background: 'rgba(255,255,255,0.07)',
+                            border: '1px solid rgba(255,255,255,0.12)',
+                            borderRadius: '12px', padding: '14px 16px',
+                            color: '#fff', fontSize: '15px', outline: 'none',
+                            boxSizing: 'border-box',
+                          }}
+                        />
+                      </div>
+
+                      <div style={{
+                        background: 'rgba(255,255,255,0.04)', borderRadius: '12px',
+                        padding: '12px 14px', marginBottom: '8px',
+                      }}>
+                        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', margin: 0 }}>
+                          📱 Al confirmar, abriremos WhatsApp con tu pedido desglosado listo para enviar.
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Cart Footer */}
               {cart.length > 0 && (
-                <div className="p-4 space-y-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                  <div className="flex justify-between items-center px-1">
-                    <span className="text-sm font-bold" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                      {cart.length} {cart.length === 1 ? 'disfraz' : 'disfraces'}
-                    </span>
-                    <span className="text-2xl font-black" style={{ color: '#ff6a00' }}>
-                      ${totalPrice} <span className="text-sm font-bold" style={{ color: 'rgba(255,255,255,0.4)' }}>MXN</span>
-                    </span>
-                  </div>
-                  <p className="text-[10px] text-center" style={{ color: 'rgba(255,255,255,0.25)' }}>
-                    * El total es estimado. Confirmamos disponibilidad y precio exacto vía WhatsApp.
-                  </p>
-                  <motion.button
-                    onClick={sendWhatsApp}
-                    whileTap={{ scale: 0.97 }}
-                    className="w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3"
-                    style={{ background: '#25D366', color: '#fff', boxShadow: '0 8px 24px rgba(37,211,102,0.35)' }}
-                  >
-                    <MessageCircle size={20} fill="currentColor" />
-                    Reservar vía WhatsApp
-                  </motion.button>
+                <div style={{
+                  padding: '16px 20px 24px',
+                  borderTop: '1px solid rgba(255,255,255,0.08)',
+                }}>
+                  {orderStep === 'cart' && (
+                    <>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '14px' }}>
+                        <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>Total del pedido</span>
+                        <span style={{ color: '#fff', fontWeight: 900, fontSize: '20px' }}>
+                          ${totalPrice} <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>MXN</span>
+                        </span>
+                      </div>
+                      <button
+                        id="proceed-to-confirm-btn"
+                        onClick={() => setOrderStep('confirm')}
+                        style={{
+                          width: '100%',
+                          background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                          border: 'none', borderRadius: '16px',
+                          padding: '16px', cursor: 'pointer',
+                          color: '#fff', fontWeight: 900, fontSize: '16px',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                          boxShadow: '0 8px 24px rgba(255, 106, 0, 0.4)',
+                        }}
+                      >
+                        Continuar
+                        <ChevronRight size={20} />
+                      </button>
+                    </>
+                  )}
+
+                  {orderStep === 'confirm' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <button
+                        id="back-to-cart-btn"
+                        onClick={() => setOrderStep('cart')}
+                        style={{
+                          background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)',
+                          borderRadius: '14px', padding: '12px',
+                          cursor: 'pointer', color: 'rgba(255,255,255,0.6)',
+                          fontWeight: 700, fontSize: '14px',
+                        }}
+                      >
+                        ← Volver al carrito
+                      </button>
+
+                      <AnimatePresence mode="wait">
+                        {orderSent ? (
+                          <motion.div
+                            key="sent"
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            style={{
+                              background: 'linear-gradient(135deg, #22C55E, #16A34A)',
+                              borderRadius: '16px', padding: '16px',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                              color: '#fff', fontWeight: 900, fontSize: '16px',
+                              boxShadow: '0 8px 24px rgba(34, 197, 94, 0.4)',
+                            }}
+                          >
+                            <Check size={22} strokeWidth={3} /> ¡Pedido enviado!
+                          </motion.div>
+                        ) : (
+                          <motion.button
+                            key="whatsapp-btn"
+                            id="whatsapp-order-btn"
+                            onClick={handleCheckout}
+                            style={{
+                              background: 'linear-gradient(135deg, #25D366, #128C7E)',
+                              border: 'none', borderRadius: '16px',
+                              padding: '16px', cursor: 'pointer',
+                              color: '#fff', fontWeight: 900, fontSize: '16px',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                              boxShadow: '0 8px 24px rgba(37, 211, 102, 0.4)',
+                            }}
+                          >
+                            <MessageCircle size={20} fill="currentColor" />
+                            Enviar pedido por WhatsApp
+                          </motion.button>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
                 </div>
               )}
             </motion.div>
@@ -789,47 +1052,351 @@ export default function MundoHalloween() {
         )}
       </AnimatePresence>
 
-      {/* ══ TOAST ════════════════════════════════════════════════════════════ */}
+      {/* ── FLOATING ADMIN BUTTON (modo administrador) ───────────────────── */}
+      <button
+        id="open-admin-btn"
+        onClick={() => setIsAdminOpen(true)}
+        title="Modo administrador — Edita precios, imágenes y disponibilidad"
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          left: '16px',
+          zIndex: 55,
+          background: 'rgba(20, 20, 20, 0.85)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 140, 0, 0.35)',
+          borderRadius: '999px',
+          padding: '9px 14px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '7px',
+          color: 'rgba(255, 200, 140, 0.9)',
+          fontWeight: 700,
+          fontSize: '11px',
+          letterSpacing: '0.05em',
+          boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
+          transition: 'all 0.2s ease',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.background = 'rgba(255, 106, 0, 0.95)';
+          e.currentTarget.style.color = '#fff';
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.background = 'rgba(20, 20, 20, 0.85)';
+          e.currentTarget.style.color = 'rgba(255, 200, 140, 0.9)';
+        }}
+      >
+        <Settings size={14} />
+        Ver modo administrador
+      </button>
+
+      {/* ── ADMIN PANEL (gestión en vivo del catálogo) ───────────────────── */}
       <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: 80, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 80, scale: 0.9 }}
-            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[60] px-5 py-3 rounded-2xl text-sm font-bold shadow-2xl"
-            style={{ background: '#ff6a00', color: '#fff', maxWidth: '90vw', whiteSpace: 'nowrap' }}
-          >
-            {toast}
-          </motion.div>
+        {isAdminOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => { setIsAdminOpen(false); setAdminPickerForId(null); }}
+              style={{
+                position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)',
+                backdropFilter: 'blur(6px)', zIndex: 80,
+              }}
+            />
+            <motion.div
+              initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 280 }}
+              style={{
+                position: 'fixed', left: 0, top: 0, bottom: 0,
+                width: '100%', maxWidth: '460px',
+                background: '#0F0F0F', zIndex: 81,
+                display: 'flex', flexDirection: 'column',
+                boxShadow: '20px 0 60px rgba(0,0,0,0.6)',
+                borderRight: '1px solid rgba(255, 140, 0, 0.15)',
+              }}
+            >
+              {/* Header */}
+              <div style={{
+                padding: '20px',
+                borderBottom: '1px solid rgba(255,255,255,0.08)',
+                background: 'linear-gradient(135deg, #1a0a00 0%, #2d1000 100%)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{
+                      width: 40, height: 40, borderRadius: '12px',
+                      background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: '0 4px 14px rgba(255, 106, 0, 0.4)',
+                    }}>
+                      <Settings size={20} color="#fff" />
+                    </div>
+                    <div>
+                      <h2 style={{ color: '#fff', fontWeight: 900, fontSize: '17px', margin: 0, letterSpacing: '-0.3px' }}>
+                        Modo administrador
+                      </h2>
+                      <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', margin: '2px 0 0' }}>
+                        Edita en vivo — cambios instantáneos
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => { setIsAdminOpen(false); setAdminPickerForId(null); }}
+                    style={{
+                      background: 'rgba(255,255,255,0.08)', border: 'none',
+                      borderRadius: '50%', width: '36px', height: '36px',
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}
+                  >
+                    <X size={18} color="rgba(255,255,255,0.7)" />
+                  </button>
+                </div>
+
+                <div style={{
+                  marginTop: '10px',
+                  background: 'rgba(255, 106, 0, 0.12)',
+                  border: '1px solid rgba(255, 106, 0, 0.25)',
+                  borderRadius: '10px',
+                  padding: '8px 12px',
+                  fontSize: '11px',
+                  color: 'rgba(255, 200, 140, 0.9)',
+                  lineHeight: 1.5,
+                }}>
+                  💡 Demo: el dueño edita precios y disponibilidad desde su celular.
+                  Conectado a Google Sheets, esto vive sincronizado en todos los dispositivos.
+                </div>
+              </div>
+
+              {/* Acciones globales */}
+              <div style={{
+                padding: '12px 20px',
+                borderBottom: '1px solid rgba(255,255,255,0.06)',
+                display: 'flex', gap: '8px',
+              }}>
+                <button
+                  onClick={resetMenu}
+                  style={{
+                    flex: 1,
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '10px',
+                    padding: '8px 10px',
+                    cursor: 'pointer',
+                    color: 'rgba(255,255,255,0.65)',
+                    fontWeight: 700, fontSize: '11px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                  }}
+                >
+                  <RefreshCw size={12} />
+                  Restaurar demo
+                </button>
+                <button
+                  onClick={() => { setIsAdminOpen(false); }}
+                  style={{
+                    flex: 1,
+                    background: 'linear-gradient(135deg, #22C55E, #16A34A)',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '8px 10px',
+                    cursor: 'pointer',
+                    color: '#fff',
+                    fontWeight: 800, fontSize: '11px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                    boxShadow: '0 4px 14px rgba(34, 197, 94, 0.3)',
+                  }}
+                >
+                  <Save size={12} />
+                  Ver menú actualizado
+                </button>
+              </div>
+
+              {/* Lista de productos editables */}
+              <div style={{ flex: 1, overflowY: 'auto', padding: '14px 16px 24px' }}>
+                {menuItems.map(item => (
+                  <div
+                    key={item.id}
+                    style={{
+                      background: item.soldOut ? 'rgba(239,68,68,0.06)' : 'rgba(255,255,255,0.04)',
+                      border: item.soldOut
+                        ? '1px solid rgba(239,68,68,0.25)'
+                        : '1px solid rgba(255,255,255,0.07)',
+                      borderRadius: '16px',
+                      padding: '12px',
+                      marginBottom: '10px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        style={{
+                          width: '54px', height: '54px',
+                          borderRadius: '10px', objectFit: 'cover',
+                          flexShrink: 0,
+                          filter: item.soldOut ? 'grayscale(0.7)' : 'none',
+                        }}
+                      />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{
+                          color: '#fff', fontWeight: 800, fontSize: '13px',
+                          margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>
+                          {item.name}
+                        </p>
+                        <p style={{
+                          color: 'rgba(255,255,255,0.35)', fontSize: '10px', margin: '2px 0 0',
+                          textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700,
+                        }}>
+                          {CATEGORIES.find(c => c.id === item.category)?.label || item.category}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Controles de edición */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '10px' }}>
+                      {/* Precio */}
+                      <div style={{
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: '10px',
+                        padding: '6px 10px',
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                      }}>
+                        <DollarSign size={14} color="#FF8C00" />
+                        <input
+                          id={`admin-price-${item.id}`}
+                          type="number"
+                          min="0"
+                          value={item.price}
+                          onChange={e => updateItem(item.id, { price: Number(e.target.value) || 0 })}
+                          style={{
+                            flex: 1, minWidth: 0,
+                            background: 'transparent', border: 'none', outline: 'none',
+                            color: '#fff', fontWeight: 800, fontSize: '13px',
+                            width: '100%',
+                          }}
+                        />
+                        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '10px', fontWeight: 700 }}>MXN</span>
+                      </div>
+
+                      {/* Toggle agotado */}
+                      <button
+                        id={`admin-soldout-${item.id}`}
+                        onClick={() => updateItem(item.id, { soldOut: !item.soldOut })}
+                        style={{
+                          background: item.soldOut ? 'rgba(239,68,68,0.18)' : 'rgba(34,197,94,0.12)',
+                          border: item.soldOut ? '1px solid rgba(239,68,68,0.35)' : '1px solid rgba(34,197,94,0.3)',
+                          borderRadius: '10px',
+                          padding: '6px 10px',
+                          cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                          color: item.soldOut ? '#EF4444' : '#22C55E',
+                          fontWeight: 800, fontSize: '11px',
+                          textTransform: 'uppercase', letterSpacing: '0.05em',
+                        }}
+                      >
+                        {item.soldOut ? <EyeOff size={13} /> : <Eye size={13} />}
+                        {item.soldOut ? 'Agotado' : 'Disponible'}
+                      </button>
+                    </div>
+
+                    {/* Cambio de imagen */}
+                    <button
+                      id={`admin-img-${item.id}`}
+                      onClick={() => setAdminPickerForId(adminPickerForId === item.id ? null : item.id)}
+                      style={{
+                        marginTop: '8px',
+                        width: '100%',
+                        background: adminPickerForId === item.id ? 'rgba(255, 106, 0, 0.18)' : 'rgba(255,255,255,0.05)',
+                        border: adminPickerForId === item.id ? '1px solid rgba(255, 106, 0, 0.4)' : '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: '10px',
+                        padding: '7px 10px',
+                        cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                        color: adminPickerForId === item.id ? '#FF8C00' : 'rgba(255,255,255,0.6)',
+                        fontWeight: 700, fontSize: '11px',
+                      }}
+                    >
+                      <ImageIcon size={13} />
+                      {adminPickerForId === item.id ? 'Cerrar galería' : 'Cambiar imagen (banco stock)'}
+                    </button>
+
+                    {/* Picker de stock */}
+                    <AnimatePresence>
+                      {adminPickerForId === item.id && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          style={{ overflow: 'hidden' }}
+                        >
+                          <div style={{
+                            marginTop: '8px',
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(4, 1fr)',
+                            gap: '6px',
+                          }}>
+                            {STOCK_IMAGES.map(stock => {
+                              const isActive = item.image === stock.url;
+                              return (
+                                <button
+                                  key={stock.url}
+                                  onClick={() => {
+                                    updateItem(item.id, { image: stock.url });
+                                    setAdminPickerForId(null);
+                                  }}
+                                  title={stock.label}
+                                  style={{
+                                    position: 'relative',
+                                    padding: 0,
+                                    background: 'transparent',
+                                    border: isActive ? '2px solid #FF8C00' : '2px solid transparent',
+                                    borderRadius: '10px',
+                                    cursor: 'pointer',
+                                    overflow: 'hidden',
+                                    aspectRatio: '1 / 1',
+                                  }}
+                                >
+                                  <img
+                                    src={stock.url}
+                                    alt={stock.label}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                                  />
+                                  {isActive && (
+                                    <div style={{
+                                      position: 'absolute', top: 2, right: 2,
+                                      background: '#FF6A00', borderRadius: '50%',
+                                      width: '16px', height: '16px',
+                                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    }}>
+                                      <Check size={10} color="#fff" strokeWidth={3} />
+                                    </div>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
-      {/* ══ FOOTER ══════════════════════════════════════════════════════════ */}
-      <footer className="border-t px-6 py-10 text-center" style={{ borderColor: 'rgba(255,255,255,0.04)', background: '#0a0a0a' }}>
-        <div className="text-2xl mb-2">🎃</div>
-        <h3 className="text-lg font-black mb-1" style={{ color: '#fff' }}>Mundo de Halloween</h3>
-        <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.3)' }}>
-          La mejor selección de disfraces para Renta y Venta
-        </p>
-        <a
-          href={`https://wa.me/${WHATSAPP_NUMBER}`}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-2 text-sm font-bold px-5 py-2.5 rounded-full transition-all"
-          style={{ background: 'rgba(37,211,102,0.15)', color: '#25D366', border: '1px solid rgba(37,211,102,0.25)' }}
-        >
-          <MessageCircle size={16} fill="currentColor" />
-          Contáctanos en WhatsApp
+      {/* ── FOOTER DEMO BADGE */}
+      <div style={{
+        textAlign: 'center', padding: '16px', paddingBottom: '100px',
+        color: 'rgba(255,255,255,0.2)', fontSize: '11px',
+      }}>
+        Menú digital demo creado con ❤️ por{' '}
+        <a href="/#/" style={{ color: 'rgba(255, 140, 0, 0.6)', textDecoration: 'none' }}>
+          Imagine & Stamp
         </a>
-        <p className="text-[10px] mt-6 uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.15)' }}>
-          Demo creado por Imagine & Stamp — 2026
-        </p>
-        <p className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.1)' }}>
-          <button onClick={() => (window.location.hash = '/')} className="hover:underline">
-            ← Volver a Imagine & Stamp
-          </button>
-        </p>
-      </footer>
+      </div>
     </div>
   );
 }
