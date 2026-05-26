@@ -33,14 +33,31 @@ interface CartItem extends Costume {
 }
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
-const WHATSAPP_NUMBER = '525650469993'; // Your WhatsApp number
+const WHATSAPP_NUMBER = '525560917169'; // Número real de pedidos
 
 const CATEGORIES = [
-  { id: 'all',         label: 'Todo',        emoji: '🎃' },
-  { id: 'terror',      label: 'Terror',      emoji: '🧟‍♂️' },
-  { id: 'superheroes', label: 'Superhéroes', emoji: '🦸‍♂️' },
-  { id: 'infantiles',  label: 'Infantiles',  emoji: '🧸' },
-  { id: 'accesorios',  label: 'Accesorios',  emoji: '🎭' },
+  { id: 'all',                      label: 'Todo',                      emoji: '🎃' },
+  { id: 'aliens',                   label: 'Alíens',                    emoji: '👽' },
+  { id: 'brujas',                   label: 'Brujas',                    emoji: '🧙‍♀️' },
+  { id: 'caretas',                  label: 'Caretas',                   emoji: '🎭' },
+  { id: 'creepypasta',              label: 'Creepypasta',               emoji: '👾' },
+  { id: 'dr-peste',                 label: 'Dr. Peste',                 emoji: '🦠' },
+  { id: 'esqueletos',               label: 'Esqueletos',                emoji: '💀' },
+  { id: 'hombres-lobo',             label: 'Hombres Lobo',              emoji: '🐺' },
+  { id: 'masacre-en-texas',         label: 'Masacre en Texas',          emoji: '🪚' },
+  { id: 'michael-myers',            label: 'Michael Myers',             emoji: '🔪' },
+  { id: 'monstruos',                label: 'Monstruos',                 emoji: '👹' },
+  { id: 'payasos',                  label: 'Payasos',                   emoji: '🤡' },
+  { id: 'personajes-de-peliculas',  label: 'Personajes de Películas',   emoji: '🎬' },
+  { id: 'scarecrow',                label: 'Scarecrow',                 emoji: '🌾' },
+  { id: 'soldados',                 label: 'Soldados',                  emoji: '🪖' },
+  { id: 'vampiros',                 label: 'Vampiros',                  emoji: '🧛' },
+  { id: 'zombies',                  label: 'Zombies',                   emoji: '🧟' },
+  { id: 'decorativos',              label: 'Decorativos',               emoji: '🕯️' },
+  { id: 'disfraces',                label: 'Disfraces',                 emoji: '👗' },
+  { id: 'silla-electrica',          label: 'Silla eléctrica',           emoji: '⚡' },
+  { id: 'animatronics',             label: 'Animatronics',              emoji: '🤖' },
+  { id: 'otros',                    label: 'Otros',                     emoji: '✨' },
 ];
 
 const INITIAL_MENU_ITEMS: Costume[] = [
@@ -325,37 +342,32 @@ export default function MundoHalloween() {
           background: 'rgba(255, 140, 0, 0.08)',
         }} />
 
-        <div className="relative z-10 px-5 pt-10 pb-8">
+        <div className="relative z-10 px-5 pt-8 pb-8">
           {/* Back link */}
           <a
             href="/#/"
-            className="inline-flex items-center gap-1.5 text-white/50 hover:text-white transition-colors mb-6 text-sm"
+            className="inline-flex items-center gap-1.5 text-white/50 hover:text-white transition-colors mb-4 text-sm"
           >
             <ArrowLeft size={16} />
-            Volver a Imagine & Stamp
+            Volver a Imagine &amp; Stamp
           </a>
 
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="flex items-center gap-4 mb-2">
-                <img
-                  src="/logo-halloween.png"
-                  alt="Mundo de Halloween Logo"
-                  className="h-12 w-auto object-contain md:h-16 shrink-0"
-                  style={{ filter: 'drop-shadow(0 0 10px rgba(255, 106, 0, 0.3))' }}
-                />
-                <div>
-                  <h1 style={{ color: '#fff', fontSize: '26px', fontWeight: 900, lineHeight: 1, letterSpacing: '-0.5px' }}>
-                    Mundo de Halloween
-                  </h1>
-                  <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', marginTop: '4px', fontWeight: 600 }}>
-                    Tu Pasaporte al Terror y la Diversión
-                  </p>
-                </div>
-              </div>
+          {/* Logo centrado + cart a la derecha */}
+          <div className="flex items-center justify-between gap-4">
+            {/* Logo + slogan */}
+            <div className="flex flex-col items-center flex-1">
+              <img
+                src="/logo-halloween.png"
+                alt="Mundo de Halloween"
+                className="h-28 md:h-36 w-auto object-contain"
+                style={{ filter: 'drop-shadow(0 0 18px rgba(255, 106, 0, 0.45))' }}
+              />
+              <p className="text-white/70 text-sm font-semibold text-center mt-2 tracking-wide">
+                Tu Pasaporte al Terror y la Diversión
+              </p>
             </div>
 
-            {/* Cart button in header */}
+            {/* Cart button */}
             <button
               id="cart-open-btn"
               onClick={() => { setIsCartOpen(true); setOrderStep('cart'); }}
@@ -370,6 +382,7 @@ export default function MundoHalloween() {
                 alignItems: 'center',
                 gap: '8px',
                 transition: 'all 0.2s ease',
+                flexShrink: 0,
                 boxShadow: totalItems > 0 ? '0 4px 20px rgba(255, 106, 0, 0.4)' : 'none',
               }}
             >
@@ -392,8 +405,6 @@ export default function MundoHalloween() {
               )}
             </button>
           </div>
-
-
         </div>
       </header>
 
@@ -1256,34 +1267,67 @@ export default function MundoHalloween() {
 
       {/* ── CORPORATE FOOTER */}
 
-      <footer className="bg-[#111] border-t border-white/5 pt-12 pb-32 px-6 mt-12">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+      <footer className="bg-[#0a0a0a] border-t border-white/5 pt-12 pb-32 px-6 mt-12">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+
+          {/* Branding */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <img src={logo} alt="Logo" className="h-[50px] w-auto brightness-0 invert opacity-80" />
-              <h2 className="text-2xl font-black text-white font-headline tracking-tighter">Imagine & Stamp</h2>
-            </div>
-            <p className="text-white/60 text-sm max-w-xs">Personalizamos tus momentos más especiales con diseños creativos y alta calidad.</p>
-          </div>
-          <div className="space-y-6">
-            <h3 className="font-headline font-bold text-white text-lg">Contacto</h3>
-            <div className="space-y-4 text-sm text-white/70">
-              <a href="https://wa.me/525650469993" target="_blank" rel="noreferrer" className="flex items-center gap-3"><MessageCircle size={18} /> WhatsApp</a>
-              <a href="mailto:imagineandstamp@gmail.com" className="flex items-center gap-3"><MailIcon size={18} /> imagineandstamp@gmail.com</a>
-            </div>
-          </div>
-          <div className="space-y-6">
-            <h3 className="font-headline font-bold text-white text-lg">Síguenos</h3>
-            <div className="flex gap-4">
-              <a href="https://www.instagram.com/personalizadosimagineandstamp" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white"><Instagram size={22} /></a>
-              <a href="https://www.facebook.com/share/1CFhhieFeV/?mibextid=wwXIfr" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white"><Facebook size={22} /></a>
+            <img src="/logo-halloween.png" alt="Mundo de Halloween" className="h-20 w-auto object-contain" style={{ filter: 'drop-shadow(0 0 10px rgba(255,106,0,0.3))' }} />
+            <p className="text-white/50 text-sm leading-relaxed">
+              Tu destino definitivo para disfraces, decoración y efectos especiales de Halloween en Ciudad de México.
+            </p>
+            <div className="flex gap-3 pt-1">
+              <a
+                href="https://www.facebook.com/share/1E4KXbMWFa/?mibextid=wwXIfr"
+                target="_blank" rel="noreferrer"
+                className="w-10 h-10 rounded-full bg-[#1877F2]/10 border border-[#1877F2]/20 flex items-center justify-center text-[#1877F2] hover:bg-[#1877F2]/20 transition-all"
+                title="Facebook Mundo de Halloween"
+              >
+                <Facebook size={18} />
+              </a>
             </div>
           </div>
+
+          {/* Contacto */}
+          <div className="space-y-4">
+            <h3 className="font-black text-white text-sm uppercase tracking-widest">Contacto</h3>
+            <div className="space-y-3 text-sm text-white/60">
+              <a href="https://wa.me/525560917169" target="_blank" rel="noreferrer" className="flex items-center gap-3 hover:text-[#25D366] transition-colors">
+                <MessageCircle size={16} className="text-[#25D366] shrink-0" />
+                <span>WhatsApp Pedidos: 55 6091 7169</span>
+              </a>
+              <a href="tel:5556336232" className="flex items-center gap-3 hover:text-[#FF8C00] transition-colors">
+                <span className="text-[#FF8C00] shrink-0 text-base">📞</span>
+                <span>55 5633 6232</span>
+              </a>
+              <a href="mailto:ventas@mundodehalloween.com" className="flex items-center gap-3 hover:text-[#FF8C00] transition-colors">
+                <MailIcon size={16} className="text-[#FF8C00] shrink-0" />
+                <span>ventas@mundodehalloween.com</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Ubicación y Horarios */}
+          <div className="space-y-4">
+            <h3 className="font-black text-white text-sm uppercase tracking-widest">Ubicación y Horarios</h3>
+            <div className="space-y-3 text-sm text-white/60">
+              <div className="flex items-start gap-3">
+                <span className="text-[#FF8C00] shrink-0 mt-0.5 text-base">📍</span>
+                <span>Ignacio Allende 45, Del Carmen, Coyoacán, 04100 Ciudad de México, CDMX</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-[#FF8C00] shrink-0 text-base">🕐</span>
+                <span className="font-semibold text-[#FF8C00]">Sáb – Dom: 12:00 PM – 12:00 AM</span>
+              </div>
+            </div>
+          </div>
+
         </div>
-        <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-white/5 text-center">
-          <p className="text-white/30 text-[10px] uppercase tracking-widest">© 2026 Imagine & Stamp. Todos los derechos reservados.</p>
-          <button onClick={() => setIsAdminOpen(true)} className="mt-4 text-white/10 hover:text-white/40 transition-colors flex items-center justify-center mx-auto" aria-label="Admin Access">
-            <Lock size={16} />
+
+        <div className="max-w-5xl mx-auto mt-10 pt-8 border-t border-white/5 flex flex-col items-center gap-3">
+          <p className="text-white/20 text-[10px] uppercase tracking-widest">© 2026 Mundo de Halloween. Todos los derechos reservados.</p>
+          <button onClick={() => setIsAdminOpen(true)} className="text-white/10 hover:text-white/40 transition-colors" aria-label="Admin Access">
+            <Lock size={14} />
           </button>
         </div>
       </footer>

@@ -42,11 +42,28 @@ const MASTER_PASSWORD = '1212';
 const HALLOWEEN_PASSWORD = 'halloween';
 
 const HALLOWEEN_CATEGORIES = [
-  { id: 'all',         label: '🎃 Todo' },
-  { id: 'terror',      label: '💀 Terror' },
-  { id: 'superheroes', label: '🦸 Superhéroes' },
-  { id: 'infantiles',  label: '🧸 Infantiles' },
-  { id: 'accesorios',  label: '🎭 Accesorios' },
+  { id: 'all',                     label: '🎃 Todo' },
+  { id: 'aliens',                  label: '👽 Alíens' },
+  { id: 'brujas',                  label: '🧙‍♀️ Brujas' },
+  { id: 'caretas',                 label: '🎭 Caretas' },
+  { id: 'creepypasta',             label: '👾 Creepypasta' },
+  { id: 'dr-peste',                label: '🦠 Dr. Peste' },
+  { id: 'esqueletos',              label: '💀 Esqueletos' },
+  { id: 'hombres-lobo',            label: '🐺 Hombres Lobo' },
+  { id: 'masacre-en-texas',        label: '🪚 Masacre en Texas' },
+  { id: 'michael-myers',           label: '🔪 Michael Myers' },
+  { id: 'monstruos',               label: '👹 Monstruos' },
+  { id: 'payasos',                 label: '🤡 Payasos' },
+  { id: 'personajes-de-peliculas', label: '🎬 Personajes de Películas' },
+  { id: 'scarecrow',               label: '🌾 Scarecrow' },
+  { id: 'soldados',                label: '🪖 Soldados' },
+  { id: 'vampiros',                label: '🧛 Vampiros' },
+  { id: 'zombies',                 label: '🧟 Zombies' },
+  { id: 'decorativos',             label: '🕯️ Decorativos' },
+  { id: 'disfraces',               label: '👗 Disfraces' },
+  { id: 'silla-electrica',         label: '⚡ Silla eléctrica' },
+  { id: 'animatronics',            label: '🤖 Animatronics' },
+  { id: 'otros',                   label: '✨ Otros' },
 ];
 
 const BADGE_OPTIONS = [
