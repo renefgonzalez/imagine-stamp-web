@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from './lib/supabase';
 import AdminHalloween from './AdminHalloween';
-import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save, Lock, Instagram, Facebook, Mail as MailIcon, Share2, SlidersHorizontal } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save, Lock, Instagram, Facebook, Mail as MailIcon, Share2, SlidersHorizontal, QrCode } from 'lucide-react';
 import logo from './logo.png';
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
@@ -161,6 +161,7 @@ const BADGE_CONFIG = {
 export default function MundoHalloween() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItem, setSelectedItem] = useState<Costume | null>(null);
@@ -1404,6 +1405,46 @@ export default function MundoHalloween() {
         )}
       </AnimatePresence>
 
+      {/* ── QR MODAL ── */}
+      <AnimatePresence>
+        {isQRModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[90] flex items-center justify-center bg-black/80 backdrop-blur-sm p-6"
+            onClick={() => setIsQRModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#111] border-2 border-[#FF6A00] rounded-2xl p-8 max-w-sm w-full flex flex-col items-center text-center relative shadow-[0_0_40px_rgba(255,106,0,0.2)]"
+            >
+              <button
+                onClick={() => setIsQRModalOpen(false)}
+                className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
+              
+              <h2 className="text-xl font-black text-white mb-6 uppercase tracking-wider">
+                Comparte el Catálogo
+              </h2>
+              
+              <div className="bg-white p-4 rounded-xl mb-6 shadow-xl">
+                <img 
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://imagineandstamp.site/%23/mundo-halloween&color=000000&bgcolor=ffffff" 
+                  alt="QR Code" 
+                  className="w-48 h-48 object-contain"
+                />
+              </div>
+
+              <p className="text-white/70 text-sm font-medium leading-relaxed">
+                Muestra este código desde tu pantalla para que otros escaneen y guarden nuestro catálogo y contacto al instante. 🎃
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── CORPORATE FOOTER */}
 
       <footer className="bg-[#0a0a0a] border-t border-white/5 pt-12 pb-32 px-6 mt-12">
@@ -1439,10 +1480,17 @@ export default function MundoHalloween() {
                 <span className="text-[#FF8C00] shrink-0 text-base">📞</span>
                 <span>55 5633 6232</span>
               </a>
-              <a href="mailto:ventas@mundodehalloween.com" className="flex items-center gap-3 hover:text-[#FF8C00] transition-colors">
+              <a href="mailto:ventas@mundodehalloween.com" className="flex items-center gap-3 hover:text-[#FF8C00] transition-colors pb-2">
                 <MailIcon size={16} className="text-[#FF8C00] shrink-0" />
                 <span>ventas@mundodehalloween.com</span>
               </a>
+              <button
+                onClick={() => setIsQRModalOpen(true)}
+                className="w-full flex items-center justify-center gap-2 bg-[#FF6A00]/10 border border-[#FF6A00]/30 text-[#FF8C00] py-3 rounded-xl font-bold hover:bg-[#FF6A00]/20 transition-all"
+              >
+                <QrCode size={18} />
+                Compartir Catálogo por QR
+              </button>
             </div>
           </div>
 
