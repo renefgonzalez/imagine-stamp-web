@@ -213,6 +213,7 @@ export default function MundoHalloween() {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [adminPickerForId, setAdminPickerForId] = useState<string | null>(null);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
 
   useEffect(() => {
     const hashParts = window.location.hash.split('?');
@@ -645,10 +646,18 @@ export default function MundoHalloween() {
         )}
 
         {filteredItems.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.3)' }}>
-            <div style={{ fontSize: '48px', marginBottom: '12px' }}>🔍</div>
-            <p style={{ fontWeight: 700 }}>No hay resultados para "{searchQuery}"</p>
-          </div>
+          searchQuery ? (
+            <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.3)' }}>
+              <div style={{ fontSize: '48px', marginBottom: '12px' }}>🔍</div>
+              <p style={{ fontWeight: 700 }}>No hay resultados para "{searchQuery}"</p>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)', marginTop: '20px' }}>
+              <div style={{ fontSize: '56px', marginBottom: '16px' }}>🦇</div>
+              <p style={{ fontWeight: 800, fontSize: '18px', color: '#fff' }}>Los monstruos de esta sección salieron a asustar...</p>
+              <p style={{ fontWeight: 500, fontSize: '15px', marginTop: '8px' }}>¡Regresa pronto! 🎃👻</p>
+            </div>
+          )
         ) : (
           <AnimatePresence mode="popLayout">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -1526,6 +1535,38 @@ export default function MundoHalloween() {
         )}
       </AnimatePresence>
 
+      {/* ── PRIVACY MODAL ── */}
+      <AnimatePresence>
+        {isPrivacyModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[90] flex items-center justify-center bg-black/80 backdrop-blur-sm p-6"
+            onClick={() => setIsPrivacyModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#111] border-2 border-[#FF6A00] rounded-2xl p-8 max-w-md w-full flex flex-col items-center text-center relative shadow-[0_0_40px_rgba(255,106,0,0.2)]"
+            >
+              <button
+                onClick={() => setIsPrivacyModalOpen(false)}
+                className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
+              
+              <h2 className="text-xl font-black text-white mb-6 uppercase tracking-wider">
+                Aviso de Privacidad
+              </h2>
+              
+              <p className="text-white/70 text-sm font-medium leading-relaxed">
+                En Mundo de Halloween protegemos tus datos. La información recopilada mediante el carrito y la redirección de WhatsApp se utiliza estrictamente para el procesamiento interno de sus pedidos de máscaras y la atención personalizada al cliente.
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── CORPORATE FOOTER */}
 
       <footer className="bg-[#0a0a0a] border-t border-white/5 pt-12 pb-32 px-6 mt-12">
@@ -1633,6 +1674,12 @@ export default function MundoHalloween() {
               >
                 IMAGINE & STAMP
               </a>.
+              <span 
+                onClick={() => setIsPrivacyModalOpen(true)}
+                className="text-xs text-gray-500 hover:text-orange-500 underline ml-4 cursor-pointer transition-colors inline-block mt-2 md:mt-0"
+              >
+                Aviso de Privacidad y Términos de Servicio
+              </span>
             </p>
           </div>
           <button onClick={() => setIsAdminOpen(true)} className="text-white/10 hover:text-white/40 transition-colors" aria-label="Admin Access">
