@@ -1546,15 +1546,29 @@ export default function MundoHalloween() {
             <p className="text-white/50 text-sm leading-relaxed">
               Tu destino definitivo para disfraces, decoración y efectos especiales de Halloween en Ciudad de México.
             </p>
-            <div className="flex gap-3 pt-1">
-              <a
-                href="https://www.facebook.com/share/1E4KXbMWFa/?mibextid=wwXIfr"
-                target="_blank" rel="noreferrer"
-                className="w-10 h-10 rounded-full bg-[#1877F2]/10 border border-[#1877F2]/20 flex items-center justify-center text-[#1877F2] hover:bg-[#1877F2]/20 transition-all"
-                title="Facebook Mundo de Halloween"
-              >
-                <Facebook size={18} />
-              </a>
+            <div className="pt-2">
+              <h3 className="font-black text-[#FF8C00]/80 text-[11px] uppercase tracking-widest mb-3">Síguenos en Redes</h3>
+              <div className="flex flex-col gap-3">
+                <a
+                  href="https://www.facebook.com/share/1E4KXbMWFa/?mibextid=wwXIfr"
+                  target="_blank" rel="noreferrer"
+                  className="flex items-center gap-3 bg-gradient-to-r from-[#111] to-[#181818] border border-[#FF6A00]/20 rounded-xl p-3 hover:border-[#FF6A00]/50 hover:shadow-[0_0_20px_rgba(255,106,0,0.15)] hover:-translate-y-1 transition-all duration-300 group"
+                >
+                  <div className="w-9 h-9 rounded-full bg-[#1877F2]/10 flex items-center justify-center text-[#1877F2] group-hover:bg-[#1877F2] group-hover:text-white transition-colors duration-300">
+                    <Facebook size={18} />
+                  </div>
+                  <span className="text-white/80 font-bold text-sm group-hover:text-white transition-colors">Mundo de Halloween Oficial</span>
+                </a>
+                
+                <div className="flex gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-white/20 cursor-not-allowed" title="Instagram - Próximamente">
+                    <Instagram size={16} />
+                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-white/20 cursor-not-allowed" title="TikTok - Próximamente">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
