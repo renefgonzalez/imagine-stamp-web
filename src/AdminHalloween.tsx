@@ -623,7 +623,7 @@ export default function AdminHalloween({
     <div style={{ minHeight: '100vh', background: '#0a0a0a', fontFamily: "'Inter', sans-serif", paddingBottom: 80 }}>
 
       {/* ── TOP NAV */}
-      <div className="flex flex-col lg:flex-row gap-6 justify-between items-center mb-6 bg-[#1a1a1a] p-5 rounded-2xl border border-white/5 shadow-sm">
+      <div className="flex flex-col lg:flex-row gap-6 justify-between items-center mb-6 bg-[#1a1a1a] p-5 rounded-2xl border border-white/5 shadow-sm max-w-6xl mx-auto w-full mt-4">
         <div className="flex items-center gap-4">
           <img 
             src="/logo-halloween.png" 
@@ -640,11 +640,11 @@ export default function AdminHalloween({
             <p className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase">Panel de Control</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <nav className="flex bg-[#111] p-1.5 rounded-xl border border-white/5">
+        <div className="flex items-center gap-2 w-full lg:w-auto overflow-x-auto">
+          <nav className="flex bg-[#111] p-1.5 rounded-xl border border-white/5 w-full lg:w-auto overflow-x-auto hide-scrollbar">
             {tabs.map(tab => (
               <button key={tab.id} onClick={() => { setActiveTab(tab.id as any); setEditingId(null); }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest ${activeTab === tab.id ? 'bg-[#FF6A00] text-white shadow' : 'text-white/40 hover:text-white/70'}`}>
+                className={`flex items-center shrink-0 gap-2 px-4 py-2 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest whitespace-nowrap ${activeTab === tab.id ? 'bg-[#FF6A00] text-white shadow' : 'text-white/40 hover:text-white/70'}`}>
                 <tab.icon size={12} /> <span>{tab.label}</span>
               </button>
             ))}
