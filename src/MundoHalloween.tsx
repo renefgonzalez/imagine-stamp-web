@@ -68,7 +68,7 @@ const INITIAL_MENU_ITEMS: Costume[] = [
     description: 'Máscara de Espantapájaros de látex de alta calidad. Ideal para Halloween y eventos de terror.',
     price: 450,
     rentalPrice: 200,
-    image: '/Mascara Scarecrow.jpg',
+    image: '/mascara-scarecrow.png.png',
     category: 'scarecrow',
     type: 'Renta y Venta',
     sizes: [],
@@ -81,7 +81,7 @@ const INITIAL_MENU_ITEMS: Costume[] = [
     description: 'Máscara estilo punk de colección, acabado premium en látex con detalles únicos.',
     price: 380,
     rentalPrice: 150,
-    image: '/Mascara Billy Punk.jpg',
+    image: '/mascara-billy-punk.png.png',
     category: 'monstruos',
     type: 'Renta y Venta',
     sizes: [],
@@ -94,7 +94,7 @@ const INITIAL_MENU_ITEMS: Costume[] = [
     description: 'La máscara de payaso aterrador más solicitada de la temporada. Látex flexible, cómoda toda la noche.',
     price: 420,
     rentalPrice: 180,
-    image: '/Mascara Dammy the clown.jpg',
+    image: '/mascara-dammy.png.png',
     category: 'payasos',
     type: 'Renta y Venta',
     sizes: [],
@@ -954,6 +954,13 @@ export default function MundoHalloween() {
                     <div style={{ color: '#fff', fontWeight: 800, fontSize: '18px' }}>${selectedItem.price}</div>
                     <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>MXN</div>
                   </div>
+                </div>
+
+                {/* Static Size Info */}
+                <div style={{ marginBottom: '24px', background: 'rgba(255,255,255,0.05)', borderRadius: '14px', padding: '12px 16px' }}>
+                  <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px', margin: 0, fontWeight: 700 }}>
+                    Talla: <span style={{ color: '#FF8C00' }}>Adulto (Unitalla)</span>
+                  </p>
                 </div>
 
                 {/* Action */}
