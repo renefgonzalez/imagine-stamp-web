@@ -24,6 +24,7 @@ interface Costume {
   is_on_sale?: boolean;
   isOnSale?: boolean;
   soldOut?: boolean;
+  rating?: number;
 }
 
 interface CartItem extends Costume {
@@ -72,6 +73,7 @@ const INITIAL_MENU_ITEMS: Costume[] = [
     type: 'Renta y Venta',
     sizes: [],
     badge: 'MÁS VENDIDO',
+    rating: 4.9,
   },
   {
     id: 'mock-2',
@@ -84,6 +86,7 @@ const INITIAL_MENU_ITEMS: Costume[] = [
     type: 'Renta y Venta',
     sizes: [],
     badge: 'NOVEDAD',
+    rating: 4.7,
   },
   {
     id: 'mock-3',
@@ -96,6 +99,7 @@ const INITIAL_MENU_ITEMS: Costume[] = [
     type: 'Renta y Venta',
     sizes: [],
     badge: 'EN OFERTA',
+    rating: 4.8,
   },
   {
     id: 'mock-4',
@@ -107,6 +111,7 @@ const INITIAL_MENU_ITEMS: Costume[] = [
     category: 'michael-myers',
     type: 'Renta y Venta',
     sizes: [],
+    rating: 4.8,
   },
 ];
 
@@ -587,6 +592,44 @@ export default function MundoHalloween() {
                     {/* Content */}
                     <div style={{ flex: 1, padding: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
 
+                      {/* ── Badge arriba del nombre */}
+                      {(isPopular || isNew || isOnSale) && (
+                        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginBottom: '2px' }}>
+                          {isPopular && (
+                            <span style={{
+                              background: 'rgba(255,106,0,0.18)', color: '#FF6A00',
+                              border: '1px solid rgba(255,106,0,0.35)',
+                              borderRadius: '6px', padding: '2px 8px',
+                              fontSize: '9px', fontWeight: 800,
+                              textTransform: 'uppercase', letterSpacing: '0.06em',
+                            }}>
+                              🔥 MÁS VENDIDO
+                            </span>
+                          )}
+                          {isNew && (
+                            <span style={{
+                              background: 'rgba(59,130,246,0.15)', color: '#60A5FA',
+                              border: '1px solid rgba(59,130,246,0.3)',
+                              borderRadius: '6px', padding: '2px 8px',
+                              fontSize: '9px', fontWeight: 800,
+                              textTransform: 'uppercase', letterSpacing: '0.06em',
+                            }}>
+                              ✨ NOVEDAD
+                            </span>
+                          )}
+                          {isOnSale && (
+                            <span style={{
+                              background: 'rgba(239,68,68,0.15)', color: '#F87171',
+                              border: '1px solid rgba(239,68,68,0.3)',
+                              borderRadius: '6px', padding: '2px 8px',
+                              fontSize: '9px', fontWeight: 800,
+                              textTransform: 'uppercase', letterSpacing: '0.06em',
+                            }}>
+                              🏷️ EN OFERTA
+                            </span>
+                          )}
+                        </div>
+                      )}
 
                       <h3 style={{ color: '#fff', fontWeight: 800, fontSize: '16px', lineHeight: 1.2, margin: 0 }}>
                         {item.name}
@@ -595,12 +638,20 @@ export default function MundoHalloween() {
                         {item.description}
                       </p>
 
-                      {/* Stats */}
-                      <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
+                      {/* ── Rating + Flamita */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '2px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                          <span style={{ color: '#F59E0B', fontSize: '13px' }}>⭐</span>
+                          <span style={{ color: '#F59E0B', fontWeight: 800, fontSize: '12px' }}>
+                            {(item.rating ?? 4.8).toFixed(1)}
+                          </span>
+                        </div>
+                        <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '10px' }}>|</span>
+                        <span style={{ fontSize: '13px' }}>🔥</span>
                       </div>
 
                       {/* Price + Add button */}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '6px' }}>
                         <span style={{ color: '#FF8C00', fontWeight: 900, fontSize: '20px' }}>
                           ${item.price}
                           <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', fontWeight: 500 }}> MXN</span>
@@ -717,24 +768,6 @@ export default function MundoHalloween() {
                         onMouseEnter={e => { if (!item.soldOut) e.currentTarget.style.transform = 'scale(1.08)'; }}
                         onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
                       />
-                      {/* Badges on image */}
-                      <div className="absolute top-2 right-2 flex flex-col gap-1 z-40 items-end">
-                        {isPopular && (
-                          <div className="bg-[#FF6A00] text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow flex items-center gap-1 uppercase">
-                            🔥 MÁS VENDIDO
-                          </div>
-                        )}
-                        {isNew && (
-                          <div className="bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow uppercase">
-                            NOVEDAD
-                          </div>
-                        )}
-                        {isOnSale && (
-                          <div className="bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow uppercase">
-                            EN OFERTA
-                          </div>
-                        )}
-                      </div>
                       {item.soldOut && (
                         <div style={{
                           position: 'absolute', inset: 0,

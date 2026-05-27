@@ -26,6 +26,7 @@ interface Costume {
   sizes: string[];
   badge?: 'NOVEDAD' | 'EN OFERTA' | 'MÁS VENDIDO';
   soldOut?: boolean;
+  rating?: number;
 }
 
 interface AdminHalloweenProps {
@@ -90,6 +91,7 @@ const EMPTY_FORM: Omit<Costume, 'id'> = {
   sizes: ['M', 'G'],
   badge: undefined,
   soldOut: false,
+  rating: 4.8,
 };
 
 // ─── BADGE PILL ───────────────────────────────────────────────────────────────
@@ -255,18 +257,31 @@ const CostumeForm = ({
         </DarkField>
       </div>
 
-      {/* Insignia */}
-      <DarkField label="Insignia / Badge">
-        <select
-          style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
-          value={form.badge || ''}
-          onChange={e => set('badge', e.target.value || undefined)}
-        >
-          {BADGE_OPTIONS.map(b => (
-            <option key={b.value} value={b.value} style={{ background: '#1a1a1a' }}>{b.label}</option>
-          ))}
-        </select>
-      </DarkField>
+      {/* Insignia + Calificación */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <DarkField label="Insignia / Badge">
+          <select
+            style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
+            value={form.badge || ''}
+            onChange={e => set('badge', e.target.value || undefined)}
+          >
+            {BADGE_OPTIONS.map(b => (
+              <option key={b.value} value={b.value} style={{ background: '#1a1a1a' }}>{b.label}</option>
+            ))}
+          </select>
+        </DarkField>
+        <DarkField label="⭐ Calificación (1.0 – 5.0)">
+          <input
+            style={inputStyle}
+            type="number"
+            min="1" max="5" step="0.1"
+            value={form.rating ?? 4.8}
+            onChange={e => set('rating', Math.min(5, Math.max(1, parseFloat(e.target.value) || 4.8)))}
+            onFocus={e => (e.target.style.borderColor = '#F59E0B')}
+            onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+          />
+        </DarkField>
+      </div>
 
       {/* Tallas */}
       <DarkField label="Tallas disponibles">
