@@ -427,24 +427,23 @@ export default function MundoHalloween() {
             </button>
           </div>
 
-          {/* ── Orange promo banner */}
+          {/* ── Dark Glass Promo Banner */}
           <div style={{
-            marginTop: '18px',
-            background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
-            borderRadius: '14px',
-            padding: '11px 18px',
-            display: 'flex',
+            marginTop: '16px',
+            background: 'rgba(255, 106, 0, 0.1)',
+            border: '1px solid rgba(255, 106, 0, 0.2)',
+            borderRadius: '8px',
+            padding: '6px 12px',
+            display: 'inline-flex',
             alignItems: 'center',
-            gap: '10px',
-            boxShadow: '0 4px 20px rgba(255,106,0,0.35)',
+            gap: '8px',
           }}>
-            <span style={{ fontSize: '20px' }}>🎃</span>
+            <span style={{ fontSize: '14px' }}>🎃</span>
             <p style={{
-              color: '#fff', fontWeight: 900, fontSize: '12px',
+              color: '#FF8C00', fontWeight: 800, fontSize: '10px',
               textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0,
-              lineHeight: 1.3,
             }}>
-              Diseños dementes para la gente fuera de lo común
+              DISEÑOS DEMENTES PARA LA GENTE FUERA DE LO COMÚN
             </p>
           </div>
         </div>
