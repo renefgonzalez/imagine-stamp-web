@@ -1404,6 +1404,16 @@ export default function MundoHalloween() {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* ── FLOATING WHATSAPP BUTTON ── */}
+      <a
+        href="https://wa.me/525560917169"
+        target="_blank"
+        rel="noreferrer"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-[#25D366] text-white px-5 py-3 rounded-full font-bold shadow-[0_8px_30px_rgba(37,211,102,0.4)] hover:bg-[#1ebe57] hover:scale-105 transition-all"
+      >
+        <MessageCircle size={22} fill="currentColor" />
+        <span>¡Cotiza aquí!</span>
+      </a>
 
       {/* ── QR MODAL ── */}
       <AnimatePresence>
