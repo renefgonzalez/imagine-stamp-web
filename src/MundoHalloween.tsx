@@ -338,41 +338,54 @@ export default function MundoHalloween() {
           minHeight: '220px',
         }}
       >
-        {/* Decorative circles */}
-        <div style={{
-          position: 'absolute', top: '-60px', right: '-60px',
-          width: '240px', height: '240px', borderRadius: '50%',
-          background: 'rgba(255, 100, 0, 0.12)',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: '-40px', left: '-40px',
-          width: '180px', height: '180px', borderRadius: '50%',
-          background: 'rgba(255, 140, 0, 0.08)',
-        }} />
-
         <div className="relative z-10 px-5 pt-8 pb-8">
           {/* Back link */}
           <a
             href="/#/"
-            className="inline-flex items-center gap-1.5 text-white/50 hover:text-white transition-colors mb-4 text-sm"
+            className="inline-flex items-center gap-1.5 text-white/50 hover:text-white transition-colors mb-5 text-sm"
           >
             <ArrowLeft size={16} />
             Volver a Imagine &amp; Stamp
           </a>
 
-          {/* Logo centrado + cart a la derecha */}
-          <div className="flex items-center justify-between gap-4">
-            {/* Logo + slogan */}
-            <div className="flex flex-col items-center flex-1">
+          {/* ── Brand row: logo left + cart right */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+
+            {/* Left: logo square + text block */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', flex: 1, minWidth: 0 }}>
+              {/* Logo as square icon */}
               <img
                 src="/logo-halloween.png"
                 alt="Mundo de Halloween"
-                className="h-28 md:h-36 w-auto object-contain"
-                style={{ filter: 'drop-shadow(0 0 18px rgba(255, 106, 0, 0.45))' }}
+                style={{
+                  width: '72px', height: '72px',
+                  objectFit: 'contain',
+                  borderRadius: '16px',
+                  background: 'rgba(255,255,255,0.04)',
+                  flexShrink: 0,
+                  filter: 'drop-shadow(0 0 12px rgba(255,106,0,0.4))',
+                }}
               />
-              <p className="text-white/70 text-sm font-semibold text-center mt-2 tracking-wide">
-                Tu Pasaporte al Terror y la Diversión
-              </p>
+
+              {/* Text block */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingTop: '2px' }}>
+                <h1 style={{
+                  color: '#fff', fontWeight: 900, fontSize: '22px',
+                  lineHeight: 1.1, margin: 0, letterSpacing: '-0.3px',
+                }}>
+                  Mundo de Halloween
+                </h1>
+                <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '13px', margin: 0, fontWeight: 500 }}>
+                  Tu pasaporte al terror y la diversión
+                </p>
+
+                {/* ── Stars + reviews row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                  <span style={{ color: '#F59E0B', fontSize: '13px' }}>⭐</span>
+                  <span style={{ color: '#F59E0B', fontWeight: 800, fontSize: '13px' }}>4.8</span>
+                  <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px' }}>(2.4k reseñas)</span>
+                </div>
+              </div>
             </div>
 
             {/* Cart button */}
@@ -412,6 +425,27 @@ export default function MundoHalloween() {
                 </>
               )}
             </button>
+          </div>
+
+          {/* ── Orange promo banner */}
+          <div style={{
+            marginTop: '18px',
+            background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+            borderRadius: '14px',
+            padding: '11px 18px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            boxShadow: '0 4px 20px rgba(255,106,0,0.35)',
+          }}>
+            <span style={{ fontSize: '20px' }}>🎃</span>
+            <p style={{
+              color: '#fff', fontWeight: 900, fontSize: '12px',
+              textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0,
+              lineHeight: 1.3,
+            }}>
+              Diseños dementes para la gente fuera de lo común
+            </p>
           </div>
         </div>
       </header>
