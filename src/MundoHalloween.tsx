@@ -1529,7 +1529,16 @@ export default function MundoHalloween() {
 
           {/* Branding */}
           <div className="space-y-4">
-            <img src="/logo-halloween.png" alt="Mundo de Halloween" className="h-20 w-auto object-contain rounded-2xl" style={{ filter: 'drop-shadow(0 0 10px rgba(255,106,0,0.3))' }} />
+            <img 
+              src="/logo-halloween.png" 
+              alt="Mundo de Halloween" 
+              style={{
+                width: '72px', height: '72px',
+                objectFit: 'contain',
+                borderRadius: '16px',
+                filter: 'drop-shadow(0 0 12px rgba(255,106,0,0.4))',
+              }} 
+            />
             <p className="text-white/50 text-sm leading-relaxed">
               Tu destino definitivo para disfraces, decoración y efectos especiales de Halloween en Ciudad de México.
             </p>
