@@ -1480,10 +1480,10 @@ export default function MundoHalloween() {
         href="https://wa.me/525560917169"
         target="_blank"
         rel="noreferrer"
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-[#25D366] text-white px-5 py-3 rounded-full font-bold shadow-[0_8px_30px_rgba(37,211,102,0.4)] hover:bg-[#1ebe57] hover:scale-105 transition-all"
+        className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-40 flex items-center gap-2 bg-[#25D366] text-white p-3 md:px-5 md:py-3 rounded-full font-bold shadow-[0_8px_30px_rgba(37,211,102,0.4)] hover:bg-[#1ebe57] hover:scale-105 transition-all"
       >
-        <MessageCircle size={22} fill="currentColor" />
-        <span>¡Cotiza aquí!</span>
+        <MessageCircle size={26} className="md:w-[22px] md:h-[22px]" fill="currentColor" />
+        <span className="hidden md:inline">¡Cotiza aquí!</span>
       </a>
 
       {/* ── QR MODAL ── */}
@@ -1533,11 +1533,11 @@ export default function MundoHalloween() {
 
           {/* Branding */}
           <div className="space-y-4">
-            <div style={{ filter: 'drop-shadow(0 0 12px rgba(255,106,0,0.4))' }}>
+            <div className="w-[72px] h-[72px]">
               <img 
                 src="/logo-halloween.png" 
                 alt="Mundo de Halloween" 
-                className="w-[72px] h-[72px] object-contain rounded-2xl"
+                className="w-full h-full object-contain rounded-2xl shadow-[0_0_15px_rgba(255,106,0,0.35)]"
               />
             </div>
             <p className="text-white/50 text-sm leading-relaxed">
