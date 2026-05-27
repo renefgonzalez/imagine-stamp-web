@@ -1533,11 +1533,12 @@ export default function MundoHalloween() {
 
           {/* Branding */}
           <div className="space-y-4">
-            <div className="w-[72px] h-[72px]">
+            <div className="inline-block">
               <img 
                 src="/logo-halloween.png" 
                 alt="Mundo de Halloween" 
-                className="w-full h-full object-contain rounded-2xl shadow-[0_0_15px_rgba(255,106,0,0.35)]"
+                className="w-[72px] h-[72px] md:w-auto md:h-20 object-contain rounded-2xl shadow-[0_0_15px_rgba(255,106,0,0.35)]"
+                style={{ borderRadius: '16px' }}
               />
             </div>
             <p className="text-white/50 text-sm leading-relaxed">
