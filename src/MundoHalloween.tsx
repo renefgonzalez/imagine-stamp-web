@@ -636,7 +636,7 @@ export default function MundoHalloween() {
       </div>
 
       {/* ── MENU GRID */}
-      <main style={{ padding: '20px 16px 120px', maxWidth: '600px', margin: '0 auto' }}>
+      <main style={{ padding: '20px 16px 120px', maxWidth: '1400px', margin: '0 auto' }}>
         {/* Category title */}
         {activeCategory !== 'all' && (
           <h2 style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '16px' }}>
@@ -651,6 +651,7 @@ export default function MundoHalloween() {
           </div>
         ) : (
           <AnimatePresence mode="popLayout">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredItems.map((item, idx) => {
               const qty = getItemQty(item.id);
               const isPopular = item.is_popular || item.isPopular || item.badge === 'MÁS VENDIDO';
@@ -674,7 +675,6 @@ export default function MundoHalloween() {
                         ? '1px solid rgba(255, 106, 0, 0.4)'
                         : '1px solid rgba(255,255,255,0.08)',
                     borderRadius: '20px',
-                    marginBottom: '12px',
                     overflow: 'hidden',
                     transition: 'border-color 0.2s ease',
                     cursor: item.soldOut ? 'not-allowed' : 'pointer',
@@ -682,9 +682,10 @@ export default function MundoHalloween() {
                   }}
                   onClick={() => { if (!item.soldOut) setSelectedItem(item); }}
                 >
-                  <div style={{ display: 'flex', gap: '0' }}>
-                    {/* Content */}
-                    <div style={{ flex: 1, padding: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {/* Card layout: horizontal on mobile (content left, image right), vertical on desktop (image top, content below) */}
+                  <div className="flex flex-row md:flex-col gap-0">
+                    {/* Content - second on desktop (below image) */}
+                    <div className="order-1 md:order-2" style={{ flex: 1, padding: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
 
                       {/* ── Badge arriba del nombre */}
                       {(isPopular || isNew || isOnSale) && (
@@ -849,8 +850,9 @@ export default function MundoHalloween() {
                       </div>
                     </div>
 
-                    {/* Image */}
-                    <div style={{ width: '130px', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+                    {/* Image - right on mobile, top on desktop */}
+                    <div className="order-2 md:order-1 w-[130px] md:w-full shrink-0 md:shrink relative overflow-hidden" style={{ flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+                      <div className="w-full md:aspect-[4/3] h-full md:h-auto" style={{ minHeight: '130px' }}>
                       <img
                         src={item.image}
                         alt={item.name}
@@ -895,11 +897,13 @@ export default function MundoHalloween() {
                           </div>
                         </div>
                       )}
+                      </div>
                     </div>
                   </div>
                 </motion.div>
               );
             })}
+            </div>
           </AnimatePresence>
         )}
       </main>
