@@ -1,8 +1,8 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from './lib/supabase';
 import AdminHalloween from './AdminHalloween';
-import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save, Lock, Instagram, Facebook, Mail as MailIcon, Share2, SlidersHorizontal, QrCode } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save, Lock, Instagram, Facebook, Mail as MailIcon, Share2, SlidersHorizontal, QrCode, Volume2, VolumeX } from 'lucide-react';
 import logo from './logo.png';
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
@@ -171,6 +171,43 @@ export default function MundoHalloween() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [initialItemToOpen, setInitialItemToOpen] = useState<string | null>(null);
 
+  // ── Music Player State
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      if (!hasInteracted && audioRef.current) {
+        audioRef.current.play().then(() => {
+          setIsAudioPlaying(true);
+        }).catch(err => console.log('Autoplay blocked:', err));
+        setHasInteracted(true);
+      }
+    };
+    
+    document.addEventListener('click', handleFirstInteraction, { once: true });
+    document.addEventListener('touchstart', handleFirstInteraction, { once: true });
+    document.addEventListener('keydown', handleFirstInteraction, { once: true });
+    
+    return () => {
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('touchstart', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+    };
+  }, [hasInteracted]);
+
+  const toggleAudio = () => {
+    if (audioRef.current) {
+      if (isAudioPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsAudioPlaying(!isAudioPlaying);
+    }
+  };
+
   // ── Catálogo dinámico (lista para Google Sheets) ──────────────────────────
   const [menuItems, setCostumes] = useState<Costume[]>(INITIAL_MENU_ITEMS);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -328,6 +365,7 @@ export default function MundoHalloween() {
 
   return (
     <div className="min-h-screen" style={{ background: '#0D0D0D', fontFamily: "'Inter', sans-serif" }}>
+      <audio ref={audioRef} src="./musica-terror.mp3" loop />
       {/* ── SEO Meta */}
       <title>Mundo de Halloween | Menú Digital Interactivo</title>
 
@@ -389,11 +427,32 @@ export default function MundoHalloween() {
               </div>
             </div>
 
-            {/* Cart button */}
-            <button
-              id="cart-open-btn"
-              onClick={() => { setIsCartOpen(true); setOrderStep('cart'); }}
-              style={{
+            {/* Music & Cart buttons container */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                onClick={toggleAudio}
+                style={{
+                  background: isAudioPlaying ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.1)',
+                  border: `1px solid ${isAudioPlaying ? 'rgba(16, 185, 129, 0.3)' : 'transparent'}`,
+                  borderRadius: '16px',
+                  padding: '10px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease',
+                  flexShrink: 0,
+                  color: isAudioPlaying ? '#10B981' : 'rgba(255,255,255,0.6)',
+                }}
+              >
+                {isAudioPlaying ? <Volume2 size={20} /> : <VolumeX size={20} />}
+              </button>
+
+              {/* Cart button */}
+              <button
+                id="cart-open-btn"
+                onClick={() => { setIsCartOpen(true); setOrderStep('cart'); }}
+                style={{
                 position: 'relative',
                 background: totalItems > 0 ? 'linear-gradient(135deg, #FF6A00, #FF8C00)' : 'rgba(255,255,255,0.1)',
                 border: 'none',
@@ -426,6 +485,7 @@ export default function MundoHalloween() {
                 </>
               )}
             </button>
+            </div>
           </div>
 
           {/* ── Dark Glass Promo Banner */}
