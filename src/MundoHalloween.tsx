@@ -1623,7 +1623,20 @@ export default function MundoHalloween() {
         </div>
 
         <div className="max-w-5xl mx-auto mt-10 pt-8 border-t border-white/5 flex flex-col items-center gap-3">
-          <p className="text-white/20 text-[10px] uppercase tracking-widest">© 2026 Mundo de Halloween. Todos los derechos reservados.</p>
+          <div className="text-center">
+            <p className="text-white/20 text-[10px] uppercase tracking-widest">© 2026 Mundo de Halloween. Todos los derechos reservados.</p>
+            <p className="text-xs text-gray-500 mt-2">
+              Página web realizada por{' '}
+              <a 
+                href="https://wa.me/525560917169?text=Hola,%20me%20encant%C3%B3%20la%20p%C3%A1gina%20de%20Mundo%20de%20Halloween%20y%20me%20interesa%20una%20p%C3%A1gina%20web%20similar%20para%20mi%20negocio" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-orange-500 hover:underline cursor-pointer font-medium transition-all"
+              >
+                IMAGINE & STAMP
+              </a>.
+            </p>
+          </div>
           <button onClick={() => setIsAdminOpen(true)} className="text-white/10 hover:text-white/40 transition-colors" aria-label="Admin Access">
             <Lock size={14} />
           </button>
