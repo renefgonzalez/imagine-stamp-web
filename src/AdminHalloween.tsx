@@ -625,9 +625,16 @@ export default function AdminHalloween({
       {/* ── TOP NAV */}
       <div className="flex flex-col lg:flex-row gap-6 justify-between items-center mb-6 bg-[#1a1a1a] p-5 rounded-2xl border border-white/5 shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-[#FF6A00]/10 rounded-xl">
-            <span style={{ fontSize: '22px' }}>🎃</span>
-          </div>
+          <img 
+            src="/logo-halloween.png" 
+            alt="Mundo de Halloween" 
+            style={{
+              width: '64px', height: '64px',
+              objectFit: 'contain',
+              borderRadius: '14px',
+              filter: 'drop-shadow(0 0 12px rgba(255,106,0,0.4))',
+            }} 
+          />
           <div>
             <p className="text-xl font-black text-white font-headline tracking-tight uppercase">MUNDO DE HALLOWEEN</p>
             <p className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase">Panel de Control</p>
