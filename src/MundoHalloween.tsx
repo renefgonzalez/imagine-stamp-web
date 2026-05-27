@@ -444,7 +444,7 @@ export default function MundoHalloween() {
               color: '#FF8C00', fontWeight: 800, fontSize: '10px',
               textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0,
             }}>
-              DISEÑOS DEMENTES PARA LA GENTE FUERA DE LO COMÚN
+              DISEÑOS DEMENTES PARA GENTE FUERA DE LO COMÚN
             </p>
           </div>
         </div>
