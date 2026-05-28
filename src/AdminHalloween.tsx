@@ -12,6 +12,7 @@ import {
   Eye, EyeOff, RefreshCw, Check, ChevronDown, ChevronUp, Image as ImageIcon,
   Folder, ClipboardList, ArrowUp, ArrowDown, Phone, Clock, CheckCircle
 } from 'lucide-react';
+import { supabase } from './lib/supabase';
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface Costume {
@@ -156,6 +157,8 @@ const CostumeForm = ({
 }) => {
   const [form, setForm] = useState(initial);
   const [sizeInput, setSizeInput] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const set = (k: keyof typeof form, v: any) => setForm(prev => ({ ...prev, [k]: v }));
 
@@ -337,15 +340,40 @@ const CostumeForm = ({
       </DarkField>
 
       {/* URL de imagen */}
-      <DarkField label="URL de Imagen">
-        <input
-          style={inputStyle}
-          placeholder="https://... o ./disfraz-local.png"
-          value={form.image}
-          onChange={e => set('image', e.target.value)}
-          onFocus={e => (e.target.style.borderColor = '#FF6A00')}
-          onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
-        />
+      <DarkField label="Imagen del Producto *">
+        <div
+          style={{
+            ...inputStyle,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            height: 100, borderStyle: 'dashed', cursor: 'pointer', position: 'relative',
+            borderColor: 'rgba(255,255,255,0.1)'
+          }}
+          onClick={() => document.getElementById('image-upload')?.click()}
+        >
+          {imageFile ? (
+            <span style={{ color: '#fff', fontSize: 13 }}>{imageFile.name}</span>
+          ) : form.image ? (
+            <span style={{ color: '#fff', fontSize: 13, wordBreak: 'break-all', padding: '0 10px', textAlign: 'center' }}>
+              {form.image}
+            </span>
+          ) : (
+            <>
+              <ImageIcon size={24} color="rgba(255,255,255,0.4)" style={{ marginBottom: 8 }} />
+              <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>Haz clic para subir una imagen</span>
+            </>
+          )}
+          <input
+            id="image-upload"
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={e => {
+              if (e.target.files && e.target.files[0]) {
+                setImageFile(e.target.files[0]);
+              }
+            }}
+          />
+        </div>
       </DarkField>
 
       {/* Agotado toggle */}
@@ -370,9 +398,42 @@ const CostumeForm = ({
 
       {/* Guardar */}
       <button
-        onClick={() => {
+        onClick={async () => {
           if (!form.name || !form.price) return;
-          onSave(form);
+          
+          let finalImageUrl = form.image;
+          
+          if (imageFile) {
+            setIsUploading(true);
+            try {
+              const fileExt = imageFile.name.split('.').pop();
+              const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+              const { error: uploadError } = await supabase.storage
+                .from('productos')
+                .upload(fileName, imageFile);
+                
+              if (uploadError) {
+                console.error('Error uploading image:', uploadError);
+                alert('Error al subir la imagen. Verifica que el bucket "productos" exista.');
+                setIsUploading(false);
+                return;
+              }
+              
+              const { data: { publicUrl } } = supabase.storage
+                .from('productos')
+                .getPublicUrl(fileName);
+                
+              finalImageUrl = publicUrl;
+            } catch (error) {
+              console.error(error);
+              alert('Ocurrió un error inesperado al subir la imagen.');
+              setIsUploading(false);
+              return;
+            }
+          }
+          
+          onSave({ ...form, image: finalImageUrl });
+          setIsUploading(false);
         }}
         style={{
           width: '100%', padding: '14px',
@@ -382,9 +443,12 @@ const CostumeForm = ({
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
           boxShadow: '0 8px 24px rgba(255,106,0,0.4)',
           letterSpacing: '0.05em', textTransform: 'uppercase',
+          opacity: isUploading ? 0.7 : 1,
+          pointerEvents: isUploading ? 'none' : 'auto',
         }}
+        disabled={isUploading}
       >
-        <Save size={18} /> Guardar Disfraz
+        <Save size={18} /> {isUploading ? 'Subiendo imagen...' : 'Guardar Producto'}
       </button>
     </motion.div>
   );
