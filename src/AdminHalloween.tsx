@@ -185,7 +185,7 @@ const CostumeForm = ({
       </div>
 
       {/* Nombre */}
-      <DarkField label="Nombre del disfraz *">
+      <DarkField label="Nombre del producto *">
         <input
           style={inputStyle} value={form.name} required
           placeholder="Ej: Batman Dark Knight"
@@ -880,7 +880,7 @@ export default function AdminHalloween({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div>
               <h2 style={{ color: '#fff', fontWeight: 900, fontSize: 20, margin: '0 0 4px', textTransform: 'uppercase' }}>
-                Nuevo Disfraz
+                Nuevo Producto
               </h2>
               <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', margin: 0 }}>
                 Se agrega al catálogo de forma local
