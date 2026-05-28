@@ -366,7 +366,7 @@ export default function MundoHalloween() {
 
   return (
     <div className="min-h-screen" style={{ background: '#0D0D0D', fontFamily: "'Inter', sans-serif" }}>
-      <audio ref={audioRef} src="/musica-terror.mp3" loop />
+      <audio ref={audioRef} src="/musica-terror.mp3?v=2" loop />
       {/* ── SEO Meta */}
       <title>Mundo de Halloween | Menú Digital Interactivo</title>
 
