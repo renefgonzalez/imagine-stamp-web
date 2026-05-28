@@ -158,6 +158,16 @@ const BADGE_CONFIG = {
 };
 
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
+
+const FormattedPrice = ({ price }: { price: number }) => {
+  const [entero, decimales] = price.toFixed(2).split('.');
+  return (
+    <>
+      ${entero}<sup className="text-xs ml-[1px]">.{decimales}</sup>
+    </>
+  );
+};
+
 export default function MundoHalloween() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -472,7 +482,7 @@ export default function MundoHalloween() {
               {totalItems > 0 && (
                 <>
                   <span style={{ color: '#fff', fontWeight: 800, fontSize: '14px' }}>
-                    ${totalPrice}
+                    <FormattedPrice price={totalPrice} />
                   </span>
                   <span style={{
                     position: 'absolute', top: '-8px', right: '-8px',
@@ -757,7 +767,7 @@ export default function MundoHalloween() {
                       {/* Price + Add button */}
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '6px' }}>
                         <span style={{ color: '#FF8C00', fontWeight: 900, fontSize: '20px' }}>
-                          ${item.price}
+                          <FormattedPrice price={item.price} />
                           <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', fontWeight: 500 }}> MXN</span>
                         </span>
 
@@ -951,7 +961,7 @@ export default function MundoHalloween() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 900, fontSize: '16px' }}>
-                  ${totalPrice} MXN
+                  <FormattedPrice price={totalPrice} /> MXN
                 </span>
                 <ChevronRight size={20} color="rgba(255,255,255,0.8)" />
               </div>
@@ -1024,8 +1034,8 @@ export default function MundoHalloween() {
                   
                   <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }} />
                   <div style={{ textAlign: 'center', flex: 1 }}>
-                    <div style={{ color: '#fff', fontWeight: 800, fontSize: '18px' }}>${selectedItem.price}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>MXN</div>
+                    <div style={{ color: '#FF8C00', fontWeight: 900, fontSize: '28px' }}><FormattedPrice price={selectedItem.price} /></div>
+                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: 600, marginTop: '2px' }}>MXN</div>
                   </div>
                 </div>
 
@@ -1135,7 +1145,7 @@ export default function MundoHalloween() {
                       }}
                     >
                       <Plus size={20} />
-                      Agregar al pedido — ${selectedItem.price} MXN
+                      Agregar al pedido — <FormattedPrice price={selectedItem.price} /> MXN
                     </button>
                   </div>
                 )}
@@ -1234,7 +1244,7 @@ export default function MundoHalloween() {
                                   {item.name}
                                 </p>
                                 <p style={{ color: '#FF8C00', fontWeight: 800, fontSize: '14px', margin: '2px 0 0' }}>
-                                  ${item.price * item.quantity}
+                                  <FormattedPrice price={item.price * item.quantity} />
                                 </p>
                                 {/* Size label */}
                                 {item.sizes && item.sizes.length > 0 ? (
@@ -1302,13 +1312,13 @@ export default function MundoHalloween() {
                               {item.name} x{item.quantity}
                             </span>
                             <span style={{ color: '#fff', fontWeight: 700, fontSize: '13px' }}>
-                              ${item.price * item.quantity}
+                              <FormattedPrice price={item.price * item.quantity} />
                             </span>
                           </div>
                         ))}
                         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '12px', paddingTop: '12px', display: 'flex', justifyContent: 'space-between' }}>
                           <span style={{ color: '#fff', fontWeight: 900, fontSize: '15px' }}>Total</span>
-                          <span style={{ color: '#FF8C00', fontWeight: 900, fontSize: '18px' }}>${totalPrice} MXN</span>
+                          <span style={{ color: '#FF8C00', fontWeight: 900, fontSize: '18px' }}><FormattedPrice price={totalPrice} /> MXN</span>
                         </div>
                       </div>
 
@@ -1356,7 +1366,7 @@ export default function MundoHalloween() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '14px' }}>
                         <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>Total del pedido</span>
                         <span style={{ color: '#fff', fontWeight: 900, fontSize: '20px' }}>
-                          ${totalPrice} <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>MXN</span>
+                          <FormattedPrice price={totalPrice} /> <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>MXN</span>
                         </span>
                       </div>
                       <button
