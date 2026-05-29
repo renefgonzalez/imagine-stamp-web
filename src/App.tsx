@@ -11,7 +11,7 @@ import { Product } from './data/products';
 import logo from './logo.png';
 import AdminPanel from './AdminPanel';
 import DemoMenu from './DemoMenu';
-import MundoHalloween from './MundoHalloween';
+
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   constructor(props: { children: ReactNode }) {
@@ -853,7 +853,7 @@ export default function App() {
         } />
         <Route path="/admin" element={<AdminPanel onLogout={() => window.location.hash = '/'} />} />
         <Route path="/demo-menu" element={<DemoMenu />} />
-        <Route path="/mundo-halloween" element={<MundoHalloween />} />
+
       </Routes>
     </HashRouter>
   );
