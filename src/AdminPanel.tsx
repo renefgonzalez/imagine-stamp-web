@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Lock, Package, DollarSign, Trash2, Edit2, Plus, LogOut, 
-  Tag, FileText, LayoutGrid, Box, Image as ImageIcon, Search, CheckCircle, Clock, Phone, List, X, Save, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Zap
+  Lock, Package, DollarSign, Trash2, Edit2, Plus, LogOut,
+  Tag, FileText, LayoutGrid, Box, Image as ImageIcon, Search, CheckCircle, Clock, Phone, List, X, Save, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Zap, Landmark
 } from 'lucide-react';
 import { DEFAULT_CATEGORIES } from './App';
 import { supabase } from './lib/supabase';
@@ -21,7 +21,7 @@ const Field = ({ label, children }: { label: string; children: React.ReactNode }
 export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<'inventory' | 'add' | 'orders' | 'categories'>('inventory');
+  const [activeTab, setActiveTab] = useState<'inventory' | 'add' | 'orders' | 'categories' | 'settings'>('inventory');
   const [orderTab, setOrderTab] = useState<'pending' | 'delivered'>('pending');
   const [searchOrder, setSearchOrder] = useState('');
 
@@ -31,6 +31,12 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+
+  // ── DATOS BANCARIOS (Transferencia) ─────────────────────────────────────
+  const emptyBank = { id: 'bank', bank_name: '', account_holder: '', clabe: '', account_number: '', card_number: '', instructions: '' };
+  const [bankSettings, setBankSettings] = useState<any>(emptyBank);
+  const [savingBank, setSavingBank] = useState(false);
+  const [bankSaved, setBankSaved] = useState(false);
 
   // ── CARGA INICIAL ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -49,8 +55,35 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
 
   const loadAllData = async () => {
     setLoading(true);
-    await Promise.all([loadCategories(), loadProducts(), loadOrders()]);
+    await Promise.all([loadCategories(), loadProducts(), loadOrders(), loadSettings()]);
     setLoading(false);
+  };
+
+  const loadSettings = async () => {
+    const { data } = await supabase.from('settings').select('*').eq('id', 'bank').maybeSingle();
+    if (data) setBankSettings({ ...emptyBank, ...data });
+  };
+
+  const saveBankSettings = async () => {
+    setSavingBank(true);
+    const payload = {
+      id: 'bank',
+      bank_name: bankSettings.bank_name || '',
+      account_holder: bankSettings.account_holder || '',
+      clabe: bankSettings.clabe || '',
+      account_number: bankSettings.account_number || '',
+      card_number: bankSettings.card_number || '',
+      instructions: bankSettings.instructions || '',
+    };
+    const { error } = await supabase.from('settings').upsert(payload, { onConflict: 'id' });
+    setSavingBank(false);
+    if (error) {
+      alert('Error al guardar los datos bancarios: ' + error.message);
+    } else {
+      setBankSaved(true);
+      setTimeout(() => setBankSaved(false), 2500);
+      loadSettings();
+    }
   };
 
   const loadCategories = async () => {
@@ -366,7 +399,8 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
     { id: 'inventory', icon: Package, label: 'Inventario' },
     { id: 'add', icon: Plus, label: 'Nuevo' },
     { id: 'categories', icon: List, label: 'Categorías' },
-    { id: 'orders', icon: DollarSign, label: 'Pedidos' }
+    { id: 'orders', icon: DollarSign, label: 'Pedidos' },
+    { id: 'settings', icon: Landmark, label: 'Ajustes' }
   ];
 
   return (
@@ -1021,6 +1055,98 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          )}
+
+          {/* ─── AJUSTES / DATOS BANCARIOS ───────────────────────────────── */}
+          {activeTab === 'settings' && (
+            <div className="max-w-2xl mx-auto">
+              <div className="mb-6 px-2">
+                <h2 className="text-2xl font-black text-primary font-headline uppercase">Datos Bancarios</h2>
+                <p className="text-xs text-primary/40 font-bold uppercase tracking-widest mt-1">
+                  Se muestran al cliente cuando elige <strong>Transferencia</strong> en el carrito.
+                </p>
+              </div>
+
+              <div className="bg-surface border border-primary/5 p-8 rounded-3xl shadow-xl space-y-5">
+                <div className="flex items-center gap-3 pb-2 border-b border-primary/5">
+                  <div className="p-3 bg-secondary/10 rounded-xl text-secondary">
+                    <Landmark size={22} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-black text-primary uppercase tracking-widest">Cuenta para Transferencias</p>
+                    <p className="text-[10px] font-bold text-primary/30 uppercase tracking-widest">Deja en blanco los campos que no uses</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <Field label="Banco">
+                    <input
+                      value={bankSettings.bank_name || ''}
+                      onChange={(e) => setBankSettings((p: any) => ({ ...p, bank_name: e.target.value }))}
+                      placeholder="EJ: BBVA"
+                      className="w-full bg-background text-primary p-4 rounded-2xl border border-primary/5 focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none text-xs font-black tracking-widest uppercase transition-all"
+                    />
+                  </Field>
+                  <Field label="Titular de la cuenta">
+                    <input
+                      value={bankSettings.account_holder || ''}
+                      onChange={(e) => setBankSettings((p: any) => ({ ...p, account_holder: e.target.value }))}
+                      placeholder="EJ: MARÍA GARCÍA LÓPEZ"
+                      className="w-full bg-background text-primary p-4 rounded-2xl border border-primary/5 focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none text-xs font-black tracking-widest uppercase transition-all"
+                    />
+                  </Field>
+                </div>
+
+                <Field label="CLABE Interbancaria (18 dígitos)">
+                  <input
+                    value={bankSettings.clabe || ''}
+                    onChange={(e) => setBankSettings((p: any) => ({ ...p, clabe: e.target.value }))}
+                    placeholder="000000000000000000"
+                    inputMode="numeric"
+                    className="w-full bg-background text-primary p-4 rounded-2xl border border-primary/5 focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none text-xs font-black tracking-widest transition-all"
+                  />
+                </Field>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <Field label="No. de Cuenta (opcional)">
+                    <input
+                      value={bankSettings.account_number || ''}
+                      onChange={(e) => setBankSettings((p: any) => ({ ...p, account_number: e.target.value }))}
+                      placeholder="0000000000"
+                      inputMode="numeric"
+                      className="w-full bg-background text-primary p-4 rounded-2xl border border-primary/5 focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none text-xs font-black tracking-widest transition-all"
+                    />
+                  </Field>
+                  <Field label="No. de Tarjeta (opcional)">
+                    <input
+                      value={bankSettings.card_number || ''}
+                      onChange={(e) => setBankSettings((p: any) => ({ ...p, card_number: e.target.value }))}
+                      placeholder="0000 0000 0000 0000"
+                      inputMode="numeric"
+                      className="w-full bg-background text-primary p-4 rounded-2xl border border-primary/5 focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none text-xs font-black tracking-widest transition-all"
+                    />
+                  </Field>
+                </div>
+
+                <Field label="Instrucciones adicionales (opcional)">
+                  <textarea
+                    value={bankSettings.instructions || ''}
+                    onChange={(e) => setBankSettings((p: any) => ({ ...p, instructions: e.target.value }))}
+                    placeholder="EJ: ENVÍA TU COMPROBANTE POR WHATSAPP PARA CONFIRMAR EL PEDIDO."
+                    className="w-full bg-background text-primary p-4 rounded-2xl border border-primary/5 focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none text-xs font-bold tracking-widest min-h-[90px] transition-all"
+                  />
+                </Field>
+
+                <button
+                  onClick={saveBankSettings}
+                  disabled={savingBank}
+                  className={`w-full ${savingBank ? 'bg-primary/20' : bankSaved ? 'bg-emerald-500' : 'bg-secondary'} text-white p-5 rounded-2xl font-black hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-xl shadow-secondary/20 uppercase tracking-[0.2em] text-xs mt-2`}
+                >
+                  {savingBank ? <Clock className="animate-spin" size={18} /> : bankSaved ? <CheckCircle size={18} /> : <Save size={18} strokeWidth={3} />}
+                  {savingBank ? 'GUARDANDO...' : bankSaved ? '¡Guardado!' : 'Guardar Datos Bancarios'}
+                </button>
               </div>
             </div>
           )}

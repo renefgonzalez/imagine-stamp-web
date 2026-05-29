@@ -2,8 +2,9 @@ import React, { useState, useMemo, useEffect, ErrorInfo, ReactNode, Component } 
 import { supabase } from './lib/supabase';
 import { 
   Search, Heart, Plus, Sparkles, X, ShoppingBag,
-  ChevronRight, Instagram, Facebook, Mail as MailIcon, 
-  PartyPopper, Gift, Briefcase, LayoutGrid, Lock, MessageCircle
+  ChevronRight, Instagram, Facebook, Mail as MailIcon,
+  PartyPopper, Gift, Briefcase, LayoutGrid, Lock, MessageCircle,
+  Landmark, Copy, Check, CreditCard
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
@@ -78,6 +79,9 @@ export default function App() {
 
   const [categories, setCategories] = useState<any[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [bankInfo, setBankInfo] = useState<any>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [mpLoading, setMpLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [cartToast, setCartToast] = useState<{ name: string } | null>(null);
   const [favorites, setFavorites] = useState<(string | number)[]>(() => {
@@ -94,10 +98,15 @@ export default function App() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [catRes, prodRes] = await Promise.all([
+        const [catRes, prodRes, settingsRes] = await Promise.all([
           supabase.from('categories').select('*').order('sort_order', { ascending: true }),
-          supabase.from('products').select('*')
+          supabase.from('products').select('*'),
+          supabase.from('settings').select('*').eq('id', 'bank').maybeSingle()
         ]);
+
+        if (settingsRes.data) {
+          setBankInfo(settingsRes.data);
+        }
 
         if (catRes.data) {
           const apiCats = catRes.data.map((cat: any) => {
@@ -199,6 +208,13 @@ export default function App() {
 
   const openCart = () => { setCartStep('cart'); setIsCartOpen(true); };
 
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard?.writeText(text).then(() => {
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 2000);
+    }).catch(() => {});
+  };
+
   const handleFinalCheckout = () => {
     const phoneNumber = '525650469993';
     const lines = cart.map(item => `  • ${item.name} x${item.quantity} = $${item.price * item.quantity} MXN`).join('\n');
@@ -241,6 +257,83 @@ export default function App() {
     setCartStep('cart');
     setIsCartOpen(false);
   };
+
+  // ── PAGO CON TARJETA (Mercado Pago Checkout Pro) ──────────────────────────
+  const handleMercadoPagoCheckout = async () => {
+    if (mpLoading) return;
+    setMpLoading(true);
+
+    const orderId = 'ORD-' + Date.now();
+    const newOrder = {
+      id: orderId,
+      customer_name: customerInfo.name,
+      customer_phone: customerInfo.phone,
+      customer_city: customerInfo.city,
+      delivery_notes: customerInfo.notes,
+      payment_method: 'Tarjeta (Mercado Pago)',
+      items: cart.map(item => ({ name: item.name, price: item.price, quantity: item.quantity })),
+      total_amount: totalPrice,
+      status: 'pending',
+      internal_notes: []
+    };
+
+    try {
+      // 1) Guardar el pedido en Supabase (queda "pendiente" hasta confirmar el pago)
+      const { error: orderError } = await supabase.from('orders').insert([newOrder]);
+      if (orderError) throw new Error('No se pudo crear el pedido. Intenta de nuevo.');
+
+      // 2) Pedir a la Edge Function que cree la preferencia de pago en Mercado Pago
+      const { data, error } = await supabase.functions.invoke('create-preference', {
+        body: {
+          orderId,
+          items: cart.map(item => ({ name: item.name, price: item.price, quantity: item.quantity })),
+          siteUrl: window.location.origin
+        }
+      });
+
+      if (error) throw error;
+
+      const redirectUrl = data?.init_point || data?.sandbox_init_point;
+      if (!redirectUrl) throw new Error(data?.error ? JSON.stringify(data.error) : 'Mercado Pago no devolvió un enlace de pago.');
+
+      // 3) Redirigir a la pantalla segura de Mercado Pago
+      window.location.href = redirectUrl;
+    } catch (err: any) {
+      console.error('Error en pago Mercado Pago:', err);
+      alert('Hubo un problema al iniciar el pago con tarjeta. ' + (err?.message || '') + '\n\nPuedes elegir otra forma de pago o escribirnos por WhatsApp.');
+      setMpLoading(false);
+    }
+  };
+
+  // ── Confirmar pago al regresar de Mercado Pago ────────────────────────────
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const pago = params.get('pago');
+    if (!pago) return;
+
+    const status = params.get('status') || params.get('collection_status');
+    const orderRef = params.get('external_reference');
+    const paymentId = params.get('payment_id') || params.get('collection_id');
+
+    if (pago === 'exito' && status === 'approved' && orderRef) {
+      // Marcar el pedido como pagado (guarda la referencia del pago de Mercado Pago)
+      supabase.from('orders')
+        .update({ payment_reference: `MP-${paymentId || 'aprobado'}` })
+        .eq('id', orderRef)
+        .then(() => {});
+      setCartToast({ name: '✅ ¡Pago aprobado! Tu pedido fue registrado.' });
+      setTimeout(() => setCartToast(null), 6000);
+    } else if (pago === 'error') {
+      setCartToast({ name: '❌ El pago fue rechazado. Intenta de nuevo u otra forma de pago.' });
+      setTimeout(() => setCartToast(null), 6000);
+    } else if (pago === 'pendiente') {
+      setCartToast({ name: '⏳ Tu pago está pendiente de confirmación.' });
+      setTimeout(() => setCartToast(null), 6000);
+    }
+
+    // Limpiar los parámetros de la URL para que no se repita el aviso al recargar
+    window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+  }, []);
 
   return (
     <HashRouter>
@@ -817,10 +910,100 @@ export default function App() {
                                 >
                                   <option value="Efectivo">💵 Efectivo</option>
                                   <option value="Transferencia">🏦 Transferencia Bancaria</option>
-                                  <option value="Tarjeta">💳 Tarjeta</option>
+                                  <option value="Tarjeta">💳 Tarjeta (Mercado Pago)</option>
                                   <option value="Por Confirmar">⏳ Por Confirmar</option>
                                 </select>
                               </div>
+
+                              {/* ── Datos bancarios para transferencia ── */}
+                              <AnimatePresence>
+                                {customerInfo.paymentMethod === 'Transferencia' && (
+                                  <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="overflow-hidden"
+                                  >
+                                    <div className="bg-secondary/5 border border-secondary/20 rounded-2xl p-4">
+                                      <div className="flex items-center gap-2 mb-3">
+                                        <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white shrink-0">
+                                          <Landmark size={16} />
+                                        </div>
+                                        <div>
+                                          <p className="text-[10px] font-black text-secondary uppercase tracking-widest leading-none">Datos para transferencia</p>
+                                          <p className="text-[9px] font-medium text-primary/40 mt-0.5">Realiza tu pago y envía el comprobante por WhatsApp</p>
+                                        </div>
+                                      </div>
+
+                                      {(() => {
+                                        const rows = [
+                                          { label: 'Banco', value: bankInfo?.bank_name, field: 'bank_name' },
+                                          { label: 'Titular', value: bankInfo?.account_holder, field: 'account_holder' },
+                                          { label: 'CLABE', value: bankInfo?.clabe, field: 'clabe' },
+                                          { label: 'No. de Cuenta', value: bankInfo?.account_number, field: 'account_number' },
+                                          { label: 'No. de Tarjeta', value: bankInfo?.card_number, field: 'card_number' },
+                                        ].filter(r => r.value && String(r.value).trim() !== '');
+
+                                        if (rows.length === 0) {
+                                          return (
+                                            <p className="text-xs text-primary/40 italic py-2">
+                                              Los datos bancarios se mostrarán aquí. Escríbenos por WhatsApp para coordinar tu pago.
+                                            </p>
+                                          );
+                                        }
+
+                                        return (
+                                          <div className="space-y-2">
+                                            {rows.map(row => (
+                                              <div key={row.field} className="flex items-center justify-between gap-2 bg-white rounded-xl px-3 py-2 border border-primary/5">
+                                                <div className="min-w-0">
+                                                  <p className="text-[9px] font-black text-primary/30 uppercase tracking-widest">{row.label}</p>
+                                                  <p className="text-sm font-bold text-primary truncate">{row.value}</p>
+                                                </div>
+                                                <button
+                                                  type="button"
+                                                  onClick={() => copyToClipboard(String(row.value), row.field)}
+                                                  title="Copiar"
+                                                  className="shrink-0 w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary/40 hover:bg-secondary hover:text-white transition-all"
+                                                >
+                                                  {copiedField === row.field ? <Check size={14} /> : <Copy size={14} />}
+                                                </button>
+                                              </div>
+                                            ))}
+                                            {bankInfo?.instructions && String(bankInfo.instructions).trim() !== '' && (
+                                              <p className="text-[10px] text-primary/50 leading-relaxed bg-white rounded-xl px-3 py-2 border border-primary/5 whitespace-pre-line">
+                                                {bankInfo.instructions}
+                                              </p>
+                                            )}
+                                          </div>
+                                        );
+                                      })()}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+
+                              {/* ── Aviso de pago con tarjeta (Mercado Pago) ── */}
+                              <AnimatePresence>
+                                {customerInfo.paymentMethod === 'Tarjeta' && (
+                                  <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="overflow-hidden"
+                                  >
+                                    <div className="bg-[#009EE3]/5 border border-[#009EE3]/20 rounded-2xl p-4 flex items-center gap-3">
+                                      <div className="w-8 h-8 rounded-full bg-[#009EE3] flex items-center justify-center text-white shrink-0">
+                                        <CreditCard size={16} />
+                                      </div>
+                                      <p className="text-[11px] font-medium text-primary/60 leading-relaxed">
+                                        Al confirmar, te llevaremos a la pantalla segura de <strong className="text-[#009EE3]">Mercado Pago</strong> para pagar con tarjeta de crédito o débito. Tu pedido se registra automáticamente.
+                                      </p>
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+
                               <div>
                                 <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1.5 block ml-1">Notas Adicionales <span className="normal-case font-medium">(opcional)</span></label>
                                 <textarea
@@ -833,14 +1016,25 @@ export default function App() {
                               </div>
                             </div>
 
-                            <button
-                              onClick={handleFinalCheckout}
-                              disabled={!customerInfo.name || !customerInfo.phone || !customerInfo.city}
-                              className="mt-5 w-full py-4 bg-[#25D366] text-white rounded-2xl font-black text-base shadow-lg hover:bg-[#1DAD54] transition-all flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed"
-                            >
-                              <MessageCircle size={22} fill="currentColor" />
-                              Finalizar Pedido vía WhatsApp
-                            </button>
+                            {customerInfo.paymentMethod === 'Tarjeta' ? (
+                              <button
+                                onClick={handleMercadoPagoCheckout}
+                                disabled={!customerInfo.name || !customerInfo.phone || !customerInfo.city || mpLoading}
+                                className="mt-5 w-full py-4 bg-[#009EE3] text-white rounded-2xl font-black text-base shadow-lg hover:bg-[#008FCC] transition-all flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed"
+                              >
+                                <CreditCard size={22} />
+                                {mpLoading ? 'Redirigiendo a Mercado Pago...' : 'Pagar con Tarjeta'}
+                              </button>
+                            ) : (
+                              <button
+                                onClick={handleFinalCheckout}
+                                disabled={!customerInfo.name || !customerInfo.phone || !customerInfo.city}
+                                className="mt-5 w-full py-4 bg-[#25D366] text-white rounded-2xl font-black text-base shadow-lg hover:bg-[#1DAD54] transition-all flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed"
+                              >
+                                <MessageCircle size={22} fill="currentColor" />
+                                Finalizar Pedido vía WhatsApp
+                              </button>
+                            )}
                           </motion.div>
                         )}
                       </AnimatePresence>
