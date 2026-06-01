@@ -10,10 +10,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Product } from './data/products';
 import logo from './logo.png';
-import AdminPanel from './AdminPanel';
 import DemoMenu from './modules/demo-menu/pages/DemoMenu';
 import { CrepasCatalog } from './modules/menu-crepas/pages/CrepasCatalog';
-import { CrepaDetail } from './modules/menu-crepas/pages/CrepaDetail';
 
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
@@ -1047,10 +1045,8 @@ export default function App() {
             </div>
           </ErrorBoundary>
         } />
-        <Route path="/admin" element={<AdminPanel onLogout={() => window.location.hash = '/'} />} />
         <Route path="/demo-menu" element={<DemoMenu />} />
         <Route path="/menu-crepas" element={<CrepasCatalog />} />
-        <Route path="/menu-crepas/:id" element={<CrepaDetail />} />
 
       </Routes>
     </HashRouter>
