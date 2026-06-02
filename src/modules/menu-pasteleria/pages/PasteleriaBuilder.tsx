@@ -24,10 +24,8 @@ export function PasteleriaBuilder() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
-  // Cart Phases: 1 = Summary, 2 = Details, 3 = Confirmation
   const [cartPhase, setCartPhase] = useState<1 | 2 | 3>(1);
   
-  // Checkout Form State
   const [customerName, setCustomerName] = useState('');
   const [deliveryType, setDeliveryType] = useState<'tienda' | 'domicilio' | null>(null);
   const [deliveryAddress, setDeliveryAddress] = useState('');
@@ -43,7 +41,6 @@ export function PasteleriaBuilder() {
 
   const isComplete = selectedPan && selectedRelleno;
   
-  // Validations
   const isPhase2Valid = 
     customerName.trim() !== '' && 
     deliveryType !== null && 
@@ -66,12 +63,10 @@ export function PasteleriaBuilder() {
 
     setCart(prev => [...prev, newCake]);
     
-    // Reset selection
     setSelectedPan(null);
     setSelectedRelleno(null);
     setSelectedExtras([]);
     
-    // Show Toast
     setShowToast(true);
   };
 
@@ -135,11 +130,11 @@ export function PasteleriaBuilder() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans text-stone-900 pb-32">
+    <div className="min-h-screen bg-[#FDFBF7] font-sans text-stone-900 pb-32 selection:bg-rose-200">
       <title>Lázaro Pastelería | Crea tu Propio Sabor</title>
 
-      {/* HEADER MINIMALISTA */}
-      <header className="px-6 pt-10 pb-6 border-b border-stone-100 flex flex-col items-center sticky top-0 bg-white/80 backdrop-blur-md z-30">
+      {/* HEADER MINIMALISTA CON SOMBRA SUTIL */}
+      <header className="px-6 pt-10 pb-6 border-b border-stone-200 border-dashed flex flex-col items-center sticky top-0 bg-[#FDFBF7]/90 backdrop-blur-md z-30 shadow-[0_8px_30px_rgb(0,0,0,0.01)]">
         <div className="w-full max-w-2xl flex justify-between items-center mb-6">
           <a href="/#/" className="text-stone-400 hover:text-stone-900 transition-colors flex items-center gap-2 text-sm uppercase tracking-widest font-light">
             <ArrowLeft size={16} /> Volver
@@ -154,7 +149,7 @@ export function PasteleriaBuilder() {
           >
             <ShoppingBag size={24} strokeWidth={1.5} />
             {totalItems > 0 && (
-              <span className="absolute 0 right-0 bg-stone-900 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">
+              <span className="absolute 0 right-0 bg-amber-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-sm shadow-amber-500/30">
                 {totalItems}
               </span>
             )}
@@ -162,12 +157,12 @@ export function PasteleriaBuilder() {
         </div>
 
         <div className="text-center max-w-xl mx-auto mt-4">
-          <h1 className="text-4xl md:text-5xl font-light tracking-tight mb-4 font-serif">
+          <h1 className="text-4xl md:text-5xl font-light tracking-tight mb-4 font-serif text-stone-800">
             Crea tu propio sabor
           </h1>
-          <div className="h-px w-16 bg-stone-900 mx-auto mb-4"></div>
-          <p className="text-stone-500 font-light text-sm tracking-wide uppercase">
-            Pregunta por el menú sin azúcar
+          <div className="h-px w-16 bg-amber-200 mx-auto mb-4"></div>
+          <p className="text-stone-500 font-light text-sm tracking-wide uppercase flex items-center justify-center gap-2">
+            Pregunta por el menú <span className="bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-widest border border-teal-100">Sin Azúcar</span>
           </p>
         </div>
       </header>
@@ -181,15 +176,15 @@ export function PasteleriaBuilder() {
             exit={{ opacity: 0, y: -50 }}
             className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4"
           >
-            <div className="bg-stone-900 text-white p-5 rounded-none shadow-2xl flex flex-col items-center text-center">
-              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mb-3">
-                <Check size={20} className="text-white" />
+            <div className="bg-white text-stone-900 p-5 rounded-3xl shadow-[0_20px_50px_rgb(0,0,0,0.08)] flex flex-col items-center text-center border border-stone-100">
+              <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center mb-3 text-amber-500">
+                <Check size={20} />
               </div>
-              <h4 className="font-serif text-lg mb-4">¡Tu pastel personalizado ha sido agregado!</h4>
+              <h4 className="font-serif text-lg mb-4 text-stone-800">¡Tu pastel personalizado ha sido agregado!</h4>
               <div className="flex gap-3 w-full">
                 <button 
                   onClick={() => setShowToast(false)}
-                  className="flex-1 border border-stone-600 text-stone-300 py-3 text-sm font-medium hover:bg-stone-800 transition-colors"
+                  className="flex-1 border border-stone-200 text-stone-600 py-3 text-sm font-medium hover:bg-stone-50 hover:border-stone-300 transition-colors rounded-xl"
                 >
                   Seguir Comprando
                 </button>
@@ -199,7 +194,7 @@ export function PasteleriaBuilder() {
                     setCartPhase(1);
                     setIsCartOpen(true);
                   }}
-                  className="flex-1 bg-white text-stone-900 py-3 text-sm font-medium hover:bg-stone-200 transition-colors"
+                  className="flex-1 bg-stone-900 text-white py-3 text-sm font-medium hover:bg-stone-800 transition-colors rounded-xl shadow-lg shadow-stone-900/20"
                 >
                   Ver Carrito
                 </button>
@@ -213,33 +208,34 @@ export function PasteleriaBuilder() {
       <main className="max-w-2xl mx-auto px-6 py-10 space-y-16 relative z-10">
         
         {/* PASO 1: PAN */}
-        <section>
-          <div className="flex items-end gap-4 mb-6">
-            <span className="text-4xl text-stone-200 font-serif italic leading-none">01</span>
-            <h2 className="text-2xl font-light tracking-wide">Elige tu pan</h2>
+        <section className="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-stone-100 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-100 via-amber-100 to-rose-100 opacity-50"></div>
+          <div className="flex items-end gap-4 mb-8">
+            <span className="text-5xl text-amber-100 font-serif italic leading-none">01</span>
+            <h2 className="text-2xl font-light tracking-wide text-stone-800">Elige tu pan</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {PANES.map(pan => {
               const isSelected = selectedPan === pan.id;
               return (
                 <button
                   key={pan.id}
                   onClick={() => setSelectedPan(pan.id)}
-                  className={`relative p-4 text-left border rounded-none transition-all duration-300 ${
+                  className={`relative p-5 text-left rounded-2xl transition-all duration-300 border-2 ${
                     isSelected 
-                      ? 'border-stone-900 bg-stone-900 text-white shadow-xl' 
-                      : 'border-stone-200 bg-transparent text-stone-600 hover:border-stone-400'
+                      ? 'border-amber-300 bg-rose-50/60 shadow-sm' 
+                      : 'border-transparent bg-stone-50 text-stone-600 hover:bg-stone-100 hover:border-stone-200'
                   }`}
                 >
-                  <div className="font-medium text-sm">{pan.name}</div>
+                  <div className={`font-medium text-sm ${isSelected ? 'text-amber-900' : ''}`}>{pan.name}</div>
                   {pan.note && (
-                    <div className={`text-[10px] mt-1 italic leading-tight ${isSelected ? 'text-stone-300' : 'text-stone-400'}`}>
+                    <div className={`text-[10px] mt-2 leading-tight px-2 py-1 rounded-md inline-block ${isSelected ? 'bg-white/60 text-amber-700' : 'bg-stone-200/50 text-stone-500'}`}>
                       {pan.note}
                     </div>
                   )}
                   {isSelected && (
-                    <div className="absolute top-2 right-2">
-                      <Check size={14} className="text-white" />
+                    <div className="absolute -top-2 -right-2 bg-amber-400 text-white p-1 rounded-full shadow-sm">
+                      <Check size={12} strokeWidth={3} />
                     </div>
                   )}
                 </button>
@@ -248,23 +244,29 @@ export function PasteleriaBuilder() {
           </div>
         </section>
 
+        {/* Separador Ondulado */}
+        <div className="flex justify-center">
+          <div className="w-24 h-px border-t border-dashed border-stone-300"></div>
+        </div>
+
         {/* PASO 2: RELLENO */}
-        <section>
-          <div className="flex items-end gap-4 mb-6">
-            <span className="text-4xl text-stone-200 font-serif italic leading-none">02</span>
-            <h2 className="text-2xl font-light tracking-wide">Elige tu relleno</h2>
+        <section className="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-stone-100 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-100 via-rose-100 to-amber-100 opacity-50"></div>
+          <div className="flex items-end gap-4 mb-8">
+            <span className="text-5xl text-rose-100 font-serif italic leading-none">02</span>
+            <h2 className="text-2xl font-light tracking-wide text-stone-800">Elige tu relleno</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {RELLENOS.map(relleno => {
               const isSelected = selectedRelleno === relleno.id;
               return (
                 <button
                   key={relleno.id}
                   onClick={() => setSelectedRelleno(relleno.id)}
-                  className={`p-4 text-center border rounded-full transition-all duration-300 ${
+                  className={`p-4 text-center rounded-2xl transition-all duration-300 border-2 ${
                     isSelected 
-                      ? 'border-stone-900 bg-stone-900 text-white shadow-md' 
-                      : 'border-stone-200 bg-transparent text-stone-600 hover:border-stone-400'
+                      ? 'border-amber-300 bg-amber-50/60 shadow-sm text-amber-900' 
+                      : 'border-transparent bg-stone-50 text-stone-600 hover:bg-stone-100 hover:border-stone-200'
                   }`}
                 >
                   <span className="font-medium text-sm">{relleno.name}</span>
@@ -274,29 +276,35 @@ export function PasteleriaBuilder() {
           </div>
         </section>
 
+        {/* Separador Ondulado */}
+        <div className="flex justify-center">
+          <div className="w-24 h-px border-t border-dashed border-stone-300"></div>
+        </div>
+
         {/* PASO 3: EXTRAS */}
-        <section>
-          <div className="flex items-end gap-4 mb-6">
-            <span className="text-4xl text-stone-200 font-serif italic leading-none">03</span>
+        <section className="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-stone-100 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-100 via-amber-100 to-rose-100 opacity-50"></div>
+          <div className="flex items-end gap-4 mb-8">
+            <span className="text-5xl text-amber-100 font-serif italic leading-none">03</span>
             <div>
-              <h2 className="text-2xl font-light tracking-wide">Elige tu extra</h2>
-              <p className="text-stone-400 text-xs uppercase tracking-widest mt-1">(Opcional)</p>
+              <h2 className="text-2xl font-light tracking-wide text-stone-800">Elige tu extra</h2>
+              <p className="text-stone-400 text-[10px] uppercase tracking-widest mt-1 font-medium bg-stone-50 inline-block px-2 py-0.5 rounded-full border border-stone-100">(Opcional)</p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {EXTRAS.map(extra => {
               const isSelected = selectedExtras.includes(extra.id);
               return (
                 <button
                   key={extra.id}
                   onClick={() => toggleExtra(extra.id)}
-                  className={`px-4 py-2 text-sm rounded-full transition-colors border ${
+                  className={`px-5 py-2.5 text-sm rounded-full transition-all border-2 ${
                     isSelected
-                      ? 'border-stone-900 bg-stone-50 text-stone-900 font-medium'
-                      : 'border-transparent bg-stone-100 text-stone-500 hover:bg-stone-200'
+                      ? 'border-amber-300 bg-rose-50/60 text-amber-900 font-medium shadow-sm'
+                      : 'border-transparent bg-stone-50 text-stone-500 hover:bg-stone-100 hover:border-stone-200'
                   }`}
                 >
-                  {extra.name} {isSelected && <Check size={14} className="inline ml-1" />}
+                  {extra.name} {isSelected && <Check size={14} className="inline ml-1 text-amber-600" />}
                 </button>
               );
             })}
@@ -312,11 +320,11 @@ export function PasteleriaBuilder() {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-6 left-0 right-0 z-20 flex justify-center px-4"
+            className="fixed bottom-8 left-0 right-0 z-20 flex justify-center px-4"
           >
             <button
               onClick={handleAddToCart}
-              className="bg-stone-900 text-white px-8 py-4 rounded-full font-medium shadow-2xl flex items-center gap-3 hover:bg-stone-800 transition-colors"
+              className="bg-stone-900 text-white px-8 py-4 rounded-full font-medium shadow-[0_20px_40px_rgb(0,0,0,0.15)] flex items-center gap-3 hover:bg-stone-800 transition-all hover:scale-105 active:scale-95"
             >
               <Plus size={20} />
               Agregar mi Creación al Pedido
@@ -334,24 +342,24 @@ export function PasteleriaBuilder() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsCartOpen(false)}
-              className="fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-40"
+              className="fixed inset-0 bg-stone-900/20 backdrop-blur-sm z-40"
             />
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-full md:w-[450px] bg-white border-l border-stone-200 z-50 flex flex-col shadow-2xl"
+              className="fixed top-0 right-0 bottom-0 w-full md:w-[450px] bg-[#FDFBF7] border-l border-stone-200 z-50 flex flex-col shadow-2xl rounded-l-3xl overflow-hidden"
             >
               {/* Header */}
-              <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-white shrink-0">
-                <h3 className="text-xl font-serif">
+              <div className="p-6 border-b border-stone-200 border-dashed flex justify-between items-center bg-white shrink-0 relative z-10 shadow-sm">
+                <h3 className="text-xl font-serif text-stone-800">
                   {cartPhase === 1 && 'Resumen del Pedido'}
                   {cartPhase === 2 && 'Datos de Entrega'}
                   {cartPhase === 3 && 'Finalizar Pedido'}
                 </h3>
-                <button onClick={() => setIsCartOpen(false)} className="text-stone-400 hover:text-stone-900 transition-colors">
-                  <X size={24} strokeWidth={1.5} />
+                <button onClick={() => setIsCartOpen(false)} className="text-stone-400 hover:text-stone-900 transition-colors bg-stone-50 p-2 rounded-full hover:bg-stone-100">
+                  <X size={20} strokeWidth={2} />
                 </button>
               </div>
 
@@ -361,36 +369,38 @@ export function PasteleriaBuilder() {
                   <div className="flex-1 overflow-y-auto p-6">
                     {cart.length === 0 ? (
                       <div className="flex flex-col items-center justify-center text-stone-400 py-10 h-full">
-                        <ShoppingBag size={48} strokeWidth={1} className="mb-4 opacity-50" />
+                        <ShoppingBag size={48} strokeWidth={1} className="mb-4 opacity-30 text-stone-300" />
                         <p className="font-light tracking-wide">Tu carrito está vacío.</p>
                       </div>
                     ) : (
-                      <div className="space-y-8">
+                      <div className="space-y-6">
                         {cart.map(item => (
-                          <div key={item.id} className="border-b border-stone-100 pb-6 last:border-0">
+                          <div key={item.id} className="bg-white p-5 rounded-3xl shadow-[0_4px_20px_rgb(0,0,0,0.02)] border border-stone-100">
                             <div className="flex justify-between items-start mb-4">
-                              <h4 className="font-medium text-stone-900">Pastel Personalizado</h4>
-                              <button onClick={() => handleRemove(item.id)} className="text-stone-400 hover:text-red-500 transition-colors">
+                              <h4 className="font-medium text-stone-800 font-serif text-lg">Pastel Personalizado</h4>
+                              <button onClick={() => handleRemove(item.id)} className="text-stone-400 hover:text-red-500 transition-colors p-1.5 hover:bg-red-50 rounded-full">
                                 <Trash2 size={16} />
                               </button>
                             </div>
                             
-                            <div className="space-y-1 text-sm text-stone-600 mb-6 font-light">
-                              <p><span className="text-stone-400 mr-2">• Pan:</span> {PANES.find(p => p.id === item.pan)?.name}</p>
-                              <p><span className="text-stone-400 mr-2">• Relleno:</span> {RELLENOS.find(r => r.id === item.relleno)?.name}</p>
+                            <div className="space-y-2 text-sm text-stone-600 mb-6 font-light bg-[#FDFBF7] p-4 rounded-2xl border border-stone-100/50">
+                              <p><span className="text-amber-700/60 font-medium mr-2">Pan:</span> {PANES.find(p => p.id === item.pan)?.name}</p>
+                              <div className="h-px border-t border-dashed border-stone-200"></div>
+                              <p><span className="text-amber-700/60 font-medium mr-2">Relleno:</span> {RELLENOS.find(r => r.id === item.relleno)?.name}</p>
+                              <div className="h-px border-t border-dashed border-stone-200"></div>
                               <p>
-                                <span className="text-stone-400 mr-2">• Extras:</span> 
+                                <span className="text-amber-700/60 font-medium mr-2">Extras:</span> 
                                 {item.extras.length > 0 ? item.extras.map(e => EXTRAS.find(x => x.id === e)?.name).join(', ') : 'Ninguno'}
                               </p>
                             </div>
 
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center border border-stone-200 rounded-none">
-                                <button onClick={() => handleUpdateQty(item.id, -1)} className="p-2 hover:bg-stone-50"><Minus size={14} /></button>
-                                <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
-                                <button onClick={() => handleUpdateQty(item.id, 1)} className="p-2 hover:bg-stone-50"><Plus size={14} /></button>
+                            <div className="flex items-center justify-between mt-2">
+                              <div className="flex items-center bg-stone-50 rounded-full border border-stone-100 p-1">
+                                <button onClick={() => handleUpdateQty(item.id, -1)} className="p-1.5 hover:bg-white rounded-full transition-colors text-stone-500"><Minus size={14} /></button>
+                                <span className="w-8 text-center text-sm font-medium text-stone-800">{item.quantity}</span>
+                                <button onClick={() => handleUpdateQty(item.id, 1)} className="p-1.5 hover:bg-white rounded-full transition-colors text-stone-500"><Plus size={14} /></button>
                               </div>
-                              <div className="font-medium text-stone-900">
+                              <div className="font-medium text-stone-900 bg-amber-50 px-3 py-1 rounded-full text-sm border border-amber-100">
                                 ${(item.price * item.quantity).toFixed(2)}
                               </div>
                             </div>
@@ -401,14 +411,14 @@ export function PasteleriaBuilder() {
                   </div>
                   
                   {cart.length > 0 && (
-                    <div className="p-6 bg-stone-50 border-t border-stone-100 shrink-0">
-                      <div className="flex justify-between items-center mb-4">
-                        <span className="text-sm font-medium uppercase tracking-widest text-stone-500">Total</span>
-                        <span className="text-xl font-serif text-stone-900">${totalAmount.toFixed(2)}</span>
+                    <div className="p-6 bg-white border-t border-stone-200 border-dashed shrink-0 shadow-[0_-10px_30px_rgb(0,0,0,0.02)] relative z-10">
+                      <div className="flex justify-between items-center mb-5 bg-stone-50 p-4 rounded-2xl border border-stone-100">
+                        <span className="text-xs font-bold uppercase tracking-widest text-stone-500">Total</span>
+                        <span className="text-2xl font-serif text-stone-800">${totalAmount.toFixed(2)}</span>
                       </div>
                       <button
                         onClick={() => setCartPhase(2)}
-                        className="w-full bg-stone-900 text-white py-4 text-sm font-medium uppercase tracking-widest hover:bg-stone-800 transition-colors flex justify-center items-center gap-2"
+                        className="w-full bg-stone-900 text-white py-4 text-sm font-medium uppercase tracking-widest hover:bg-stone-800 transition-all rounded-2xl flex justify-center items-center gap-2 shadow-lg shadow-stone-900/10"
                       >
                         Siguiente: Datos de Entrega <ArrowRight size={16} />
                       </button>
@@ -420,66 +430,74 @@ export function PasteleriaBuilder() {
               {/* FASE 2: Datos y Pago */}
               {cartPhase === 2 && (
                 <div className="flex-1 flex flex-col overflow-hidden">
-                  <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-stone-50/50">
+                  <div className="flex-1 overflow-y-auto p-6 space-y-6">
                     
                     {/* Datos del Cliente */}
-                    <div className="space-y-4">
-                      <h4 className="text-sm font-serif font-medium text-stone-900 mb-2 border-b border-stone-200 pb-2">1. Datos del Cliente</h4>
+                    <div className="bg-white p-6 rounded-3xl shadow-[0_4px_20px_rgb(0,0,0,0.02)] border border-stone-100">
+                      <h4 className="text-sm font-serif font-medium text-stone-800 mb-4 flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs">1</span> 
+                        Datos del Cliente
+                      </h4>
                       
-                      <div>
-                        <label className="block text-xs uppercase tracking-widest text-stone-500 mb-2">Nombre Completo *</label>
-                        <input
-                          type="text"
-                          value={customerName}
-                          onChange={e => setCustomerName(e.target.value)}
-                          placeholder="Escribe tu nombre"
-                          className="w-full bg-white border border-stone-200 px-4 py-3 text-sm outline-none focus:border-stone-900 transition-colors"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-4">
                         <div>
-                          <label className="block text-xs uppercase tracking-widest text-stone-500 mb-2">Fecha *</label>
-                          <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                              <Calendar size={14} className="text-stone-400" />
-                            </div>
-                            <input
-                              type="date"
-                              value={deliveryDate}
-                              onChange={e => setDeliveryDate(e.target.value)}
-                              className="w-full bg-white border border-stone-200 pl-9 pr-3 py-3 text-sm outline-none focus:border-stone-900 transition-colors"
-                            />
-                          </div>
+                          <label className="block text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">Nombre Completo *</label>
+                          <input
+                            type="text"
+                            value={customerName}
+                            onChange={e => setCustomerName(e.target.value)}
+                            placeholder="Escribe tu nombre"
+                            className="w-full bg-stone-50 border border-transparent px-4 py-3 text-sm outline-none focus:border-amber-300 focus:bg-white transition-all rounded-xl"
+                          />
                         </div>
-                        <div>
-                          <label className="block text-xs uppercase tracking-widest text-stone-500 mb-2">Hora *</label>
-                          <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                              <Clock size={14} className="text-stone-400" />
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">Fecha *</label>
+                            <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Calendar size={14} className="text-stone-400" />
+                              </div>
+                              <input
+                                type="date"
+                                value={deliveryDate}
+                                onChange={e => setDeliveryDate(e.target.value)}
+                                className="w-full bg-stone-50 border border-transparent pl-9 pr-3 py-3 text-sm outline-none focus:border-amber-300 focus:bg-white transition-all rounded-xl"
+                              />
                             </div>
-                            <input
-                              type="time"
-                              value={deliveryTime}
-                              onChange={e => setDeliveryTime(e.target.value)}
-                              className="w-full bg-white border border-stone-200 pl-9 pr-3 py-3 text-sm outline-none focus:border-stone-900 transition-colors"
-                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">Hora *</label>
+                            <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Clock size={14} className="text-stone-400" />
+                              </div>
+                              <input
+                                type="time"
+                                value={deliveryTime}
+                                onChange={e => setDeliveryTime(e.target.value)}
+                                className="w-full bg-stone-50 border border-transparent pl-9 pr-3 py-3 text-sm outline-none focus:border-amber-300 focus:bg-white transition-all rounded-xl"
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     {/* Modo de Envío */}
-                    <div className="space-y-4">
-                      <h4 className="text-sm font-serif font-medium text-stone-900 mb-2 border-b border-stone-200 pb-2">2. Modo de Envío</h4>
+                    <div className="bg-white p-6 rounded-3xl shadow-[0_4px_20px_rgb(0,0,0,0.02)] border border-stone-100">
+                      <h4 className="text-sm font-serif font-medium text-stone-800 mb-4 flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-xs">2</span> 
+                        Modo de Envío
+                      </h4>
                       
                       <div className="grid grid-cols-2 gap-3">
                         <button
                           onClick={() => setDeliveryType('tienda')}
-                          className={`flex flex-col items-center justify-center p-4 border transition-all ${
+                          className={`flex flex-col items-center justify-center p-4 border-2 rounded-2xl transition-all ${
                             deliveryType === 'tienda' 
-                              ? 'border-stone-900 bg-stone-900 text-white' 
-                              : 'border-stone-200 bg-white text-stone-500 hover:border-stone-300'
+                              ? 'border-amber-300 bg-amber-50/60 text-amber-900 shadow-sm' 
+                              : 'border-transparent bg-stone-50 text-stone-500 hover:bg-stone-100'
                           }`}
                         >
                           <Store size={20} className="mb-2" />
@@ -487,10 +505,10 @@ export function PasteleriaBuilder() {
                         </button>
                         <button
                           onClick={() => setDeliveryType('domicilio')}
-                          className={`flex flex-col items-center justify-center p-4 border transition-all ${
+                          className={`flex flex-col items-center justify-center p-4 border-2 rounded-2xl transition-all ${
                             deliveryType === 'domicilio' 
-                              ? 'border-stone-900 bg-stone-900 text-white' 
-                              : 'border-stone-200 bg-white text-stone-500 hover:border-stone-300'
+                              ? 'border-amber-300 bg-amber-50/60 text-amber-900 shadow-sm' 
+                              : 'border-transparent bg-stone-50 text-stone-500 hover:bg-stone-100'
                           }`}
                         >
                           <Truck size={20} className="mb-2" />
@@ -500,58 +518,61 @@ export function PasteleriaBuilder() {
 
                       {deliveryType === 'domicilio' && (
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
-                          <label className="block text-xs uppercase tracking-widest text-stone-500 mt-4 mb-2">Dirección Completa *</label>
+                          <label className="block text-[10px] font-bold uppercase tracking-widest text-stone-400 mt-4 mb-2">Dirección Completa *</label>
                           <textarea
                             value={deliveryAddress}
                             onChange={e => setDeliveryAddress(e.target.value)}
                             placeholder="Calle, número, colonia, referencias..."
-                            className="w-full bg-white border border-stone-200 px-4 py-3 text-sm outline-none focus:border-stone-900 transition-colors resize-none h-20"
+                            className="w-full bg-stone-50 border border-transparent px-4 py-3 text-sm outline-none focus:border-amber-300 focus:bg-white transition-all resize-none h-20 rounded-xl"
                           />
                         </motion.div>
                       )}
                     </div>
 
                     {/* Forma de Pago */}
-                    <div className="space-y-4">
-                      <h4 className="text-sm font-serif font-medium text-stone-900 mb-2 border-b border-stone-200 pb-2">3. Forma de Pago</h4>
+                    <div className="bg-white p-6 rounded-3xl shadow-[0_4px_20px_rgb(0,0,0,0.02)] border border-stone-100">
+                      <h4 className="text-sm font-serif font-medium text-stone-800 mb-4 flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs">3</span> 
+                        Forma de Pago
+                      </h4>
                       
                       <div className="space-y-2">
                         <button
                           onClick={() => setPaymentMethod('spei')}
-                          className={`w-full flex items-center p-3 border transition-all ${paymentMethod === 'spei' ? 'border-stone-900 bg-stone-50' : 'border-stone-200 bg-white hover:border-stone-300'}`}
+                          className={`w-full flex items-center p-4 border-2 rounded-2xl transition-all ${paymentMethod === 'spei' ? 'border-amber-300 bg-rose-50/60 shadow-sm' : 'border-transparent bg-stone-50 hover:bg-stone-100'}`}
                         >
-                          <Landmark size={18} className={`mr-3 ${paymentMethod === 'spei' ? 'text-stone-900' : 'text-stone-400'}`} />
-                          <span className={`text-sm ${paymentMethod === 'spei' ? 'font-medium text-stone-900' : 'text-stone-600'}`}>Transferencia SPEI</span>
+                          <Landmark size={18} className={`mr-3 ${paymentMethod === 'spei' ? 'text-amber-700' : 'text-stone-400'}`} />
+                          <span className={`text-sm ${paymentMethod === 'spei' ? 'font-medium text-amber-900' : 'text-stone-600'}`}>Transferencia SPEI</span>
                         </button>
                         <button
                           onClick={() => setPaymentMethod('efectivo')}
-                          className={`w-full flex items-center p-3 border transition-all ${paymentMethod === 'efectivo' ? 'border-stone-900 bg-stone-50' : 'border-stone-200 bg-white hover:border-stone-300'}`}
+                          className={`w-full flex items-center p-4 border-2 rounded-2xl transition-all ${paymentMethod === 'efectivo' ? 'border-amber-300 bg-rose-50/60 shadow-sm' : 'border-transparent bg-stone-50 hover:bg-stone-100'}`}
                         >
-                          <Banknote size={18} className={`mr-3 ${paymentMethod === 'efectivo' ? 'text-stone-900' : 'text-stone-400'}`} />
-                          <span className={`text-sm ${paymentMethod === 'efectivo' ? 'font-medium text-stone-900' : 'text-stone-600'}`}>Efectivo contra entrega</span>
+                          <Banknote size={18} className={`mr-3 ${paymentMethod === 'efectivo' ? 'text-amber-700' : 'text-stone-400'}`} />
+                          <span className={`text-sm ${paymentMethod === 'efectivo' ? 'font-medium text-amber-900' : 'text-stone-600'}`}>Efectivo contra entrega</span>
                         </button>
                         <button
                           onClick={() => setPaymentMethod('tarjeta')}
-                          className={`w-full flex items-center p-3 border transition-all ${paymentMethod === 'tarjeta' ? 'border-stone-900 bg-stone-50' : 'border-stone-200 bg-white hover:border-stone-300'}`}
+                          className={`w-full flex items-center p-4 border-2 rounded-2xl transition-all ${paymentMethod === 'tarjeta' ? 'border-amber-300 bg-rose-50/60 shadow-sm' : 'border-transparent bg-stone-50 hover:bg-stone-100'}`}
                         >
-                          <CreditCard size={18} className={`mr-3 ${paymentMethod === 'tarjeta' ? 'text-stone-900' : 'text-stone-400'}`} />
-                          <span className={`text-sm ${paymentMethod === 'tarjeta' ? 'font-medium text-stone-900' : 'text-stone-600'}`}>Tarjeta de Crédito/Débito en Tienda</span>
+                          <CreditCard size={18} className={`mr-3 ${paymentMethod === 'tarjeta' ? 'text-amber-700' : 'text-stone-400'}`} />
+                          <span className={`text-sm ${paymentMethod === 'tarjeta' ? 'font-medium text-amber-900' : 'text-stone-600'}`}>Tarjeta de Crédito/Débito en Tienda</span>
                         </button>
                       </div>
                     </div>
                   </div>
 
-                  <div className="p-6 bg-white border-t border-stone-100 shrink-0 flex gap-3">
+                  <div className="p-6 bg-white border-t border-stone-200 border-dashed shrink-0 flex gap-3 shadow-[0_-10px_30px_rgb(0,0,0,0.02)] relative z-10">
                     <button
                       onClick={() => setCartPhase(1)}
-                      className="px-4 py-4 border border-stone-200 text-stone-600 hover:bg-stone-50 transition-colors flex items-center justify-center"
+                      className="px-5 py-4 border border-stone-200 text-stone-600 hover:bg-stone-50 transition-colors flex items-center justify-center rounded-2xl"
                     >
                       <ArrowLeft size={18} />
                     </button>
                     <button
                       onClick={() => setCartPhase(3)}
                       disabled={!isPhase2Valid}
-                      className="flex-1 bg-stone-900 text-white py-4 text-sm font-medium uppercase tracking-widest hover:bg-stone-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                      className="flex-1 bg-stone-900 text-white py-4 text-sm font-medium uppercase tracking-widest hover:bg-stone-800 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex justify-center items-center gap-2 rounded-2xl shadow-lg shadow-stone-900/10"
                     >
                       Siguiente: Finalizar Pedido <ArrowRight size={16} />
                     </button>
@@ -562,41 +583,46 @@ export function PasteleriaBuilder() {
               {/* FASE 3: Confirmación Final */}
               {cartPhase === 3 && (
                 <div className="flex-1 flex flex-col overflow-hidden">
-                  <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                    <div className="text-center mb-8">
-                      <div className="w-16 h-16 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-stone-100">
-                        <Check size={28} className="text-stone-900" />
+                  <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-white relative">
+                    <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-amber-50 to-white"></div>
+                    
+                    <div className="text-center mb-8 relative z-10 pt-4">
+                      <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_4px_20px_rgb(0,0,0,0.05)] border border-amber-100">
+                        <Check size={28} className="text-amber-500" />
                       </div>
-                      <h2 className="text-2xl font-serif text-stone-900 mb-2">Casi listo, {customerName.split(' ')[0]}</h2>
+                      <h2 className="text-2xl font-serif text-stone-800 mb-2">Casi listo, {customerName.split(' ')[0]}</h2>
                       <p className="text-sm text-stone-500 font-light">Verifica que tus datos sean correctos.</p>
                     </div>
 
-                    <div className="bg-stone-50 p-5 border border-stone-100 space-y-4">
-                      <div>
-                        <span className="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Total a Pagar</span>
-                        <span className="text-2xl font-serif text-stone-900">${totalAmount.toFixed(2)} MXN</span>
+                    <div className="bg-[#FDFBF7] p-6 rounded-3xl shadow-[0_4px_20px_rgb(0,0,0,0.02)] border border-stone-100 space-y-5 relative z-10">
+                      <div className="text-center pb-2">
+                        <span className="block text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Total a Pagar</span>
+                        <span className="text-4xl font-serif text-stone-800">${totalAmount.toFixed(2)} <span className="text-sm text-stone-400 font-sans tracking-widest">MXN</span></span>
                       </div>
                       
-                      <div className="h-px bg-stone-200 w-full" />
+                      <div className="flex justify-center">
+                        <div className="w-full max-w-[200px] h-px border-t border-dashed border-stone-200"></div>
+                      </div>
                       
-                      <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="grid grid-cols-2 gap-y-5 gap-x-4 text-sm mt-2">
                         <div>
-                          <span className="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">A nombre de</span>
-                          <span className="font-medium text-stone-900">{customerName}</span>
+                          <span className="block text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">A nombre de</span>
+                          <span className="font-medium text-stone-800">{customerName}</span>
                         </div>
                         <div>
-                          <span className="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Fecha de Entrega</span>
-                          <span className="font-medium text-stone-900">{deliveryDate} a las {deliveryTime}</span>
+                          <span className="block text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Fecha de Entrega</span>
+                          <span className="font-medium text-stone-800">{deliveryDate} a las {deliveryTime}</span>
                         </div>
                         <div className="col-span-2">
-                          <span className="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Modo de Envío</span>
-                          <span className="font-medium text-stone-900">
+                          <span className="block text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Modo de Envío</span>
+                          <span className="font-medium text-stone-800">
                             {deliveryType === 'tienda' ? 'Recoger en Tienda' : `Envío a Domicilio (${deliveryAddress})`}
                           </span>
                         </div>
                         <div className="col-span-2">
-                          <span className="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Forma de Pago</span>
-                          <span className="font-medium text-stone-900">
+                          <span className="block text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Forma de Pago</span>
+                          <span className="font-medium text-stone-800 flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-teal-400 inline-block"></span>
                             {paymentMethod === 'spei' && 'Transferencia SPEI'}
                             {paymentMethod === 'efectivo' && 'Efectivo contra entrega'}
                             {paymentMethod === 'tarjeta' && 'Tarjeta de Crédito/Débito en Tienda'}
@@ -606,16 +632,16 @@ export function PasteleriaBuilder() {
                     </div>
                   </div>
 
-                  <div className="p-6 bg-white border-t border-stone-100 shrink-0 flex flex-col gap-3">
+                  <div className="p-6 bg-white border-t border-stone-200 border-dashed shrink-0 flex flex-col gap-3 shadow-[0_-10px_30px_rgb(0,0,0,0.02)] relative z-10">
                     <button
                       onClick={handleCheckout}
-                      className="w-full bg-amber-500 text-white py-4 text-sm font-bold uppercase tracking-widest hover:bg-amber-600 transition-colors shadow-lg shadow-amber-500/20 flex justify-center items-center gap-2"
+                      className="w-full bg-amber-500 text-white py-4 text-sm font-bold uppercase tracking-widest hover:bg-amber-600 transition-all shadow-[0_8px_20px_rgb(245,158,11,0.25)] flex justify-center items-center gap-2 rounded-2xl hover:scale-[1.02] active:scale-[0.98]"
                     >
                       Finalizar Pedido por WhatsApp <ArrowRight size={16} />
                     </button>
                     <button
                       onClick={() => setCartPhase(2)}
-                      className="w-full py-3 text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors uppercase tracking-widest flex justify-center items-center gap-2"
+                      className="w-full py-3 text-sm font-medium text-stone-400 hover:text-stone-800 transition-colors uppercase tracking-widest flex justify-center items-center gap-2 rounded-2xl hover:bg-stone-50"
                     >
                       <ArrowLeft size={16} /> Regresar y corregir
                     </button>
