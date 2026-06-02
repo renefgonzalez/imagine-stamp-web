@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock } from 'lucide-react';
 import { PANES, RELLENOS, EXTRAS } from '../constants';
 
 interface CustomCake {
@@ -20,7 +20,13 @@ export function PasteleriaBuilder() {
   
   const [cart, setCart] = useState<CustomCake[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  
+  // Checkout Form State
   const [customerName, setCustomerName] = useState('');
+  const [deliveryType, setDeliveryType] = useState<'tienda' | 'domicilio' | null>(null);
+  const [deliveryDate, setDeliveryDate] = useState('');
+  const [deliveryTime, setDeliveryTime] = useState('');
+  const [specialNotes, setSpecialNotes] = useState('');
 
   const toggleExtra = (id: string) => {
     setSelectedExtras(prev => 
@@ -29,6 +35,10 @@ export function PasteleriaBuilder() {
   };
 
   const isComplete = selectedPan && selectedRelleno;
+  
+  // Checkout Validation
+  const isFormValid = customerName.trim() !== '' && deliveryType !== null && deliveryDate !== '' && deliveryTime !== '';
+  const canCheckout = cart.length > 0 && isFormValid;
 
   const handleAddToCart = () => {
     if (!isComplete) return;
@@ -62,6 +72,8 @@ export function PasteleriaBuilder() {
   };
 
   const handleCheckout = () => {
+    if (!canCheckout) return;
+
     const lines = cart.map(item => {
       const panName = PANES.find(p => p.id === item.pan)?.name;
       const rellenoName = RELLENOS.find(r => r.id === item.relleno)?.name;
@@ -70,11 +82,16 @@ export function PasteleriaBuilder() {
       return `🎂 *${item.quantity}x Pastel Personalizado Lázaro*\n  • Pan: ${panName}\n  • Relleno: ${rellenoName}\n  • Extras: ${extrasNames || 'Ninguno'}`;
     }).join('\n\n');
 
-    const name = customerName.trim() || 'Cliente';
+    const name = customerName.trim();
+    const deliveryStr = deliveryType === 'tienda' ? 'Recoger en Tienda' : 'Envío a Domicilio';
 
     const message = 
-      `✨ *Nuevo Pedido - Lázaro Pastelería*\n\n` +
-      `Hola! Soy *${name}* y he diseñado este pedido:\n\n` +
+      `✨ ¡Hola Lázaro Pastelería! Me gustaría encargar el siguiente pastel personalizado:\n\n` +
+      `👤 Cliente: *${name}*\n` +
+      `📍 Entrega: *${deliveryStr}*\n` +
+      `📅 Fecha/Hora: *${deliveryDate}* a las *${deliveryTime}*\n` +
+      `📝 Dedicatoria/Notas: _${specialNotes.trim() || 'Ninguna'}_\n` +
+      `------------------------------------------\n\n` +
       `${lines}\n\n` +
       `_Pedido generado desde el constructor interactivo_ 🤍`;
 
@@ -83,6 +100,10 @@ export function PasteleriaBuilder() {
     setTimeout(() => {
       setCart([]);
       setCustomerName('');
+      setDeliveryType(null);
+      setDeliveryDate('');
+      setDeliveryTime('');
+      setSpecialNotes('');
       setIsCartOpen(false);
     }, 2000);
   };
@@ -259,66 +280,157 @@ export function PasteleriaBuilder() {
               className="fixed top-0 right-0 bottom-0 w-full md:w-[450px] bg-white border-l border-stone-200 z-50 flex flex-col shadow-2xl"
             >
               {/* Header */}
-              <div className="p-6 border-b border-stone-100 flex justify-between items-center">
+              <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-white shrink-0">
                 <h3 className="text-xl font-serif">Tu Pedido</h3>
                 <button onClick={() => setIsCartOpen(false)} className="text-stone-400 hover:text-stone-900">
                   <X size={24} strokeWidth={1.5} />
                 </button>
               </div>
 
-              {/* Items */}
-              <div className="flex-1 overflow-y-auto p-6">
-                {cart.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center text-stone-400">
-                    <ShoppingBag size={48} strokeWidth={1} className="mb-4" />
-                    <p className="font-light tracking-wide">No has creado ningún pastel aún.</p>
-                  </div>
-                ) : (
-                  <div className="space-y-8">
-                    {cart.map(item => (
-                      <div key={item.id} className="border-b border-stone-100 pb-6 last:border-0">
-                        <div className="flex justify-between items-start mb-4">
-                          <h4 className="font-medium text-stone-900">Pastel Personalizado Lázaro</h4>
-                          <button onClick={() => handleRemove(item.id)} className="text-stone-400 hover:text-red-500">
-                            <Trash2 size={16} />
+              {/* Items & Formulario Container */}
+              <div className="flex-1 overflow-y-auto">
+                <div className="p-6">
+                  {cart.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center text-stone-400 py-10">
+                      <ShoppingBag size={48} strokeWidth={1} className="mb-4" />
+                      <p className="font-light tracking-wide">No has creado ningún pastel aún.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-8">
+                      {cart.map(item => (
+                        <div key={item.id} className="border-b border-stone-100 pb-6 last:border-0">
+                          <div className="flex justify-between items-start mb-4">
+                            <h4 className="font-medium text-stone-900">Pastel Personalizado Lázaro</h4>
+                            <button onClick={() => handleRemove(item.id)} className="text-stone-400 hover:text-red-500">
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                          
+                          <div className="space-y-1 text-sm text-stone-600 mb-6 font-light">
+                            <p><span className="text-stone-400 mr-2">• Pan:</span> {PANES.find(p => p.id === item.pan)?.name}</p>
+                            <p><span className="text-stone-400 mr-2">• Relleno:</span> {RELLENOS.find(r => r.id === item.relleno)?.name}</p>
+                            <p>
+                              <span className="text-stone-400 mr-2">• Extras:</span> 
+                              {item.extras.length > 0 ? item.extras.map(e => EXTRAS.find(x => x.id === e)?.name).join(', ') : 'Ninguno'}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-4">
+                            <span className="text-xs uppercase tracking-widest text-stone-400">Cantidad:</span>
+                            <div className="flex items-center border border-stone-200 rounded-none">
+                              <button onClick={() => handleUpdateQty(item.id, -1)} className="p-2 hover:bg-stone-50"><Minus size={14} /></button>
+                              <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+                              <button onClick={() => handleUpdateQty(item.id, 1)} className="p-2 hover:bg-stone-50"><Plus size={14} /></button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* FORMULARIO DE CHECKOUT */}
+                {cart.length > 0 && (
+                  <div className="p-6 bg-stone-50 border-t border-stone-100 mt-4">
+                    <h4 className="text-sm font-serif font-medium text-stone-900 mb-5">Información del Pedido</h4>
+                    
+                    <div className="space-y-5">
+                      {/* Nombre */}
+                      <div>
+                        <label className="block text-xs uppercase tracking-widest text-stone-500 mb-2">Nombre del Cliente *</label>
+                        <input
+                          type="text"
+                          value={customerName}
+                          onChange={e => setCustomerName(e.target.value)}
+                          placeholder="Escribe tu nombre"
+                          className="w-full bg-white border border-stone-200 px-4 py-3 text-sm outline-none focus:border-stone-900 transition-colors"
+                        />
+                      </div>
+
+                      {/* Tipo de Entrega */}
+                      <div>
+                        <label className="block text-xs uppercase tracking-widest text-stone-500 mb-2">Tipo de Entrega *</label>
+                        <div className="grid grid-cols-2 gap-3">
+                          <button
+                            onClick={() => setDeliveryType('tienda')}
+                            className={`flex flex-col items-center justify-center p-4 border transition-all ${
+                              deliveryType === 'tienda' 
+                                ? 'border-stone-900 bg-stone-900 text-white' 
+                                : 'border-stone-200 bg-white text-stone-500 hover:border-stone-300'
+                            }`}
+                          >
+                            <Store size={20} className="mb-2" />
+                            <span className="text-xs font-medium">Recoger en Tienda</span>
+                          </button>
+                          <button
+                            onClick={() => setDeliveryType('domicilio')}
+                            className={`flex flex-col items-center justify-center p-4 border transition-all ${
+                              deliveryType === 'domicilio' 
+                                ? 'border-stone-900 bg-stone-900 text-white' 
+                                : 'border-stone-200 bg-white text-stone-500 hover:border-stone-300'
+                            }`}
+                          >
+                            <Truck size={20} className="mb-2" />
+                            <span className="text-xs font-medium">Envío a Domicilio</span>
                           </button>
                         </div>
-                        
-                        <div className="space-y-1 text-sm text-stone-600 mb-6 font-light">
-                          <p><span className="text-stone-400 mr-2">• Pan:</span> {PANES.find(p => p.id === item.pan)?.name}</p>
-                          <p><span className="text-stone-400 mr-2">• Relleno:</span> {RELLENOS.find(r => r.id === item.relleno)?.name}</p>
-                          <p>
-                            <span className="text-stone-400 mr-2">• Extras:</span> 
-                            {item.extras.length > 0 ? item.extras.map(e => EXTRAS.find(x => x.id === e)?.name).join(', ') : 'Ninguno'}
-                          </p>
-                        </div>
+                      </div>
 
-                        <div className="flex items-center gap-4">
-                          <span className="text-xs uppercase tracking-widest text-stone-400">Cantidad:</span>
-                          <div className="flex items-center border border-stone-200 rounded-none">
-                            <button onClick={() => handleUpdateQty(item.id, -1)} className="p-2 hover:bg-stone-50"><Minus size={14} /></button>
-                            <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
-                            <button onClick={() => handleUpdateQty(item.id, 1)} className="p-2 hover:bg-stone-50"><Plus size={14} /></button>
+                      {/* Fecha y Hora */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs uppercase tracking-widest text-stone-500 mb-2">Fecha *</label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <Calendar size={14} className="text-stone-400" />
+                            </div>
+                            <input
+                              type="date"
+                              value={deliveryDate}
+                              onChange={e => setDeliveryDate(e.target.value)}
+                              className="w-full bg-white border border-stone-200 pl-9 pr-3 py-3 text-sm outline-none focus:border-stone-900 transition-colors"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs uppercase tracking-widest text-stone-500 mb-2">Hora *</label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <Clock size={14} className="text-stone-400" />
+                            </div>
+                            <input
+                              type="time"
+                              value={deliveryTime}
+                              onChange={e => setDeliveryTime(e.target.value)}
+                              className="w-full bg-white border border-stone-200 pl-9 pr-3 py-3 text-sm outline-none focus:border-stone-900 transition-colors"
+                            />
                           </div>
                         </div>
                       </div>
-                    ))}
+
+                      {/* Notas Especiales */}
+                      <div>
+                        <label className="block text-xs uppercase tracking-widest text-stone-500 mb-2">Dedicatoria / Notas Especiales</label>
+                        <textarea
+                          value={specialNotes}
+                          onChange={e => setSpecialNotes(e.target.value)}
+                          placeholder="Ej. 'Ponerle letrero que diga Feliz Cumpleaños Mamá'"
+                          className="w-full bg-white border border-stone-200 px-4 py-3 text-sm outline-none focus:border-stone-900 transition-colors resize-none h-24"
+                        />
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
 
               {/* Footer */}
-              <div className="p-6 bg-stone-50 border-t border-stone-100">
-                <input
-                  type="text"
-                  value={customerName}
-                  onChange={e => setCustomerName(e.target.value)}
-                  placeholder="Nombre del cliente"
-                  className="w-full bg-white border border-stone-200 px-4 py-3 text-sm outline-none focus:border-stone-900 transition-colors mb-4"
-                />
+              <div className="p-6 bg-white border-t border-stone-100 shrink-0">
+                {!isFormValid && cart.length > 0 && (
+                  <p className="text-xs text-red-500 font-medium mb-3 text-center">Por favor, completa todos los campos requeridos (*).</p>
+                )}
                 <button
                   onClick={handleCheckout}
-                  disabled={cart.length === 0}
+                  disabled={!canCheckout}
                   className="w-full bg-stone-900 text-white py-4 text-sm font-medium uppercase tracking-widest hover:bg-stone-800 transition-colors disabled:opacity-30 flex justify-center items-center gap-2"
                 >
                   Confirmar por WhatsApp <ArrowRight size={16} />
@@ -332,7 +444,7 @@ export function PasteleriaBuilder() {
   );
 }
 
-// Just a quick local icon component since ArrowRight isn't imported
+// Just a quick local icon component since ArrowRight isn't imported from lucide
 function ArrowRight({ size }: { size: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
