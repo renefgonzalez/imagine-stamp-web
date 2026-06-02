@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark, Instagram, Facebook, MapPin, Phone, Lock } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark, Instagram, Facebook, MapPin, Phone, Lock, Tiktok } from 'lucide-react';
 import { useCatalog } from '../constants';
 import logoLazaro from '../assets/logo-lazaro.png';
 
@@ -13,7 +13,7 @@ interface CustomCake {
   price: number;
 }
 
-const WHATSAPP_NUMBER = '525650469993';
+const WHATSAPP_NUMBER = '525512479773';
 const BASE_CAKE_PRICE = 550; // Precio base demostrativo
 
 export function PasteleriaBuilder() {
@@ -361,7 +361,7 @@ export function PasteleriaBuilder() {
             </h4>
             <div className="space-y-3 text-sm text-stone-500 font-light">
               <p>Pedidos por WhatsApp:</p>
-              <p className="font-medium text-stone-700">+52 56 5046 9993</p>
+              <p className="font-medium text-stone-700">+52 55 1247 9773</p>
               <div className="w-8 h-px bg-stone-200 my-2 mx-auto md:mx-0"></div>
               <p>Lunes a Sábado: 9:00 - 20:00</p>
               <p>Domingo: 10:00 - 15:00</p>
@@ -376,11 +376,14 @@ export function PasteleriaBuilder() {
               <p>Av. Reforma 123, Col. Centro<br/>Ciudad de México, CP 06000</p>
               
               <div className="flex gap-4 pt-2">
-                <a href="#" className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-400 hover:text-amber-600 hover:bg-amber-50 transition-colors border border-stone-100">
+                <a href="https://www.instagram.com/lazaro.pastel?igsh=MTkxY2Rvd294NnN4Mw%3D%3D&utm_source=qr" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-400 hover:text-amber-600 hover:bg-amber-50 transition-colors border border-stone-100">
                   <Instagram size={16} />
                 </a>
                 <a href="#" className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-400 hover:text-amber-600 hover:bg-amber-50 transition-colors border border-stone-100">
                   <Facebook size={16} />
+                </a>
+                <a href="https://www.tiktok.com/@pastelerialazaro?_r=1&_t=ZS-96sqnO6nIBB" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-400 hover:text-amber-600 hover:bg-amber-50 transition-colors border border-stone-100">
+                  <Tiktok size={16} />
                 </a>
               </div>
             </div>

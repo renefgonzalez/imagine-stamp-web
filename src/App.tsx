@@ -4,7 +4,7 @@ import {
   Search, Heart, Plus, Sparkles, X, ShoppingBag,
   ChevronRight, Instagram, Facebook, Mail as MailIcon,
   PartyPopper, Gift, Briefcase, LayoutGrid, Lock, MessageCircle,
-  Landmark, Copy, Check, CreditCard
+  Landmark, Copy, Check, CreditCard, Tiktok
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
@@ -218,7 +218,7 @@ export default function App() {
   };
 
   const handleFinalCheckout = () => {
-    const phoneNumber = '525650469993';
+    const phoneNumber = '525512479773';
     const lines = cart.map(item => `  • ${item.name} x${item.quantity} = $${item.price * item.quantity} MXN`).join('\n');
 
     // ── Crear pedido y guardarlo en Supabase ─────────────────────────────
@@ -370,6 +370,14 @@ export default function App() {
                         className="w-8 h-8 rounded-full flex items-center justify-center text-primary/40 hover:text-[#1877F2] hover:bg-blue-50 transition-all"
                       >
                         <Facebook size={16} />
+                      </a>
+                      <a 
+                        href="https://www.tiktok.com/@pastelerialazaro?_r=1&_t=ZS-96sqnO6nIBB"
+                        target="_blank" rel="noreferrer"
+                        title="TikTok"
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-primary/40 hover:text-black hover:bg-gray-100 transition-all"
+                      >
+                        <Tiktok size={16} />
                       </a>
                       <a 
                         href="mailto:imagineandstamp@gmail.com"
@@ -748,7 +756,7 @@ export default function App() {
                   <div className="space-y-6">
                     <h3 className="font-headline font-bold text-primary text-lg">Contacto</h3>
                     <div className="space-y-4 text-sm text-primary/70">
-                      <a href="https://wa.me/525650469993" target="_blank" rel="noreferrer" className="flex items-center gap-3"><MessageCircle size={18} /> WhatsApp</a>
+                      <a href="https://wa.me/525512479773" target="_blank" rel="noreferrer" className="flex items-center gap-3"><MessageCircle size={18} /> WhatsApp</a>
                       <a href="mailto:imagineandstamp@gmail.com" className="flex items-center gap-3"><MailIcon size={18} /> imagineandstamp@gmail.com</a>
                     </div>
                   </div>
@@ -757,6 +765,7 @@ export default function App() {
                     <div className="flex gap-4">
                       <a href="https://www.instagram.com/personalizadosimagineandstamp" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center"><Instagram size={22} /></a>
                       <a href="https://www.facebook.com/share/1CFhhieFeV/?mibextid=wwXIfr" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center"><Facebook size={22} /></a>
+                      <a href="https://www.tiktok.com/@pastelerialazaro?_r=1&_t=ZS-96sqnO6nIBB" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center"><Tiktok size={22} /></a>
                     </div>
                   </div>
                 </div>
@@ -770,7 +779,7 @@ export default function App() {
 
               <div className="fixed bottom-8 right-6 z-50 flex flex-col gap-4 items-end">
                 <motion.a 
-                  href="https://wa.me/525650469993" target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }}
+                  href="https://wa.me/525512479773" target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }}
                   className="flex items-center gap-3 bg-[#25D366] text-white px-6 py-4 rounded-full shadow-2xl"
                 >
                   <span className="font-bold text-sm">¡Cotiza aquí!</span>
