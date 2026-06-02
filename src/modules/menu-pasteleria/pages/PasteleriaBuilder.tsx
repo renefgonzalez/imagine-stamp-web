@@ -33,6 +33,7 @@ export function PasteleriaBuilder() {
   const [deliveryDate, setDeliveryDate] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'spei' | 'efectivo' | 'tarjeta' | null>(null);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   useEffect(() => {
     const originalTitle = document.title;
@@ -383,7 +384,7 @@ export function PasteleriaBuilder() {
               Página web realizada por <a href="/#/" className="font-bold text-[#FF6B00] hover:opacity-80 transition-opacity cursor-pointer">IMAGINE & STAMP</a>
             </p>
             <span className="hidden sm:inline text-stone-200">|</span>
-            <a href="#" className="hover:text-amber-500 transition-colors">Aviso de Privacidad y Términos de Servicio</a>
+            <button onClick={() => setShowPrivacyModal(true)} className="hover:text-amber-500 transition-colors">Aviso de Privacidad y Términos de Servicio</button>
           </div>
           <a href="/#/lazaro-pasteleria/admin" className="pt-2 flex flex-col items-center justify-center text-stone-300 hover:text-amber-500 transition-colors cursor-pointer group">
             <Lock size={12} className="group-hover:scale-110 transition-transform" />
@@ -728,6 +729,50 @@ export function PasteleriaBuilder() {
                 </div>
               )}
 
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* PRIVACY MODAL */}
+      <AnimatePresence>
+        {showPrivacyModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowPrivacyModal(false)}
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-white rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[85vh]"
+            >
+              <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
+                <h3 className="font-serif text-lg text-stone-800">Aviso de Privacidad</h3>
+                <button 
+                  onClick={() => setShowPrivacyModal(false)}
+                  className="p-2 text-stone-400 hover:text-stone-800 hover:bg-stone-100 rounded-full transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-6 overflow-y-auto text-stone-600 text-sm leading-relaxed font-light space-y-4">
+                <p>En <strong className="font-medium text-stone-800">Lázaro Pastelería</strong> nos comprometemos a proteger tus datos personales.</p>
+                <p>La información solicitada en este sitio (Nombre, Dirección, Teléfono) tiene como única finalidad procesar tu pedido personalizado, coordinar la entrega de tu producto y enviar los detalles de tu compra a través de WhatsApp.</p>
+                <p>No compartimos tus datos con terceros ni los utilizamos para fines publicitarios sin tu consentimiento explícito.</p>
+              </div>
+              <div className="p-6 border-t border-stone-100 bg-stone-50/50">
+                <button
+                  onClick={() => setShowPrivacyModal(false)}
+                  className="w-full bg-stone-900 text-white py-3.5 rounded-xl font-medium tracking-widest text-xs uppercase hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/10"
+                >
+                  Entendido / Cerrar
+                </button>
+              </div>
             </motion.div>
           </>
         )}
