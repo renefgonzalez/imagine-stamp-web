@@ -389,10 +389,10 @@ export function PasteleriaBuilder() {
             <span className="hidden sm:inline text-stone-200">|</span>
             <a href="#" className="hover:text-amber-500 transition-colors">Aviso de Privacidad y Términos de Servicio</a>
           </div>
-          <div className="pt-2 flex flex-col items-center justify-center text-stone-300">
-            <Lock size={12} className="mb-1" />
+          <a href="/#/lazaro-pasteleria/admin" className="pt-2 flex flex-col items-center justify-center text-stone-300 hover:text-amber-500 transition-colors cursor-pointer group">
+            <Lock size={12} className="mb-1 group-hover:scale-110 transition-transform" />
             <span className="text-[9px] uppercase tracking-widest">Sitio 100% Seguro</span>
-          </div>
+          </a>
         </div>
       </footer>
 
