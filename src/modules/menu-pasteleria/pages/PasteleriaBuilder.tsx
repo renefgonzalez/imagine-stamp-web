@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark, Instagram, Facebook, MapPin, Phone, Lock } from 'lucide-react';
 import { PANES, RELLENOS, EXTRAS } from '../constants';
@@ -33,6 +33,30 @@ export function PasteleriaBuilder() {
   const [deliveryDate, setDeliveryDate] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'spei' | 'efectivo' | 'tarjeta' | null>(null);
+
+  useEffect(() => {
+    const originalTitle = document.title;
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    const ogImage = document.querySelector('meta[property="og:image"]');
+    
+    const originalOgTitle = ogTitle ? ogTitle.getAttribute('content') : null;
+    const originalOgDesc = ogDesc ? ogDesc.getAttribute('content') : null;
+    const originalOgImage = ogImage ? ogImage.getAttribute('content') : null;
+
+    document.title = 'Lázaro Pastelería 🍰 | Crea tu propio sabor';
+    
+    if (ogTitle) ogTitle.setAttribute('content', 'Lázaro Pastelería 🍰 | Crea tu propio sabor');
+    if (ogDesc) ogDesc.setAttribute('content', 'Diseña tu pastel personalizado desde nuestro menú digital interactivo y ordénalo directo por WhatsApp.');
+    if (ogImage) ogImage.setAttribute('content', logoLazaro);
+
+    return () => {
+      document.title = originalTitle;
+      if (ogTitle && originalOgTitle) ogTitle.setAttribute('content', originalOgTitle);
+      if (ogDesc && originalOgDesc) ogDesc.setAttribute('content', originalOgDesc);
+      if (ogImage && originalOgImage) ogImage.setAttribute('content', originalOgImage);
+    };
+  }, []);
 
   const toggleExtra = (id: string) => {
     setSelectedExtras(prev => 
