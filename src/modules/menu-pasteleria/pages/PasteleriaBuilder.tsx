@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark, Instagram, Facebook, MapPin, Phone, Lock } from 'lucide-react';
-import { PANES, RELLENOS, EXTRAS } from '../constants';
+import { useCatalog } from '../constants';
 import logoLazaro from '../assets/logo-lazaro.png';
 
 interface CustomCake {
@@ -17,6 +17,7 @@ const WHATSAPP_NUMBER = '525650469993';
 const BASE_CAKE_PRICE = 550; // Precio base demostrativo
 
 export function PasteleriaBuilder() {
+  const { panes: PANES, rellenos: RELLENOS, extras: EXTRAS } = useCatalog();
   const [selectedPan, setSelectedPan] = useState<string | null>(null);
   const [selectedRelleno, setSelectedRelleno] = useState<string | null>(null);
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
@@ -78,13 +79,18 @@ export function PasteleriaBuilder() {
   const handleAddToCart = () => {
     if (!isComplete) return;
 
+    const panPrice = PANES.find(p => p.id === selectedPan)?.price || 0;
+    const rellenoPrice = RELLENOS.find(r => r.id === selectedRelleno)?.price || 0;
+    const extrasPrice = selectedExtras.reduce((acc, eId) => acc + (EXTRAS.find(e => e.id === eId)?.price || 0), 0);
+    const totalPrice = BASE_CAKE_PRICE + panPrice + rellenoPrice + extrasPrice;
+
     const newCake: CustomCake = {
       id: crypto.randomUUID(),
       pan: selectedPan,
       relleno: selectedRelleno,
       extras: selectedExtras,
       quantity: 1,
-      price: BASE_CAKE_PRICE
+      price: totalPrice
     };
 
     setCart(prev => [...prev, newCake]);
@@ -247,7 +253,10 @@ export function PasteleriaBuilder() {
                       : 'border-transparent bg-stone-50 text-stone-600 hover:bg-stone-100 hover:border-stone-200'
                   }`}
                 >
-                  <div className={`font-medium text-sm ${isSelected ? 'text-amber-900' : ''}`}>{pan.name}</div>
+                  <div className={`font-medium text-sm ${isSelected ? 'text-amber-900' : ''}`}>
+                    {pan.name}
+                    {pan.price > 0 && <span className="block text-xs text-amber-600/80 mt-0.5">(+${pan.price})</span>}
+                  </div>
                   {pan.note && (
                     <div className={`text-[10px] mt-2 leading-tight px-2 py-1 rounded-md inline-block ${isSelected ? 'bg-white/60 text-amber-700' : 'bg-stone-200/50 text-stone-500'}`}>
                       {pan.note}
@@ -289,7 +298,10 @@ export function PasteleriaBuilder() {
                       : 'border-transparent bg-stone-50 text-stone-600 hover:bg-stone-100 hover:border-stone-200'
                   }`}
                 >
-                  <span className="font-medium text-sm">{relleno.name}</span>
+                  <span className="font-medium text-sm block">
+                    {relleno.name}
+                    {relleno.price > 0 && <span className="block text-xs text-amber-600/80 mt-0.5">(+${relleno.price})</span>}
+                  </span>
                 </button>
               );
             })}
@@ -324,7 +336,7 @@ export function PasteleriaBuilder() {
                       : 'border-transparent bg-stone-50 text-stone-500 hover:bg-stone-100 hover:border-stone-200'
                   }`}
                 >
-                  {extra.name} {isSelected && <Check size={14} className="inline ml-1 text-amber-600" />}
+                  {extra.name} {extra.price > 0 && <span className="opacity-70">(+${extra.price})</span>} {isSelected && <Check size={14} className="inline ml-1 text-amber-600" />}
                 </button>
               );
             })}
