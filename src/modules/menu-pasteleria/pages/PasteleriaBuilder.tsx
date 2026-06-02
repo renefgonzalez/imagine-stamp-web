@@ -380,7 +380,7 @@ export function PasteleriaBuilder() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-xs text-stone-400 font-light">
             <p>
-              Página web realizada por <span className="font-bold text-[#FF6B00]">IMAGINE & STAMP</span>
+              Página web realizada por <a href="/#/" className="font-bold text-[#FF6B00] hover:opacity-80 transition-opacity cursor-pointer">IMAGINE & STAMP</a>
             </p>
             <span className="hidden sm:inline text-stone-200">|</span>
             <a href="#" className="hover:text-amber-500 transition-colors">Aviso de Privacidad y Términos de Servicio</a>
