@@ -160,11 +160,7 @@ export function PasteleriaBuilder() {
 
       {/* HEADER MINIMALISTA CON SOMBRA SUTIL */}
       <header className="px-6 pt-10 pb-6 border-b border-stone-200 border-dashed flex flex-col items-center sticky top-0 bg-[#FDFBF7]/90 backdrop-blur-md z-30 shadow-[0_8px_30px_rgb(0,0,0,0.01)]">
-        <div className="w-full max-w-2xl flex justify-between items-center mb-6">
-          <a href="/#/" className="text-stone-400 hover:text-stone-900 transition-colors flex items-center gap-2 text-sm uppercase tracking-widest font-light">
-            <ArrowLeft size={16} /> Volver
-          </a>
-          
+        <div className="w-full max-w-2xl flex justify-end items-center mb-6">
           <button
             onClick={() => {
               setCartPhase(1);
@@ -390,8 +386,7 @@ export function PasteleriaBuilder() {
             <a href="#" className="hover:text-amber-500 transition-colors">Aviso de Privacidad y Términos de Servicio</a>
           </div>
           <a href="/#/lazaro-pasteleria/admin" className="pt-2 flex flex-col items-center justify-center text-stone-300 hover:text-amber-500 transition-colors cursor-pointer group">
-            <Lock size={12} className="mb-1 group-hover:scale-110 transition-transform" />
-            <span className="text-[9px] uppercase tracking-widest">Sitio 100% Seguro</span>
+            <Lock size={12} className="group-hover:scale-110 transition-transform" />
           </a>
         </div>
       </footer>
