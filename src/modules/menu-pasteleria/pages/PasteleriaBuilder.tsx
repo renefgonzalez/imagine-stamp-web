@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark, Instagram, Facebook, MapPin, Phone } from 'lucide-react';
 import { PANES, RELLENOS, EXTRAS } from '../constants';
+import logoLazaro from '../assets/logo-lazaro.png';
 
 interface CustomCake {
   id: string;
@@ -157,9 +158,7 @@ export function PasteleriaBuilder() {
         </div>
 
         <div className="text-center max-w-xl mx-auto mt-4">
-          <h1 className="text-4xl md:text-5xl font-light tracking-tight mb-4 font-serif text-stone-800">
-            Crea tu propio sabor
-          </h1>
+          <img src={logoLazaro} alt="Lázaro Pastelería" className="h-20 mx-auto mb-4 drop-shadow-sm" />
           <div className="h-px w-16 bg-amber-200 mx-auto mb-4"></div>
           <p className="text-stone-500 font-light text-sm tracking-wide uppercase flex items-center justify-center gap-2">
             Pregunta por el menú <span className="bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-widest border border-teal-100">Sin Azúcar</span>
@@ -312,6 +311,54 @@ export function PasteleriaBuilder() {
         </section>
 
       </main>
+
+      {/* FOOTER BOUTIQUE */}
+      <footer className="bg-white border-t border-stone-200 border-dashed mt-20 pt-16 pb-32 px-6 relative z-10 shadow-[0_-10px_30px_rgb(0,0,0,0.01)]">
+        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
+          
+          <div className="flex flex-col items-center md:items-start">
+            <img src={logoLazaro} alt="Lázaro Pastelería" className="h-16 mb-4 opacity-90 grayscale hover:grayscale-0 transition-all duration-500" />
+            <p className="text-stone-500 font-serif italic text-lg mb-2">Crea tu propio sabor</p>
+            <p className="text-stone-400 text-xs font-light">Pastelería artesanal de alta gama. Cada creación es única y elaborada con ingredientes premium.</p>
+          </div>
+
+          <div className="flex flex-col items-center md:items-start">
+            <h4 className="text-stone-800 font-medium uppercase tracking-widest text-xs mb-6 flex items-center gap-2">
+              <Phone size={14} className="text-amber-500" /> Contacto
+            </h4>
+            <div className="space-y-3 text-sm text-stone-500 font-light">
+              <p>Pedidos por WhatsApp:</p>
+              <p className="font-medium text-stone-700">+52 56 5046 9993</p>
+              <div className="w-8 h-px bg-stone-200 my-2 mx-auto md:mx-0"></div>
+              <p>Lunes a Sábado: 9:00 - 20:00</p>
+              <p>Domingo: 10:00 - 15:00</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center md:items-start">
+            <h4 className="text-stone-800 font-medium uppercase tracking-widest text-xs mb-6 flex items-center gap-2">
+              <MapPin size={14} className="text-amber-500" /> Ubicación
+            </h4>
+            <div className="space-y-4 text-sm text-stone-500 font-light">
+              <p>Av. Reforma 123, Col. Centro<br/>Ciudad de México, CP 06000</p>
+              
+              <div className="flex gap-4 pt-2">
+                <a href="#" className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-400 hover:text-amber-600 hover:bg-amber-50 transition-colors border border-stone-100">
+                  <Instagram size={16} />
+                </a>
+                <a href="#" className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-400 hover:text-amber-600 hover:bg-amber-50 transition-colors border border-stone-100">
+                  <Facebook size={16} />
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div className="max-w-4xl mx-auto mt-16 pt-6 border-t border-stone-100 text-center flex flex-col items-center">
+          <p className="text-stone-300 text-[10px] uppercase tracking-widest">© 2026 Lázaro Pastelería. Todos los derechos reservados.</p>
+        </div>
+      </footer>
+
 
       {/* FIXED ACTION BAR */}
       <AnimatePresence>
