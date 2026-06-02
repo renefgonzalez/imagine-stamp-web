@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark, Instagram, Facebook, MapPin, Phone } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark, Instagram, Facebook, MapPin, Phone, Lock } from 'lucide-react';
 import { PANES, RELLENOS, EXTRAS } from '../constants';
 import logoLazaro from '../assets/logo-lazaro.png';
 
@@ -354,8 +354,21 @@ export function PasteleriaBuilder() {
           </div>
 
         </div>
-        <div className="max-w-4xl mx-auto mt-16 pt-6 border-t border-stone-100 text-center flex flex-col items-center">
-          <p className="text-stone-300 text-[10px] uppercase tracking-widest">© 2026 Lázaro Pastelería. Todos los derechos reservados.</p>
+        <div className="max-w-4xl mx-auto mt-16 pt-8 border-t border-stone-100 text-center flex flex-col items-center space-y-3">
+          <p className="text-stone-400 text-[10px] uppercase tracking-widest">
+            © 2026 LÁZARO PASTELERÍA. TODOS LOS DERECHOS RESERVADOS.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-xs text-stone-400 font-light">
+            <p>
+              Página web realizada por <span className="font-bold text-[#FF6B00]">IMAGINE & STAMP</span>
+            </p>
+            <span className="hidden sm:inline text-stone-200">|</span>
+            <a href="#" className="hover:text-amber-500 transition-colors">Aviso de Privacidad y Términos de Servicio</a>
+          </div>
+          <div className="pt-2 flex flex-col items-center justify-center text-stone-300">
+            <Lock size={12} className="mb-1" />
+            <span className="text-[9px] uppercase tracking-widest">Sitio 100% Seguro</span>
+          </div>
         </div>
       </footer>
 
