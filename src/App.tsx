@@ -4,7 +4,7 @@ import {
   Search, Heart, Plus, Sparkles, X, ShoppingBag,
   ChevronRight, Instagram, Facebook, Mail as MailIcon,
   PartyPopper, Gift, Briefcase, LayoutGrid, Lock, MessageCircle,
-  Landmark, Copy, Check, CreditCard, Tiktok
+  Landmark, Copy, Check, CreditCard
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
@@ -377,7 +377,7 @@ export default function App() {
                         title="TikTok"
                         className="w-8 h-8 rounded-full flex items-center justify-center text-primary/40 hover:text-black hover:bg-gray-100 transition-all"
                       >
-                        <Tiktok size={16} />
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
                       </a>
                       <a 
                         href="mailto:imagineandstamp@gmail.com"
@@ -765,7 +765,7 @@ export default function App() {
                     <div className="flex gap-4">
                       <a href="https://www.instagram.com/personalizadosimagineandstamp" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center"><Instagram size={22} /></a>
                       <a href="https://www.facebook.com/share/1CFhhieFeV/?mibextid=wwXIfr" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center"><Facebook size={22} /></a>
-                      <a href="https://www.tiktok.com/@pastelerialazaro?_r=1&_t=ZS-96sqnO6nIBB" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center"><Tiktok size={22} /></a>
+                      <a href="https://www.tiktok.com/@pastelerialazaro?_r=1&_t=ZS-96sqnO6nIBB" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg></a>
                     </div>
                   </div>
                 </div>
