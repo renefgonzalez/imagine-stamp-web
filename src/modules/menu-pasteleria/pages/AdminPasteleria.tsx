@@ -3,8 +3,7 @@ import { ArrowLeft, Lock, LogOut, Settings, Package, Banknote, Edit2, Plus, Chec
 import { useCatalog, CatalogItem, PanOption, RellenoOption, ExtraOption } from '../constants';
 
 export function AdminPasteleria() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [role, setRole] = useState<'superadmin' | 'gestor' | null>(null);
+  const [currentRole, setCurrentRole] = useState<'admin' | 'client' | null>(null);
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
   const [activeTab, setActiveTab] = useState<'dashboard' | 'catalog'>('dashboard');
@@ -13,9 +12,8 @@ export function AdminPasteleria() {
 
   useEffect(() => {
     const savedRole = localStorage.getItem('lazaro_admin_role');
-    if (savedRole === 'superadmin' || savedRole === 'gestor') {
-      setRole(savedRole as 'superadmin' | 'gestor');
-      setIsLoggedIn(true);
+    if (savedRole === 'admin' || savedRole === 'client') {
+      setCurrentRole(savedRole as 'admin' | 'client');
     }
   }, []);
 
@@ -24,27 +22,24 @@ export function AdminPasteleria() {
     setError(false);
     
     if (password === '1212') {
-      setRole('superadmin');
-      setIsLoggedIn(true);
-      localStorage.setItem('lazaro_admin_role', 'superadmin');
+      setCurrentRole('admin');
+      localStorage.setItem('lazaro_admin_role', 'admin');
     } else if (password === 'pastel') {
-      setRole('gestor');
-      setIsLoggedIn(true);
-      localStorage.setItem('lazaro_admin_role', 'gestor');
+      setCurrentRole('client');
+      localStorage.setItem('lazaro_admin_role', 'client');
     } else {
       setError(true);
     }
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    setRole(null);
+    setCurrentRole(null);
     setPassword('');
     setActiveTab('dashboard');
     localStorage.removeItem('lazaro_admin_role');
   };
 
-  if (!isLoggedIn) {
+  if (currentRole === null) {
     return (
       <div className="min-h-screen bg-[#FDFBF7] flex flex-col items-center justify-center p-6 text-stone-900">
         <title>Acceso Admin | Lázaro</title>
@@ -55,8 +50,8 @@ export function AdminPasteleria() {
             <Lock size={28} strokeWidth={1.5} />
           </div>
           
-          <h1 className="text-2xl font-serif text-stone-800 mb-2">Panel de Control</h1>
-          <p className="text-sm font-light text-stone-500 mb-8">Ingresa tu contraseña para continuar</p>
+          <h1 className="text-2xl font-serif text-stone-800 mb-2">Acceso Administrativo</h1>
+          <p className="text-sm font-light text-stone-500 mb-8">- Lázaro Pastelería -</p>
           
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
@@ -73,7 +68,7 @@ export function AdminPasteleria() {
                 }`}
                 autoFocus
               />
-              {error && <p className="text-xs text-red-500 mt-2 font-medium">Contraseña incorrecta</p>}
+              {error && <p className="text-xs text-red-500 mt-2 font-light tracking-wide">Contraseña incorrecta. Inténtalo de nuevo.</p>}
             </div>
             
             <button 
@@ -96,13 +91,13 @@ export function AdminPasteleria() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] font-sans text-stone-900 pb-20">
-      <title>Panel {role === 'superadmin' ? 'Super Admin' : 'Gestor'} | Lázaro</title>
+      <title>Panel {currentRole === 'admin' ? 'Administrador' : 'Cliente'} | Lázaro</title>
 
       <header className="px-6 py-6 border-b border-stone-200 bg-white sticky top-0 z-30 shadow-sm flex justify-between items-center">
         <div>
           <h1 className="text-xl font-serif text-stone-800">Lázaro Pastelería</h1>
           <p className="text-xs text-stone-400 font-medium tracking-widest uppercase">
-            {role === 'superadmin' ? 'Suite Principal' : 'Gestión de Pedidos'}
+            {currentRole === 'admin' ? 'Suite Principal' : 'Gestión de Pedidos'}
           </p>
         </div>
         
@@ -115,7 +110,7 @@ export function AdminPasteleria() {
         </button>
       </header>
 
-      {role === 'superadmin' && (
+      {currentRole === 'admin' && (
         <div className="max-w-5xl mx-auto px-6 mt-6">
           <div className="flex space-x-4 border-b border-stone-200">
             <button
@@ -148,7 +143,7 @@ export function AdminPasteleria() {
                 </div>
               </div>
               
-              {role === 'superadmin' && (
+              {currentRole === 'admin' && (
                 <>
                   <div className="bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.02)] border border-stone-100 flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center">
