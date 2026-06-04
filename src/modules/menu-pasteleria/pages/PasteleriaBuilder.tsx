@@ -633,7 +633,7 @@ export function PasteleriaBuilder() {
         ) : (
           <section className="bg-[#FDFBF7] p-0 md:p-4 rounded-3xl relative overflow-hidden">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {expressProducts.filter(p => p.categoria === activeTab).map(product => (
+              {expressProducts.filter(p => p.categoria?.trim().toLowerCase() === activeTab?.trim().toLowerCase()).map(product => (
                 <div key={product.id} className="bg-white border border-stone-100 rounded-3xl overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.03)] flex flex-col">
                   <div className="relative h-56 bg-stone-100 overflow-hidden shrink-0">
                     <img src={product.imagenes[0]} alt={product.nombre} className="w-full h-full object-cover transition-opacity duration-700 ease-in-out group-hover:opacity-0" />
