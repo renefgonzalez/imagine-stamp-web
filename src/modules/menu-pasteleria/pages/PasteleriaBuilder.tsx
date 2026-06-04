@@ -471,14 +471,14 @@ export function PasteleriaBuilder() {
             <span className="text-5xl text-rose-100 font-serif italic leading-none">03</span>
             <h2 className="text-2xl font-light tracking-wide text-stone-800">Elige tu relleno</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="flex flex-wrap justify-center gap-3">
             {RELLENOS.map(relleno => {
               const isSelected = selectedRelleno === relleno.id;
               return (
                 <button
                   key={relleno.id}
                   onClick={() => setSelectedRelleno(relleno.id)}
-                  className={`relative py-3 px-4 h-full flex flex-col items-center justify-center text-center rounded-2xl transition-all duration-300 border-2 ${
+                  className={`relative py-3 px-4 flex-grow basis-[calc(50%-0.75rem)] md:basis-[calc(33.333%-0.75rem)] min-w-[140px] flex flex-col items-center justify-center text-center rounded-2xl transition-all duration-300 border-2 ${
                     isSelected 
                       ? 'border-amber-300 bg-amber-50/60 shadow-sm text-amber-900' 
                       : 'border-transparent bg-stone-50 text-stone-600 hover:bg-stone-100 hover:border-stone-200'
@@ -553,14 +553,14 @@ export function PasteleriaBuilder() {
               <p className="text-stone-400 text-[10px] uppercase tracking-widest mt-1 font-medium bg-stone-50 inline-block px-2 py-0.5 rounded-full border border-stone-100">(Opcional)</p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {decoraciones.map(dec => {
               const isSelected = selectedDecoraciones.includes(dec.id);
               return (
                 <button
                   key={dec.id}
                   onClick={() => toggleDecoracion(dec.id)}
-                  className={`relative px-4 py-2 text-sm font-medium rounded-full transition-all border-2 ${
+                  className={`relative w-full text-center px-4 py-3 text-sm font-medium rounded-2xl transition-all border-2 ${
                     isSelected
                       ? 'border-amber-300 bg-rose-50/60 text-amber-900 shadow-sm'
                       : 'border-transparent bg-stone-50 text-stone-500 hover:bg-stone-100 hover:border-stone-200'
