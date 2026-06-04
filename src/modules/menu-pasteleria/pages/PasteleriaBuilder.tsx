@@ -7,6 +7,23 @@ import logoLazaro from '../assets/logo-lazaro.png';
 const WHATSAPP_NUMBER = '525512479773';
 const BASE_CAKE_PRICE = 550; // Precio base demostrativo
 
+const getEmbedUrl = (url: string) => {
+  if (!url) return '';
+  if (url.includes('youtube.com/watch?v=')) return url.replace('watch?v=', 'embed/').split('&')[0];
+  if (url.includes('youtu.be/')) return `https://www.youtube.com/embed/${url.split('youtu.be/')[1].split('?')[0]}`;
+  if (url.includes('youtube.com/shorts/')) return `https://www.youtube.com/embed/${url.split('shorts/')[1].split('?')[0]}`;
+  if (url.includes('tiktok.com/')) {
+    const match = url.match(/video\/(\d+)/);
+    if (match && match[1]) return `https://www.tiktok.com/embed/v2/${match[1]}`;
+  }
+  if (url.includes('instagram.com/')) {
+    let cleanUrl = url.split('?')[0];
+    if (!cleanUrl.endsWith('/')) cleanUrl += '/';
+    return `${cleanUrl}embed`;
+  }
+  return url;
+};
+
 export function PasteleriaBuilder() {
   const { panes: PANES, rellenos: RELLENOS, extras: EXTRAS, decoraciones, tiers: TIERS, SIZES, expressProducts, expressCategories } = useCatalog();
   const [bankData, setBankData] = useState<{banco: string, titular: string, clabe: string} | null>(null);
@@ -23,6 +40,7 @@ export function PasteleriaBuilder() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [playingVideo, setPlayingVideo] = useState<string | null>(null);
 
   const [cartPhase, setCartPhase] = useState<1 | 2 | 3>(1);
   
@@ -644,19 +662,25 @@ export function PasteleriaBuilder() {
                       <img src={product.imagenes[1]} alt={product.nombre} className="w-full h-full object-cover absolute inset-0 opacity-0 transition-opacity duration-700 ease-in-out group-hover:opacity-100" />
                     )}
                     {product.etiqueta && (
-                      <span className="absolute top-4 left-4 bg-teal-500 text-white text-[10px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-full shadow-md shadow-teal-500/20">
+                      <span className="absolute top-4 left-4 z-10 bg-teal-500 text-white text-[10px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-full shadow-md shadow-teal-500/20">
                         {product.etiqueta}
                       </span>
+                    )}
+                    
+                    {product.video_url && (
+                      <button 
+                        onClick={() => setPlayingVideo(getEmbedUrl(product.video_url!))}
+                        className="absolute inset-0 z-20 flex items-center justify-center bg-black/10 hover:bg-black/30 transition-colors group/video"
+                      >
+                        <div className="w-14 h-14 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-rose-500 shadow-xl scale-95 group-hover/video:scale-110 transition-transform">
+                          <Play fill="currentColor" size={24} className="ml-1" />
+                        </div>
+                      </button>
                     )}
                   </div>
                   <div className="p-6 flex flex-col flex-1">
                     <h3 className="font-serif text-lg text-stone-800 leading-tight">{product.nombre}</h3>
                     <p className="text-sm text-stone-500 mt-3 font-light leading-relaxed flex-1 line-clamp-3">{product.descripcion}</p>
-                    {product.video_url && (
-                      <a href={product.video_url} target="_blank" rel="noopener noreferrer" className="mt-3 flex items-center gap-2 text-rose-500 hover:text-rose-600 text-xs font-medium uppercase tracking-widest transition-colors w-fit">
-                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-rose-50 text-rose-500"><Play size={10} className="ml-0.5" /></span> Ver Video
-                      </a>
-                    )}
                     <div className="flex items-center justify-between mt-6 pt-6 border-t border-stone-100 border-dashed">
                       <span className="font-serif text-xl text-stone-800">${product.precio.toFixed(2)}</span>
                       <button
@@ -1244,6 +1268,37 @@ export function PasteleriaBuilder() {
                 ¡Entendido!
               </button>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* VIDEO MODAL */}
+      <AnimatePresence>
+        {playingVideo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
+            onClick={() => setPlayingVideo(null)}
+          >
+            <div 
+              className="relative w-full max-w-md h-[80vh] bg-stone-900 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center"
+              onClick={e => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setPlayingVideo(null)}
+                className="absolute top-4 right-4 z-50 w-10 h-10 bg-black/50 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+              
+              <iframe 
+                src={playingVideo} 
+                className="w-full h-full border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowFullScreen
+              ></iframe>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
