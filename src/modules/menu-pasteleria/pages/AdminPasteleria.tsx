@@ -718,6 +718,7 @@ function ExpressManager({ categories, products, onSave }: ExpressManagerProps) {
 
   const [isAdding, setIsAdding] = useState(false);
   const [newCatName, setNewCatName] = useState('');
+  const [editingCatName, setEditingCatName] = useState<string | null>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, setImg: React.Dispatch<React.SetStateAction<string>>) => {
     const file = e.target.files?.[0];
@@ -791,16 +792,46 @@ function ExpressManager({ categories, products, onSave }: ExpressManagerProps) {
     }
   };
 
-  const handleAddCategory = () => {
+  const handleSaveCategory = () => {
     if (!newCatName.trim()) return;
-    if (localCategories.includes(newCatName.trim())) {
-      alert('Esta categoría ya existe.');
-      return;
+    
+    if (editingCatName) {
+      if (newCatName.trim() === editingCatName) {
+        setEditingCatName(null);
+        setNewCatName('');
+        return;
+      }
+      if (localCategories.includes(newCatName.trim())) {
+        alert('Esta categoría ya existe.');
+        return;
+      }
+
+      const newCats = localCategories.map(c => c === editingCatName ? newCatName.trim() : c);
+      setLocalCategories(newCats);
+      
+      const updatedProducts = localProducts.map(p => 
+        p.categoria === editingCatName ? { ...p, categoria: newCatName.trim() } : p
+      );
+      setLocalProducts(updatedProducts);
+      
+      onSave(newCats, updatedProducts);
+      setEditingCatName(null);
+      setNewCatName('');
+    } else {
+      if (localCategories.includes(newCatName.trim())) {
+        alert('Esta categoría ya existe.');
+        return;
+      }
+      const newCats = [...localCategories, newCatName.trim()];
+      setLocalCategories(newCats);
+      onSave(newCats, localProducts);
+      setNewCatName('');
     }
-    const newCats = [...localCategories, newCatName.trim()];
-    setLocalCategories(newCats);
-    onSave(newCats, localProducts);
-    setNewCatName('');
+  };
+
+  const handleEditCategory = (cat: string) => {
+    setEditingCatName(cat);
+    setNewCatName(cat);
   };
 
   const handleDeleteCategory = (cat: string) => {
@@ -827,17 +858,32 @@ function ExpressManager({ categories, products, onSave }: ExpressManagerProps) {
             className="flex-1 text-sm px-4 py-2.5 border border-stone-200 rounded-xl focus:outline-none focus:border-amber-400"
           />
           <button 
-            onClick={handleAddCategory}
-            className="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold tracking-widest uppercase transition-colors shadow-md shadow-amber-500/20 flex items-center gap-2"
+            onClick={handleSaveCategory}
+            className={`${editingCatName ? 'bg-blue-500 hover:bg-blue-600 shadow-blue-500/20' : 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/20'} text-white px-5 py-2.5 rounded-xl text-sm font-bold tracking-widest uppercase transition-colors shadow-md flex items-center gap-2`}
           >
-            <Plus size={16} /> Crear
+            {editingCatName ? <><Edit2 size={16} /> Actualizar</> : <><Plus size={16} /> Crear</>}
           </button>
+          {editingCatName && (
+             <button 
+               onClick={() => { setEditingCatName(null); setNewCatName(''); }}
+               className="bg-stone-200 hover:bg-stone-300 text-stone-700 px-5 py-2.5 rounded-xl text-sm font-bold tracking-widest uppercase transition-colors"
+             >
+               Cancelar
+             </button>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-2">
           {localCategories.map(cat => (
             <div key={cat} className="flex items-center gap-1 bg-stone-50 border border-stone-200 text-stone-600 px-3 py-1.5 rounded-full text-sm">
               <span>{cat}</span>
+              <button 
+                onClick={() => handleEditCategory(cat)}
+                className="text-stone-400 hover:text-blue-500 p-0.5 rounded-full transition-colors ml-1"
+                title="Editar categoría"
+              >
+                <Edit2 size={12} />
+              </button>
               <button 
                 onClick={() => handleDeleteCategory(cat)}
                 className="text-stone-400 hover:text-red-500 p-0.5 rounded-full transition-colors"
