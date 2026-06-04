@@ -402,10 +402,10 @@ export function PasteleriaBuilder() {
       <main className="max-w-2xl mx-auto px-6 py-10 space-y-16 relative z-10">
         
         {/* TABS DE CATEGORÍAS */}
-        <div className="flex flex-col items-center gap-4 mb-8 w-full max-w-sm mx-auto">
+        <div className="flex flex-row overflow-x-auto gap-3 mb-8 w-full pb-4 snap-x snap-mandatory hide-scrollbar">
           <button
             onClick={() => setActiveTab('builder')}
-            className={`w-full px-6 py-4 rounded-full text-sm font-medium transition-all ${
+            className={`whitespace-nowrap shrink-0 snap-center px-6 py-3 rounded-full text-sm font-medium transition-all ${
               activeTab === 'builder'
                 ? 'bg-stone-900 text-white shadow-md'
                 : 'bg-white text-stone-500 hover:bg-stone-100 border border-stone-200'
@@ -417,7 +417,7 @@ export function PasteleriaBuilder() {
             <button
               key={cat}
               onClick={() => setActiveTab(cat)}
-              className={`w-full px-6 py-4 rounded-full text-sm font-medium transition-all ${
+              className={`whitespace-nowrap shrink-0 snap-center px-6 py-3 rounded-full text-sm font-medium transition-all ${
                 activeTab === cat
                   ? 'bg-stone-900 text-white shadow-md'
                   : 'bg-white text-stone-500 hover:bg-stone-100 border border-stone-200'
