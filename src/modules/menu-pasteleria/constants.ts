@@ -11,6 +11,14 @@ export interface PanOption extends CatalogItem {}
 export interface RellenoOption extends CatalogItem {}
 export interface ExtraOption extends CatalogItem {}
 
+export interface ProductoExpress {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  imagenes: string[];
+  etiqueta?: string;
+}
 export const DEFAULT_PANES: PanOption[] = [
   { id: 'vainilla', name: 'Vainilla', price: 0 },
   { id: 'chocolate', name: 'Chocolate', price: 0 },
@@ -58,6 +66,17 @@ export const DEFAULT_EXTRAS: ExtraOption[] = [
   { id: 'galletas-lotus', name: 'Galletas Lotus', price: 0 },
   { id: 'brownies-bites', name: 'Brownies Bites', price: 0 },
   { id: 'cheesecake-bites', name: 'Cheesecake Bites', price: 0 },
+];
+
+export const productosExpress: ProductoExpress[] = [
+  {
+    id: 'cupcakes-clasicos-6',
+    nombre: 'Cupcakes Clásicos (Media Docena)',
+    descripcion: 'Pan de vainilla o chocolate con relleno de dulce de leche.',
+    precio: 450,
+    imagenes: ['/assets/placeholder-cupcake1.jpg', '/assets/placeholder-cupcake2.jpg'],
+    etiqueta: 'Novedad'
+  }
 ];
 
 export const PANES = DEFAULT_PANES;

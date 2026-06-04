@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark, Instagram, Facebook, MapPin, Phone, Lock } from 'lucide-react';
-import { useCatalog } from '../constants';
+import { useCatalog, productosExpress } from '../constants';
 import logoLazaro from '../assets/logo-lazaro.png';
 
-interface CustomCake {
+interface CartItem {
   id: string;
-  size: string;
-  pan: string;
-  relleno: string;
-  extras: string[];
+  type: 'custom' | 'express';
   quantity: number;
   price: number;
+  // Custom
+  size?: string;
+  pan?: string;
+  relleno?: string;
+  extras?: string[];
+  // Express
+  productId?: string;
+  name?: string;
 }
 
 const WHATSAPP_NUMBER = '525512479773';
@@ -34,7 +39,8 @@ export function PasteleriaBuilder() {
   
   const isLargeSize = selectedSize === '20 personas' || selectedSize === '30 personas';
   
-  const [cart, setCart] = useState<CustomCake[]>([]);
+  const [activeTab, setActiveTab] = useState<'builder' | 'express'>('builder');
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
@@ -96,11 +102,12 @@ export function PasteleriaBuilder() {
     const extrasPrice = selectedExtras.reduce((acc, eId) => acc + (EXTRAS.find(e => e.id === eId)?.price || 0), 0);
     const totalPrice = BASE_CAKE_PRICE + panPrice + rellenoPrice + extrasPrice;
 
-    const newCake: CustomCake = {
+    const newCake: CartItem = {
       id: crypto.randomUUID(),
+      type: 'custom',
       size: selectedSize!,
-      pan: selectedPan,
-      relleno: selectedRelleno,
+      pan: selectedPan!,
+      relleno: selectedRelleno!,
       extras: selectedExtras,
       quantity: 1,
       price: totalPrice
@@ -112,6 +119,27 @@ export function PasteleriaBuilder() {
     setSelectedPan(null);
     setSelectedRelleno(null);
     setSelectedExtras([]);
+    
+    setShowToast(true);
+  };
+
+  const handleAddToCartExpress = (product: typeof productosExpress[0]) => {
+    const newItem: CartItem = {
+      id: crypto.randomUUID(),
+      type: 'express',
+      productId: product.id,
+      name: product.nombre,
+      quantity: 1,
+      price: product.precio
+    };
+    
+    setCart(prev => {
+      const existing = prev.find(item => item.type === 'express' && item.productId === product.id);
+      if (existing) {
+        return prev.map(item => item.id === existing.id ? { ...item, quantity: item.quantity + 1 } : item);
+      }
+      return [...prev, newItem];
+    });
     
     setShowToast(true);
   };
@@ -132,11 +160,15 @@ export function PasteleriaBuilder() {
 
   const handleCheckout = () => {
     const lines = cart.map(item => {
-      const panName = PANES.find(p => p.id === item.pan)?.name;
-      const rellenoName = RELLENOS.find(r => r.id === item.relleno)?.name;
-      const extrasNames = item.extras.map(eId => EXTRAS.find(e => e.id === eId)?.name).join(', ');
-      
-      return `🎂 *${item.quantity}x Pastel Personalizado*\n  • Tamaño: ${item.size}\n  • Pan: ${panName}\n  • Relleno: ${rellenoName}\n  • Extras: ${extrasNames || 'Ninguno'}`;
+      if (item.type === 'custom') {
+        const panName = PANES.find(p => p.id === item.pan)?.name;
+        const rellenoName = RELLENOS.find(r => r.id === item.relleno)?.name;
+        const extrasNames = item.extras?.map(eId => EXTRAS.find(e => e.id === eId)?.name).join(', ');
+        
+        return `🎂 *${item.quantity}x Pastel Personalizado*\n  • Tamaño: ${item.size}\n  • Pan: ${panName}\n  • Relleno: ${rellenoName}\n  • Extras: ${extrasNames || 'Ninguno'}`;
+      } else {
+        return `🧁 *${item.quantity}x ${item.name}*\n  • (Producto Express)`;
+      }
     }).join('\n\n');
 
     const name = customerName.trim();
@@ -247,7 +279,33 @@ export function PasteleriaBuilder() {
       {/* CONSTRUCTOR INTERACTIVO */}
       <main className="max-w-2xl mx-auto px-6 py-10 space-y-16 relative z-10">
         
-        {/* PASO 1: TAMAÑO */}
+        {/* TABS DE CATEGORÍAS */}
+        <div className="flex justify-center gap-4 mb-8">
+          <button
+            onClick={() => setActiveTab('builder')}
+            className={`px-6 py-3 rounded-full text-sm font-medium transition-all ${
+              activeTab === 'builder'
+                ? 'bg-stone-900 text-white shadow-md'
+                : 'bg-white text-stone-500 hover:bg-stone-100 border border-stone-200'
+            }`}
+          >
+            Crea tu propio sabor
+          </button>
+          <button
+            onClick={() => setActiveTab('express')}
+            className={`px-6 py-3 rounded-full text-sm font-medium transition-all ${
+              activeTab === 'express'
+                ? 'bg-stone-900 text-white shadow-md'
+                : 'bg-white text-stone-500 hover:bg-stone-100 border border-stone-200'
+            }`}
+          >
+            Cupcakes en 3 horas
+          </button>
+        </div>
+
+        {activeTab === 'builder' ? (
+          <div className="space-y-16">
+            {/* PASO 1: TAMAÑO */}
         <section className="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-stone-100 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-100 via-rose-100 to-amber-100 opacity-50"></div>
           <div className="flex items-end gap-4 mb-8">
@@ -409,6 +467,42 @@ export function PasteleriaBuilder() {
             })}
           </div>
         </section>
+        </div>
+        ) : (
+          <section className="bg-[#FDFBF7] p-0 md:p-4 rounded-3xl relative overflow-hidden">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {productosExpress.map(product => (
+                <div key={product.id} className="bg-white border border-stone-100 rounded-3xl overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.03)] flex flex-col">
+                  <div className="relative h-56 bg-stone-100 overflow-hidden shrink-0">
+                    <img src={product.imagenes[0]} alt={product.nombre} className="w-full h-full object-cover transition-opacity duration-700 ease-in-out group-hover:opacity-0" />
+                    {product.imagenes[1] && (
+                      <img src={product.imagenes[1]} alt={product.nombre} className="w-full h-full object-cover absolute inset-0 opacity-0 transition-opacity duration-700 ease-in-out group-hover:opacity-100" />
+                    )}
+                    {product.etiqueta && (
+                      <span className="absolute top-4 left-4 bg-teal-500 text-white text-[10px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-full shadow-md shadow-teal-500/20">
+                        {product.etiqueta}
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-6 flex flex-col flex-1">
+                    <h3 className="font-serif text-lg text-stone-800 leading-tight">{product.nombre}</h3>
+                    <p className="text-sm text-stone-500 mt-3 font-light leading-relaxed flex-1 line-clamp-3">{product.descripcion}</p>
+                    <div className="flex items-center justify-between mt-6 pt-6 border-t border-stone-100 border-dashed">
+                      <span className="font-serif text-xl text-stone-800">${product.precio.toFixed(2)}</span>
+                      <button
+                        onClick={() => handleAddToCartExpress(product)}
+                        className="bg-stone-900 text-white px-5 py-2.5 rounded-full text-xs font-medium uppercase tracking-widest hover:bg-stone-800 transition-all shadow-md shadow-stone-900/10 active:scale-95"
+                      >
+                        Agregar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
 
       </main>
 
@@ -474,9 +568,9 @@ export function PasteleriaBuilder() {
       </footer>
 
 
-      {/* FIXED ACTION BAR */}
+      {/* FIXED ACTION BAR FOR BUILDER */}
       <AnimatePresence>
-        {isComplete && !showToast && (
+        {activeTab === 'builder' && isComplete && !showToast && (
           <motion.div
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -538,24 +632,29 @@ export function PasteleriaBuilder() {
                         {cart.map(item => (
                           <div key={item.id} className="bg-white p-5 rounded-3xl shadow-[0_4px_20px_rgb(0,0,0,0.02)] border border-stone-100">
                             <div className="flex justify-between items-start mb-4">
-                              <h4 className="font-medium text-stone-800 font-serif text-lg">Pastel Personalizado</h4>
+                              <h4 className="font-medium text-stone-800 font-serif text-lg">
+                                {item.type === 'custom' ? 'Pastel Personalizado' : item.name}
+                              </h4>
                               <button onClick={() => handleRemove(item.id)} className="text-stone-400 hover:text-red-500 transition-colors p-1.5 hover:bg-red-50 rounded-full">
                                 <Trash2 size={16} />
                               </button>
                             </div>
                             
-                            <div className="space-y-2 text-sm text-stone-600 mb-6 font-light bg-[#FDFBF7] p-4 rounded-2xl border border-stone-100/50">
-                              <p><span className="text-amber-700/60 font-medium mr-2">Tamaño:</span> {item.size}</p>
-                              <div className="h-px border-t border-dashed border-stone-200"></div>
-                              <p><span className="text-amber-700/60 font-medium mr-2">Pan:</span> {PANES.find(p => p.id === item.pan)?.name}</p>
-                              <div className="h-px border-t border-dashed border-stone-200"></div>
-                              <p><span className="text-amber-700/60 font-medium mr-2">Relleno:</span> {RELLENOS.find(r => r.id === item.relleno)?.name}</p>
-                              <div className="h-px border-t border-dashed border-stone-200"></div>
-                              <p>
-                                <span className="text-amber-700/60 font-medium mr-2">Extras:</span> 
-                                {item.extras.length > 0 ? item.extras.map(e => EXTRAS.find(x => x.id === e)?.name).join(', ') : 'Ninguno'}
-                              </p>
-                            </div>
+                            {item.type === 'custom' && (
+                              <div className="space-y-2 text-sm text-stone-600 mb-6 font-light bg-[#FDFBF7] p-4 rounded-2xl border border-stone-100/50">
+                                <p><span className="text-amber-700/60 font-medium mr-2">Tamaño:</span> {item.size}</p>
+                                <div className="h-px border-t border-dashed border-stone-200"></div>
+                                <p><span className="text-amber-700/60 font-medium mr-2">Pan:</span> {PANES.find(p => p.id === item.pan)?.name}</p>
+                                <div className="h-px border-t border-dashed border-stone-200"></div>
+                                <p><span className="text-amber-700/60 font-medium mr-2">Relleno:</span> {RELLENOS.find(r => r.id === item.relleno)?.name}</p>
+                                <div className="h-px border-t border-dashed border-stone-200"></div>
+                                <p>
+                                  <span className="text-amber-700/60 font-medium mr-2">Extras:</span> 
+                                  {item.extras?.length ? item.extras.map(e => EXTRAS.find(x => x.id === e)?.name).join(', ') : 'Ninguno'}
+                                </p>
+                              </div>
+                            )}
+
 
                             <div className="flex items-center justify-between mt-2">
                               <div className="flex items-center bg-stone-50 rounded-full border border-stone-100 p-1">
