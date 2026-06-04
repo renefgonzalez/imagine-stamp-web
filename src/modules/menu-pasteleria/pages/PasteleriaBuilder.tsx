@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark, Instagram, Facebook, MapPin, Phone, Lock } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark, Instagram, Facebook, MapPin, Phone, Lock, Play } from 'lucide-react';
 import { useCatalog, productosExpress, SizeOption, CartItem } from '../constants';
 import { supabase } from '../../../lib/supabase';
 import logoLazaro from '../assets/logo-lazaro.png';
@@ -652,6 +652,11 @@ export function PasteleriaBuilder() {
                   <div className="p-6 flex flex-col flex-1">
                     <h3 className="font-serif text-lg text-stone-800 leading-tight">{product.nombre}</h3>
                     <p className="text-sm text-stone-500 mt-3 font-light leading-relaxed flex-1 line-clamp-3">{product.descripcion}</p>
+                    {product.video_url && (
+                      <a href={product.video_url} target="_blank" rel="noopener noreferrer" className="mt-3 flex items-center gap-2 text-rose-500 hover:text-rose-600 text-xs font-medium uppercase tracking-widest transition-colors w-fit">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-rose-50 text-rose-500"><Play size={10} className="ml-0.5" /></span> Ver Video
+                      </a>
+                    )}
                     <div className="flex items-center justify-between mt-6 pt-6 border-t border-stone-100 border-dashed">
                       <span className="font-serif text-xl text-stone-800">${product.precio.toFixed(2)}</span>
                       <button

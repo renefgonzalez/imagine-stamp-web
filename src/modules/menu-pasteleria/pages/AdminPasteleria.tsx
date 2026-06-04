@@ -792,6 +792,7 @@ function ExpressManager({ categories, products, onSave, fetchProducts }: Express
   const [img2File, setImg2File] = useState<File | null>(null);
   const [etiqueta, setEtiqueta] = useState('');
   const [descripcion, setDescripcion] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
 
   const [isAdding, setIsAdding] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -824,6 +825,7 @@ function ExpressManager({ categories, products, onSave, fetchProducts }: Express
     setImg2File(null);
     setEtiqueta('');
     setDescripcion('');
+    setVideoUrl('');
     setEditingId(null);
     setIsAdding(false);
     setIsSaving(false);
@@ -840,6 +842,7 @@ function ExpressManager({ categories, products, onSave, fetchProducts }: Express
     setImg2File(null);
     setEtiqueta(p.etiqueta || '');
     setDescripcion(p.descripcion);
+    setVideoUrl(p.video_url || '');
     setIsAdding(true);
   };
 
@@ -879,7 +882,8 @@ function ExpressManager({ categories, products, onSave, fetchProducts }: Express
       precio: Number(precio),
       imagenes: [finalImg1, finalImg2].filter(Boolean),
       etiqueta: etiqueta || null,
-      descripcion
+      descripcion,
+      video_url: videoUrl || null
     };
 
     if (editingId) {
@@ -1070,6 +1074,10 @@ function ExpressManager({ categories, products, onSave, fetchProducts }: Express
               <div className="md:col-span-2">
                 <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-widest">Descripción</label>
                 <textarea value={descripcion} onChange={e => setDescripcion(e.target.value)} className="w-full text-sm px-4 py-2 border border-stone-200 rounded-lg focus:outline-none focus:border-amber-400 bg-white" rows={2}></textarea>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-widest">Enlace de Video (TikTok, Instagram, YouTube) Opcional</label>
+                <input type="text" value={videoUrl} onChange={e => setVideoUrl(e.target.value)} className="w-full text-sm px-4 py-2 border border-stone-200 rounded-lg focus:outline-none focus:border-amber-400 bg-white" placeholder="https://..." />
               </div>
               <div>
                 <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-widest">Imagen 1 (Principal)</label>

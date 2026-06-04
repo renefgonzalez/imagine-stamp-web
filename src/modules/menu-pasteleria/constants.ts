@@ -63,6 +63,7 @@ export interface ProductoExpress {
   imagenes: string[];
   etiqueta?: string;
   categoria: string;
+  video_url?: string;
 }
 
 export const PRICING_TIERS: PricingTier[] = [
