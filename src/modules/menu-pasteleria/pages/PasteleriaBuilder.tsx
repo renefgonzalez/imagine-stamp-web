@@ -208,8 +208,7 @@ export function PasteleriaBuilder() {
       
     let paymentStr = '';
     if (paymentMethod === 'spei') paymentStr = 'Transferencia SPEI';
-    if (paymentMethod === 'efectivo') paymentStr = 'Efectivo contra entrega';
-    if (paymentMethod === 'tarjeta') paymentStr = 'Tarjeta de Crédito/Débito en Tienda';
+    if (paymentMethod === 'tarjeta') paymentStr = 'Tarjeta de Crédito/Débito';
 
     let message = 
       `✨ ¡Hola Lázaro Pastelería! Me gustaría confirmar el siguiente pedido:\n\n` +
@@ -938,18 +937,11 @@ export function PasteleriaBuilder() {
                           <span className={`text-sm ${paymentMethod === 'spei' ? 'font-medium text-amber-900' : 'text-stone-600'}`}>Transferencia SPEI</span>
                         </button>
                         <button
-                          onClick={() => setPaymentMethod('efectivo')}
-                          className={`w-full flex items-center p-4 border-2 rounded-2xl transition-all ${paymentMethod === 'efectivo' ? 'border-amber-300 bg-rose-50/60 shadow-sm' : 'border-transparent bg-stone-50 hover:bg-stone-100'}`}
-                        >
-                          <Banknote size={18} className={`mr-3 ${paymentMethod === 'efectivo' ? 'text-amber-700' : 'text-stone-400'}`} />
-                          <span className={`text-sm ${paymentMethod === 'efectivo' ? 'font-medium text-amber-900' : 'text-stone-600'}`}>Efectivo contra entrega</span>
-                        </button>
-                        <button
                           onClick={() => setPaymentMethod('tarjeta')}
                           className={`w-full flex items-center p-4 border-2 rounded-2xl transition-all ${paymentMethod === 'tarjeta' ? 'border-amber-300 bg-rose-50/60 shadow-sm' : 'border-transparent bg-stone-50 hover:bg-stone-100'}`}
                         >
                           <CreditCard size={18} className={`mr-3 ${paymentMethod === 'tarjeta' ? 'text-amber-700' : 'text-stone-400'}`} />
-                          <span className={`text-sm ${paymentMethod === 'tarjeta' ? 'font-medium text-amber-900' : 'text-stone-600'}`}>Tarjeta de Crédito/Débito en Tienda</span>
+                          <span className={`text-sm ${paymentMethod === 'tarjeta' ? 'font-medium text-amber-900' : 'text-stone-600'}`}>Tarjeta de Crédito/Débito</span>
                         </button>
                       </div>
 
@@ -1036,8 +1028,7 @@ export function PasteleriaBuilder() {
                           <span className="font-medium text-stone-800 flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-teal-400 inline-block"></span>
                             {paymentMethod === 'spei' && 'Transferencia SPEI'}
-                            {paymentMethod === 'efectivo' && 'Efectivo contra entrega'}
-                            {paymentMethod === 'tarjeta' && 'Tarjeta de Crédito/Débito en Tienda'}
+                            {paymentMethod === 'tarjeta' && 'Tarjeta de Crédito/Débito'}
                           </span>
                         </div>
                       </div>
