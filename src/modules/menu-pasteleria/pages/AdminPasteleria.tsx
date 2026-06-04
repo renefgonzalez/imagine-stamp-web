@@ -860,7 +860,7 @@ function ExpressManager({ categories, products, onSave }: ExpressManagerProps) {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Módulo de Gestión de Categorías */}
+      {/* Módulo de Gestión de Categorías - Edición Habilitada */}
       <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-stone-100 overflow-hidden p-6 mb-8">
         <h3 className="font-serif text-lg text-stone-800">Administrar Pestañas / Categorías</h3>
         <p className="text-sm text-stone-500 font-light mt-1 mb-4">Crea categorías aquí para organizar tus productos. Cada una será una pestaña nueva para tus clientes.</p>
