@@ -35,6 +35,12 @@ export function PasteleriaBuilder() {
   const [paymentMethod, setPaymentMethod] = useState<'spei' | 'efectivo' | 'tarjeta' | null>(null);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedDiscount, setAppliedDiscount] = useState<number>(0);
+  const [couponStatus, setCouponStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [generatedCoupon, setGeneratedCoupon] = useState<string | null>(null);
+  const [showCouponAlert, setShowCouponAlert] = useState(false);
+
   useEffect(() => {
     const localCart = localStorage.getItem('lazaro_cart');
     if (localCart) {
@@ -180,8 +186,21 @@ export function PasteleriaBuilder() {
     setCart(prev => prev.filter(c => c.id !== id));
   };
 
+  const handleApplyCoupon = () => {
+    const code = couponCode.trim().toUpperCase();
+    if (code === 'BIENVENIDA10' || code.startsWith('LAZARO-10-')) {
+      setAppliedDiscount(0.10);
+      setCouponStatus('success');
+    } else {
+      setAppliedDiscount(0);
+      setCouponStatus('error');
+    }
+  };
+
   const totalItems = cart.reduce((acc, i) => acc + i.quantity, 0);
-  const totalAmount = cart.reduce((acc, i) => acc + (i.price * i.quantity), 0);
+  const subtotal = cart.reduce((acc, i) => acc + (i.price * i.quantity), 0);
+  const discountAmount = subtotal * appliedDiscount;
+  const totalAmount = subtotal - discountAmount;
 
   const handleCheckout = () => {
     const lines = cart.map(item => {
@@ -222,13 +241,32 @@ export function PasteleriaBuilder() {
       message += `📝 *Notas del cliente:* ${specialNotes.trim()}\n`;
     }
 
+    const subtotalStr = subtotal.toFixed(2);
+    const discountStr = discountAmount > 0 ? `\n🏷️ *Descuento aplicado:* -$${discountAmount.toFixed(2)} MXN (${(appliedDiscount * 100).toFixed(0)}%)` : '';
+    
+    let generatedCode = '';
+    if (subtotal > 1200) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let randStr = '';
+      for(let i=0; i<4; i++) randStr += chars.charAt(Math.floor(Math.random() * chars.length));
+      generatedCode = `LAZARO-10-${randStr}`;
+      setGeneratedCoupon(generatedCode);
+      setShowCouponAlert(true);
+    }
+
     message += 
       `------------------------------------------\n\n` +
       `Detalle del Pedido:\n${lines}\n\n` +
-      `💰 *Total de la Nota:* $${totalAmount.toFixed(2)} MXN\n\n` +
+      `💰 *Subtotal:* $${subtotalStr} MXN` +
+      discountStr +
+      `\n\n💵 *Total a Pagar:* $${totalAmount.toFixed(2)} MXN\n\n` +
       `_Pedido generado desde el constructor interactivo_ 🤍`;
 
-    const newOrder: LazaroOrder = {
+    if (generatedCode) {
+      message += `\n\n🎁 *Cupón otorgado al cliente (Próxima compra):* ${generatedCode}`;
+    }
+
+    const newOrder: any = {
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       customerName: name,
@@ -241,7 +279,8 @@ export function PasteleriaBuilder() {
       specialNotes,
       totalAmount,
       items: cart,
-      status: 'PENDIENTE'
+      status: 'PENDIENTE',
+      notasInternas: generatedCode ? `Cupón otorgado al cliente: ${generatedCode}` : undefined
     };
 
     const existingOrdersJson = localStorage.getItem('lazaro_pedidos');
@@ -255,13 +294,16 @@ export function PasteleriaBuilder() {
       setCustomerName('');
       setCustomerPhone('');
       setDeliveryAddress('');
-      setDeliveryAddress('');
       setDeliveryDate('');
       setDeliveryTime('');
       setSpecialNotes('');
       setPaymentMethod(null);
       setIsCartOpen(false);
       setCartPhase(1);
+
+      setAppliedDiscount(0);
+      setCouponCode('');
+      setCouponStatus('idle');
     }, 2000);
   };
 
@@ -930,6 +972,37 @@ export function PasteleriaBuilder() {
                       )}
                     </div>
 
+                    {/* Cupón de Descuento */}
+                    <div className="bg-white p-6 rounded-3xl shadow-[0_4px_20px_rgb(0,0,0,0.02)] border border-stone-100 mt-4 mb-4">
+                      <h4 className="text-sm font-serif font-medium text-stone-800 mb-4 flex items-center gap-2">
+                        ¿Tienes un cupón de descuento?
+                      </h4>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={couponCode}
+                          onChange={e => {
+                            setCouponCode(e.target.value);
+                            setCouponStatus('idle');
+                          }}
+                          placeholder="Ingresa tu código"
+                          className="flex-1 bg-stone-50 border border-transparent px-4 py-3 text-sm outline-none focus:border-amber-300 focus:bg-white transition-all rounded-xl uppercase"
+                        />
+                        <button
+                          onClick={handleApplyCoupon}
+                          className="bg-stone-900 text-white px-5 py-3 rounded-xl font-medium text-sm hover:bg-stone-800 transition-colors"
+                        >
+                          Aplicar
+                        </button>
+                      </div>
+                      {couponStatus === 'success' && (
+                        <p className="text-green-600 text-xs mt-2 font-medium">Cupón aplicado: -10%</p>
+                      )}
+                      {couponStatus === 'error' && (
+                        <p className="text-red-500 text-xs mt-2 font-medium">Cupón inválido</p>
+                      )}
+                    </div>
+
                     {/* Forma de Pago */}
                     <div className="bg-white p-6 rounded-3xl shadow-[0_4px_20px_rgb(0,0,0,0.02)] border border-stone-100">
                       <h4 className="text-sm font-serif font-medium text-stone-800 mb-4 flex items-center gap-2">
@@ -1009,6 +1082,11 @@ export function PasteleriaBuilder() {
 
                     <div className="bg-[#FDFBF7] p-6 rounded-3xl shadow-[0_4px_20px_rgb(0,0,0,0.02)] border border-stone-100 space-y-5 relative z-10">
                       <div className="text-center pb-2">
+                        {appliedDiscount > 0 && (
+                          <div className="mb-2 text-green-600 text-sm font-medium">
+                            Subtotal: ${subtotal.toFixed(2)} | Descuento: -${discountAmount.toFixed(2)}
+                          </div>
+                        )}
                         <span className="block text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Total a Pagar</span>
                         <span className="text-4xl font-serif text-stone-800">${totalAmount.toFixed(2)} <span className="text-sm text-stone-400 font-sans tracking-widest">MXN</span></span>
                       </div>
@@ -1107,6 +1185,56 @@ export function PasteleriaBuilder() {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* MODAL CUPON GENERADO */}
+      <AnimatePresence>
+        {showCouponAlert && generatedCoupon && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl relative"
+            >
+              <button 
+                onClick={() => {
+                  setShowCouponAlert(false);
+                  setGeneratedCoupon(null);
+                }} 
+                className="absolute top-4 right-4 text-stone-400 hover:text-stone-900 bg-stone-50 p-2 rounded-full"
+              >
+                <X size={16} />
+              </button>
+              
+              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">🎁</span>
+              </div>
+              <h3 className="font-serif text-xl text-stone-800 mb-2">¡Gracias por tu compra!</h3>
+              <p className="text-stone-600 text-sm mb-6 leading-relaxed">
+                Para premiar tu preferencia, obtuviste un cupón del <strong>10%</strong> para tu próximo pedido. Guarda este código:
+              </p>
+              
+              <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 mb-6">
+                <p className="font-mono text-lg font-bold text-amber-700 tracking-widest">{generatedCoupon}</p>
+              </div>
+              
+              <button
+                onClick={() => {
+                  setShowCouponAlert(false);
+                  setGeneratedCoupon(null);
+                }}
+                className="w-full bg-stone-900 text-white py-3 rounded-xl font-medium text-sm hover:bg-stone-800 transition-colors"
+              >
+                ¡Entendido!
+              </button>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
