@@ -240,6 +240,12 @@ function OrdersManager() {
     localStorage.setItem('lazaro_pedidos', JSON.stringify(updated));
   };
 
+  const handleUpdateNotas = (id: string, notas: string) => {
+    const updated = orders.map(o => o.id === id ? { ...o, notasInternas: notas } : o);
+    setOrders(updated);
+    localStorage.setItem('lazaro_pedidos', JSON.stringify(updated));
+  };
+
   const handleDelete = (id: string) => {
     if(confirm('¿Seguro que deseas eliminar este pedido?')) {
       const updated = orders.filter(o => o.id !== id);
@@ -357,6 +363,16 @@ function OrdersManager() {
                   </li>
                 ))}
               </ul>
+            </div>
+
+            <div className="mb-4">
+              <h4 className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Notas Internas (Staff)</h4>
+              <textarea 
+                defaultValue={order.notasInternas || ''}
+                onBlur={(e) => handleUpdateNotas(order.id, e.target.value)}
+                placeholder="Añade recordatorios, anticipos, notas..."
+                className="w-full h-20 bg-stone-50 border border-stone-100 rounded-xl p-3 text-xs text-stone-700 resize-none focus:outline-none focus:border-amber-300 focus:bg-white transition-all"
+              />
             </div>
 
             <div className="flex justify-between items-end border-t border-stone-100 pt-4 mt-auto">

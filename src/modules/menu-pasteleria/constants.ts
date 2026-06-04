@@ -44,6 +44,7 @@ export interface LazaroOrder {
   totalAmount: number;
   items: CartItem[];
   status: 'PENDIENTE' | 'ENTREGADO';
+  notasInternas?: string;
 }
 
 export interface CatalogItem {
