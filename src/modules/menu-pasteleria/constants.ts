@@ -1,15 +1,57 @@
 import { useState, useEffect } from 'react';
 
+export type SizeOption = '3-4 personas' | '6-8 personas' | '10-12 personas' | '20 personas' | '30 personas';
+
+export interface PriceMatrix {
+  '3-4 personas': number;
+  '6-8 personas': number;
+  '10-12 personas': number;
+  '20 personas': number;
+  '30 personas': number;
+}
+
+export interface PricingTier {
+  id: string;
+  name: string;
+  type: 'pan' | 'relleno' | 'extra' | 'decoracion';
+  prices: PriceMatrix | number;
+}
+
+export interface CartItem {
+  type: 'custom' | 'express';
+  pan?: string;
+  relleno?: string;
+  extras?: string[];
+  decoraciones?: string[];
+  size?: SizeOption;
+  id?: string;
+  name?: string;
+  price: number;
+  quantity: number;
+}
+
+export interface LazaroOrder {
+  id: string;
+  createdAt: string;
+  customerName: string;
+  customerPhone: string;
+  deliveryDate: string;
+  deliveryTime: string;
+  deliveryType: 'tienda' | 'domicilio';
+  deliveryAddress: string;
+  paymentMethod: 'spei' | 'efectivo' | 'tarjeta';
+  specialNotes: string;
+  totalAmount: number;
+  items: CartItem[];
+  status: 'PENDIENTE' | 'ENTREGADO';
+}
+
 export interface CatalogItem {
   id: string;
   name: string;
-  price: number;
+  category: string;
   note?: string;
 }
-
-export interface PanOption extends CatalogItem {}
-export interface RellenoOption extends CatalogItem {}
-export interface ExtraOption extends CatalogItem {}
 
 export interface ProductoExpress {
   id: string;
@@ -18,94 +60,207 @@ export interface ProductoExpress {
   precio: number;
   imagenes: string[];
   etiqueta?: string;
+  categoria: string;
 }
-export const DEFAULT_PANES: PanOption[] = [
-  { id: 'vainilla', name: 'Vainilla', price: 0 },
-  { id: 'chocolate', name: 'Chocolate', price: 0 },
-  { id: 'oreo', name: 'Oreo', price: 0 },
-  { id: 'red-velvet', name: 'Red Velvet', price: 0 },
-  { id: 'zanahoria', name: 'Zanahoria', price: 0 },
-  { id: 'platano', name: 'Plátano', price: 0 },
-  { id: 'chai', name: 'Chai', price: 0 },
-  { id: '3-leches', name: '3 Leches', price: 0, note: 'No aplica para más de 12 personas' },
-  { id: 'limon-blueberries', name: 'Limón Blueberries', price: 0 },
-  { id: 'limon-poppy-seed', name: 'Limón Poppy Seed', price: 0 },
-  { id: 'manzana', name: 'Manzana', price: 0 },
-  { id: 'cafe', name: 'Café', price: 0 },
+
+export const PRICING_TIERS: PricingTier[] = [
+  {
+    id: 'pan-clasico',
+    name: 'Categoría A (Pan Clásico)',
+    type: 'pan',
+    prices: { '3-4 personas': 70, '6-8 personas': 140, '10-12 personas': 160, '20 personas': 180, '30 personas': 270 }
+  },
+  {
+    id: 'pan-premium',
+    name: 'Categoría B (Pan Premium)',
+    type: 'pan',
+    prices: { '3-4 personas': 85, '6-8 personas': 170, '10-12 personas': 210, '20 personas': 240, '30 personas': 360 }
+  },
+  {
+    id: 'relleno-clasico',
+    name: 'Categoría C (Relleno Clásico)',
+    type: 'relleno',
+    prices: { '3-4 personas': 55, '6-8 personas': 110, '10-12 personas': 150, '20 personas': 180, '30 personas': 250 }
+  },
+  {
+    id: 'relleno-premium',
+    name: 'Categoría D (Relleno Premium)',
+    type: 'relleno',
+    prices: { '3-4 personas': 75, '6-8 personas': 140, '10-12 personas': 180, '20 personas': 220, '30 personas': 280 }
+  },
+  {
+    id: 'extras-frutos',
+    name: 'Categoría E (Frutos)',
+    type: 'extra',
+    prices: { '3-4 personas': 50, '6-8 personas': 100, '10-12 personas': 150, '20 personas': 200, '30 personas': 200 }
+  },
+  {
+    id: 'extras-semillas',
+    name: 'Categoría F (Semillas)',
+    type: 'extra',
+    prices: { '3-4 personas': 30, '6-8 personas': 60, '10-12 personas': 100, '20 personas': 150, '30 personas': 150 }
+  },
+  {
+    id: 'extras-especiales',
+    name: 'Categoría G (Especiales)',
+    type: 'extra',
+    prices: { '3-4 personas': 40, '6-8 personas': 80, '10-12 personas': 130, '20 personas': 220, '30 personas': 330 }
+  },
+  {
+    id: 'extras-fijo',
+    name: 'Categoría H (Precio Fijo)',
+    type: 'extra',
+    prices: 80
+  },
+  {
+    id: 'decoracion-fondant',
+    name: 'Categoría I (Decoración en fondant)',
+    type: 'decoracion',
+    prices: 100
+  },
+  {
+    id: 'decoracion-topper',
+    name: 'Categoría I (Cake Topper papel)',
+    type: 'decoracion',
+    prices: 55
+  },
+  {
+    id: 'decoracion-mdf',
+    name: 'Categoría I (Cake Topper MDF)',
+    type: 'decoracion',
+    prices: 60
+  },
+  {
+    id: 'decoracion-frase',
+    name: 'Categoría I (Frase personalizada)',
+    type: 'decoracion',
+    prices: 30
+  }
 ];
 
-export const DEFAULT_RELLENOS: RellenoOption[] = [
-  { id: 'vainilla', name: 'Vainilla', price: 0 },
-  { id: 'chocolate', name: 'Chocolate', price: 0 },
-  { id: 'oreo', name: 'Oreo', price: 0 },
-  { id: 'mascarpone', name: 'Mascarpone', price: 0 },
-  { id: 'philadelphia', name: 'Philadelphia', price: 0 },
-  { id: 'matcha', name: 'Matcha', price: 0 },
-  { id: 'maracuya', name: 'Maracuyá', price: 0 },
-  { id: 'dulce-de-leche', name: 'Dulce de leche', price: 0 },
-  { id: 'lotus', name: 'Lotus', price: 0 },
-  { id: 'pay-de-limon', name: 'Pay de limón', price: 0 },
-  { id: 'ganache-amargo', name: 'Ganache de chocolate amargo', price: 0 },
+export const DEFAULT_PANES: CatalogItem[] = [
+  { id: 'chocolate', name: 'Chocolate', category: 'pan-clasico' },
+  { id: 'vainilla', name: 'Vainilla', category: 'pan-clasico' },
+  { id: 'platano', name: 'Plátano', category: 'pan-clasico' },
+  { id: '3-leches', name: '3 Leches', category: 'pan-clasico', note: 'No aplica para más de 12 personas' },
+  { id: 'oreo', name: 'Oreo', category: 'pan-premium' },
+  { id: 'zanahoria', name: 'Zanahoria', category: 'pan-premium' },
+  { id: 'red-velvet', name: 'Red Velvet', category: 'pan-premium' },
+  { id: 'chai', name: 'Chai', category: 'pan-premium' },
+  { id: 'limon', name: 'Limón', category: 'pan-premium' },
+  { id: 'blueberry', name: 'Blueberry', category: 'pan-premium' },
+  { id: 'elote', name: 'Elote', category: 'pan-premium' },
+  { id: 'cafe', name: 'Café', category: 'pan-premium' }
 ];
 
-export const DEFAULT_EXTRAS: ExtraOption[] = [
-  { id: 'fresa', name: 'Fresa', price: 0 },
-  { id: 'blueberries', name: 'Blueberries', price: 0 },
-  { id: 'frambuesa', name: 'Frambuesa', price: 0 },
-  { id: 'zarzamora', name: 'Zarzamora', price: 0 },
-  { id: 'nuez', name: 'Nuez', price: 0 },
-  { id: 'almendra', name: 'Almendra', price: 0 },
-  { id: 'avellana', name: 'Avellana', price: 0 },
-  { id: 'chocolate-pref', name: 'Chocolate de tu preferencia', price: 0 },
-  { id: 'curd-limon', name: 'Curd de limón', price: 0 },
-  { id: 'coco', name: 'Coco', price: 0 },
-  { id: 'mermelada-fresa', name: 'Mermelada de fresa', price: 0 },
-  { id: 'mermelada-guayaba', name: 'Mermelada de Guayaba', price: 0 },
-  { id: 'galletas', name: 'Galletas', price: 0 },
-  { id: 'crumble', name: 'Crumble', price: 0 },
-  { id: 'galletas-lotus', name: 'Galletas Lotus', price: 0 },
-  { id: 'brownies-bites', name: 'Brownies Bites', price: 0 },
-  { id: 'cheesecake-bites', name: 'Cheesecake Bites', price: 0 },
+export const DEFAULT_RELLENOS: CatalogItem[] = [
+  { id: 'vainilla-relleno', name: 'Vainilla', category: 'relleno-clasico' },
+  { id: 'dulce-de-leche', name: 'Dulce de leche', category: 'relleno-clasico' },
+  { id: 'oreo-relleno', name: 'Oreo', category: 'relleno-clasico' },
+  { id: 'chocolate-relleno', name: 'Chocolate', category: 'relleno-clasico' },
+  { id: 'philadelphia', name: 'Philadelphia', category: 'relleno-premium' },
+  { id: 'mascarpone', name: 'Mascarpone', category: 'relleno-premium' },
+  { id: 'matcha', name: 'Matcha', category: 'relleno-premium' },
+  { id: 'maracuya', name: 'Maracuyá', category: 'relleno-premium' },
+  { id: 'lotus', name: 'Lotus', category: 'relleno-premium' },
+  { id: 'pay-de-limon', name: 'Pay de limón', category: 'relleno-premium' },
+  { id: 'ganache-chocolate', name: 'Ganache de chocolate', category: 'relleno-premium' }
 ];
 
-export const productosExpress: ProductoExpress[] = [
+export const DEFAULT_EXTRAS: CatalogItem[] = [
+  { id: 'fresa', name: 'Fresa', category: 'extras-frutos' },
+  { id: 'blueberry-extra', name: 'Blueberry', category: 'extras-frutos' },
+  { id: 'frambuesa', name: 'Frambuesa', category: 'extras-frutos' },
+  { id: 'zarzamora', name: 'Zarzamora', category: 'extras-frutos' },
+  { id: 'nuez', name: 'Nuez', category: 'extras-semillas' },
+  { id: 'almendra', name: 'Almendra', category: 'extras-semillas' },
+  { id: 'avellana-tostada', name: 'Avellana tostada', category: 'extras-semillas' },
+  { id: 'coco', name: 'Coco', category: 'extras-semillas' },
+  { id: 'galleta-lotus', name: 'Galleta Lotus', category: 'extras-especiales' },
+  { id: 'crumble', name: 'Crumble', category: 'extras-especiales' },
+  { id: 'guayaba', name: 'Mermelada de Guayaba', category: 'extras-fijo' }
+];
+
+export const DEFAULT_DECORACIONES: CatalogItem[] = [
+  { id: 'dec-fondant', name: 'Decoración en fondant', category: 'decoracion-fondant' },
+  { id: 'dec-topper', name: 'Cake Topper (papel fotográfico)', category: 'decoracion-topper' },
+  { id: 'dec-mdf', name: 'Cake topper happy birthday (letrero mdf)', category: 'decoracion-mdf' },
+  { id: 'dec-frase', name: 'Frase personalizada', category: 'decoracion-frase' }
+];
+
+export const DEFAULT_PRODUCTOS_EXPRESS: ProductoExpress[] = [
   {
     id: 'cupcakes-clasicos-6',
     nombre: 'Cupcakes Clásicos (Media Docena)',
     descripcion: 'Pan de vainilla o chocolate con relleno de dulce de leche.',
     precio: 450,
     imagenes: ['/assets/placeholder-cupcake1.jpg', '/assets/placeholder-cupcake2.jpg'],
-    etiqueta: 'Novedad'
+    etiqueta: 'Novedad',
+    categoria: 'Cupcakes en 3 horas'
   }
 ];
 
-export const PANES = DEFAULT_PANES;
-export const RELLENOS = DEFAULT_RELLENOS;
-export const EXTRAS = DEFAULT_EXTRAS;
+export const DEFAULT_EXPRESS_CATEGORIES = ['Cupcakes en 3 horas'];
+
+export const SIZES: SizeOption[] = [
+  '3-4 personas',
+  '6-8 personas',
+  '10-12 personas',
+  '20 personas',
+  '30 personas'
+];
 
 export function useCatalog() {
-  const [panes, setPanes] = useState<PanOption[]>(DEFAULT_PANES);
-  const [rellenos, setRellenos] = useState<RellenoOption[]>(DEFAULT_RELLENOS);
-  const [extras, setExtras] = useState<ExtraOption[]>(DEFAULT_EXTRAS);
+  const [panes, setPanes] = useState<CatalogItem[]>(DEFAULT_PANES);
+  const [rellenos, setRellenos] = useState<CatalogItem[]>(DEFAULT_RELLENOS);
+  const [extras, setExtras] = useState<CatalogItem[]>(DEFAULT_EXTRAS);
+  const [decoraciones, setDecoraciones] = useState<CatalogItem[]>(DEFAULT_DECORACIONES);
+  const [tiers, setTiers] = useState<PricingTier[]>(PRICING_TIERS);
+  const [expressProducts, setExpressProducts] = useState<ProductoExpress[]>(DEFAULT_PRODUCTOS_EXPRESS);
+  const [expressCategories, setExpressCategories] = useState<string[]>(DEFAULT_EXPRESS_CATEGORIES);
 
   useEffect(() => {
     const localPanes = localStorage.getItem('lazaro_catalog_panes');
     const localRellenos = localStorage.getItem('lazaro_catalog_rellenos');
     const localExtras = localStorage.getItem('lazaro_catalog_extras');
+    const localDecs = localStorage.getItem('lazaro_catalog_decoraciones');
+    const localTiers = localStorage.getItem('lazaro_catalog_tiers');
+    const localExpress = localStorage.getItem('lazaro_catalog_express');
+    const localExpressCats = localStorage.getItem('lazaro_catalog_express_cats');
 
     if (localPanes) setPanes(JSON.parse(localPanes));
     if (localRellenos) setRellenos(JSON.parse(localRellenos));
     if (localExtras) setExtras(JSON.parse(localExtras));
+    if (localDecs) setDecoraciones(JSON.parse(localDecs));
+    if (localTiers) setTiers(JSON.parse(localTiers));
+    if (localExpress) setExpressProducts(JSON.parse(localExpress));
+    if (localExpressCats) setExpressCategories(JSON.parse(localExpressCats));
   }, []);
 
-  const saveCatalog = (newPanes: PanOption[], newRellenos: RellenoOption[], newExtras: ExtraOption[]) => {
+  const saveCatalog = (
+    newPanes: CatalogItem[], 
+    newRellenos: CatalogItem[], 
+    newExtras: CatalogItem[], 
+    newDecoraciones: CatalogItem[],
+    newTiers: PricingTier[], 
+    newExpress: ProductoExpress[],
+    newExpressCats: string[]
+  ) => {
     setPanes(newPanes);
     setRellenos(newRellenos);
     setExtras(newExtras);
+    setDecoraciones(newDecoraciones);
+    setTiers(newTiers);
+    setExpressProducts(newExpress);
+    setExpressCategories(newExpressCats);
     localStorage.setItem('lazaro_catalog_panes', JSON.stringify(newPanes));
     localStorage.setItem('lazaro_catalog_rellenos', JSON.stringify(newRellenos));
     localStorage.setItem('lazaro_catalog_extras', JSON.stringify(newExtras));
+    localStorage.setItem('lazaro_catalog_decoraciones', JSON.stringify(newDecoraciones));
+    localStorage.setItem('lazaro_catalog_tiers', JSON.stringify(newTiers));
+    localStorage.setItem('lazaro_catalog_express', JSON.stringify(newExpress));
+    localStorage.setItem('lazaro_catalog_express_cats', JSON.stringify(newExpressCats));
   };
 
-  return { panes, rellenos, extras, saveCatalog };
+  return { panes, rellenos, extras, decoraciones, tiers, expressProducts, expressCategories, saveCatalog, SIZES };
 }

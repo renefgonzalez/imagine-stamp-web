@@ -1,45 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark, Instagram, Facebook, MapPin, Phone, Lock } from 'lucide-react';
-import { useCatalog, productosExpress } from '../constants';
+import { useCatalog, productosExpress, SizeOption, CartItem } from '../constants';
 import logoLazaro from '../assets/logo-lazaro.png';
-
-interface CartItem {
-  id: string;
-  type: 'custom' | 'express';
-  quantity: number;
-  price: number;
-  // Custom
-  size?: string;
-  pan?: string;
-  relleno?: string;
-  extras?: string[];
-  // Express
-  productId?: string;
-  name?: string;
-}
-
 const WHATSAPP_NUMBER = '525512479773';
 const BASE_CAKE_PRICE = 550; // Precio base demostrativo
 
 export function PasteleriaBuilder() {
-  const { panes: PANES, rellenos: RELLENOS, extras: EXTRAS } = useCatalog();
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const { panes: PANES, rellenos: RELLENOS, extras: EXTRAS, decoraciones, tiers: TIERS, SIZES, expressProducts, expressCategories } = useCatalog();
+  const [bankData, setBankData] = useState<{banco: string, titular: string, clabe: string} | null>(null);
+  const [selectedSize, setSelectedSize] = useState<SizeOption | null>(null);
   const [selectedPan, setSelectedPan] = useState<string | null>(null);
   const [selectedRelleno, setSelectedRelleno] = useState<string | null>(null);
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
+  const [selectedDecoraciones, setSelectedDecoraciones] = useState<string[]>([]);
   
-  const SIZES = [
-    '3-4 personas',
-    '6-8 personas',
-    '10-12 personas',
-    '20 personas',
-    '30 personas'
-  ];
-  
+
   const isLargeSize = selectedSize === '20 personas' || selectedSize === '30 personas';
   
-  const [activeTab, setActiveTab] = useState<'builder' | 'express'>('builder');
+  const [activeTab, setActiveTab] = useState<string>('builder');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -47,12 +26,30 @@ export function PasteleriaBuilder() {
   const [cartPhase, setCartPhase] = useState<1 | 2 | 3>(1);
   
   const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
   const [deliveryType, setDeliveryType] = useState<'tienda' | 'domicilio' | null>(null);
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [deliveryDate, setDeliveryDate] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('');
+  const [specialNotes, setSpecialNotes] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'spei' | 'efectivo' | 'tarjeta' | null>(null);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+
+  useEffect(() => {
+    const localCart = localStorage.getItem('lazaro_cart');
+    if (localCart) {
+      setCart(JSON.parse(localCart));
+    }
+    const savedBank = localStorage.getItem('lazaro_datos_bancarios');
+    if (savedBank) {
+      try {
+        const parsed = JSON.parse(savedBank);
+        if (parsed.banco || parsed.titular || parsed.clabe) {
+          setBankData(parsed);
+        }
+      } catch (e) {}
+    }
+  }, []);
 
   useEffect(() => {
     const originalTitle = document.title;
@@ -84,23 +81,48 @@ export function PasteleriaBuilder() {
     );
   };
 
+  const toggleDecoracion = (id: string) => {
+    setSelectedDecoraciones(prev => 
+      prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]
+    );
+  };
+
   const isComplete = selectedSize && selectedPan && selectedRelleno;
   
   const isPhase2Valid = 
     customerName.trim() !== '' && 
+    customerPhone.trim() !== '' &&
     deliveryType !== null && 
     (deliveryType === 'tienda' || deliveryAddress.trim() !== '') &&
     deliveryDate !== '' && 
     deliveryTime !== '' &&
     paymentMethod !== null;
 
-  const handleAddToCart = () => {
-    if (!isComplete) return;
+  const getPrice = (categoryId: string, size: SizeOption) => {
+    const tier = TIERS.find(t => t.id === categoryId);
+    if (!tier) return 0;
+    if (typeof tier.prices === 'number') return tier.prices;
+    return tier.prices[size] || 0;
+  };
 
-    const panPrice = PANES.find(p => p.id === selectedPan)?.price || 0;
-    const rellenoPrice = RELLENOS.find(r => r.id === selectedRelleno)?.price || 0;
-    const extrasPrice = selectedExtras.reduce((acc, eId) => acc + (EXTRAS.find(e => e.id === eId)?.price || 0), 0);
-    const totalPrice = BASE_CAKE_PRICE + panPrice + rellenoPrice + extrasPrice;
+  const handleAddToCart = () => {
+    if (!isComplete || !selectedSize) return;
+
+    const panCat = PANES.find(p => p.id === selectedPan)?.category;
+    const rellenoCat = RELLENOS.find(r => r.id === selectedRelleno)?.category;
+    
+    const panPrice = panCat ? getPrice(panCat, selectedSize) : 0;
+    const rellenoPrice = rellenoCat ? getPrice(rellenoCat, selectedSize) : 0;
+    const extrasPrice = selectedExtras.reduce((acc, eId) => {
+      const eCat = EXTRAS.find(e => e.id === eId)?.category;
+      return acc + (eCat ? getPrice(eCat, selectedSize) : 0);
+    }, 0);
+    const decoracionesPrice = selectedDecoraciones.reduce((acc, dId) => {
+      const dCat = decoraciones.find(d => d.id === dId)?.category;
+      return acc + (dCat ? getPrice(dCat, selectedSize) : 0);
+    }, 0);
+    
+    const totalPrice = panPrice + rellenoPrice + extrasPrice + decoracionesPrice;
 
     const newCake: CartItem = {
       id: crypto.randomUUID(),
@@ -109,6 +131,7 @@ export function PasteleriaBuilder() {
       pan: selectedPan!,
       relleno: selectedRelleno!,
       extras: selectedExtras,
+      decoraciones: selectedDecoraciones,
       quantity: 1,
       price: totalPrice
     };
@@ -119,18 +142,20 @@ export function PasteleriaBuilder() {
     setSelectedPan(null);
     setSelectedRelleno(null);
     setSelectedExtras([]);
+    setSelectedDecoraciones([]);
     
     setShowToast(true);
   };
 
   const handleAddToCartExpress = (product: typeof productosExpress[0]) => {
     const newItem: CartItem = {
-      id: crypto.randomUUID(),
+      id: product.id + '-' + Date.now(),
       type: 'express',
-      productId: product.id,
-      name: product.nombre,
       quantity: 1,
-      price: product.precio
+      price: product.precio,
+      size: SIZES[0], // dummy value to satisfy type
+      productId: product.id,
+      name: product.nombre
     };
     
     setCart(prev => {
@@ -164,14 +189,19 @@ export function PasteleriaBuilder() {
         const panName = PANES.find(p => p.id === item.pan)?.name;
         const rellenoName = RELLENOS.find(r => r.id === item.relleno)?.name;
         const extrasNames = item.extras?.map(eId => EXTRAS.find(e => e.id === eId)?.name).join(', ');
+        const decNames = item.decoraciones?.map(dId => decoraciones.find(d => d.id === dId)?.name).join(', ');
         
-        return `🎂 *${item.quantity}x Pastel Personalizado*\n  • Tamaño: ${item.size}\n  • Pan: ${panName}\n  • Relleno: ${rellenoName}\n  • Extras: ${extrasNames || 'Ninguno'}`;
+        let customDesc = `🎂 *${item.quantity}x Pastel Personalizado*\n  • Tamaño: ${item.size}\n  • Pan: ${panName}\n  • Relleno: ${rellenoName}`;
+        if (extrasNames) customDesc += `\n  • Extras: ${extrasNames}`;
+        if (decNames) customDesc += `\n  • Decoración: ${decNames}`;
+        return customDesc;
       } else {
         return `🧁 *${item.quantity}x ${item.name}*\n  • (Producto Express)`;
       }
     }).join('\n\n');
 
     const name = customerName.trim();
+    const phone = customerPhone.trim();
     const deliveryStr = deliveryType === 'tienda' 
       ? 'Recoger en Tienda' 
       : `Envío a Domicilio (${deliveryAddress.trim()})`;
@@ -181,26 +211,55 @@ export function PasteleriaBuilder() {
     if (paymentMethod === 'efectivo') paymentStr = 'Efectivo contra entrega';
     if (paymentMethod === 'tarjeta') paymentStr = 'Tarjeta de Crédito/Débito en Tienda';
 
-    const message = 
+    let message = 
       `✨ ¡Hola Lázaro Pastelería! Me gustaría confirmar el siguiente pedido:\n\n` +
       `👤 Cliente: *${name}*\n` +
-      `📅 Fecha/Hora: *${deliveryDate}* a las *${deliveryTime}*\n` +
+      `📞 Teléfono: *${phone}*\n` +
+      `📅 Fecha de entrega: *${deliveryDate}* a las *${deliveryTime}*\n` +
       `🚚 Modo de Envío: *${deliveryStr}*\n` +
-      `💳 Forma de Pago: *${paymentStr}*\n` +
+      `💳 Forma de Pago: *${paymentStr}*\n`;
+      
+    if (specialNotes.trim()) {
+      message += `📝 *Notas del cliente:* ${specialNotes.trim()}\n`;
+    }
+
+    message += 
       `------------------------------------------\n\n` +
       `Detalle del Pedido:\n${lines}\n\n` +
       `💰 *Total de la Nota:* $${totalAmount.toFixed(2)} MXN\n\n` +
       `_Pedido generado desde el constructor interactivo_ 🤍`;
+
+    const newOrder: LazaroOrder = {
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      customerName: name,
+      customerPhone: phone,
+      deliveryDate,
+      deliveryTime,
+      deliveryType: deliveryType!,
+      deliveryAddress,
+      paymentMethod: paymentMethod!,
+      specialNotes,
+      totalAmount,
+      items: cart,
+      status: 'PENDIENTE'
+    };
+
+    const existingOrdersJson = localStorage.getItem('lazaro_pedidos');
+    const existingOrders: LazaroOrder[] = existingOrdersJson ? JSON.parse(existingOrdersJson) : [];
+    localStorage.setItem('lazaro_pedidos', JSON.stringify([...existingOrders, newOrder]));
 
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
     
     setTimeout(() => {
       setCart([]);
       setCustomerName('');
-      setDeliveryType(null);
+      setCustomerPhone('');
+      setDeliveryAddress('');
       setDeliveryAddress('');
       setDeliveryDate('');
       setDeliveryTime('');
+      setSpecialNotes('');
       setPaymentMethod(null);
       setIsCartOpen(false);
       setCartPhase(1);
@@ -280,7 +339,7 @@ export function PasteleriaBuilder() {
       <main className="max-w-2xl mx-auto px-6 py-10 space-y-16 relative z-10">
         
         {/* TABS DE CATEGORÍAS */}
-        <div className="flex justify-center gap-4 mb-8">
+        <div className="flex justify-center gap-4 mb-8 flex-wrap">
           <button
             onClick={() => setActiveTab('builder')}
             className={`px-6 py-3 rounded-full text-sm font-medium transition-all ${
@@ -291,16 +350,19 @@ export function PasteleriaBuilder() {
           >
             Crea tu propio sabor
           </button>
-          <button
-            onClick={() => setActiveTab('express')}
-            className={`px-6 py-3 rounded-full text-sm font-medium transition-all ${
-              activeTab === 'express'
-                ? 'bg-stone-900 text-white shadow-md'
-                : 'bg-white text-stone-500 hover:bg-stone-100 border border-stone-200'
-            }`}
-          >
-            Cupcakes en 3 horas
-          </button>
+          {expressCategories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setActiveTab(cat)}
+              className={`px-6 py-3 rounded-full text-sm font-medium transition-all ${
+                activeTab === cat
+                  ? 'bg-stone-900 text-white shadow-md'
+                  : 'bg-white text-stone-500 hover:bg-stone-100 border border-stone-200'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
 
         {activeTab === 'builder' ? (
@@ -365,7 +427,7 @@ export function PasteleriaBuilder() {
                   key={pan.id}
                   onClick={() => !isDisabled && setSelectedPan(pan.id)}
                   disabled={isDisabled}
-                  className={`relative p-5 text-left rounded-2xl transition-all duration-300 border-2 ${
+                  className={`relative py-3 px-4 h-full flex flex-col items-center justify-center text-center rounded-2xl transition-all duration-300 border-2 ${
                     isDisabled 
                       ? 'border-transparent bg-stone-50/50 opacity-50 cursor-not-allowed'
                       : isSelected 
@@ -375,15 +437,14 @@ export function PasteleriaBuilder() {
                 >
                   <div className={`font-medium text-sm ${isSelected ? 'text-amber-900' : ''} ${isDisabled ? 'text-stone-400' : ''}`}>
                     {pan.name}
-                    {pan.price > 0 && <span className="block text-xs text-amber-600/80 mt-0.5">(+${pan.price})</span>}
                   </div>
                   {isDisabled && (
-                    <div className="text-[10px] mt-2 leading-tight px-2 py-1 rounded-md inline-block bg-stone-200/50 text-stone-500">
+                    <div className="text-[10px] mt-1 leading-tight px-1 text-stone-400">
                       (No disponible para más de 12 personas)
                     </div>
                   )}
                   {!isDisabled && pan.note && (
-                    <div className={`text-[10px] mt-2 leading-tight px-2 py-1 rounded-md inline-block ${isSelected ? 'bg-white/60 text-amber-700' : 'bg-stone-200/50 text-stone-500'}`}>
+                    <div className={`text-[10px] mt-1 leading-tight px-1 ${isSelected ? 'text-amber-700/70' : 'text-stone-400'}`}>
                       {pan.note}
                     </div>
                   )}
@@ -417,7 +478,7 @@ export function PasteleriaBuilder() {
                 <button
                   key={relleno.id}
                   onClick={() => setSelectedRelleno(relleno.id)}
-                  className={`p-4 text-center rounded-2xl transition-all duration-300 border-2 ${
+                  className={`py-3 px-4 h-full flex flex-col items-center justify-center text-center rounded-2xl transition-all duration-300 border-2 ${
                     isSelected 
                       ? 'border-amber-300 bg-amber-50/60 shadow-sm text-amber-900' 
                       : 'border-transparent bg-stone-50 text-stone-600 hover:bg-stone-100 hover:border-stone-200'
@@ -425,7 +486,6 @@ export function PasteleriaBuilder() {
                 >
                   <span className="font-medium text-sm block">
                     {relleno.name}
-                    {relleno.price > 0 && <span className="block text-xs text-amber-600/80 mt-0.5">(+${relleno.price})</span>}
                   </span>
                 </button>
               );
@@ -455,13 +515,48 @@ export function PasteleriaBuilder() {
                 <button
                   key={extra.id}
                   onClick={() => toggleExtra(extra.id)}
-                  className={`px-5 py-2.5 text-sm rounded-full transition-all border-2 ${
+                  className={`px-4 py-2 text-sm font-medium rounded-full transition-all border-2 ${
                     isSelected
-                      ? 'border-amber-300 bg-rose-50/60 text-amber-900 font-medium shadow-sm'
+                      ? 'border-amber-300 bg-rose-50/60 text-amber-900 shadow-sm'
                       : 'border-transparent bg-stone-50 text-stone-500 hover:bg-stone-100 hover:border-stone-200'
                   }`}
                 >
-                  {extra.name} {extra.price > 0 && <span className="opacity-70">(+${extra.price})</span>} {isSelected && <Check size={14} className="inline ml-1 text-amber-600" />}
+                  {extra.name} {isSelected && <Check size={14} className="inline ml-1 text-amber-600" />}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Separador Ondulado */}
+        <div className="flex justify-center">
+          <div className="w-24 h-px border-t border-dashed border-stone-300"></div>
+        </div>
+
+        {/* PASO 5: DECORACIÓN */}
+        <section className="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-stone-100 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-100 via-rose-100 to-amber-100 opacity-50"></div>
+          <div className="flex items-end gap-4 mb-8">
+            <span className="text-5xl text-rose-100 font-serif italic leading-none">05</span>
+            <div>
+              <h2 className="text-2xl font-light tracking-wide text-stone-800">Elige tu decoración</h2>
+              <p className="text-stone-400 text-[10px] uppercase tracking-widest mt-1 font-medium bg-stone-50 inline-block px-2 py-0.5 rounded-full border border-stone-100">(Opcional)</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {decoraciones.map(dec => {
+              const isSelected = selectedDecoraciones.includes(dec.id);
+              return (
+                <button
+                  key={dec.id}
+                  onClick={() => toggleDecoracion(dec.id)}
+                  className={`px-4 py-2 text-sm font-medium rounded-full transition-all border-2 ${
+                    isSelected
+                      ? 'border-amber-300 bg-rose-50/60 text-amber-900 shadow-sm'
+                      : 'border-transparent bg-stone-50 text-stone-500 hover:bg-stone-100 hover:border-stone-200'
+                  }`}
+                >
+                  {dec.name} {isSelected && <Check size={14} className="inline ml-1 text-amber-600" />}
                 </button>
               );
             })}
@@ -471,7 +566,7 @@ export function PasteleriaBuilder() {
         ) : (
           <section className="bg-[#FDFBF7] p-0 md:p-4 rounded-3xl relative overflow-hidden">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {productosExpress.map(product => (
+              {expressProducts.filter(p => p.categoria === activeTab).map(product => (
                 <div key={product.id} className="bg-white border border-stone-100 rounded-3xl overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.03)] flex flex-col">
                   <div className="relative h-56 bg-stone-100 overflow-hidden shrink-0">
                     <img src={product.imagenes[0]} alt={product.nombre} className="w-full h-full object-cover transition-opacity duration-700 ease-in-out group-hover:opacity-0" />
@@ -708,7 +803,18 @@ export function PasteleriaBuilder() {
                             type="text"
                             value={customerName}
                             onChange={e => setCustomerName(e.target.value)}
-                            placeholder="Escribe tu nombre"
+                            placeholder="Ej. Juan Pérez"
+                            className="w-full bg-stone-50 border border-transparent px-4 py-3 text-sm outline-none focus:border-amber-300 focus:bg-white transition-all rounded-xl"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">Teléfono de contacto *</label>
+                          <input
+                            type="tel"
+                            value={customerPhone}
+                            onChange={e => setCustomerPhone(e.target.value)}
+                            placeholder="Ej. 55 1234 5678"
                             className="w-full bg-stone-50 border border-transparent px-4 py-3 text-sm outline-none focus:border-amber-300 focus:bg-white transition-all rounded-xl"
                           />
                         </div>
@@ -742,6 +848,16 @@ export function PasteleriaBuilder() {
                               />
                             </div>
                           </div>
+                        </div>
+
+                        <div className="mt-3">
+                          <label className="block text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">Notas especiales (Opcional)</label>
+                          <textarea
+                            value={specialNotes}
+                            onChange={e => setSpecialNotes(e.target.value)}
+                            placeholder="Ej. Es un regalo sorpresa, por favor enviar sin ticket impreso..."
+                            className="w-full bg-stone-50 border border-transparent px-4 py-3 text-sm outline-none focus:border-amber-300 focus:bg-white transition-all resize-none h-20 rounded-xl"
+                          />
                         </div>
                       </div>
                     </div>
@@ -821,6 +937,25 @@ export function PasteleriaBuilder() {
                           <span className={`text-sm ${paymentMethod === 'tarjeta' ? 'font-medium text-amber-900' : 'text-stone-600'}`}>Tarjeta de Crédito/Débito en Tienda</span>
                         </button>
                       </div>
+
+                      {paymentMethod === 'spei' && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-4">
+                          <div className="bg-amber-50/50 border border-amber-100 rounded-xl p-4">
+                            <h5 className="text-xs font-bold text-amber-900 uppercase tracking-widest mb-3">Datos para Transferencia</h5>
+                            {bankData ? (
+                              <div className="space-y-2 text-sm text-amber-800/80">
+                                <p><strong className="font-medium text-amber-900">Banco:</strong> {bankData.banco}</p>
+                                <p><strong className="font-medium text-amber-900">Titular:</strong> {bankData.titular}</p>
+                                <p><strong className="font-medium text-amber-900">CLABE/Tarjeta:</strong> {bankData.clabe}</p>
+                              </div>
+                            ) : (
+                              <p className="text-sm text-amber-800/70 italic">
+                                Los datos para la transferencia se te proporcionarán al confirmar tu pedido por WhatsApp.
+                              </p>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
                     </div>
                   </div>
 
