@@ -384,10 +384,10 @@ export function PasteleriaBuilder() {
       <main className="max-w-2xl mx-auto px-6 py-10 space-y-16 relative z-10">
         
         {/* TABS DE CATEGORÍAS */}
-        <div className="flex justify-center gap-4 mb-8 flex-wrap">
+        <div className="flex flex-col items-center gap-4 mb-8 w-full max-w-sm mx-auto">
           <button
             onClick={() => setActiveTab('builder')}
-            className={`px-6 py-3 rounded-full text-sm font-medium transition-all ${
+            className={`w-full px-6 py-4 rounded-full text-sm font-medium transition-all ${
               activeTab === 'builder'
                 ? 'bg-stone-900 text-white shadow-md'
                 : 'bg-white text-stone-500 hover:bg-stone-100 border border-stone-200'
@@ -399,7 +399,7 @@ export function PasteleriaBuilder() {
             <button
               key={cat}
               onClick={() => setActiveTab(cat)}
-              className={`px-6 py-3 rounded-full text-sm font-medium transition-all ${
+              className={`w-full px-6 py-4 rounded-full text-sm font-medium transition-all ${
                 activeTab === cat
                   ? 'bg-stone-900 text-white shadow-md'
                   : 'bg-white text-stone-500 hover:bg-stone-100 border border-stone-200'
@@ -438,7 +438,10 @@ export function PasteleriaBuilder() {
                       : 'border-transparent bg-stone-50 text-stone-600 hover:bg-stone-100 hover:border-stone-200'
                   }`}
                 >
-                  <span className="font-medium text-sm block">{size}</span>
+                  <span className="font-medium text-sm block">
+                    <span className="text-lg">{size.replace(' personas', '')}</span>
+                    <span className="block text-[10px] uppercase tracking-widest opacity-60 mt-0.5">personas</span>
+                  </span>
                   {isSelected && (
                     <div className="absolute -top-2 -right-2 bg-amber-400 text-white p-1 rounded-full shadow-sm">
                       <Check size={12} strokeWidth={3} />
