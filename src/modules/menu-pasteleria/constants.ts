@@ -185,7 +185,7 @@ export const DEFAULT_EXTRAS: CatalogItem[] = [
 export const DEFAULT_DECORACIONES: CatalogItem[] = [
   { id: 'dec-fondant', name: 'Decoración en fondant', category: 'decoracion-fondant' },
   { id: 'dec-topper', name: 'Cake Topper (papel fotográfico)', category: 'decoracion-topper' },
-  { id: 'dec-mdf', name: 'Cake topper happy birthday (letrero mdf)', category: 'decoracion-mdf' },
+  { id: 'dec-mdf', name: 'Cake topper happy birthday (letrero mdf)', category: 'decoracion-mdf', note: '*MDF: madera sintética de material comprimido*' },
   { id: 'dec-frase', name: 'Frase personalizada', category: 'decoracion-frase' }
 ];
 

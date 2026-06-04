@@ -567,7 +567,14 @@ export function PasteleriaBuilder() {
                       : 'border-transparent bg-stone-50 text-stone-500 hover:bg-stone-100 hover:border-stone-200'
                   }`}
                 >
-                  {dec.name}
+                  <div className="font-medium text-sm">
+                    {dec.name}
+                  </div>
+                  {dec.note && (
+                    <div className={`text-[10px] mt-1 leading-tight px-1 ${isSelected ? 'text-amber-700/70' : 'text-stone-400'}`}>
+                      {dec.note}
+                    </div>
+                  )}
                   {isSelected && (
                     <div className="absolute -top-2 -right-2 bg-amber-400 text-white p-1 rounded-full shadow-sm">
                       <Check size={12} strokeWidth={3} />
