@@ -6,6 +6,7 @@ import logoLazaro from '../assets/logo-lazaro.png';
 
 interface CustomCake {
   id: string;
+  size: string;
   pan: string;
   relleno: string;
   extras: string[];
@@ -18,9 +19,20 @@ const BASE_CAKE_PRICE = 550; // Precio base demostrativo
 
 export function PasteleriaBuilder() {
   const { panes: PANES, rellenos: RELLENOS, extras: EXTRAS } = useCatalog();
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedPan, setSelectedPan] = useState<string | null>(null);
   const [selectedRelleno, setSelectedRelleno] = useState<string | null>(null);
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
+  
+  const SIZES = [
+    '3-4 personas',
+    '6-8 personas',
+    '10-12 personas',
+    '20 personas',
+    '30 personas'
+  ];
+  
+  const isLargeSize = selectedSize === '20 personas' || selectedSize === '30 personas';
   
   const [cart, setCart] = useState<CustomCake[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -66,7 +78,7 @@ export function PasteleriaBuilder() {
     );
   };
 
-  const isComplete = selectedPan && selectedRelleno;
+  const isComplete = selectedSize && selectedPan && selectedRelleno;
   
   const isPhase2Valid = 
     customerName.trim() !== '' && 
@@ -86,6 +98,7 @@ export function PasteleriaBuilder() {
 
     const newCake: CustomCake = {
       id: crypto.randomUUID(),
+      size: selectedSize!,
       pan: selectedPan,
       relleno: selectedRelleno,
       extras: selectedExtras,
@@ -95,6 +108,7 @@ export function PasteleriaBuilder() {
 
     setCart(prev => [...prev, newCake]);
     
+    setSelectedSize(null);
     setSelectedPan(null);
     setSelectedRelleno(null);
     setSelectedExtras([]);
@@ -122,7 +136,7 @@ export function PasteleriaBuilder() {
       const rellenoName = RELLENOS.find(r => r.id === item.relleno)?.name;
       const extrasNames = item.extras.map(eId => EXTRAS.find(e => e.id === eId)?.name).join(', ');
       
-      return `🎂 *${item.quantity}x Pastel Personalizado*\n  • Pan: ${panName}\n  • Relleno: ${rellenoName}\n  • Extras: ${extrasNames || 'Ninguno'}`;
+      return `🎂 *${item.quantity}x Pastel Personalizado*\n  • Tamaño: ${item.size}\n  • Pan: ${panName}\n  • Relleno: ${rellenoName}\n  • Extras: ${extrasNames || 'Ninguno'}`;
     }).join('\n\n');
 
     const name = customerName.trim();
@@ -233,35 +247,33 @@ export function PasteleriaBuilder() {
       {/* CONSTRUCTOR INTERACTIVO */}
       <main className="max-w-2xl mx-auto px-6 py-10 space-y-16 relative z-10">
         
-        {/* PASO 1: PAN */}
+        {/* PASO 1: TAMAÑO */}
         <section className="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-stone-100 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-100 via-amber-100 to-rose-100 opacity-50"></div>
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-100 via-rose-100 to-amber-100 opacity-50"></div>
           <div className="flex items-end gap-4 mb-8">
-            <span className="text-5xl text-amber-100 font-serif italic leading-none">01</span>
-            <h2 className="text-2xl font-light tracking-wide text-stone-800">Elige tu pan</h2>
+            <span className="text-5xl text-rose-100 font-serif italic leading-none">01</span>
+            <h2 className="text-2xl font-light tracking-wide text-stone-800">Elige tus porciones</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {PANES.map(pan => {
-              const isSelected = selectedPan === pan.id;
+          <div className="flex flex-wrap gap-4">
+            {SIZES.map(size => {
+              const isSelected = selectedSize === size;
               return (
                 <button
-                  key={pan.id}
-                  onClick={() => setSelectedPan(pan.id)}
-                  className={`relative p-5 text-left rounded-2xl transition-all duration-300 border-2 ${
+                  key={size}
+                  onClick={() => {
+                    setSelectedSize(size);
+                    // Si se selecciona un tamaño grande y el pan era 3-leches, deseleccionarlo
+                    if ((size === '20 personas' || size === '30 personas') && selectedPan === '3-leches') {
+                      setSelectedPan(null);
+                    }
+                  }}
+                  className={`flex-1 min-w-[120px] p-5 text-center rounded-2xl transition-all duration-300 border-2 ${
                     isSelected 
-                      ? 'border-amber-300 bg-rose-50/60 shadow-sm' 
+                      ? 'border-amber-300 bg-amber-50/60 shadow-sm text-amber-900' 
                       : 'border-transparent bg-stone-50 text-stone-600 hover:bg-stone-100 hover:border-stone-200'
                   }`}
                 >
-                  <div className={`font-medium text-sm ${isSelected ? 'text-amber-900' : ''}`}>
-                    {pan.name}
-                    {pan.price > 0 && <span className="block text-xs text-amber-600/80 mt-0.5">(+${pan.price})</span>}
-                  </div>
-                  {pan.note && (
-                    <div className={`text-[10px] mt-2 leading-tight px-2 py-1 rounded-md inline-block ${isSelected ? 'bg-white/60 text-amber-700' : 'bg-stone-200/50 text-stone-500'}`}>
-                      {pan.note}
-                    </div>
-                  )}
+                  <span className="font-medium text-sm block">{size}</span>
                   {isSelected && (
                     <div className="absolute -top-2 -right-2 bg-amber-400 text-white p-1 rounded-full shadow-sm">
                       <Check size={12} strokeWidth={3} />
@@ -278,11 +290,66 @@ export function PasteleriaBuilder() {
           <div className="w-24 h-px border-t border-dashed border-stone-300"></div>
         </div>
 
-        {/* PASO 2: RELLENO */}
+        {/* PASO 2: PAN */}
+        <section className="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-stone-100 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-100 via-amber-100 to-rose-100 opacity-50"></div>
+          <div className="flex items-end gap-4 mb-8">
+            <span className="text-5xl text-amber-100 font-serif italic leading-none">02</span>
+            <h2 className="text-2xl font-light tracking-wide text-stone-800">Elige tu pan</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {PANES.map(pan => {
+              const isSelected = selectedPan === pan.id;
+              const isDisabled = pan.id === '3-leches' && isLargeSize;
+              
+              return (
+                <button
+                  key={pan.id}
+                  onClick={() => !isDisabled && setSelectedPan(pan.id)}
+                  disabled={isDisabled}
+                  className={`relative p-5 text-left rounded-2xl transition-all duration-300 border-2 ${
+                    isDisabled 
+                      ? 'border-transparent bg-stone-50/50 opacity-50 cursor-not-allowed'
+                      : isSelected 
+                        ? 'border-amber-300 bg-rose-50/60 shadow-sm' 
+                        : 'border-transparent bg-stone-50 text-stone-600 hover:bg-stone-100 hover:border-stone-200'
+                  }`}
+                >
+                  <div className={`font-medium text-sm ${isSelected ? 'text-amber-900' : ''} ${isDisabled ? 'text-stone-400' : ''}`}>
+                    {pan.name}
+                    {pan.price > 0 && <span className="block text-xs text-amber-600/80 mt-0.5">(+${pan.price})</span>}
+                  </div>
+                  {isDisabled && (
+                    <div className="text-[10px] mt-2 leading-tight px-2 py-1 rounded-md inline-block bg-stone-200/50 text-stone-500">
+                      (No disponible para más de 12 personas)
+                    </div>
+                  )}
+                  {!isDisabled && pan.note && (
+                    <div className={`text-[10px] mt-2 leading-tight px-2 py-1 rounded-md inline-block ${isSelected ? 'bg-white/60 text-amber-700' : 'bg-stone-200/50 text-stone-500'}`}>
+                      {pan.note}
+                    </div>
+                  )}
+                  {isSelected && !isDisabled && (
+                    <div className="absolute -top-2 -right-2 bg-amber-400 text-white p-1 rounded-full shadow-sm">
+                      <Check size={12} strokeWidth={3} />
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Separador Ondulado */}
+        <div className="flex justify-center">
+          <div className="w-24 h-px border-t border-dashed border-stone-300"></div>
+        </div>
+
+        {/* PASO 3: RELLENO */}
         <section className="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-stone-100 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-100 via-rose-100 to-amber-100 opacity-50"></div>
           <div className="flex items-end gap-4 mb-8">
-            <span className="text-5xl text-rose-100 font-serif italic leading-none">02</span>
+            <span className="text-5xl text-rose-100 font-serif italic leading-none">03</span>
             <h2 className="text-2xl font-light tracking-wide text-stone-800">Elige tu relleno</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -313,11 +380,11 @@ export function PasteleriaBuilder() {
           <div className="w-24 h-px border-t border-dashed border-stone-300"></div>
         </div>
 
-        {/* PASO 3: EXTRAS */}
+        {/* PASO 4: EXTRAS */}
         <section className="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-stone-100 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-100 via-amber-100 to-rose-100 opacity-50"></div>
           <div className="flex items-end gap-4 mb-8">
-            <span className="text-5xl text-amber-100 font-serif italic leading-none">03</span>
+            <span className="text-5xl text-amber-100 font-serif italic leading-none">04</span>
             <div>
               <h2 className="text-2xl font-light tracking-wide text-stone-800">Elige tu extra</h2>
               <p className="text-stone-400 text-[10px] uppercase tracking-widest mt-1 font-medium bg-stone-50 inline-block px-2 py-0.5 rounded-full border border-stone-100">(Opcional)</p>
@@ -478,6 +545,8 @@ export function PasteleriaBuilder() {
                             </div>
                             
                             <div className="space-y-2 text-sm text-stone-600 mb-6 font-light bg-[#FDFBF7] p-4 rounded-2xl border border-stone-100/50">
+                              <p><span className="text-amber-700/60 font-medium mr-2">Tamaño:</span> {item.size}</p>
+                              <div className="h-px border-t border-dashed border-stone-200"></div>
                               <p><span className="text-amber-700/60 font-medium mr-2">Pan:</span> {PANES.find(p => p.id === item.pan)?.name}</p>
                               <div className="h-px border-t border-dashed border-stone-200"></div>
                               <p><span className="text-amber-700/60 font-medium mr-2">Relleno:</span> {RELLENOS.find(r => r.id === item.relleno)?.name}</p>
