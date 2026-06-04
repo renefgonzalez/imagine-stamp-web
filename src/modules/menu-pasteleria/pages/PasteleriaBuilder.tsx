@@ -478,7 +478,7 @@ export function PasteleriaBuilder() {
                 <button
                   key={relleno.id}
                   onClick={() => setSelectedRelleno(relleno.id)}
-                  className={`py-3 px-4 h-full flex flex-col items-center justify-center text-center rounded-2xl transition-all duration-300 border-2 ${
+                  className={`relative py-3 px-4 h-full flex flex-col items-center justify-center text-center rounded-2xl transition-all duration-300 border-2 ${
                     isSelected 
                       ? 'border-amber-300 bg-amber-50/60 shadow-sm text-amber-900' 
                       : 'border-transparent bg-stone-50 text-stone-600 hover:bg-stone-100 hover:border-stone-200'
@@ -487,6 +487,11 @@ export function PasteleriaBuilder() {
                   <span className="font-medium text-sm block">
                     {relleno.name}
                   </span>
+                  {isSelected && (
+                    <div className="absolute -top-2 -right-2 bg-amber-400 text-white p-1 rounded-full shadow-sm">
+                      <Check size={12} strokeWidth={3} />
+                    </div>
+                  )}
                 </button>
               );
             })}
@@ -515,13 +520,18 @@ export function PasteleriaBuilder() {
                 <button
                   key={extra.id}
                   onClick={() => toggleExtra(extra.id)}
-                  className={`px-4 py-2 text-sm font-medium rounded-full transition-all border-2 ${
+                  className={`relative px-4 py-2 text-sm font-medium rounded-full transition-all border-2 ${
                     isSelected
                       ? 'border-amber-300 bg-rose-50/60 text-amber-900 shadow-sm'
                       : 'border-transparent bg-stone-50 text-stone-500 hover:bg-stone-100 hover:border-stone-200'
                   }`}
                 >
-                  {extra.name} {isSelected && <Check size={14} className="inline ml-1 text-amber-600" />}
+                  {extra.name}
+                  {isSelected && (
+                    <div className="absolute -top-2 -right-2 bg-amber-400 text-white p-1 rounded-full shadow-sm">
+                      <Check size={12} strokeWidth={3} />
+                    </div>
+                  )}
                 </button>
               );
             })}
@@ -550,13 +560,18 @@ export function PasteleriaBuilder() {
                 <button
                   key={dec.id}
                   onClick={() => toggleDecoracion(dec.id)}
-                  className={`px-4 py-2 text-sm font-medium rounded-full transition-all border-2 ${
+                  className={`relative px-4 py-2 text-sm font-medium rounded-full transition-all border-2 ${
                     isSelected
                       ? 'border-amber-300 bg-rose-50/60 text-amber-900 shadow-sm'
                       : 'border-transparent bg-stone-50 text-stone-500 hover:bg-stone-100 hover:border-stone-200'
                   }`}
                 >
-                  {dec.name} {isSelected && <Check size={14} className="inline ml-1 text-amber-600" />}
+                  {dec.name}
+                  {isSelected && (
+                    <div className="absolute -top-2 -right-2 bg-amber-400 text-white p-1 rounded-full shadow-sm">
+                      <Check size={12} strokeWidth={3} />
+                    </div>
+                  )}
                 </button>
               );
             })}
