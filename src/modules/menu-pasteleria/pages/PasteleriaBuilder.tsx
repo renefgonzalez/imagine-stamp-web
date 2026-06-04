@@ -270,30 +270,32 @@ export function PasteleriaBuilder() {
       <title>Lázaro Pastelería | Crea tu Propio Sabor</title>
 
       {/* HEADER MINIMALISTA CON SOMBRA SUTIL */}
-      <header className="px-6 pt-10 pb-6 border-b border-stone-200 border-dashed flex flex-col items-center sticky top-0 bg-[#FDFBF7]/90 backdrop-blur-md z-30 shadow-[0_8px_30px_rgb(0,0,0,0.01)]">
-        <div className="w-full max-w-2xl flex justify-end items-center mb-6">
-          <button
-            onClick={() => {
-              setCartPhase(1);
-              setIsCartOpen(true);
-            }}
-            className="relative p-2 text-stone-900 hover:opacity-70 transition-opacity"
-          >
-            <ShoppingBag size={24} strokeWidth={1.5} />
-            {totalItems > 0 && (
-              <span className="absolute 0 right-0 bg-amber-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-sm shadow-amber-500/30">
-                {totalItems}
-              </span>
-            )}
-          </button>
-        </div>
+      <header className="px-6 pt-4 md:pt-6 pb-4 border-b border-stone-200 border-dashed flex flex-col items-center sticky top-0 bg-[#FDFBF7]/90 backdrop-blur-md z-30 shadow-[0_8px_30px_rgb(0,0,0,0.01)]">
+        <div className="w-full max-w-2xl relative">
+          <div className="absolute top-0 right-0 z-10">
+            <button
+              onClick={() => {
+                setCartPhase(1);
+                setIsCartOpen(true);
+              }}
+              className="relative p-2 text-stone-900 hover:opacity-70 transition-opacity"
+            >
+              <ShoppingBag size={24} strokeWidth={1.5} />
+              {totalItems > 0 && (
+                <span className="absolute 0 right-0 bg-amber-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-sm shadow-amber-500/30">
+                  {totalItems}
+                </span>
+              )}
+            </button>
+          </div>
 
-        <div className="text-center max-w-xl mx-auto mt-4">
-          <img src={logoLazaro} alt="Lázaro Pastelería" className="h-20 mx-auto mb-4 drop-shadow-sm" />
-          <div className="h-px w-16 bg-amber-200 mx-auto mb-4"></div>
-          <p className="text-stone-500 font-light text-sm tracking-wide uppercase flex items-center justify-center gap-2">
-            Pregunta por el menú <span className="bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-widest border border-teal-100">Sin Azúcar</span>
-          </p>
+          <div className="text-center max-w-xl mx-auto pt-1 md:pt-2">
+            <img src={logoLazaro} alt="Lázaro Pastelería" className="h-16 md:h-20 mx-auto mb-3 drop-shadow-sm" />
+            <div className="h-px w-16 bg-amber-200 mx-auto mb-3"></div>
+            <p className="text-stone-500 font-light text-[11px] md:text-sm tracking-wide uppercase flex items-center justify-center gap-2">
+              Pregunta por el menú <span className="bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-widest border border-teal-100">Sin Azúcar</span>
+            </p>
+          </div>
         </div>
       </header>
 
