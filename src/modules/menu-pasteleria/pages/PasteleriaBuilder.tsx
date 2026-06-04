@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark, Instagram, Facebook, MapPin, Phone, Lock, Play } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark, Instagram, Facebook, MapPin, Phone, Lock, Play, LayoutGrid } from 'lucide-react';
 import { useCatalog, productosExpress, SizeOption, CartItem } from '../constants';
 import { supabase } from '../../../lib/supabase';
 import logoLazaro from '../assets/logo-lazaro.png';
@@ -41,6 +41,7 @@ export function PasteleriaBuilder() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
+  const [showCategoriesGrid, setShowCategoriesGrid] = useState(false);
 
   const [cartPhase, setCartPhase] = useState<1 | 2 | 3>(1);
   
@@ -401,31 +402,86 @@ export function PasteleriaBuilder() {
       {/* CONSTRUCTOR INTERACTIVO */}
       <main className="max-w-2xl mx-auto px-6 py-10 space-y-16 relative z-10">
         
-        {/* TABS DE CATEGORÍAS */}
-        <div className="flex flex-row overflow-x-auto gap-3 mb-8 w-full pb-4 snap-x snap-mandatory hide-scrollbar">
-          <button
-            onClick={() => setActiveTab('builder')}
-            className={`whitespace-nowrap shrink-0 snap-center px-6 py-3 rounded-full text-sm font-medium transition-all ${
-              activeTab === 'builder'
-                ? 'bg-stone-900 text-white shadow-md'
-                : 'bg-white text-stone-500 hover:bg-stone-100 border border-stone-200'
-            }`}
-          >
-            Crea tu propio sabor
-          </button>
-          {expressCategories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveTab(cat)}
-              className={`whitespace-nowrap shrink-0 snap-center px-6 py-3 rounded-full text-sm font-medium transition-all ${
-                activeTab === cat
-                  ? 'bg-stone-900 text-white shadow-md'
-                  : 'bg-white text-stone-500 hover:bg-stone-100 border border-stone-200'
+        {/* CONTROLES DE CATEGORÍAS */}
+        <div className="mb-8 w-full max-w-4xl mx-auto">
+          <div className="flex items-center gap-3 w-full">
+            <button 
+              onClick={() => setShowCategoriesGrid(!showCategoriesGrid)}
+              className={`flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full border transition-all ${
+                showCategoriesGrid 
+                  ? 'bg-stone-900 text-white border-stone-900 shadow-md' 
+                  : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
               }`}
             >
-              {cat}
+              <LayoutGrid size={20} />
             </button>
-          ))}
+            
+            <div className="flex flex-row overflow-x-auto gap-3 pb-2 pt-2 snap-x snap-mandatory hide-scrollbar flex-1">
+              <button
+                onClick={() => { setActiveTab('builder'); setShowCategoriesGrid(false); }}
+                className={`whitespace-nowrap shrink-0 snap-center px-6 py-3 rounded-full text-sm font-medium transition-all ${
+                  activeTab === 'builder'
+                    ? 'bg-stone-900 text-white shadow-md'
+                    : 'bg-white text-stone-500 hover:bg-stone-100 border border-stone-200'
+                }`}
+              >
+                Crea tu propio sabor
+              </button>
+              {expressCategories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => { setActiveTab(cat); setShowCategoriesGrid(false); }}
+                  className={`whitespace-nowrap shrink-0 snap-center px-6 py-3 rounded-full text-sm font-medium transition-all ${
+                    activeTab === cat
+                      ? 'bg-stone-900 text-white shadow-md'
+                      : 'bg-white text-stone-500 hover:bg-stone-100 border border-stone-200'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* GRID DESPLEGABLE */}
+          <AnimatePresence>
+            {showCategoriesGrid && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden mt-2"
+              >
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 p-4 bg-white border border-stone-100 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                  <button
+                    onClick={() => { setActiveTab('builder'); setShowCategoriesGrid(false); }}
+                    className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all ${
+                      activeTab === 'builder'
+                        ? 'bg-stone-900 text-white border-stone-900 shadow-md'
+                        : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
+                    }`}
+                  >
+                    <span className="text-2xl mb-2">🍰</span>
+                    <span className="text-xs font-medium text-center">Crea tu propio sabor</span>
+                  </button>
+                  {expressCategories.map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => { setActiveTab(cat); setShowCategoriesGrid(false); }}
+                      className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all ${
+                        activeTab === cat
+                          ? 'bg-stone-900 text-white border-stone-900 shadow-md'
+                          : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
+                      }`}
+                    >
+                      <span className="text-2xl mb-2">✨</span>
+                      <span className="text-xs font-medium text-center">{cat}</span>
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {activeTab === 'builder' ? (
