@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Calendar, Clock, CreditCard, Banknote, Landmark, Instagram, Facebook, MapPin, Phone, Lock } from 'lucide-react';
 import { useCatalog, productosExpress, SizeOption, CartItem } from '../constants';
+import { supabase } from '../../../lib/supabase';
 import logoLazaro from '../assets/logo-lazaro.png';
 const WHATSAPP_NUMBER = '525512479773';
 const BASE_CAKE_PRICE = 550; // Precio base demostrativo
@@ -202,7 +203,7 @@ export function PasteleriaBuilder() {
   const discountAmount = subtotal * appliedDiscount;
   const totalAmount = subtotal - discountAmount;
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     const lines = cart.map(item => {
       if (item.type === 'custom') {
         const panName = PANES.find(p => p.id === item.pan)?.name;
@@ -266,26 +267,27 @@ export function PasteleriaBuilder() {
       message += `\n\n🎁 *Cupón otorgado al cliente (Próxima compra):* ${generatedCode}`;
     }
 
-    const newOrder: any = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      customerName: name,
-      customerPhone: phone,
-      deliveryDate,
-      deliveryTime,
-      deliveryType: deliveryType!,
-      deliveryAddress,
-      paymentMethod: paymentMethod!,
-      specialNotes,
-      totalAmount,
-      items: cart,
-      status: 'PENDIENTE',
-      notasInternas: generatedCode ? `Cupón otorgado al cliente: ${generatedCode}` : undefined
+    const newOrder = {
+      id_pedido: crypto.randomUUID(),
+      cliente_nombre: name,
+      telefono: phone,
+      fecha_entrega: `${deliveryDate} | ${deliveryTime}`,
+      metodo_entrega: deliveryType === 'tienda' ? 'tienda' : `domicilio | ${deliveryAddress}`,
+      notas_cliente: specialNotes,
+      productos: cart,
+      metodo_pago: paymentMethod!,
+      total: totalAmount,
+      estado: 'Pendiente',
+      notas_internas: generatedCode ? `Cupón otorgado al cliente: ${generatedCode}` : null
     };
 
-    const existingOrdersJson = localStorage.getItem('lazaro_pedidos');
-    const existingOrders: LazaroOrder[] = existingOrdersJson ? JSON.parse(existingOrdersJson) : [];
-    localStorage.setItem('lazaro_pedidos', JSON.stringify([...existingOrders, newOrder]));
+    const { error } = await supabase.from('lazaro_pedidos').insert([newOrder]);
+    
+    if (error) {
+      console.error('Error guardando pedido:', error);
+      alert('Hubo un problema al procesar tu pedido. Por favor intenta de nuevo.');
+      return;
+    }
 
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
     

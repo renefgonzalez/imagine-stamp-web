@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
 
 export type SizeOption = '3-4 personas' | '6-8 personas' | '10-12 personas' | '20 personas' | '30 personas';
 
@@ -220,31 +221,50 @@ export function useCatalog() {
   const [expressProducts, setExpressProducts] = useState<ProductoExpress[]>(DEFAULT_PRODUCTOS_EXPRESS);
   const [expressCategories, setExpressCategories] = useState<string[]>(DEFAULT_EXPRESS_CATEGORIES);
 
-  useEffect(() => {
-    const localPanes = localStorage.getItem('lazaro_catalog_panes');
-    const localRellenos = localStorage.getItem('lazaro_catalog_rellenos');
-    const localExtras = localStorage.getItem('lazaro_catalog_extras');
-    const localDecs = localStorage.getItem('lazaro_catalog_decoraciones');
-    const localTiers = localStorage.getItem('lazaro_catalog_tiers');
-    const localExpress = localStorage.getItem('lazaro_catalog_express');
-    const localExpressCats = localStorage.getItem('lazaro_catalog_express_cats');
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase.from('lazaro_productos').select('*');
+      if (error) {
+        console.error('Error fetching express products from Supabase:', error);
+      } else if (data) {
+        setExpressProducts(data as ProductoExpress[]);
+      }
+    } catch (err) {
+      console.error('Unexpected error fetching express products:', err);
+    }
+  };
 
-    if (localPanes) setPanes(JSON.parse(localPanes));
-    if (localRellenos) setRellenos(JSON.parse(localRellenos));
-    if (localExtras) setExtras(JSON.parse(localExtras));
-    if (localDecs) setDecoraciones(JSON.parse(localDecs));
-    if (localTiers) setTiers(JSON.parse(localTiers));
-    if (localExpress) setExpressProducts(JSON.parse(localExpress));
-    if (localExpressCats) setExpressCategories(JSON.parse(localExpressCats));
+  const fetchConfig = async () => {
+    try {
+      const { data, error } = await supabase.from('lazaro_configuracion').select('*').eq('id', 1).single();
+      if (error) {
+        if (error.code !== 'PGRST116') {
+          console.error('Error fetching config from Supabase:', error);
+        }
+      } else if (data) {
+        if (data.panes && data.panes.length > 0) setPanes(data.panes);
+        if (data.rellenos && data.rellenos.length > 0) setRellenos(data.rellenos);
+        if (data.extras && data.extras.length > 0) setExtras(data.extras);
+        if (data.decoraciones && data.decoraciones.length > 0) setDecoraciones(data.decoraciones);
+        if (data.tiers && data.tiers.length > 0) setTiers(data.tiers);
+        if (data.express_cats && data.express_cats.length > 0) setExpressCategories(data.express_cats);
+      }
+    } catch (err) {
+      console.error('Unexpected error fetching config:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchConfig();
+    fetchProducts();
   }, []);
 
-  const saveCatalog = (
+  const saveCatalog = async (
     newPanes: CatalogItem[], 
     newRellenos: CatalogItem[], 
     newExtras: CatalogItem[], 
     newDecoraciones: CatalogItem[],
     newTiers: PricingTier[], 
-    newExpress: ProductoExpress[],
     newExpressCats: string[]
   ) => {
     setPanes(newPanes);
@@ -252,16 +272,23 @@ export function useCatalog() {
     setExtras(newExtras);
     setDecoraciones(newDecoraciones);
     setTiers(newTiers);
-    setExpressProducts(newExpress);
     setExpressCategories(newExpressCats);
-    localStorage.setItem('lazaro_catalog_panes', JSON.stringify(newPanes));
-    localStorage.setItem('lazaro_catalog_rellenos', JSON.stringify(newRellenos));
-    localStorage.setItem('lazaro_catalog_extras', JSON.stringify(newExtras));
-    localStorage.setItem('lazaro_catalog_decoraciones', JSON.stringify(newDecoraciones));
-    localStorage.setItem('lazaro_catalog_tiers', JSON.stringify(newTiers));
-    localStorage.setItem('lazaro_catalog_express', JSON.stringify(newExpress));
-    localStorage.setItem('lazaro_catalog_express_cats', JSON.stringify(newExpressCats));
+    
+    try {
+      const { error } = await supabase.from('lazaro_configuracion').upsert({
+        id: 1,
+        panes: newPanes,
+        rellenos: newRellenos,
+        extras: newExtras,
+        decoraciones: newDecoraciones,
+        tiers: newTiers,
+        express_cats: newExpressCats
+      });
+      if (error) throw error;
+    } catch (err) {
+      console.error('Error saving config to Supabase:', err);
+    }
   };
 
-  return { panes, rellenos, extras, decoraciones, tiers, expressProducts, expressCategories, saveCatalog, SIZES };
+  return { panes, rellenos, extras, decoraciones, tiers, expressProducts, expressCategories, saveCatalog, fetchProducts, SIZES };
 }

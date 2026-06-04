@@ -1,6 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Lock, LogOut, Settings, Package, Banknote, Edit2, Plus, Check, Trash2, X, Landmark, Search, Phone, Calendar, Clock } from 'lucide-react';
+import { supabase } from '../../../lib/supabase';
 import { useCatalog, CatalogItem, PricingTier, SizeOption, SIZES, ProductoExpress, LazaroOrder } from '../constants';
+
+class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, error: any}> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-8 text-red-600 bg-red-50 border border-red-200 rounded-xl">
+          <h2 className="text-xl font-bold mb-4">Error de Renderizado (Pantalla Blanca)</h2>
+          <pre className="text-sm whitespace-pre-wrap">{this.state.error?.toString()}</pre>
+          <pre className="text-xs mt-4 text-stone-500">{this.state.error?.stack}</pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export function AdminPasteleria() {
   const [currentRole, setCurrentRole] = useState<'admin' | 'client' | null>(null);
@@ -12,7 +35,7 @@ export function AdminPasteleria() {
   const [titular, setTitular] = useState('');
   const [clabe, setClabe] = useState('');
 
-  const { panes, rellenos, extras, decoraciones, tiers, expressProducts, expressCategories, saveCatalog } = useCatalog();
+  const { panes, rellenos, extras, decoraciones, tiers, expressProducts, expressCategories, saveCatalog, fetchProducts } = useCatalog();
 
   useEffect(() => {
     const savedRole = localStorage.getItem('lazaro_admin_role');
@@ -164,7 +187,9 @@ export function AdminPasteleria() {
 
       <main className="max-w-5xl mx-auto p-6 mt-2">
         {activeTab === 'orders' ? (
-          <OrdersManager />
+          <ErrorBoundary>
+            <OrdersManager />
+          </ErrorBoundary>
         ) : activeTab === 'dashboard' ? (
           <>
             <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-stone-100 overflow-hidden">
@@ -204,13 +229,14 @@ export function AdminPasteleria() {
             extras={extras}
             decoraciones={decoraciones}
             tiers={tiers}
-            onSave={(p, r, e, d, t) => saveCatalog(p, r, e, d, t, expressProducts, expressCategories)}
+            onSave={(p, r, e, d, t) => saveCatalog(p, r, e, d, t, expressCategories)}
           />
         ) : (
           <ExpressManager
             categories={expressCategories}
             products={expressProducts}
-            onSave={(newCats, newExpress) => saveCatalog(panes, rellenos, extras, decoraciones, tiers, newExpress, newCats)}
+            onSave={(newCats) => saveCatalog(panes, rellenos, extras, decoraciones, tiers, newCats)}
+            fetchProducts={fetchProducts}
           />
         )}
       </main>
@@ -219,52 +245,70 @@ export function AdminPasteleria() {
 }
 
 function OrdersManager() {
-  const [orders, setOrders] = useState<LazaroOrder[]>([]);
-  const [filter, setFilter] = useState<'PENDIENTE' | 'ENTREGADO'>('PENDIENTE');
+  const [orders, setOrders] = useState<any[]>([]);
+  const [filter, setFilter] = useState<'Pendiente' | 'Entregado'>('Pendiente');
   const [search, setSearch] = useState('');
   
   const { panes, rellenos, extras, decoraciones } = useCatalog();
 
-  useEffect(() => {
-    const raw = localStorage.getItem('lazaro_pedidos');
-    if (raw) {
-      try {
-        setOrders(JSON.parse(raw));
-      } catch (e) {}
+  const fetchOrders = async () => {
+    const { data, error } = await supabase
+      .from('lazaro_pedidos')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (data && !error) {
+      setOrders(data);
     }
+  };
+
+  useEffect(() => {
+    fetchOrders();
   }, []);
 
-  const handleStatusChange = (id: string, newStatus: 'PENDIENTE' | 'ENTREGADO') => {
-    const updated = orders.map(o => o.id === id ? { ...o, status: newStatus } : o);
-    setOrders(updated);
-    localStorage.setItem('lazaro_pedidos', JSON.stringify(updated));
+  const handleStatusChange = async (id: string, newStatus: 'Pendiente' | 'Entregado') => {
+    const { error } = await supabase
+      .from('lazaro_pedidos')
+      .update({ estado: newStatus })
+      .eq('id_pedido', id);
+    if (!error) {
+      fetchOrders();
+    }
   };
 
-  const handleUpdateNotas = (id: string, notas: string) => {
-    const updated = orders.map(o => o.id === id ? { ...o, notasInternas: notas } : o);
-    setOrders(updated);
-    localStorage.setItem('lazaro_pedidos', JSON.stringify(updated));
+  const handleUpdateNotas = async (id: string, notas: string) => {
+    const { error } = await supabase
+      .from('lazaro_pedidos')
+      .update({ notas_internas: notas })
+      .eq('id_pedido', id);
+    if (!error) {
+      fetchOrders();
+    }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if(confirm('¿Seguro que deseas eliminar este pedido?')) {
-      const updated = orders.filter(o => o.id !== id);
-      setOrders(updated);
-      localStorage.setItem('lazaro_pedidos', JSON.stringify(updated));
+      const { error } = await supabase
+        .from('lazaro_pedidos')
+        .delete()
+        .eq('id_pedido', id);
+      if (!error) {
+        fetchOrders();
+      }
     }
   };
 
   const filtered = orders.filter(o => {
-    if (o.status !== filter) return false;
+    if (o.estado !== filter) return false;
     if (search) {
       const s = search.toLowerCase();
-      return o.customerName.toLowerCase().includes(s) || o.customerPhone.includes(s);
+      return (o.cliente_nombre || '').toLowerCase().includes(s) || (o.telefono || '').includes(s);
     }
     return true;
   });
 
-  const pendientesCount = orders.filter(o => o.status === 'PENDIENTE').length;
-  const entregadosCount = orders.filter(o => o.status === 'ENTREGADO').length;
+  const pendientesCount = orders.filter(o => o.estado === 'Pendiente').length;
+  const entregadosCount = orders.filter(o => o.estado === 'Entregado').length;
 
   return (
     <div className="space-y-6">
@@ -296,49 +340,52 @@ function OrdersManager() {
 
       <div className="flex space-x-2">
         <button 
-          onClick={() => setFilter('PENDIENTE')}
-          className={`px-4 py-2 rounded-lg text-sm font-bold tracking-wide transition-colors ${filter === 'PENDIENTE' ? 'bg-amber-100 text-amber-800' : 'bg-white text-stone-500 hover:bg-stone-50 shadow-sm border border-stone-100'}`}
+          onClick={() => setFilter('Pendiente')}
+          className={`px-4 py-2 rounded-lg text-sm font-bold tracking-wide transition-colors ${filter === 'Pendiente' ? 'bg-amber-100 text-amber-800' : 'bg-white text-stone-500 hover:bg-stone-50 shadow-sm border border-stone-100'}`}
         >
           ⏳ Pendientes
         </button>
         <button 
-          onClick={() => setFilter('ENTREGADO')}
-          className={`px-4 py-2 rounded-lg text-sm font-bold tracking-wide transition-colors ${filter === 'ENTREGADO' ? 'bg-stone-200 text-stone-800' : 'bg-white text-stone-500 hover:bg-stone-50 shadow-sm border border-stone-100'}`}
+          onClick={() => setFilter('Entregado')}
+          className={`px-4 py-2 rounded-lg text-sm font-bold tracking-wide transition-colors ${filter === 'Entregado' ? 'bg-stone-200 text-stone-800' : 'bg-white text-stone-500 hover:bg-stone-50 shadow-sm border border-stone-100'}`}
         >
           ✅ Entregados
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered.map(order => (
-          <div key={order.id} className="bg-white rounded-2xl p-6 shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-stone-100 flex flex-col relative overflow-hidden transition-all hover:shadow-[0_4px_25px_rgb(0,0,0,0.08)]">
-            {order.status === 'PENDIENTE' && <div className="absolute top-0 left-0 w-full h-1 bg-amber-400" />}
-            {order.status === 'ENTREGADO' && <div className="absolute top-0 left-0 w-full h-1 bg-green-400" />}
+        {filtered.map(order => {
+          const [delDate, delTime] = (order.fecha_entrega || '').split(' | ');
+          const [delType, delAddress] = (order.metodo_entrega || '').split(' | ');
+          return (
+          <div key={order.id_pedido} className="bg-white rounded-2xl p-6 shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-stone-100 flex flex-col relative overflow-hidden transition-all hover:shadow-[0_4px_25px_rgb(0,0,0,0.08)]">
+            {order.estado === 'Pendiente' && <div className="absolute top-0 left-0 w-full h-1 bg-amber-400" />}
+            {order.estado === 'Entregado' && <div className="absolute top-0 left-0 w-full h-1 bg-green-400" />}
             
             <div className="flex justify-between items-start mb-4 border-b border-stone-100 pb-4">
               <div>
-                <p className="text-xs text-stone-400 uppercase tracking-widest font-bold">ID: {order.id.slice(0, 8)}</p>
-                <p className="text-[11px] text-stone-400 mt-0.5">{new Date(order.createdAt).toLocaleString()}</p>
+                <p className="text-xs text-stone-400 uppercase tracking-widest font-bold">ID: {order.id_pedido?.slice(0, 8)}</p>
+                <p className="text-[11px] text-stone-400 mt-0.5">{new Date(order.created_at).toLocaleString()}</p>
               </div>
-              <button onClick={() => handleDelete(order.id)} className="text-stone-300 hover:text-red-500 transition-colors p-1 bg-stone-50 rounded-md hover:bg-red-50">
+              <button onClick={() => handleDelete(order.id_pedido)} className="text-stone-300 hover:text-red-500 transition-colors p-1 bg-stone-50 rounded-md hover:bg-red-50">
                 <X size={16} />
               </button>
             </div>
 
             <div className="mb-4">
-              <h3 className="text-lg font-serif font-bold text-stone-800 leading-tight">{order.customerName}</h3>
-              <p className="text-sm text-stone-500 flex items-center gap-1 mt-1 font-medium"><Phone size={14} className="text-amber-500"/> {order.customerPhone}</p>
+              <h3 className="text-lg font-serif font-bold text-stone-800 leading-tight">{order.cliente_nombre}</h3>
+              <p className="text-sm text-stone-500 flex items-center gap-1 mt-1 font-medium"><Phone size={14} className="text-amber-500"/> {order.telefono}</p>
             </div>
 
             <div className="bg-stone-50 rounded-xl p-3 mb-4 text-sm border border-stone-100">
               <div className="flex items-center gap-2 text-stone-700 font-bold mb-1">
                 <Calendar size={14} className="text-amber-500" />
-                {order.deliveryDate} a las {order.deliveryTime}
+                {delDate || order.fecha_entrega} {delTime ? `a las ${delTime}` : ''}
               </div>
-              <p className="text-stone-500 ml-6 text-xs">{order.deliveryType === 'tienda' ? 'Recoger en Tienda' : order.deliveryAddress}</p>
-              {order.specialNotes && (
+              <p className="text-stone-500 ml-6 text-xs">{delType === 'tienda' ? 'Recoger en Tienda' : delAddress || order.metodo_entrega}</p>
+              {order.notas_cliente && (
                 <div className="mt-3 p-2 bg-amber-50/50 border border-amber-100/50 rounded-lg text-amber-800 text-xs italic">
-                  <span className="font-bold mr-1">Notas:</span> {order.specialNotes}
+                  <span className="font-bold mr-1">Notas:</span> {order.notas_cliente}
                 </div>
               )}
             </div>
@@ -346,7 +393,7 @@ function OrdersManager() {
             <div className="mb-4 flex-1">
               <h4 className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Detalle del Pedido</h4>
               <ul className="space-y-3">
-                {order.items.map((item, i) => (
+                {(typeof order.productos === 'string' ? JSON.parse(order.productos) : (order.productos || [])).map((item: any, i: number) => (
                   <li key={i} className="text-sm text-stone-600 flex gap-2">
                     <span className="font-bold text-stone-800">{item.quantity}x</span>
                     {item.type === 'express' ? (
@@ -355,8 +402,8 @@ function OrdersManager() {
                       <div className="flex-1">
                         <strong className="text-stone-800 block">Pastel ({item.size})</strong>
                         <p className="text-[11px] text-stone-500 mt-1 leading-snug">
-                          {panes.find(p => p.id === item.pan)?.name || item.pan} | {rellenos.find(r => r.id === item.relleno)?.name || item.relleno}
-                          {item.extras && item.extras.length > 0 && ` | +${item.extras.map(eId => extras.find(e => e.id === eId)?.name || eId).join(', ')}`}
+                          {panes?.find(p => p.id === item.pan)?.name || item.pan} | {rellenos?.find(r => r.id === item.relleno)?.name || item.relleno}
+                          {Array.isArray(item.extras) && item.extras.length > 0 && ` | +${item.extras.map((eId: any) => extras?.find(e => e.id === eId)?.name || eId).join(', ')}`}
                         </p>
                       </div>
                     )}
@@ -368,8 +415,8 @@ function OrdersManager() {
             <div className="mb-4">
               <h4 className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Notas Internas (Staff)</h4>
               <textarea 
-                defaultValue={order.notasInternas || ''}
-                onBlur={(e) => handleUpdateNotas(order.id, e.target.value)}
+                defaultValue={order.notas_internas || ''}
+                onBlur={(e) => handleUpdateNotas(order.id_pedido, e.target.value)}
                 placeholder="Añade recordatorios, anticipos, notas..."
                 className="w-full h-20 bg-stone-50 border border-stone-100 rounded-xl p-3 text-xs text-stone-700 resize-none focus:outline-none focus:border-amber-300 focus:bg-white transition-all"
               />
@@ -377,27 +424,28 @@ function OrdersManager() {
 
             <div className="flex justify-between items-end border-t border-stone-100 pt-4 mt-auto">
               <div>
-                <span className={`text-[10px] px-2 py-1 rounded-md font-bold uppercase tracking-widest ${order.paymentMethod === 'efectivo' ? 'bg-green-100 text-green-700' : order.paymentMethod === 'tarjeta' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
-                  {order.paymentMethod}
+                <span className={`text-[10px] px-2 py-1 rounded-md font-bold uppercase tracking-widest ${order.metodo_pago === 'efectivo' ? 'bg-green-100 text-green-700' : order.metodo_pago === 'tarjeta' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                  {order.metodo_pago}
                 </span>
-                <p className="text-xl font-bold text-stone-800 mt-2">${order.totalAmount.toFixed(2)}</p>
+                <p className="text-xl font-bold text-stone-800 mt-2">${Number(order.total || 0).toFixed(2)}</p>
               </div>
               
               <select 
-                value={order.status}
-                onChange={(e) => handleStatusChange(order.id, e.target.value as any)}
+                value={order.estado}
+                onChange={(e) => handleStatusChange(order.id_pedido, e.target.value as any)}
                 className={`text-xs font-bold px-3 py-2 rounded-lg border outline-none cursor-pointer transition-colors ${
-                  order.status === 'PENDIENTE' 
+                  order.estado === 'Pendiente' 
                     ? 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100' 
                     : 'border-green-200 bg-green-50 text-green-700 hover:bg-green-100'
                 }`}
               >
-                <option value="PENDIENTE">PENDIENTE</option>
-                <option value="ENTREGADO">ENTREGADO</option>
+                <option value="Pendiente">PENDIENTE</option>
+                <option value="Entregado">ENTREGADO</option>
               </select>
             </div>
           </div>
-        ))}
+          );
+        })}
         {filtered.length === 0 && (
           <div className="col-span-full py-16 text-center">
             <Package size={48} className="mx-auto text-stone-200 mb-4" />
@@ -715,12 +763,23 @@ function CatalogSection({ title, items, setItems, tiers }: CatalogSectionProps) 
 interface ExpressManagerProps {
   categories: string[];
   products: ProductoExpress[];
-  onSave: (cats: string[], p: ProductoExpress[]) => void;
+  onSave: (cats: string[]) => void;
+  fetchProducts: () => Promise<void>;
 }
 
-function ExpressManager({ categories, products, onSave }: ExpressManagerProps) {
+function ExpressManager({ categories, products, onSave, fetchProducts }: ExpressManagerProps) {
   const [localCategories, setLocalCategories] = useState(categories);
   const [localProducts, setLocalProducts] = useState(products);
+  
+  // Sync when props change
+  useEffect(() => {
+    setLocalProducts(products);
+  }, [products]);
+
+  // Sync categories
+  useEffect(() => {
+    setLocalCategories(categories);
+  }, [categories]);
   
   const [editingId, setEditingId] = useState<string | null>(null);
   
@@ -729,16 +788,24 @@ function ExpressManager({ categories, products, onSave }: ExpressManagerProps) {
   const [precio, setPrecio] = useState('');
   const [img1, setImg1] = useState('');
   const [img2, setImg2] = useState('');
+  const [img1File, setImg1File] = useState<File | null>(null);
+  const [img2File, setImg2File] = useState<File | null>(null);
   const [etiqueta, setEtiqueta] = useState('');
   const [descripcion, setDescripcion] = useState('');
 
   const [isAdding, setIsAdding] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [newCatName, setNewCatName] = useState('');
   const [editingCatName, setEditingCatName] = useState<string | null>(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, setImg: React.Dispatch<React.SetStateAction<string>>) => {
+  const handleImageUpload = (
+    e: React.ChangeEvent<HTMLInputElement>, 
+    setImg: React.Dispatch<React.SetStateAction<string>>,
+    setFile: React.Dispatch<React.SetStateAction<File | null>>
+  ) => {
     const file = e.target.files?.[0];
     if (file) {
+      setFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImg(reader.result as string);
@@ -753,10 +820,13 @@ function ExpressManager({ categories, products, onSave }: ExpressManagerProps) {
     setPrecio('');
     setImg1('');
     setImg2('');
+    setImg1File(null);
+    setImg2File(null);
     setEtiqueta('');
     setDescripcion('');
     setEditingId(null);
     setIsAdding(false);
+    setIsSaving(false);
   };
 
   const startEdit = (p: ProductoExpress) => {
@@ -766,45 +836,81 @@ function ExpressManager({ categories, products, onSave }: ExpressManagerProps) {
     setPrecio(p.precio.toString());
     setImg1(p.imagenes[0] || '');
     setImg2(p.imagenes[1] || '');
+    setImg1File(null);
+    setImg2File(null);
     setEtiqueta(p.etiqueta || '');
     setDescripcion(p.descripcion);
     setIsAdding(true);
   };
 
-  const handleSaveProduct = () => {
-    if (!nombre.trim() || !categoria.trim() || !precio || !img1) {
+  const uploadFile = async (file: File): Promise<string | null> => {
+    const fileName = `${Date.now()}-${file.name.replace(/\\s+/g, '-')}`;
+    const { data, error } = await supabase.storage.from('lazaro_imagenes').upload(fileName, file);
+    if (error) {
+      console.error('Error uploading image:', error);
+      return null;
+    }
+    const { data: { publicUrl } } = supabase.storage.from('lazaro_imagenes').getPublicUrl(data.path);
+    return publicUrl;
+  };
+
+  const handleSaveProduct = async () => {
+    if (!nombre.trim() || !categoria.trim() || !precio || (!img1 && !img1File)) {
       alert('Nombre, Categoría, Precio y al menos una imagen son obligatorios.');
       return;
     }
     
-    const newProd: ProductoExpress = {
-      id: editingId || crypto.randomUUID(),
+    setIsSaving(true);
+    let finalImg1 = img1;
+    let finalImg2 = img2;
+
+    if (img1File) {
+      const uploadedUrl = await uploadFile(img1File);
+      if (uploadedUrl) finalImg1 = uploadedUrl;
+    }
+    if (img2File) {
+      const uploadedUrl = await uploadFile(img2File);
+      if (uploadedUrl) finalImg2 = uploadedUrl;
+    }
+
+    const newProd = {
       nombre,
       categoria,
       precio: Number(precio),
-      imagenes: [img1, img2].filter(Boolean),
-      etiqueta: etiqueta || undefined,
+      imagenes: [finalImg1, finalImg2].filter(Boolean),
+      etiqueta: etiqueta || null,
       descripcion
     };
 
-    let newProds;
     if (editingId) {
-      newProds = localProducts.map(p => p.id === editingId ? newProd : p);
+      const { error } = await supabase.from('lazaro_productos').update(newProd).eq('id', editingId);
+      if (error) {
+        alert('Error al actualizar el producto: ' + error.message);
+        setIsSaving(false);
+        return;
+      }
     } else {
-      newProds = [...localProducts, newProd];
+      const { error } = await supabase.from('lazaro_productos').insert([newProd]);
+      if (error) {
+        alert('Error al crear el producto: ' + error.message);
+        setIsSaving(false);
+        return;
+      }
     }
     
-    setLocalProducts(newProds);
-    onSave(localCategories, newProds);
+    await fetchProducts();
     resetForm();
     alert('Inventario actualizado exitosamente.');
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('¿Estás seguro de eliminar este producto?')) {
-      const newProds = localProducts.filter(p => p.id !== id);
-      setLocalProducts(newProds);
-      onSave(localCategories, newProds);
+      const { error } = await supabase.from('lazaro_productos').delete().eq('id', id);
+      if (error) {
+        alert('Error al eliminar producto: ' + error.message);
+      } else {
+        await fetchProducts();
+      }
     }
   };
 
@@ -825,12 +931,7 @@ function ExpressManager({ categories, products, onSave }: ExpressManagerProps) {
       const newCats = localCategories.map(c => c === editingCatName ? newCatName.trim() : c);
       setLocalCategories(newCats);
       
-      const updatedProducts = localProducts.map(p => 
-        p.categoria === editingCatName ? { ...p, categoria: newCatName.trim() } : p
-      );
-      setLocalProducts(updatedProducts);
-      
-      onSave(newCats, updatedProducts);
+      onSave(newCats);
       setEditingCatName(null);
       setNewCatName('');
     } else {
@@ -840,7 +941,7 @@ function ExpressManager({ categories, products, onSave }: ExpressManagerProps) {
       }
       const newCats = [...localCategories, newCatName.trim()];
       setLocalCategories(newCats);
-      onSave(newCats, localProducts);
+      onSave(newCats);
       setNewCatName('');
     }
   };
@@ -854,7 +955,7 @@ function ExpressManager({ categories, products, onSave }: ExpressManagerProps) {
     if (confirm(`¿Estás seguro de eliminar la categoría "${cat}"?`)) {
       const newCats = localCategories.filter(c => c !== cat);
       setLocalCategories(newCats);
-      onSave(newCats, localProducts);
+      onSave(newCats);
     }
   };
 
@@ -972,18 +1073,18 @@ function ExpressManager({ categories, products, onSave }: ExpressManagerProps) {
               </div>
               <div>
                 <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-widest">Imagen 1 (Principal)</label>
-                <input type="file" accept="image/*" onChange={e => handleImageUpload(e, setImg1)} className="w-full text-sm px-4 py-2 border border-stone-200 rounded-lg focus:outline-none focus:border-amber-400 bg-white" />
+                <input type="file" accept="image/*" onChange={e => handleImageUpload(e, setImg1, setImg1File)} className="w-full text-sm px-4 py-2 border border-stone-200 rounded-lg focus:outline-none focus:border-amber-400 bg-white" />
                 {img1 && <img src={img1} alt="Preview 1" className="mt-2 h-16 w-16 object-cover rounded-md border border-stone-200 shadow-sm" />}
               </div>
               <div>
                 <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-widest">Imagen 2 (Hover/Opcional)</label>
-                <input type="file" accept="image/*" onChange={e => handleImageUpload(e, setImg2)} className="w-full text-sm px-4 py-2 border border-stone-200 rounded-lg focus:outline-none focus:border-amber-400 bg-white" />
+                <input type="file" accept="image/*" onChange={e => handleImageUpload(e, setImg2, setImg2File)} className="w-full text-sm px-4 py-2 border border-stone-200 rounded-lg focus:outline-none focus:border-amber-400 bg-white" />
                 {img2 && <img src={img2} alt="Preview 2" className="mt-2 h-16 w-16 object-cover rounded-md border border-stone-200 shadow-sm" />}
               </div>
             </div>
             <div className="flex gap-2">
-              <button onClick={handleSaveProduct} className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg text-sm font-bold uppercase transition-colors"><Check size={16} className="inline mr-1" /> Guardar Producto</button>
-              <button onClick={resetForm} className="bg-stone-200 hover:bg-stone-300 text-stone-700 px-6 py-2 rounded-lg text-sm font-medium transition-colors">Cancelar</button>
+              <button disabled={isSaving} onClick={handleSaveProduct} className="bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white px-6 py-2 rounded-lg text-sm font-bold uppercase transition-colors"><Check size={16} className="inline mr-1" /> {isSaving ? 'Guardando...' : 'Guardar Producto'}</button>
+              <button disabled={isSaving} onClick={resetForm} className="bg-stone-200 hover:bg-stone-300 text-stone-700 px-6 py-2 rounded-lg text-sm font-medium transition-colors">Cancelar</button>
             </div>
           </div>
         )}
