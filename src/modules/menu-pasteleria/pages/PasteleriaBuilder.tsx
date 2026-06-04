@@ -570,9 +570,9 @@ export function PasteleriaBuilder() {
                   <div className="font-medium text-sm">
                     {dec.name}
                   </div>
-                  {dec.note && (
+                  {(dec.note || dec.id === 'dec-mdf') && (
                     <div className={`text-[10px] mt-1 leading-tight px-1 ${isSelected ? 'text-amber-700/70' : 'text-stone-400'}`}>
-                      {dec.note}
+                      {dec.note || '*MDF: madera sintética de material comprimido*'}
                     </div>
                   )}
                   {isSelected && (
