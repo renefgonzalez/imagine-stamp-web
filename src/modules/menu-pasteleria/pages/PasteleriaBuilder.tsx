@@ -485,7 +485,7 @@ export function PasteleriaBuilder() {
         </div>
 
         {activeTab === 'builder' ? (
-          <div className="space-y-16">
+          <div className="space-y-6 md:space-y-10">
             {/* PASO 1: TAMAÑO */}
         <section className="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-stone-100 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-100 via-rose-100 to-amber-100 opacity-50"></div>
