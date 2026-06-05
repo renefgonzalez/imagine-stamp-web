@@ -1,0 +1,8 @@
+Sube aquí las fotos de la galería de pasteles (este módulo es independiente).
+
+- Formatos aceptados: .webp, .jpg, .jpeg, .png
+- Nómbralas con números para controlar el orden: 1.webp, 2.webp, 3.webp, ...
+- Se cargan automáticamente; no hay que tocar el código ni hay límite fijo de 20.
+- Recomendado: .webp optimizado, lado largo ~1200px.
+
+Puedes borrar este archivo cuando subas las imágenes.

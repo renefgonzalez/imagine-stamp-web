@@ -5,9 +5,19 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
+// Carga automática de todas las imágenes dentro del módulo de pastelería.
+// Solo agrega/quita archivos en src/modules/menu-pasteleria/assets/galeria/
+const imagenes = import.meta.glob('../assets/galeria/*.{webp,jpg,jpeg,png}', {
+  eager: true,
+  import: 'default',
+});
+
 export default function GaleriaPasteles() {
-  const totalFotos = 20;
-  const fotos = Array.from({ length: totalFotos }, (_, index) => `/galeria-pasteles/${index + 1}.webp`);
+  const fotos = Object.entries(imagenes)
+    .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+    .map(([, src]) => src as string);
+
+  if (fotos.length === 0) return null;
 
   return (
     <div className="w-full max-w-5xl mx-auto mb-8 px-4 mt-6">
@@ -36,7 +46,7 @@ export default function GaleriaPasteles() {
         className="w-full h-72 md:h-80 rounded-xl"
       >
         {fotos.map((fotoSrc, index) => (
-          <SwiperSlide key={index}>
+          <SwiperSlide key={fotoSrc}>
             <div className="w-full h-full overflow-hidden rounded-xl shadow-lg border border-gray-100">
               <img
                 src={fotoSrc}
