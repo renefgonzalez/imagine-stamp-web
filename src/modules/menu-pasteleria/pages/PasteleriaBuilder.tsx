@@ -635,14 +635,17 @@ export function PasteleriaBuilder() {
               <p className="text-stone-400 text-[10px] uppercase tracking-widest mt-1 font-medium bg-stone-50 inline-block px-2 py-0.5 rounded-full border border-stone-100">(Opcional)</p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-3">
-            {EXTRAS.map(extra => {
+          <div className="grid grid-cols-2 gap-3">
+            {[...EXTRAS]
+              .sort((a, b) => Number(a.name.length > 14) - Number(b.name.length > 14))
+              .map(extra => {
               const isSelected = selectedExtras.includes(extra.id);
+              const isWide = extra.name.length > 14;
               return (
                 <button
                   key={extra.id}
                   onClick={() => toggleExtra(extra.id)}
-                  className={`relative px-4 py-2 text-sm font-medium rounded-full transition-all border-2 ${
+                  className={`relative px-4 py-2 text-sm font-medium rounded-full transition-all border-2 justify-self-center ${isWide ? 'col-span-2' : ''} ${
                     isSelected
                       ? 'border-amber-300 bg-rose-50/60 text-amber-900 shadow-sm'
                       : 'border-transparent bg-stone-50 text-stone-500 hover:bg-stone-100 hover:border-stone-200'
