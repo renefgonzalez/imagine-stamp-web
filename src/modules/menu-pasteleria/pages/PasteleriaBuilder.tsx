@@ -4,6 +4,7 @@ import { ShoppingBag, ArrowLeft, Check, Plus, Minus, Trash2, X, Store, Truck, Ca
 import { useCatalog, productosExpress, SizeOption, CartItem } from '../constants';
 import { supabase } from '../../../lib/supabase';
 import logoLazaro from '../assets/logo-lazaro.png';
+import GaleriaPasteles from '../components/GaleriaPasteles';
 const WHATSAPP_NUMBER = '525512479773';
 const BASE_CAKE_PRICE = 550; // Precio base demostrativo
 
@@ -486,6 +487,7 @@ export function PasteleriaBuilder() {
 
         {activeTab === 'builder' ? (
           <div className="space-y-6 md:space-y-10">
+            <GaleriaPasteles />
             {/* PASO 1: TAMAÑO */}
         <section className="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-stone-100 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-100 via-rose-100 to-amber-100 opacity-50"></div>
