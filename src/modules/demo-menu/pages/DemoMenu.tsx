@@ -1179,44 +1179,7 @@ export default function DemoMenu() {
         )}
       </AnimatePresence>
 
-      {/* ── FLOATING ADMIN BUTTON (modo administrador) ───────────────────── */}
-      <button
-        id="open-admin-btn"
-        onClick={() => setIsAdminOpen(true)}
-        title="Modo administrador — Edita precios, imágenes y disponibilidad"
-        style={{
-          position: 'fixed',
-          bottom: '24px',
-          left: '16px',
-          zIndex: 55,
-          background: 'rgba(20, 20, 20, 0.85)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 140, 0, 0.35)',
-          borderRadius: '999px',
-          padding: '9px 14px',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '7px',
-          color: 'rgba(255, 200, 140, 0.9)',
-          fontWeight: 700,
-          fontSize: '11px',
-          letterSpacing: '0.05em',
-          boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
-          transition: 'all 0.2s ease',
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.background = 'rgba(255, 106, 0, 0.95)';
-          e.currentTarget.style.color = '#fff';
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.background = 'rgba(20, 20, 20, 0.85)';
-          e.currentTarget.style.color = 'rgba(255, 200, 140, 0.9)';
-        }}
-      >
-        <Settings size={14} />
-        Ver modo administrador
-      </button>
+
 
       {/* ── ADMIN PANEL (gestión en vivo del catálogo) ───────────────────── */}
       <AnimatePresence>
