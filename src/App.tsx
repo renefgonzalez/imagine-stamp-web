@@ -372,7 +372,7 @@ export default function App() {
                         <Facebook size={16} />
                       </a>
                       <a 
-                        href="https://www.tiktok.com/@pastelerialazaro?_r=1&_t=ZS-96sqnO6nIBB"
+                        href="https://www.tiktok.com/@TU_USUARIO_AQUI"
                         target="_blank" rel="noreferrer"
                         title="TikTok"
                         className="w-8 h-8 rounded-full flex items-center justify-center text-primary/40 hover:text-black hover:bg-gray-100 transition-all"
@@ -756,7 +756,7 @@ export default function App() {
                   <div className="space-y-6">
                     <h3 className="font-headline font-bold text-primary text-lg">Contacto</h3>
                     <div className="space-y-4 text-sm text-primary/70">
-                      <a href="https://wa.me/525512479773" target="_blank" rel="noreferrer" className="flex items-center gap-3"><MessageCircle size={18} /> WhatsApp</a>
+                      <a href="https://wa.me/525650469993" target="_blank" rel="noreferrer" className="flex items-center gap-3"><MessageCircle size={18} /> WhatsApp</a>
                       <a href="mailto:imagineandstamp@gmail.com" className="flex items-center gap-3"><MailIcon size={18} /> imagineandstamp@gmail.com</a>
                     </div>
                   </div>
@@ -765,7 +765,7 @@ export default function App() {
                     <div className="flex gap-4">
                       <a href="https://www.instagram.com/personalizadosimagineandstamp" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center"><Instagram size={22} /></a>
                       <a href="https://www.facebook.com/share/1CFhhieFeV/?mibextid=wwXIfr" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center"><Facebook size={22} /></a>
-                      <a href="https://www.tiktok.com/@pastelerialazaro?_r=1&_t=ZS-96sqnO6nIBB" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg></a>
+                      <a href="https://www.tiktok.com/@TU_USUARIO_AQUI" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg></a>
                     </div>
                   </div>
                 </div>
@@ -779,7 +779,7 @@ export default function App() {
 
               <div className="fixed bottom-8 right-6 z-50 flex flex-col gap-4 items-end">
                 <motion.a 
-                  href="https://wa.me/525512479773" target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }}
+                  href="https://wa.me/525650469993?text=Hola,%20vengo%20de%20la%20página%20web%20y%20quiero%20cotizar" target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }}
                   className="flex items-center gap-3 bg-[#25D366] text-white px-6 py-4 rounded-full shadow-2xl"
                 >
                   <span className="font-bold text-sm">¡Cotiza aquí!</span>
