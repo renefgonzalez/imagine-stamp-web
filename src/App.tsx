@@ -15,7 +15,7 @@ import { CrepasCatalog } from './modules/menu-crepas/pages/CrepasCatalog';
 import { PasteleriaBuilder } from './modules/menu-pasteleria/pages/PasteleriaBuilder';
 import { AdminPasteleria } from './modules/menu-pasteleria/pages/AdminPasteleria';
 import MenuAbanico from './modules/menu-taqueria/pages/MenuAbanico';
-import MenuCoco from './modules/menu-coco/MenuCoco';
+import MenuPatrona from './modules/cazuelitas-patrona/MenuPatrona';
 
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
@@ -1063,7 +1063,7 @@ export default function App() {
         <Route path="/lazaro-pasteleria" element={<PasteleriaBuilder />} />
         <Route path="/lazaro-pasteleria/admin" element={<AdminPasteleria />} />
         <Route path="/taqueria-abanico" element={<MenuAbanico />} />
-        <Route path="/menu-coco" element={<MenuCoco />} />
+        <Route path="/cazuelitas-patrona" element={<MenuPatrona />} />
       </Routes>
     </HashRouter>
   );
