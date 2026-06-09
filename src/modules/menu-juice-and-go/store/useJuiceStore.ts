@@ -20,7 +20,7 @@ interface JuiceStore {
   clearCart: () => void;
 }
 
-export const useJuiceStore = create<JuiceStore>((set) => ({
+export const useJuiceStore = create<JuiceStore>()((set) => ({
   cart: [],
   addToCart: (item) => set((state) => ({ cart: [...state.cart, item] })),
   removeFromCart: (id) => set((state) => ({ cart: state.cart.filter(i => i.id !== id) })),
