@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Footer from './Footer';
 import FloatingCart from './FloatingCart';
 import { useCartStore } from './cartStore';
 import logoImg from './logo.png';
+import { getSupabaseClient } from '../../lib/dynamicSupabase';
 
 const MenuPatrona = () => {
   const { addItem } = useCartStore();
+
+  // Inicializar y obtener el cliente de Supabase específico para La Patrona
+  const supabase = getSupabaseClient('la-patrona');
+
+  useEffect(() => {
+    // Ejemplo de cómo podrías usarlo:
+    // const fetchProducts = async () => {
+    //   const { data } = await supabase.from('products').select('*');
+    //   console.log('Productos de La Patrona:', data);
+    // };
+    // fetchProducts();
+    console.log("Supabase Client (La Patrona) configurado en esta sesión.");
+  }, [supabase]);
 
   return (
     <div className="min-h-screen bg-[#1A110D] text-[#F9E79F] font-sans relative pb-28 overflow-hidden">
