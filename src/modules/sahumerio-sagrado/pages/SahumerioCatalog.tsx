@@ -22,6 +22,7 @@ export default function SahumerioCatalog() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartStep, setCartStep] = useState<'cart' | 'details'>('cart');
+  const [selectedProductDetails, setSelectedProductDetails] = useState<any>(null);
   
   const [favorites, setFavorites] = useState<string[]>([]);
 
@@ -191,7 +192,7 @@ export default function SahumerioCatalog() {
           </nav>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-6 text-sm font-medium">
+          <div className="flex items-center gap-2 md:gap-6 text-sm font-medium">
             <button 
               onClick={() => {
                 if(favorites.length > 0) {
@@ -201,7 +202,7 @@ export default function SahumerioCatalog() {
                   alert('Aún no tienes favoritos.');
                 }
               }}
-              className="relative flex items-center justify-center w-12 h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg hidden md:flex"
+              className="relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg"
               title="Mis Favoritos"
             >
               <div className="absolute inset-0 rounded-full shadow-[0_0_20px_rgba(184,146,255,0.5)] group-hover:shadow-[0_0_35px_rgba(184,146,255,0.9)] transition-shadow" />
@@ -215,7 +216,7 @@ export default function SahumerioCatalog() {
             
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="relative flex items-center justify-center w-12 h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg"
+              className="relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg"
             >
               <div className="absolute inset-0 rounded-full shadow-[0_0_20px_rgba(184,146,255,0.5)] group-hover:shadow-[0_0_35px_rgba(184,146,255,0.9)] transition-shadow" />
               <ShoppingBag size={20} className="text-[#B892FF]" strokeWidth={2} />
@@ -226,12 +227,12 @@ export default function SahumerioCatalog() {
               )}
             </button>
 
-            <div className="flex items-center gap-4 hidden md:flex">
-              <a href="#" className="relative flex items-center justify-center w-12 h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg">
+            <div className="flex items-center gap-2 md:gap-4">
+              <a href="#" className="relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg">
                 <div className="absolute inset-0 rounded-full shadow-[0_0_20px_rgba(184,146,255,0.5)] group-hover:shadow-[0_0_35px_rgba(184,146,255,0.9)] transition-shadow" />
                 <svg width="20" height="20" className="text-[#B892FF] relative z-10" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
               </a>
-              <a href="#" className="relative flex items-center justify-center w-12 h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg">
+              <a href="#" className="relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg">
                 <div className="absolute inset-0 rounded-full shadow-[0_0_20px_rgba(184,146,255,0.5)] group-hover:shadow-[0_0_35px_rgba(184,146,255,0.9)] transition-shadow" />
                 <svg width="20" height="20" className="text-[#B892FF] relative z-10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
               </a>
@@ -365,7 +366,7 @@ export default function SahumerioCatalog() {
 
         {/* LISTA DE PRODUCTOS */}
         <main className="max-w-5xl mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
             <AnimatePresence mode="popLayout">
               {filteredProducts.map(product => (
                 <motion.div 
@@ -375,42 +376,47 @@ export default function SahumerioCatalog() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.4 }}
-                  className="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-[#8A799E]/10 hover:shadow-xl transition-all duration-300 group flex flex-col"
+                  onClick={() => setSelectedProductDetails(product)}
+                  className="bg-white rounded-[1.5rem] md:rounded-[2rem] overflow-hidden shadow-sm border border-[#8A799E]/10 hover:shadow-xl transition-all duration-300 group flex flex-col cursor-pointer"
                 >
-                  <div className="aspect-square overflow-hidden relative m-2 rounded-[1.5rem]">
+                  <div className="aspect-square overflow-hidden relative m-2 rounded-[1rem] md:rounded-[1.5rem]">
                     <img 
                       src={product.image} 
                       alt={product.name} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
-                    <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
+                    <div className="absolute top-2 right-2 flex flex-col gap-2 z-10">
                       <button 
                         onClick={(e) => toggleFavorite(e, product.id)}
-                        className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-[#B892FF] hover:border-[#B892FF] transition-all shadow-md group/fav"
+                        className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-[#B892FF] hover:border-[#B892FF] transition-all shadow-md group/fav"
                         title="Agregar a favoritos"
                       >
-                        <Heart size={16} fill={favorites.includes(product.id) ? "white" : "none"} className={favorites.includes(product.id) ? "text-white" : "text-white group-hover/fav:text-white"} />
+                        <Heart size={14} fill={favorites.includes(product.id) ? "white" : "none"} className={favorites.includes(product.id) ? "text-white" : "text-white group-hover/fav:text-white md:w-4 md:h-4"} />
                       </button>
                       <button 
                         onClick={(e) => shareProduct(e, product)}
-                        className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-[#B892FF] hover:border-[#B892FF] transition-all shadow-md group/share"
+                        className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-[#B892FF] hover:border-[#B892FF] transition-all shadow-md group/share"
                         title="Compartir"
                       >
-                        <Share2 size={16} className="text-white group-hover/share:text-white" />
+                        <Share2 size={14} className="text-white group-hover/share:text-white md:w-4 md:h-4" />
                       </button>
                     </div>
                   </div>
-                  <div className="p-6 flex flex-col flex-1">
-                    <h3 className="font-serif font-medium text-lg mb-2 text-[#4A4056]">{product.name}</h3>
-                    <p className="text-sm text-[#8A799E] mb-6 line-clamp-2 font-light flex-1">{product.description}</p>
-                    <div className="flex items-center justify-between mt-auto">
-                      <span className="text-xl font-medium text-[#4A4056]">${product.price}</span>
+                  <div className="p-4 md:p-6 flex flex-col flex-1">
+                    <h3 className="font-serif font-medium text-base md:text-lg mb-1 md:mb-2 text-[#4A4056] leading-tight">{product.name}</h3>
+                    <p className="text-xs md:text-sm text-[#8A799E] mb-4 md:mb-6 line-clamp-2 font-light flex-1">{product.description}</p>
+                    <div className="flex flex-col mt-auto gap-2 md:gap-3">
+                      <span className="text-lg md:text-xl font-bold text-[#4A4056]">${product.price}</span>
                       <button 
-                        onClick={() => addToCart(product)}
-                        className="w-10 h-10 rounded-full bg-[#FDFBF7] border border-[#8A799E]/20 text-[#6B5A7E] flex items-center justify-center hover:bg-[#6B5A7E] hover:text-white hover:border-[#6B5A7E] transition-all"
-                        aria-label="Agregar al carrito"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart(product);
+                        }}
+                        className="w-full py-2 text-xs md:text-sm md:py-2.5 rounded-full bg-[#B892FF] text-white font-medium hover:bg-[#A37DE6] transition-colors flex items-center justify-center gap-1 md:gap-2 shadow-sm"
                       >
-                        <Plus size={18} />
+                        <ShoppingBag size={14} className="md:w-[18px] md:h-[18px]" />
+                        <span className="hidden sm:inline">Agregar al Carrito</span>
+                        <span className="sm:hidden">Agregar</span>
                       </button>
                     </div>
                   </div>
@@ -664,6 +670,53 @@ export default function SahumerioCatalog() {
               )}
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+      {/* MODAL DETALLES DEL PRODUCTO */}
+      <AnimatePresence>
+        {selectedProductDetails && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => setSelectedProductDetails(null)}
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-white rounded-3xl overflow-hidden max-w-lg w-full shadow-2xl flex flex-col max-h-[90vh]"
+            >
+              <div className="relative h-64 shrink-0">
+                <img src={selectedProductDetails.image} alt={selectedProductDetails.name} className="w-full h-full object-cover" />
+                <button 
+                  onClick={() => setSelectedProductDetails(null)}
+                  className="absolute top-4 right-4 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors shadow-lg"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="p-6 overflow-y-auto">
+                <h3 className="text-2xl font-serif text-[#4A4056] mb-2">{selectedProductDetails.name}</h3>
+                <p className="text-[#8A799E] mb-6 whitespace-pre-wrap">{selectedProductDetails.description}</p>
+                <div className="flex justify-between items-center pt-4 border-t border-[#8A799E]/10">
+                  <span className="text-2xl font-bold text-[#4A4056]">${selectedProductDetails.price}</span>
+                  <button 
+                    onClick={() => {
+                      addToCart(selectedProductDetails);
+                      setSelectedProductDetails(null);
+                    }}
+                    className="px-6 py-3 bg-[#B892FF] text-white rounded-full font-bold hover:bg-[#A37DE6] transition-colors shadow-md flex items-center gap-2"
+                  >
+                    <ShoppingBag size={18} />
+                    Agregar
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
