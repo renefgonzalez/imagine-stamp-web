@@ -256,21 +256,21 @@ export default function SahumerioCatalog() {
         </div>
 
         {/* Humo sutil animado subiendo desde el centro */}
-        <div className="absolute inset-0 flex items-end justify-center pointer-events-none z-10 overflow-hidden mix-blend-screen opacity-80">
+        <div className="absolute inset-0 flex items-end justify-center pointer-events-none z-[5] overflow-hidden mix-blend-screen opacity-40">
           <motion.div
-            animate={{ y: [100, -800], x: [-40, 50, -30], opacity: [0, 0.8, 0], scale: [1, 2, 3] }}
-            transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-            className="absolute w-72 h-[500px] bg-white/30 blur-[70px] rounded-full"
+            animate={{ y: [100, -600], x: [-30, 40, -20], opacity: [0, 0.5, 0], scale: [1, 1.8, 2.5] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+            className="absolute w-64 h-[400px] bg-white/10 blur-[60px] rounded-full"
           />
           <motion.div
-            animate={{ y: [150, -900], x: [30, -60, 40], opacity: [0, 0.7, 0], scale: [0.8, 1.8, 2.5] }}
-            transition={{ duration: 16, repeat: Infinity, ease: "linear", delay: 4 }}
-            className="absolute w-80 h-[550px] bg-gray-200/30 blur-[80px] rounded-full"
+            animate={{ y: [150, -700], x: [20, -50, 30], opacity: [0, 0.4, 0], scale: [0.8, 1.5, 2] }}
+            transition={{ duration: 18, repeat: Infinity, ease: "linear", delay: 5 }}
+            className="absolute w-72 h-[450px] bg-gray-200/10 blur-[70px] rounded-full"
           />
           <motion.div
-            animate={{ y: [50, -700], x: [-20, 30, -40], opacity: [0, 0.6, 0], scale: [1.2, 2.5, 3.5] }}
-            transition={{ duration: 18, repeat: Infinity, ease: "linear", delay: 8 }}
-            className="absolute w-96 h-[600px] bg-white/20 blur-[90px] rounded-full"
+            animate={{ y: [50, -500], x: [-10, 20, -30], opacity: [0, 0.3, 0], scale: [1.2, 2, 3] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear", delay: 10 }}
+            className="absolute w-80 h-[500px] bg-white/5 blur-[80px] rounded-full"
           />
         </div>
 
