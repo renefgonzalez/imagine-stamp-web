@@ -164,15 +164,15 @@ export default function SahumerioCatalog() {
       
       {/* HEADER TRANSLÚCIDO MINIMALISTA TIPO BRASA URBANA */}
       <header className="fixed top-0 w-full z-40 bg-transparent transition-all duration-300 border-b border-white/5">
-        <div className="w-full px-6 md:px-12 h-24 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
+        <div className="w-full px-3 sm:px-6 md:px-12 h-24 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
           {/* Logo & Title */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <button className="text-white/60 hover:text-white transition-colors">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
               </svg>
             </button>
-            <div className="relative w-16 h-16 ml-2 rounded-full overflow-hidden flex items-center justify-center bg-black/40 border border-white/20 drop-shadow-[0_0_25px_rgba(184,146,255,0.8)]">
+            <div className="relative w-12 h-12 md:w-16 md:h-16 ml-1 md:ml-2 rounded-full overflow-hidden flex items-center justify-center bg-black/40 border border-white/20 drop-shadow-[0_0_25px_rgba(184,146,255,0.8)]">
               {/* Este img cargará tu logo desde la carpeta superior */}
               <img src={mainLogo} alt="Logo Sahumerio" className="w-full h-full object-cover z-10" />
               {/* Fallback de flor de loto por si la imagen aún no se sube */}
@@ -181,7 +181,7 @@ export default function SahumerioCatalog() {
                 <path d="M50 25 C 20 50, 10 70, 50 85 C 90 70, 80 50, 50 25 Z" stroke="currentColor" strokeWidth="4" fill="transparent"/>
               </svg>
             </div>
-            <span className="text-white font-bold text-xl tracking-wider ml-2 font-sans">SAHUMERIO SAGRADO</span>
+            <span className="hidden sm:block text-white font-bold text-lg md:text-xl tracking-wider ml-1 md:ml-2 font-sans shrink-0">SAHUMERIO SAGRADO</span>
           </div>
           
           {/* Center Nav */}
@@ -192,7 +192,7 @@ export default function SahumerioCatalog() {
           </nav>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-2 md:gap-6 text-sm font-medium">
+          <div className="flex items-center gap-1.5 md:gap-6 text-sm font-medium shrink-0">
             <button 
               onClick={() => {
                 if(favorites.length > 0) {
@@ -202,13 +202,13 @@ export default function SahumerioCatalog() {
                   alert('Aún no tienes favoritos.');
                 }
               }}
-              className="relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg"
+              className="relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg"
               title="Mis Favoritos"
             >
               <div className="absolute inset-0 rounded-full shadow-[0_0_20px_rgba(184,146,255,0.5)] group-hover:shadow-[0_0_35px_rgba(184,146,255,0.9)] transition-shadow" />
-              <Heart size={20} className="text-[#B892FF] relative z-10" strokeWidth={2} fill={favorites.length > 0 ? "#B892FF" : "none"} />
+              <Heart className="w-4 h-4 md:w-5 md:h-5 text-[#B892FF] relative z-10" strokeWidth={2} fill={favorites.length > 0 ? "#B892FF" : "none"} />
               {favorites.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#B892FF] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#1A1A1A] z-20">
+                <span className="absolute -top-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-[#B892FF] text-white text-[9px] md:text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#1A1A1A] z-20">
                   {favorites.length}
                 </span>
               )}
@@ -216,25 +216,25 @@ export default function SahumerioCatalog() {
             
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg"
+              className="relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg"
             >
               <div className="absolute inset-0 rounded-full shadow-[0_0_20px_rgba(184,146,255,0.5)] group-hover:shadow-[0_0_35px_rgba(184,146,255,0.9)] transition-shadow" />
-              <ShoppingBag size={20} className="text-[#B892FF]" strokeWidth={2} />
+              <ShoppingBag className="w-4 h-4 md:w-5 md:h-5 text-[#B892FF]" strokeWidth={2} />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#B892FF] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#1A1A1A]">
+                <span className="absolute -top-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-[#B892FF] text-white text-[9px] md:text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#1A1A1A]">
                   {totalItems}
                 </span>
               )}
             </button>
 
-            <div className="flex items-center gap-2 md:gap-4">
-              <a href="#" className="relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg">
+            <div className="flex items-center gap-1.5 md:gap-4">
+              <a href="#" className="relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg">
                 <div className="absolute inset-0 rounded-full shadow-[0_0_20px_rgba(184,146,255,0.5)] group-hover:shadow-[0_0_35px_rgba(184,146,255,0.9)] transition-shadow" />
-                <svg width="20" height="20" className="text-[#B892FF] relative z-10" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                <svg className="w-4 h-4 md:w-5 md:h-5 text-[#B892FF] relative z-10" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
               </a>
-              <a href="#" className="relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg">
+              <a href="#" className="relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg">
                 <div className="absolute inset-0 rounded-full shadow-[0_0_20px_rgba(184,146,255,0.5)] group-hover:shadow-[0_0_35px_rgba(184,146,255,0.9)] transition-shadow" />
-                <svg width="20" height="20" className="text-[#B892FF] relative z-10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                <svg className="w-4 h-4 md:w-5 md:h-5 text-[#B892FF] relative z-10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
               </a>
             </div>
           </div>
@@ -330,10 +330,10 @@ export default function SahumerioCatalog() {
       {/* AUDIO FLOTANTE (Discreto) */}
       <button 
         onClick={toggleAudio}
-        className="fixed bottom-6 left-6 z-40 w-10 h-10 rounded-full bg-white/70 backdrop-blur-sm border border-[#8A799E]/20 shadow-sm flex items-center justify-center text-[#8A799E] hover:bg-white hover:text-[#6B5A7E] transition-all"
+        className="fixed bottom-24 md:bottom-6 left-4 md:left-6 z-50 w-12 h-12 md:w-10 md:h-10 rounded-full bg-black/60 md:bg-white/70 backdrop-blur-md border border-white/20 md:border-[#8A799E]/20 shadow-[0_0_20px_rgba(184,146,255,0.4)] flex items-center justify-center text-white md:text-[#8A799E] hover:bg-[#B892FF] transition-all"
         title={isPlaying ? "Pausar música zen" : "Reproducir música zen"}
       >
-        {isPlaying ? <Volume2 size={18} /> : <VolumeX size={18} />}
+        {isPlaying ? <Volume2 size={24} className="md:w-[18px]" /> : <VolumeX size={24} className="md:w-[18px]" />}
       </button>
       <audio 
         ref={audioRef} 
