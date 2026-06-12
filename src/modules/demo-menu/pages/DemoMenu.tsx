@@ -222,8 +222,8 @@ export default function DemoMenu() {
   const [orderSent, setOrderSent] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
-  const [deliveryMethod, setDeliveryMethod] = useState('Por confirmar');
-  const [paymentMethod, setPaymentMethod] = useState('Por confirmar');
+  const [deliveryMethod, setDeliveryMethod] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
   const [additionalNotes, setAdditionalNotes] = useState('');
   const [discountCoupon, setDiscountCoupon] = useState('');
   const [orderStep, setOrderStep] = useState<'cart' | 'confirm'>('cart');
@@ -270,9 +270,9 @@ export default function DemoMenu() {
   // ── Cart logic
   const totalItems = cart.reduce((acc, i) => acc + i.quantity, 0);
   const subTotal = cart.reduce((acc, i) => acc + i.price * i.quantity, 0);
-  const isPickup = deliveryMethod === 'Recoger en tienda';
-  const pickupFee = isPickup ? 50 : 0;
-  const totalPrice = subTotal + pickupFee;
+  const isDelivery = deliveryMethod === 'Envío a domicilio';
+  const deliveryFee = isDelivery ? 50 : 0;
+  const totalPrice = subTotal + deliveryFee;
 
   const addToCart = (item: MenuItem) => {
     if (item.soldOut) return;
@@ -305,7 +305,7 @@ export default function DemoMenu() {
     const pMethod = `Forma de Pago: ${paymentMethod}`;
     const notes = additionalNotes.trim() ? `Notas: ${additionalNotes}` : '';
     const coupon = discountCoupon.trim() ? `Cupón: ${discountCoupon}` : '';
-    const pickupExtra = isPickup ? `Costo de gestión (Recoger en tienda): $50 MXN\n` : '';
+    const pickupExtra = isDelivery ? `Costo de envío a domicilio: $50 MXN\n` : '';
 
     const message =
       `🍔 *Pedido en Burger & Co*\n\n` +
@@ -332,8 +332,8 @@ export default function DemoMenu() {
       setIsCartOpen(false);
       setCustomerName('');
       setCustomerPhone('');
-      setDeliveryMethod('Por confirmar');
-      setPaymentMethod('Por confirmar');
+      setDeliveryMethod('');
+      setPaymentMethod('');
       setAdditionalNotes('');
       setDiscountCoupon('');
     }, 2500);
@@ -1090,10 +1090,10 @@ export default function DemoMenu() {
                             </span>
                           </div>
                         ))}
-                        {isPickup && (
+                        {isDelivery && (
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                             <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px' }}>
-                              Gestión en tienda
+                              Costo de Envío
                             </span>
                             <span style={{ color: '#fff', fontWeight: 700, fontSize: '13px' }}>
                               $50
@@ -1160,15 +1160,16 @@ export default function DemoMenu() {
                               boxSizing: 'border-box',
                             }}
                           >
+                            <option value="" disabled style={{ background: '#111' }}>Seleccione una opción</option>
                             <option value="Por confirmar" style={{ background: '#111' }}>❓ Por confirmar</option>
                             <option value="Envío a domicilio" style={{ background: '#111' }}>🛵 Envío a domicilio</option>
                             <option value="Recoger en tienda" style={{ background: '#111' }}>🏪 Recoger en tienda</option>
                             <option value="Entrega digital" style={{ background: '#111' }}>💻 Entrega digital</option>
                           </select>
-                          {isPickup && (
+                          {isDelivery && (
                             <div style={{ marginTop: '8px', padding: '10px', background: 'rgba(255, 140, 0, 0.15)', borderRadius: '8px', border: '1px solid rgba(255, 140, 0, 0.3)' }}>
                               <p style={{ color: '#FF8C00', fontSize: '12px', margin: 0, fontWeight: 600 }}>
-                                ℹ️ Costo por gestión de pedido en tienda: $50 pesos. (Sumado al total)
+                                ℹ️ Costo por envío a domicilio: $50 pesos. (Sumado al total)
                               </p>
                             </div>
                           )}
@@ -1189,6 +1190,7 @@ export default function DemoMenu() {
                               boxSizing: 'border-box',
                             }}
                           >
+                            <option value="" disabled style={{ background: '#111' }}>Seleccione una opción</option>
                             <option value="Por confirmar" style={{ background: '#111' }}>❓ Por confirmar</option>
                             <option value="Efectivo" style={{ background: '#111' }}>💵 Efectivo</option>
                             <option value="Tarjeta" style={{ background: '#111' }}>💳 Tarjeta</option>
@@ -1323,10 +1325,13 @@ export default function DemoMenu() {
                             key="whatsapp-btn"
                             id="whatsapp-order-btn"
                             onClick={handleCheckout}
+                            disabled={!customerName || !customerPhone || !deliveryMethod || !paymentMethod}
                             style={{
                               background: 'linear-gradient(135deg, #25D366, #128C7E)',
                               border: 'none', borderRadius: '16px',
-                              padding: '16px', cursor: 'pointer',
+                              padding: '16px', 
+                              cursor: (!customerName || !customerPhone || !deliveryMethod || !paymentMethod) ? 'not-allowed' : 'pointer',
+                              opacity: (!customerName || !customerPhone || !deliveryMethod || !paymentMethod) ? 0.5 : 1,
                               color: '#fff', fontWeight: 900, fontSize: '16px',
                               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
                               boxShadow: '0 8px 24px rgba(37, 211, 102, 0.4)',
