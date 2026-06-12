@@ -206,6 +206,11 @@ export default function DemoMenu() {
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [orderSent, setOrderSent] = useState(false);
   const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [deliveryMethod, setDeliveryMethod] = useState('Por confirmar');
+  const [paymentMethod, setPaymentMethod] = useState('Por confirmar');
+  const [additionalNotes, setAdditionalNotes] = useState('');
+  const [discountCoupon, setDiscountCoupon] = useState('');
   const [orderStep, setOrderStep] = useState<'cart' | 'confirm'>('cart');
 
   // ── Catálogo dinámico (lista para Google Sheets) ──────────────────────────
@@ -249,7 +254,10 @@ export default function DemoMenu() {
 
   // ── Cart logic
   const totalItems = cart.reduce((acc, i) => acc + i.quantity, 0);
-  const totalPrice = cart.reduce((acc, i) => acc + i.price * i.quantity, 0);
+  const subTotal = cart.reduce((acc, i) => acc + i.price * i.quantity, 0);
+  const isPickup = deliveryMethod === 'Recoger en tienda';
+  const pickupFee = isPickup ? 50 : 0;
+  const totalPrice = subTotal + pickupFee;
 
   const addToCart = (item: MenuItem) => {
     if (item.soldOut) return;
@@ -277,13 +285,27 @@ export default function DemoMenu() {
       .join('\n');
 
     const name = customerName.trim() || 'Cliente';
+    const phone = customerPhone.trim() ? `Tel: ${customerPhone}` : '';
+    const dMethod = `Método de Entrega: ${deliveryMethod}`;
+    const pMethod = `Forma de Pago: ${paymentMethod}`;
+    const notes = additionalNotes.trim() ? `Notas: ${additionalNotes}` : '';
+    const coupon = discountCoupon.trim() ? `Cupón: ${discountCoupon}` : '';
+    const pickupExtra = isPickup ? `Costo de gestión (Recoger en tienda): $50 MXN\n` : '';
 
     const message =
       `🍔 *Pedido en Burger & Co*\n\n` +
-      `Hola! Soy *${name}* y quiero ordenar:\n\n` +
-      `${lines}\n\n` +
+      `*Datos del Cliente:*\n` +
+      `Nombre: ${name}\n` +
+      (phone ? `${phone}\n` : '') +
+      `\n*Detalle del Pedido:*\n${lines}\n\n` +
+      `${pickupExtra}` +
       `*Total: $${totalPrice} MXN*\n\n` +
-      `_Pedido generado desde el menú digital de Imagine & Stamp_ ✨`;
+      `*Opciones seleccionadas:*\n` +
+      `${dMethod}\n` +
+      `${pMethod}\n` +
+      (notes ? `\n*Información Extra:*\n${notes}\n` : '') +
+      (coupon ? `\n*Cupón:* ${coupon}\n` : '') +
+      `\n_Pedido generado desde el menú digital de Imagine & Stamp_ ✨`;
 
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
 
@@ -294,6 +316,11 @@ export default function DemoMenu() {
       setOrderStep('cart');
       setIsCartOpen(false);
       setCustomerName('');
+      setCustomerPhone('');
+      setDeliveryMethod('Por confirmar');
+      setPaymentMethod('Por confirmar');
+      setAdditionalNotes('');
+      setDiscountCoupon('');
     }, 2500);
   };
 
@@ -1048,30 +1075,155 @@ export default function DemoMenu() {
                             </span>
                           </div>
                         ))}
+                        {isPickup && (
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px' }}>
+                              Gestión en tienda
+                            </span>
+                            <span style={{ color: '#fff', fontWeight: 700, fontSize: '13px' }}>
+                              $50
+                            </span>
+                          </div>
+                        )}
                         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '12px', paddingTop: '12px', display: 'flex', justifyContent: 'space-between' }}>
                           <span style={{ color: '#fff', fontWeight: 900, fontSize: '15px' }}>Total</span>
                           <span style={{ color: '#FF8C00', fontWeight: 900, fontSize: '18px' }}>${totalPrice} MXN</span>
                         </div>
                       </div>
 
-                      {/* Name input */}
-                      <div style={{ marginBottom: '16px' }}>
-                        <label style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: '8px' }}>
-                          Tu nombre (opcional)
-                        </label>
-                        <input
-                          id="customer-name-input"
-                          value={customerName}
-                          onChange={e => setCustomerName(e.target.value)}
-                          placeholder="Ej: Juan García"
-                          style={{
-                            width: '100%', background: 'rgba(255,255,255,0.07)',
-                            border: '1px solid rgba(255,255,255,0.12)',
-                            borderRadius: '12px', padding: '14px 16px',
-                            color: '#fff', fontSize: '15px', outline: 'none',
-                            boxSizing: 'border-box',
-                          }}
-                        />
+                      {/* Datos del cliente */}
+                      <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div>
+                          <label style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: '8px' }}>
+                            Nombre completo *
+                          </label>
+                          <input
+                            id="customer-name-input"
+                            value={customerName}
+                            onChange={e => setCustomerName(e.target.value)}
+                            placeholder="Ej: Juan García"
+                            style={{
+                              width: '100%', background: 'rgba(255,255,255,0.07)',
+                              border: '1px solid rgba(255,255,255,0.12)',
+                              borderRadius: '12px', padding: '14px 16px',
+                              color: '#fff', fontSize: '15px', outline: 'none',
+                              boxSizing: 'border-box',
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: '8px' }}>
+                            Teléfono *
+                          </label>
+                          <input
+                            id="customer-phone-input"
+                            value={customerPhone}
+                            onChange={e => setCustomerPhone(e.target.value)}
+                            placeholder="Ej: 55 1234 5678"
+                            style={{
+                              width: '100%', background: 'rgba(255,255,255,0.07)',
+                              border: '1px solid rgba(255,255,255,0.12)',
+                              borderRadius: '12px', padding: '14px 16px',
+                              color: '#fff', fontSize: '15px', outline: 'none',
+                              boxSizing: 'border-box',
+                            }}
+                          />
+                        </div>
+
+                        <div>
+                          <label style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: '8px' }}>
+                            Método de Entrega *
+                          </label>
+                          <select
+                            value={deliveryMethod}
+                            onChange={e => setDeliveryMethod(e.target.value)}
+                            style={{
+                              width: '100%', background: 'rgba(255,255,255,0.07)',
+                              border: '1px solid rgba(255,255,255,0.12)',
+                              borderRadius: '12px', padding: '14px 16px',
+                              color: '#fff', fontSize: '15px', outline: 'none',
+                              boxSizing: 'border-box',
+                            }}
+                          >
+                            <option value="Por confirmar" style={{ background: '#111' }}>Por confirmar</option>
+                            <option value="Envío a domicilio" style={{ background: '#111' }}>Envío a domicilio</option>
+                            <option value="Recoger en tienda" style={{ background: '#111' }}>Recoger en tienda</option>
+                            <option value="Entrega digital" style={{ background: '#111' }}>Entrega digital</option>
+                          </select>
+                          {isPickup && (
+                            <div style={{ marginTop: '8px', padding: '10px', background: 'rgba(255, 140, 0, 0.15)', borderRadius: '8px', border: '1px solid rgba(255, 140, 0, 0.3)' }}>
+                              <p style={{ color: '#FF8C00', fontSize: '12px', margin: 0, fontWeight: 600 }}>
+                                ℹ️ Costo por gestión de pedido en tienda: $50 pesos. (Sumado al total)
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <label style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: '8px' }}>
+                            Forma de Pago *
+                          </label>
+                          <select
+                            value={paymentMethod}
+                            onChange={e => setPaymentMethod(e.target.value)}
+                            style={{
+                              width: '100%', background: 'rgba(255,255,255,0.07)',
+                              border: '1px solid rgba(255,255,255,0.12)',
+                              borderRadius: '12px', padding: '14px 16px',
+                              color: '#fff', fontSize: '15px', outline: 'none',
+                              boxSizing: 'border-box',
+                            }}
+                          >
+                            <option value="Por confirmar" style={{ background: '#111' }}>Por confirmar</option>
+                            <option value="Efectivo" style={{ background: '#111' }}>Efectivo</option>
+                            <option value="Tarjeta" style={{ background: '#111' }}>Tarjeta</option>
+                            <option value="Transferencia" style={{ background: '#111' }}>Transferencia</option>
+                          </select>
+                          {paymentMethod === 'Transferencia' && (
+                            <div style={{ marginTop: '8px', padding: '10px', background: 'rgba(34, 197, 94, 0.15)', borderRadius: '8px', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
+                              <p style={{ color: '#22C55E', fontSize: '12px', margin: 0, fontWeight: 600 }}>
+                                Datos bancarios: CLABE 012345678901234567 / Cuenta 1234567890 (Banco XYZ)
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <label style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: '8px' }}>
+                            Cupón de descuento
+                          </label>
+                          <input
+                            value={discountCoupon}
+                            onChange={e => setDiscountCoupon(e.target.value)}
+                            placeholder="Ej: DESC10"
+                            style={{
+                              width: '100%', background: 'rgba(255,255,255,0.07)',
+                              border: '1px solid rgba(255,255,255,0.12)',
+                              borderRadius: '12px', padding: '14px 16px',
+                              color: '#fff', fontSize: '15px', outline: 'none',
+                              boxSizing: 'border-box',
+                            }}
+                          />
+                        </div>
+
+                        <div>
+                          <label style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: '8px' }}>
+                            Notas adicionales
+                          </label>
+                          <textarea
+                            value={additionalNotes}
+                            onChange={e => setAdditionalNotes(e.target.value)}
+                            placeholder="Alguna alergia o instrucción especial..."
+                            style={{
+                              width: '100%', background: 'rgba(255,255,255,0.07)',
+                              border: '1px solid rgba(255,255,255,0.12)',
+                              borderRadius: '12px', padding: '14px 16px',
+                              color: '#fff', fontSize: '15px', outline: 'none',
+                              boxSizing: 'border-box',
+                              minHeight: '80px', resize: 'vertical'
+                            }}
+                          />
+                        </div>
                       </div>
 
                       <div style={{
