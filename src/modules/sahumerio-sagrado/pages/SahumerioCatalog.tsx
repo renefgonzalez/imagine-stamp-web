@@ -38,7 +38,16 @@ export default function SahumerioCatalog() {
 
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = 0.2;
+      audioRef.current.volume = 0.08; // Más bajito, muy de fondo
+      // Intentar reproducir automáticamente
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          setIsPlaying(true);
+        }).catch(e => {
+          console.log('El navegador bloqueó el autoplay:', e);
+        });
+      }
     }
   }, []);
 
