@@ -141,7 +141,7 @@ export default function SahumerioCatalog() {
   };
 
   const handleCheckout = () => {
-    const phoneNumber = '525512479773';
+    const phoneNumber = '';
     const cartText = cart.map(item => `✨ ${item.name} x${item.quantity} = $${item.price * item.quantity} MXN`).join('\n');
     
     const message = 
