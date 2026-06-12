@@ -38,7 +38,7 @@ export default function SahumerioCatalog() {
 
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = 0.08; // Más bajito, muy de fondo
+      audioRef.current.volume = 0.05; // Más bajito, muy de fondo
       // Intentar reproducir automáticamente
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
