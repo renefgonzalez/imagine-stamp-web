@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  ShoppingBag, Plus, Minus, X, MapPin, Sparkles, 
+  ShoppingBag, Plus, Minus, X, MapPin, Sparkles, Heart, Share2,
   MessageCircle, Moon, Star, ArrowLeft, Volume2, VolumeX, ChevronDown,
   Globe, Search, Menu, ZoomIn, ZoomOut, Phone, Mail, QrCode, Clock
 } from 'lucide-react';
@@ -22,6 +22,26 @@ export default function SahumerioCatalog() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartStep, setCartStep] = useState<'cart' | 'details'>('cart');
+  
+  const [favorites, setFavorites] = useState<string[]>([]);
+
+  const toggleFavorite = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
+  };
+
+  const shareProduct = (e: React.MouseEvent, product: any) => {
+    e.stopPropagation();
+    if (navigator.share) {
+      navigator.share({
+        title: product.name,
+        text: `Mira este producto mágico: ${product.name}`,
+        url: window.location.href,
+      }).catch(console.error);
+    } else {
+      alert(`Compartir: ${window.location.href}`);
+    }
+  };
   
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
@@ -172,10 +192,26 @@ export default function SahumerioCatalog() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-6 text-sm font-medium">
-            <div className="flex gap-2 text-white/50 text-xs tracking-wider hidden md:flex">
-              <button className="text-white font-bold">ES</button>
-              <span>EN</span>
-            </div>
+            <button 
+              onClick={() => {
+                if(favorites.length > 0) {
+                  const favItems = SAHUMERIO_PRODUCTS.filter(p => favorites.includes(p.id)).map(p => p.name).join(', ');
+                  alert('Tus favoritos:\n' + favItems);
+                } else {
+                  alert('Aún no tienes favoritos.');
+                }
+              }}
+              className="relative flex items-center justify-center w-12 h-12 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg hidden md:flex"
+              title="Mis Favoritos"
+            >
+              <div className="absolute inset-0 rounded-full shadow-[0_0_20px_rgba(184,146,255,0.5)] group-hover:shadow-[0_0_35px_rgba(184,146,255,0.9)] transition-shadow" />
+              <Heart size={20} className="text-[#B892FF] relative z-10" strokeWidth={2} fill={favorites.length > 0 ? "#B892FF" : "none"} />
+              {favorites.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#B892FF] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#1A1A1A] z-20">
+                  {favorites.length}
+                </span>
+              )}
+            </button>
             
             <button 
               onClick={() => setIsCartOpen(true)}
@@ -356,6 +392,22 @@ export default function SahumerioCatalog() {
                       alt={product.name} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
+                    <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
+                      <button 
+                        onClick={(e) => toggleFavorite(e, product.id)}
+                        className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-[#B892FF] hover:border-[#B892FF] transition-all shadow-md group/fav"
+                        title="Agregar a favoritos"
+                      >
+                        <Heart size={16} fill={favorites.includes(product.id) ? "white" : "none"} className={favorites.includes(product.id) ? "text-white" : "text-white group-hover/fav:text-white"} />
+                      </button>
+                      <button 
+                        onClick={(e) => shareProduct(e, product)}
+                        className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-[#B892FF] hover:border-[#B892FF] transition-all shadow-md group/share"
+                        title="Compartir"
+                      >
+                        <Share2 size={16} className="text-white group-hover/share:text-white" />
+                      </button>
+                    </div>
                   </div>
                   <div className="p-6 flex flex-col flex-1">
                     <h3 className="font-serif font-medium text-lg mb-2 text-[#4A4056]">{product.name}</h3>
