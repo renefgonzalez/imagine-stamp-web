@@ -1,6 +1,21 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save, Instagram, Facebook, Phone, Mail, Clock } from 'lucide-react';
+
+const TikTokIcon = ({ size = 24, color = "currentColor" }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+  </svg>
+);
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 interface MenuItem {
@@ -1629,16 +1644,65 @@ export default function DemoMenu() {
         )}
       </AnimatePresence>
 
-      {/* ── FOOTER DEMO BADGE */}
-      <div style={{
-        textAlign: 'center', padding: '16px', paddingBottom: '100px',
-        color: 'rgba(255,255,255,0.2)', fontSize: '11px',
-      }}>
-        Menú digital demo creado con ❤️ por{' '}
-        <a href="/#/" style={{ color: 'rgba(255, 140, 0, 0.6)', textDecoration: 'none' }}>
-          Imagine & Stamp
-        </a>
-      </div>
+      {/* ── FOOTER ── */}
+      <footer className="bg-[#0a0a0a] border-t border-white/10 pt-16 pb-28 md:pb-16 px-6 mt-16">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+          {/* Columna Izquierda: Marca */}
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <h2 className="text-2xl font-black text-white mb-4 tracking-tight">Imagine & Stamp</h2>
+            <p className="text-white/60 text-sm leading-relaxed max-w-sm">
+              Personalizamos tus momentos más especiales con diseños creativos y alta calidad.
+            </p>
+          </div>
+
+          {/* Columna Central: Contacto */}
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <h3 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Contacto</h3>
+            <ul className="space-y-4 text-sm text-white/70">
+              <li>
+                <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 hover:text-[#25D366] transition-colors justify-center md:justify-start">
+                  <MessageCircle size={18} />
+                  <span>WhatsApp: Envíanos un mensaje</span>
+                </a>
+              </li>
+              <li className="flex items-center justify-center md:justify-start gap-3">
+                <Phone size={18} />
+                <span>Teléfono: (55) 1234 5678</span>
+              </li>
+              <li>
+                <a href="mailto:imagineandstamp@gmail.com" className="flex items-center gap-3 hover:text-white transition-colors justify-center md:justify-start">
+                  <Mail size={18} />
+                  <span>imagineandstamp@gmail.com</span>
+                </a>
+              </li>
+              <li className="flex items-center justify-center md:justify-start gap-3 text-white/50 pt-2">
+                <Clock size={18} />
+                <span>Horario de atención: Lun - Vie 9:00 am a 6:00 pm</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Columna Derecha: Síguenos */}
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <h3 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Síguenos</h3>
+            <div className="flex gap-4">
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/70 hover:bg-[#E1306C] hover:text-white transition-all">
+                <Instagram size={20} />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/70 hover:bg-[#1877F2] hover:text-white transition-all">
+                <Facebook size={20} />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/70 hover:bg-white hover:text-black transition-all">
+                <TikTokIcon size={20} />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-6xl mx-auto mt-12 pt-8 border-t border-white/10 text-center text-white/30 text-xs">
+          © {new Date().getFullYear()} Imagine & Stamp. Todos los derechos reservados.
+        </div>
+      </footer>
     </div>
   );
 }
