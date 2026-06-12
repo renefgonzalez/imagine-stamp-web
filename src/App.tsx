@@ -15,6 +15,7 @@ import { CrepasCatalog } from './modules/menu-crepas/pages/CrepasCatalog';
 import MenuAbanico from './modules/menu-taqueria/pages/MenuAbanico';
 import MenuPatrona from './modules/cazuelitas-patrona/MenuPatrona';
 import JuiceMenu from './modules/menu-juice-and-go/pages/JuiceMenu';
+import SahumerioCatalog from './modules/sahumerio-sagrado/pages/SahumerioCatalog';
 
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
@@ -1062,6 +1063,7 @@ export default function App() {
         <Route path="/taqueria-abanico" element={<MenuAbanico />} />
         <Route path="/cazuelitas-patrona" element={<MenuPatrona />} />
         <Route path="/demo-juice-and-go" element={<JuiceMenu />} />
+        <Route path="/sahumerio-sagrado" element={<SahumerioCatalog />} />
       </Routes>
     </HashRouter>
   );
