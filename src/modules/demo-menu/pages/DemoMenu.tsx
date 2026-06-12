@@ -21,7 +21,7 @@ interface CartItem extends MenuItem {
 }
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
-const WHATSAPP_NUMBER = '525512479773'; // Your WhatsApp number
+const WHATSAPP_NUMBER = '525650469993'; // Your WhatsApp number
 
 const CATEGORIES = [
   { id: 'all',       label: 'Todo',        emoji: '🍔' },
