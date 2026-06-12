@@ -12,7 +12,7 @@ export const SAHUMERIO_PRODUCTS = [
     description: 'Atrae abundancia y purifica energías densas.', 
     price: 150, 
     category: 'inciensos', 
-    image: 'https://images.unsplash.com/photo-1608681283628-9818816b677a?q=80&w=600&auto=format&fit=crop' 
+    image: '/productos/copal_incense.png' 
   },
   { 
     id: 'vela-1', 
@@ -20,7 +20,7 @@ export const SAHUMERIO_PRODUCTS = [
     description: 'Relaja tu mente y conecta con tu interior. 100% soya.', 
     price: 250, 
     category: 'velas', 
-    image: 'https://images.unsplash.com/photo-1595166258079-994c6579fc9c?q=80&w=600&auto=format&fit=crop' 
+    image: '/productos/vela_mistica.png' 
   },
   { 
     id: 'cristal-1', 
@@ -28,6 +28,6 @@ export const SAHUMERIO_PRODUCTS = [
     description: 'Piedra protectora que transmuta energías negativas.', 
     price: 300, 
     category: 'cristales', 
-    image: 'https://images.unsplash.com/photo-1590840428514-d02161db06a3?q=80&w=600&auto=format&fit=crop' 
+    image: '/productos/amatista_crystal.png' 
   }
 ];
