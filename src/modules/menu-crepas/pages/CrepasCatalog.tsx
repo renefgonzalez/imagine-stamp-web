@@ -11,7 +11,7 @@ export interface CartItem extends Crepa {
   extras: string[];
 }
 
-const WHATSAPP_NUMBER = ''; // Can be customized
+const WHATSAPP_NUMBER = '525650469993'; // Can be customized
 
 const CATEGORIES = [
   { id: 'all', label: 'Todas', emoji: '🥞' },

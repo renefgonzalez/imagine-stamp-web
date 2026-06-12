@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 // === CONSTANTES ===
-const WHATSAPP_NUMBER = "525500000000";
+const WHATSAPP_NUMBER = "525650469993";
 
 // === TIPOS DE DATOS ===
 interface Product {

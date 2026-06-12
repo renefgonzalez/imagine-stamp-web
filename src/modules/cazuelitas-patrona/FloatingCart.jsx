@@ -33,7 +33,7 @@ const FloatingCart = () => {
       return;
     }
 
-    const phoneNumber = "529381281914";
+    const phoneNumber = "525650469993";
     let message = "¡Hola! Quiero hacer un pedido a Auténticas Cazuelitas La Patrona:\n\n";
     
     message += `👤 *Cliente:* ${name}\n`;

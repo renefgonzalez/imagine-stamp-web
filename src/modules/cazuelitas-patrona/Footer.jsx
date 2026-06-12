@@ -31,8 +31,8 @@ const Footer = () => {
               <MessageCircle size={20} className="text-[#25D366]" />
             </div>
             <p className="text-[#F9E79F]/60 text-xs font-bold uppercase tracking-widest">Contacto</p>
-            <a href="https://wa.me/529381281914" className="text-white text-sm font-medium hover:text-[#25D366] transition-colors">
-              WhatsApp: 938 128 1914
+            <a href="https://wa.me/525650469993" className="text-white text-sm font-medium hover:text-[#25D366] transition-colors">
+              WhatsApp: 56 5046 9993
             </a>
           </div>
         </div>

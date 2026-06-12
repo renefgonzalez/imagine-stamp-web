@@ -220,7 +220,7 @@ export default function App() {
   };
 
   const handleFinalCheckout = () => {
-    const phoneNumber = '';
+    const phoneNumber = '525650469993';
     const lines = cart.map(item => `  • ${item.name} x${item.quantity} = $${item.price * item.quantity} MXN`).join('\n');
 
     // ── Crear pedido y guardarlo en Supabase ─────────────────────────────

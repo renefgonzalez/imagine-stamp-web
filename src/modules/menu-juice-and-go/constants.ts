@@ -224,7 +224,7 @@ export const JUICE_CATALOG: JuiceProduct[] = [
 
 export const STORE_INFO = {
   name: 'Juice & Go',
-  whatsapp: '524422693751',
+  whatsapp: '525650469993',
   address: 'Camino Real 13 Los Olvera, Qro.',
   slogan: 'Energía que se bebe'
 };
