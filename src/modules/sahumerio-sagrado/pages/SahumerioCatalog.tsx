@@ -323,16 +323,7 @@ export default function SahumerioCatalog() {
           </motion.button>
         </div>
 
-        {/* CONTROLES INFERIORES */}
-        <div className="absolute bottom-8 w-full px-8 flex justify-between items-end z-20 pointer-events-none">
-          <div className="flex flex-col gap-4 pointer-events-auto">
-            {/* Controles removidos (Grina 1 y flechas) */}
-          </div>
-          <div className="flex items-center gap-3 pointer-events-auto text-white">
-            <button className="p-2 hover:bg-white/20 rounded-full transition-all drop-shadow-md"><ZoomOut size={22} strokeWidth={1.5} /></button>
-            <button className="p-2 hover:bg-white/20 rounded-full transition-all drop-shadow-md"><ZoomIn size={22} strokeWidth={1.5} /></button>
-          </div>
-        </div>
+        {/* CONTROLES INFERIORES - Removidos */}
       </section>
 
       {/* AUDIO FLOTANTE (Discreto) */}
