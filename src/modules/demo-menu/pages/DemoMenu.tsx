@@ -1160,10 +1160,10 @@ export default function DemoMenu() {
                               boxSizing: 'border-box',
                             }}
                           >
-                            <option value="Por confirmar" style={{ background: '#111' }}>Por confirmar</option>
-                            <option value="Envío a domicilio" style={{ background: '#111' }}>Envío a domicilio</option>
-                            <option value="Recoger en tienda" style={{ background: '#111' }}>Recoger en tienda</option>
-                            <option value="Entrega digital" style={{ background: '#111' }}>Entrega digital</option>
+                            <option value="Por confirmar" style={{ background: '#111' }}>❓ Por confirmar</option>
+                            <option value="Envío a domicilio" style={{ background: '#111' }}>🛵 Envío a domicilio</option>
+                            <option value="Recoger en tienda" style={{ background: '#111' }}>🏪 Recoger en tienda</option>
+                            <option value="Entrega digital" style={{ background: '#111' }}>💻 Entrega digital</option>
                           </select>
                           {isPickup && (
                             <div style={{ marginTop: '8px', padding: '10px', background: 'rgba(255, 140, 0, 0.15)', borderRadius: '8px', border: '1px solid rgba(255, 140, 0, 0.3)' }}>
@@ -1189,10 +1189,10 @@ export default function DemoMenu() {
                               boxSizing: 'border-box',
                             }}
                           >
-                            <option value="Por confirmar" style={{ background: '#111' }}>Por confirmar</option>
-                            <option value="Efectivo" style={{ background: '#111' }}>Efectivo</option>
-                            <option value="Tarjeta" style={{ background: '#111' }}>Tarjeta</option>
-                            <option value="Transferencia" style={{ background: '#111' }}>Transferencia</option>
+                            <option value="Por confirmar" style={{ background: '#111' }}>❓ Por confirmar</option>
+                            <option value="Efectivo" style={{ background: '#111' }}>💵 Efectivo</option>
+                            <option value="Tarjeta" style={{ background: '#111' }}>💳 Tarjeta</option>
+                            <option value="Transferencia" style={{ background: '#111' }}>🏦 Transferencia</option>
                           </select>
                           {paymentMethod === 'Transferencia' && (
                             <div style={{ marginTop: '8px', padding: '10px', background: 'rgba(34, 197, 94, 0.15)', borderRadius: '8px', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
