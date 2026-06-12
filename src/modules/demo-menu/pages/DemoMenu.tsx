@@ -1134,7 +1134,7 @@ export default function DemoMenu() {
                             id="customer-phone-input"
                             value={customerPhone}
                             onChange={e => setCustomerPhone(e.target.value)}
-                            placeholder="Ej: 55 1234 5678"
+                            placeholder="Ej: 56 5046 9993"
                             style={{
                               width: '100%', background: 'rgba(255,255,255,0.07)',
                               border: '1px solid rgba(255,255,255,0.12)',
@@ -1667,7 +1667,7 @@ export default function DemoMenu() {
               </li>
               <li className="flex items-center justify-center md:justify-start gap-3">
                 <Phone size={18} />
-                <span>Teléfono: (55) 1234 5678</span>
+                <span>Teléfono: 56 5046 9993</span>
               </li>
               <li>
                 <a href="mailto:imagineandstamp@gmail.com" className="flex items-center gap-3 hover:text-white transition-colors justify-center md:justify-start">
