@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { SAHUMERIO_CATEGORIES, SAHUMERIO_PRODUCTS } from '../constants';
 import bgImage from '../assets/sahumerio-bg.jpg';
-import ambientAudio from '../assets/ambient-music.mp3';
+import ambientAudio from '../sahumerio-sagrado.mp3';
 import mainLogo from '../logo-sahumerio.jpeg';
 
 interface CartItem {
