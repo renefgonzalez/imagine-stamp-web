@@ -38,7 +38,7 @@ export default function SahumerioCatalog() {
 
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = 0.05; // Más bajito, muy de fondo
+      audioRef.current.volume = 0.03; // Más bajito, muy de fondo
       // Intentar reproducir automáticamente
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
@@ -290,13 +290,7 @@ export default function SahumerioCatalog() {
         {/* CONTROLES INFERIORES */}
         <div className="absolute bottom-8 w-full px-8 flex justify-between items-end z-20 pointer-events-none">
           <div className="flex flex-col gap-4 pointer-events-auto">
-            <button className="text-white text-sm font-medium border border-white/30 bg-black/20 px-4 py-2 rounded-full flex items-center justify-between gap-4 backdrop-blur-sm hover:bg-black/40 transition-all w-32">
-              Grina 1 <ChevronDown size={14} />
-            </button>
-            <div className="flex gap-2 text-white">
-              <button className="p-2 border border-white/30 bg-black/20 rounded-full hover:bg-black/40 backdrop-blur-sm transition-all"><ArrowLeft size={16} /></button>
-              <button className="p-2 border border-white/30 bg-black/20 rounded-full hover:bg-black/40 backdrop-blur-sm transition-all rotate-180"><ArrowLeft size={16} /></button>
-            </div>
+            {/* Controles removidos (Grina 1 y flechas) */}
           </div>
           <div className="flex items-center gap-3 pointer-events-auto text-white">
             <button className="p-2 hover:bg-white/20 rounded-full transition-all drop-shadow-md"><ZoomOut size={22} strokeWidth={1.5} /></button>
