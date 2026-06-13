@@ -8,7 +8,7 @@ import {
 import { SAHUMERIO_CATEGORIES, SAHUMERIO_PRODUCTS } from '../constants';
 import bgImage from '../assets/sahumerio-bg.jpg';
 import ambientAudio from '../sahumerio-sagrado.mp3';
-import mainLogo from '../logo-sahumerio.jpeg';
+import mainLogo from '../../../logo.png';
 
 interface CartItem {
   id: string;
@@ -167,21 +167,10 @@ export default function SahumerioCatalog() {
         <div className="w-full px-3 sm:px-6 md:px-12 h-24 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
           {/* Logo & Title */}
           <div className="flex items-center gap-2 md:gap-4">
-            <button className="text-white/60 hover:text-white transition-colors">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-              </svg>
-            </button>
-            <div className="relative w-12 h-12 md:w-16 md:h-16 ml-1 md:ml-2 rounded-full overflow-hidden flex items-center justify-center bg-black/40 border border-white/20 drop-shadow-[0_0_25px_rgba(184,146,255,0.8)]">
-              {/* Este img cargará tu logo desde la carpeta superior */}
-              <img src={mainLogo} alt="Logo Sahumerio" className="w-full h-full object-cover z-10" />
-              {/* Fallback de flor de loto por si la imagen aún no se sube */}
-              <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute text-[#B892FF]/50">
-                <path d="M50 15 C 30 40, 20 60, 50 85 C 80 60, 70 40, 50 15 Z" stroke="currentColor" strokeWidth="4" fill="transparent"/>
-                <path d="M50 25 C 20 50, 10 70, 50 85 C 90 70, 80 50, 50 25 Z" stroke="currentColor" strokeWidth="4" fill="transparent"/>
-              </svg>
+            {/* Se agrega un margen superior (mt-4 md:mt-6) para bajar un poco el logo y que no se corte arriba */}
+            <div className="relative w-24 h-24 md:w-32 md:h-32 mt-4 md:mt-6 ml-1 md:ml-2 flex items-center justify-center drop-shadow-[0_0_25px_rgba(184,146,255,0.8)] z-20">
+              <img src={mainLogo} alt="Logo Sahumerio" className="w-full h-full object-contain" />
             </div>
-            <span className="hidden sm:block text-white font-bold text-lg md:text-xl tracking-wider ml-1 md:ml-2 font-sans shrink-0">SAHUMERIO SAGRADO</span>
           </div>
           
           {/* Center Nav - Eliminado por solicitud del cliente */}
@@ -438,8 +427,8 @@ export default function SahumerioCatalog() {
           {/* Columna 1 */}
           <div className="flex flex-col gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-16 h-16 rounded-full overflow-hidden bg-black/40 border border-white/20 flex items-center justify-center p-1 drop-shadow-[0_0_15px_rgba(184,146,255,0.4)]">
-                <img src={mainLogo} alt="Logo Sahumerio" className="w-full h-full object-cover rounded-full" />
+              <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center p-1 drop-shadow-[0_0_15px_rgba(184,146,255,0.4)]">
+                <img src={mainLogo} alt="Logo Sahumerio" className="w-full h-full object-contain" />
               </div>
               <span className="text-white font-serif font-medium text-lg uppercase tracking-wider leading-tight">
                 Sahumerio<br/><span className="text-[#B892FF]">Sagrado</span>
