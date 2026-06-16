@@ -715,17 +715,23 @@ export default function SahumerioCatalog() {
           <div className="flex flex-col gap-6">
             <h3 className="text-white font-bold tracking-widest text-sm uppercase">Contacto</h3>
             <ul className="space-y-4 text-sm text-white/70 font-light">
-              <li className="flex items-center gap-3">
-                <span className="text-[#25D366]"><MessageCircle size={18} /></span>
-                <span>WhatsApp Pedidos: 55 4989 3248</span>
+              <li>
+                <a href="https://wa.me/525549893248" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-white transition-colors group">
+                  <span className="text-[#25D366] group-hover:scale-110 transition-transform"><MessageCircle size={18} /></span>
+                  <span>WhatsApp Pedidos: 55 4989 3248</span>
+                </a>
               </li>
-              <li className="flex items-center gap-3">
-                <span className="text-[#B892FF]"><Phone size={18} /></span>
-                <span>55 5633 6232</span>
+              <li>
+                <a href="tel:+525556336232" className="flex items-center gap-3 hover:text-white transition-colors group">
+                  <span className="text-[#B892FF] group-hover:scale-110 transition-transform"><Phone size={18} /></span>
+                  <span>55 5633 6232</span>
+                </a>
               </li>
-              <li className="flex items-center gap-3">
-                <span className="text-[#B892FF]"><Mail size={18} /></span>
-                <span>ventas@sahumeriosagrado.com</span>
+              <li>
+                <a href="mailto:ventas@sahumeriosagrado.com" className="flex items-center gap-3 hover:text-white transition-colors group">
+                  <span className="text-[#B892FF] group-hover:scale-110 transition-transform"><Mail size={18} /></span>
+                  <span>ventas@sahumeriosagrado.com</span>
+                </a>
               </li>
             </ul>
             <button className="mt-2 w-full md:w-auto px-6 py-3 border border-[#B892FF]/50 text-[#B892FF] rounded-full hover:bg-[#B892FF]/10 transition-colors flex items-center justify-center gap-2 font-medium text-sm">
@@ -738,9 +744,11 @@ export default function SahumerioCatalog() {
           <div className="flex flex-col gap-6">
             <h3 className="text-white font-bold tracking-widest text-sm uppercase">Ubicación y Horarios</h3>
             <ul className="space-y-4 text-sm text-white/70 font-light">
-              <li className="flex gap-3">
-                <span className="text-[#B892FF] shrink-0 mt-0.5"><MapPin size={18} /></span>
-                <span className="leading-relaxed">Guillermo Prieto #185, Col. Benito Juárez,<br/>Del. Iztacalco, C.P. 08930,<br/>Ciudad de México</span>
+              <li>
+                <a href="https://maps.google.com/?q=Guillermo+Prieto+185,+Col.+Benito+Juarez,+Del.+Iztacalco,+08930,+Ciudad+de+Mexico" target="_blank" rel="noopener noreferrer" className="flex gap-3 hover:text-white transition-colors group">
+                  <span className="text-[#B892FF] shrink-0 mt-0.5 group-hover:scale-110 transition-transform"><MapPin size={18} /></span>
+                  <span className="leading-relaxed">Guillermo Prieto #185, Col. Benito Juárez,<br/>Del. Iztacalco, C.P. 08930,<br/>Ciudad de México</span>
+                </a>
               </li>
               <li className="flex items-center gap-3 text-[#B892FF] font-medium mt-2">
                 <Clock size={18} />
