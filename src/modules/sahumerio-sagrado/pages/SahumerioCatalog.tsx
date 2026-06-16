@@ -117,8 +117,8 @@ export default function SahumerioCatalog() {
         const supabaseIds = new Set(catData.map(c => c.id));
         const merged = catData.map((c: any) => ({
           ...c,
-          label: c.label || hardcodedById.get(c.id)?.label || c.id,
-          emoji: c.emoji || hardcodedById.get(c.id)?.emoji || '✨',
+          label: c.label || (hardcodedById.get(c.id) as any)?.name || c.id,
+          emoji: c.emoji || (hardcodedById.get(c.id) as any)?.emoji || '✨',
         }));
         for (const hc of SAHUMERIO_CATEGORIES) {
           if (!supabaseIds.has(hc.id)) merged.push({ ...hc });
