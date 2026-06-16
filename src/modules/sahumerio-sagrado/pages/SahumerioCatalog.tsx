@@ -286,6 +286,12 @@ export default function SahumerioCatalog() {
     }
 
     window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+    
+    // Limpiar carrito y cerrar modales después de enviar el pedido
+    setCart([]);
+    setIsCheckoutOpen(false);
+    setIsCartOpen(false);
+    setCartStep('cart');
   };
 
   return (
