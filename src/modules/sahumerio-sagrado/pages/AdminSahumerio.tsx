@@ -51,6 +51,7 @@ interface Product {
   type: 'Renta' | 'Venta' | 'Renta y Venta';
   sizes: string[];
   badge?: 'NUEVO' | 'EN OFERTA' | 'MÁS VENDIDO' | 'PROXIMAMENTE';
+  sub_category_2?: string;
   soldOut?: boolean;
   rating?: number;
 }
@@ -571,6 +572,26 @@ const ProductForm = ({
           <div style={{
             position: 'absolute', top: 3,
             left: form.soldOut ? 25 : 3,
+            width: 20, height: 20, borderRadius: '50%',
+            background: '#fff', transition: 'left 0.2s',
+          }} />
+        </button>
+      </div>
+
+      {/* Carrusel toggle */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: 600 }}>🌟 Mostrar en Carrusel Superior</span>
+        <button
+          onClick={() => set('sub_category_2', form.sub_category_2 === 'CARRUSEL_SAHUMERIO' ? '' : 'CARRUSEL_SAHUMERIO')}
+          style={{
+            width: 48, height: 26, borderRadius: 13,
+            background: form.sub_category_2 === 'CARRUSEL_SAHUMERIO' ? '#B892FF' : 'rgba(255,255,255,0.1)',
+            border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.2s',
+          }}
+        >
+          <div style={{
+            position: 'absolute', top: 3,
+            left: form.sub_category_2 === 'CARRUSEL_SAHUMERIO' ? 25 : 3,
             width: 20, height: 20, borderRadius: '50%',
             background: '#fff', transition: 'left 0.2s',
           }} />

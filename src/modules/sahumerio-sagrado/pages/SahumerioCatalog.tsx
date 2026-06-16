@@ -577,7 +577,58 @@ export default function SahumerioCatalog() {
       />
 
       {/* CATÁLOGO DE PRODUCTOS */}
-      <div id="catalogo" className="min-h-screen pt-24 pb-32">
+      <div id="catalogo" className="min-h-screen pt-12 pb-32">
+        <style>{`
+          @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .carousel-track {
+            display: flex;
+            width: max-content;
+            animation: scroll-left 30s linear infinite;
+          }
+          .carousel-track:hover {
+            animation-play-state: paused;
+          }
+        `}</style>
+
+        {/* CARRUSEL DE DESTACADOS */}
+        {menuItems.filter(p => p.sub_category_2 === 'CARRUSEL_SAHUMERIO' || p.badge === 'EN OFERTA').length > 0 && (
+          <div className="max-w-5xl mx-auto mb-8 relative overflow-hidden">
+            <h3 className="text-center text-[11px] font-black uppercase tracking-[0.2em] text-[#B892FF] mb-4 opacity-80">
+              ✨ Destacados para ti ✨
+            </h3>
+            {/* Mask para difuminar los bordes izquierdo y derecho */}
+            <div style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
+              <div className="carousel-track gap-4 px-4">
+                {/* Duplicamos los items varias veces para crear el efecto infinito */}
+                {[...Array(4)].fill(menuItems.filter(p => p.sub_category_2 === 'CARRUSEL_SAHUMERIO' || p.badge === 'EN OFERTA')).flat().map((item, idx) => (
+                  <div 
+                    key={idx} 
+                    className="flex-shrink-0 w-64 bg-white/40 backdrop-blur-md rounded-2xl p-3 border border-[#8A799E]/20 shadow-sm flex gap-3 cursor-pointer hover:bg-white/70 hover:shadow-md transition-all group"
+                    onClick={() => {
+                      setSelectedProductDetails(item);
+                    }}
+                  >
+                    <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-black/5">
+                      {item.image ? (
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[#8A799E]/50"><ImageIcon size={16} /></div>
+                      )}
+                    </div>
+                    <div className="flex flex-col justify-center flex-1 min-w-0">
+                      <div className="text-[#4A4056] font-black text-[12px] leading-tight truncate mb-1 group-hover:text-[#B892FF] transition-colors">{item.name}</div>
+                      <div className="text-[#8A799E] font-bold text-[13px]">${item.price} MXN</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── SEARCH BAR */}
         <div className="max-w-5xl mx-auto px-4 mb-4">
           <div className="flex items-center gap-2 bg-white/50 backdrop-blur-md rounded-2xl px-4 py-3 border border-[#8A799E]/20 shadow-sm transition-all focus-within:bg-white focus-within:shadow-md focus-within:border-[#B892FF]/50">
