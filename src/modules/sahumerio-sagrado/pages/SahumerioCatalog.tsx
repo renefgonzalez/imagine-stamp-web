@@ -4,7 +4,7 @@ import {
   ShoppingBag, Plus, Minus, X, MapPin, Sparkles, Heart, Share2,
   MessageCircle, Moon, Star, ArrowLeft, Volume2, VolumeX, ChevronDown,
   Globe, Search, Menu, ZoomIn, ZoomOut, Phone, Mail, QrCode, Clock,
-  SlidersHorizontal
+  SlidersHorizontal, Check
 } from 'lucide-react';
 import { SAHUMERIO_CATEGORIES, SAHUMERIO_PRODUCTS } from '../constants';
 import bgImage from '../assets/sahumerio-bg.png';
@@ -625,8 +625,19 @@ export default function SahumerioCatalog() {
                     <img 
                       src={product.image} 
                       alt={product.name} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ${cart.some(item => item.id === product.id) ? 'opacity-90' : ''}`}
                     />
+                    {cart.some(item => item.id === product.id) && (
+                      <div className="absolute inset-0 bg-[#B892FF]/10 flex items-center justify-center z-[5] pointer-events-none">
+                        <motion.div 
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          className="w-12 h-12 md:w-14 md:h-14 bg-[#B892FF] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(184,146,255,0.6)]"
+                        >
+                          <Check className="text-white w-6 h-6 md:w-8 md:h-8" strokeWidth={3} />
+                        </motion.div>
+                      </div>
+                    )}
                     <div className="absolute top-2 right-2 flex flex-col gap-2 z-10">
                       <button 
                         onClick={(e) => toggleFavorite(e, product.id)}
