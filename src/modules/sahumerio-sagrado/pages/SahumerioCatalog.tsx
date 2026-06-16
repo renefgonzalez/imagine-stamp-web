@@ -716,7 +716,7 @@ export default function SahumerioCatalog() {
             <h3 className="text-white font-bold tracking-widest text-sm uppercase">Contacto</h3>
             <ul className="space-y-4 text-sm text-white/70 font-light">
               <li>
-                <a href="https://wa.me/525549893248" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-white transition-colors group">
+                <a href="https://wa.me/525549893248?text=%C2%A1Hola!%20Vengo%20de%20la%20p%C3%A1gina%20web%20de%20Sahumerio%20Sagrado%20y%20me%20gustar%C3%ADa%20pedir%20informaci%C3%B3n." target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-white transition-colors group">
                   <span className="text-[#25D366] group-hover:scale-110 transition-transform"><MessageCircle size={18} /></span>
                   <span>WhatsApp Pedidos: 55 4989 3248</span>
                 </a>
