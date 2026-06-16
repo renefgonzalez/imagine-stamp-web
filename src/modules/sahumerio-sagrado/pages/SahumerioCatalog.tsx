@@ -22,6 +22,7 @@ interface CartItem {
 
 export default function SahumerioCatalog() {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [visibleCount, setVisibleCount] = useState(10);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartStep, setCartStep] = useState<'cart' | 'details'>('cart');
@@ -208,6 +209,12 @@ export default function SahumerioCatalog() {
     }
     return result;
   }, [selectedCategory, activeBadgeFilter, searchQuery]);
+
+  useEffect(() => {
+    setVisibleCount(10);
+  }, [selectedCategory, activeBadgeFilter, searchQuery]);
+
+  const displayedProducts = filteredProducts.slice(0, visibleCount);
 
   const addToCart = (product: any) => {
     setCart(prev => {
@@ -608,9 +615,10 @@ export default function SahumerioCatalog() {
               </div>
             )
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
-            <AnimatePresence mode="popLayout">
-              {filteredProducts.map(product => (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
+                <AnimatePresence mode="popLayout">
+                  {displayedProducts.map(product => (
                 <motion.div 
                   key={product.id}
                   layout
@@ -674,9 +682,21 @@ export default function SahumerioCatalog() {
                     </div>
                   </div>
                 </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
+                  ))}
+                </AnimatePresence>
+              </div>
+              {visibleCount < filteredProducts.length && (
+                <div className="mt-12 mb-8 flex justify-center w-full">
+                  <button
+                    onClick={() => setVisibleCount(prev => prev + 10)}
+                    className="px-10 py-4 bg-[#B892FF] text-white font-bold text-lg rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(184,146,255,0.4)] hover:shadow-[0_0_35px_rgba(184,146,255,0.6)] hover:bg-[#A37DE6] hover:scale-105 transition-all duration-300 relative overflow-hidden group"
+                  >
+                    <span className="relative z-10">Ver más productos</span>
+                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </main>
       </div>
