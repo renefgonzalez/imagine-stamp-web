@@ -1,5 +1,5 @@
 import React from 'react';
-import { Beef, UtensilsCrossed, Flame, Pizza, ChefHat, LayoutGrid } from 'lucide-react';
+import { Beef, UtensilsCrossed, Flame, Pizza, ChefHat, CupSoda } from 'lucide-react';
 
 export interface Product {
   id: string;
@@ -21,11 +21,12 @@ export interface Category {
 }
 
 export const CATEGORIES: Category[] = [
-  { id: 'burgers',  name: 'Burgers',  icon: <Beef size={20} /> },
-  { id: 'tortas',   name: 'Tortas',   icon: <UtensilsCrossed size={20} /> },
-  { id: 'dogos',    name: 'Dogos',    icon: <Pizza size={20} /> },
-  { id: 'papas',    name: 'Papas',    icon: <Flame size={20} /> },
-  { id: 'boneless', name: 'Boneless', icon: <ChefHat size={20} /> },
+  { id: 'burgers',  name: 'Burgers',  icon: <span className="text-lg">🍔</span> },
+  { id: 'tortas',   name: 'Tortas',   icon: <span className="text-lg">🥪</span> },
+  { id: 'dogos',    name: 'Dogos',    icon: <span className="text-lg">🌭</span> },
+  { id: 'papas',    name: 'Papas',    icon: <span className="text-lg">🍟</span> },
+  { id: 'boneless', name: 'Boneless', icon: <span className="text-lg">🍗</span> },
+  { id: 'refrescos',name: 'Refrescos',icon: <span className="text-lg">🥤</span> },
 ];
 
 export const PRODUCTS: Product[] = [
@@ -39,7 +40,7 @@ export const PRODUCTS: Product[] = [
     name: 'LENNY BURGER',
     price: 60,
     description: 'Carne, queso amarillo, verduras y aderezos… envuelta en hojas de lechuga.',
-    image: '/quikesranch/lenny-burger.jpg',
+    image: '/quikesranch/lenny-burger-v3.png',
     popular: true,
     isLennyBurger: true,
   },
@@ -237,6 +238,18 @@ export const PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1524114664604-cd8133cd67ad?w=500&h=400&fit=crop',
     popular: true,
     badge: '🔥 Picante disponible',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // REFRESCOS (Chescos)
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'refresco_lata',
+    category: 'refrescos',
+    name: 'REFRESCOS',
+    price: 25,
+    description: 'Pepsi, Coca Cola y de sabor.',
+    image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&h=400&fit=crop',
   },
 ];
 

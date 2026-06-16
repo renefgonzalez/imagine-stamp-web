@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   ShoppingBag, X, Plus, Minus, MessageCircle, Search,
   LayoutGrid, Flame, Phone, Copy, Check, MapPin, ChevronRight,
-  Landmark, CreditCard, Banknote,
+  Landmark, CreditCard, Banknote, SlidersHorizontal, Heart, Share2,
 } from 'lucide-react';
 import { CATEGORIES, PRODUCTS, COMPANY_INFO, Product } from '../constants';
 
@@ -26,9 +26,52 @@ export default function QuikesRanchCatalog() {
   const [cart, setCart]                     = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen]         = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen]     = useState(false);
+  const [activeBadgeFilter, setActiveBadgeFilter] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [lennyToggle, setLennyToggle]       = useState(false);
   const [copied, setCopied]                 = useState<string | null>(null);
+
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('quikesranch_favorites');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem('quikesranch_favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFavorites(prev => 
+      prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+    );
+  };
+
+  const handleShare = async (product: Product, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const shareUrl = `${window.location.origin}${window.location.pathname}#/?item=${product.id}`;
+    const shareText = `¡Checa este antojo en Quike's Ranch!: ${product.name} - $${product.price} MXN`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Quike's Ranch",
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (err) {
+        console.error('Error al compartir', err);
+      }
+    } else {
+      navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+      alert('¡Enlace copiado al portapapeles!');
+    }
+  };
 
   const [form, setForm] = useState({
     name: '',
@@ -37,12 +80,16 @@ export default function QuikesRanchCatalog() {
     address: '',
     paymentMethod: '',
     notes: '',
+    coupon: '',
   });
 
   // ─── Cart helpers ─────────────────────────────────────────────────────────
 
   const cartCount = cart.reduce((s, i) => s + i.quantity, 0);
   const cartTotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const deliveryCost = form.deliveryMethod === 'Envío a domicilio' ? 50 : 0;
+  const discountAmount = form.coupon.toUpperCase() === 'PROMO10' ? cartTotal * 0.1 : 0;
+  const finalTotal = cartTotal + deliveryCost - discountAmount;
 
   const addToCart = (product: Product, withLenny = false, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -81,7 +128,7 @@ export default function QuikesRanchCatalog() {
   // ─── Checkout ─────────────────────────────────────────────────────────────
 
   const handleCheckout = () => {
-    const { name, phone, deliveryMethod, address, paymentMethod, notes } = form;
+    const { name, phone, deliveryMethod, address, paymentMethod, notes, coupon } = form;
     let msg = `🔥 *NUEVO PEDIDO — ${COMPANY_INFO.name}* 🔥\n\n`;
     msg += `*DATOS DEL CLIENTE*\n`;
     msg += `👤 Nombre: ${name}\n`;
@@ -89,10 +136,15 @@ export default function QuikesRanchCatalog() {
     msg += `🚚 Entrega: ${deliveryMethod || '—'}\n`;
     if (deliveryMethod === 'Envío a domicilio' && address) msg += `📍 Dirección: ${address}\n`;
     msg += `💳 Pago: ${paymentMethod || '—'}\n`;
+    if (coupon) msg += `🎟️ Cupón: ${coupon}\n`;
     if (notes) msg += `📝 Notas: ${notes}\n`;
     msg += `\n*PEDIDO*\n`;
     cart.forEach(i => { msg += `▪ ${i.quantity}x ${i.name} — $${(i.price * i.quantity).toFixed(2)}\n`; });
-    msg += `\n💰 *TOTAL: $${cartTotal.toFixed(2)}*\n\n¡Gracias, te esperamos! 🤠`;
+    
+    if (deliveryCost > 0) msg += `▪ Envío a domicilio — $${deliveryCost.toFixed(2)}\n`;
+    if (discountAmount > 0) msg += `▪ Descuento (${coupon}) — -$${discountAmount.toFixed(2)}\n`;
+
+    msg += `\n💰 *TOTAL FINAL: $${finalTotal.toFixed(2)}*\n\n¡Gracias, te esperamos! 🤠`;
     window.open(`https://wa.me/${COMPANY_INFO.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
@@ -102,14 +154,26 @@ export default function QuikesRanchCatalog() {
     setTimeout(() => setCopied(null), 2000);
   };
 
-  // ─── Filtered products ────────────────────────────────────────────────────
+  // ─── Filter logic ─────────────────────────────────────────────────────────
 
   const visibleProducts = useMemo(() => PRODUCTS.filter(p => {
-    const matchCat    = activeCategory === 'todo' || p.category === activeCategory;
+    const matchCat = 
+      activeCategory === 'todo' ? true : 
+      activeCategory === 'favoritos' ? favorites.includes(p.id) : 
+      p.category === activeCategory;
+      
     const q           = searchQuery.toLowerCase();
     const matchSearch = !q || p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
-    return matchCat && matchSearch;
-  }), [activeCategory, searchQuery]);
+    
+    let matchBadge = true;
+    if (activeBadgeFilter) {
+       if (activeBadgeFilter === 'Especial') matchBadge = p.isLennyBurger || p.badge === 'Especial';
+       else if (activeBadgeFilter === 'Popular') matchBadge = (p.popular && !p.isLennyBurger) || p.badge === 'Popular';
+       else matchBadge = p.badge === activeBadgeFilter;
+    }
+    
+    return matchCat && matchSearch && matchBadge;
+  }), [activeCategory, searchQuery, activeBadgeFilter]);
 
   // ─── Styles ───────────────────────────────────────────────────────────────
 
@@ -127,23 +191,23 @@ export default function QuikesRanchCatalog() {
         style={{ background: '#0A0A0A', borderColor: `${ORANGE}33` }}
       >
         {/* Top bar */}
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <div className="container mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Brand */}
-          <div className="shrink-0">
-            <div className="flex items-center gap-2">
+          <div className="shrink-0 text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-2">
               <Flame size={22} style={{ color: ORANGE }} />
-              <h1 className="text-xl font-extrabold uppercase tracking-widest" style={{ color: GOLD }}>
+              <h1 className="text-xl md:text-xl font-extrabold uppercase tracking-widest" style={{ color: GOLD }}>
                 Quike's Ranch
               </h1>
               <Flame size={22} style={{ color: ORANGE }} />
             </div>
-            <p className="text-[10px] tracking-[0.25em] uppercase" style={{ color: '#666' }}>
+            <p className="text-[9px] sm:text-[10px] tracking-wider sm:tracking-[0.25em] uppercase mt-1 md:mt-0 text-center max-w-[280px] sm:max-w-none mx-auto leading-relaxed" style={{ color: '#666' }}>
               Burgers · Tortas · Dogos · Papas · Boneless
             </p>
           </div>
 
           {/* Search + Cart */}
-          <div className="flex items-center gap-3 flex-1 justify-end max-w-sm">
+          <div className="flex items-center gap-3 w-full md:w-auto md:flex-1 justify-center md:justify-end max-w-sm mx-auto md:mx-0">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={15} />
               <input
@@ -155,6 +219,25 @@ export default function QuikesRanchCatalog() {
                 style={{ background: '#1A1A1A', border: `1px solid #2A2A2A`, color: '#EEE' }}
               />
             </div>
+            <button
+              onClick={() => setActiveCategory(activeCategory === 'favoritos' ? 'todo' : 'favoritos')}
+              className="relative p-2.5 rounded-full transition-colors shrink-0"
+              style={{ 
+                background: activeCategory === 'favoritos' ? `${ORANGE}22` : '#1A1A1A', 
+                border: `1px solid ${ORANGE}55` 
+              }}
+            >
+              <Heart size={20} style={{ color: ORANGE }} fill={activeCategory === 'favoritos' ? ORANGE : 'none'} />
+              {favorites.length > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold"
+                  style={{ background: ORANGE, color: '#000' }}
+                >
+                  {favorites.length}
+                </span>
+              )}
+            </button>
+
             <button
               onClick={() => setIsCartOpen(true)}
               className="relative p-2.5 rounded-full transition-colors shrink-0"
@@ -176,8 +259,20 @@ export default function QuikesRanchCatalog() {
         {/* Category nav */}
         <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ background: '#0D0D0D', borderTop: '1px solid #1A1A1A' }}>
           <div className="flex px-4 py-2.5 gap-2 w-max items-center">
+            {/* Filter Button */}
+            <button
+              onClick={() => setIsFilterOpen(true)}
+              className="flex flex-col items-center gap-1 px-3 py-1.5 rounded-lg transition-all relative shrink-0"
+              style={{ background: '#1A1A1A', border: `1px solid ${ORANGE}55`, color: ORANGE }}
+            >
+              <SlidersHorizontal size={18} />
+              <span className="text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">Filtros</span>
+            </button>
             {/* All */}
-            {[{ id: 'todo', name: 'Todo', icon: <LayoutGrid size={18} /> }, ...CATEGORIES].map(cat => {
+            {[
+              { id: 'todo', name: 'Todo', icon: <LayoutGrid size={18} /> },
+              ...CATEGORIES
+            ].map(cat => {
               const active = activeCategory === cat.id;
               return (
                 <button
@@ -235,6 +330,24 @@ export default function QuikesRanchCatalog() {
                     />
                     <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #111 0%, transparent 60%)' }} />
 
+                    {/* Action Buttons */}
+                    <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
+                      <button 
+                        onClick={(e) => toggleFavorite(product.id, e)}
+                        className="p-1.5 rounded-full transition-transform hover:scale-110"
+                        style={{ background: 'rgba(0,0,0,0.5)', color: favorites.includes(product.id) ? ORANGE : '#FFF' }}
+                      >
+                        <Heart size={18} fill={favorites.includes(product.id) ? ORANGE : 'none'} />
+                      </button>
+                      <button 
+                        onClick={(e) => handleShare(product, e)}
+                        className="p-1.5 rounded-full text-white transition-transform hover:scale-110"
+                        style={{ background: 'rgba(0,0,0,0.5)' }}
+                      >
+                        <Share2 size={18} />
+                      </button>
+                    </div>
+
                     {/* Badges */}
                     <div className="absolute top-3 right-3 flex flex-col gap-1.5 items-end">
                       {product.isLennyBurger && (
@@ -259,7 +372,7 @@ export default function QuikesRanchCatalog() {
                       <h3 className="font-extrabold text-base uppercase tracking-wider leading-tight text-white drop-shadow">
                         {product.name}
                       </h3>
-                      <p className="font-bold mt-0.5" style={{ color: product.isLennyBurger ? GOLD : ORANGE }}>
+                      <p className="font-bold mt-0.5" style={{ color: ORANGE }}>
                         {product.price > 0 ? `$${product.price.toFixed(2)}` : 'Precio próximamente'}
                       </p>
                     </div>
@@ -275,12 +388,12 @@ export default function QuikesRanchCatalog() {
                       className="w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
                       style={{
                         background: 'transparent',
-                        border: `1px solid ${product.isLennyBurger ? GOLD + '55' : '#333'}`,
-                        color: product.isLennyBurger ? GOLD : '#CCC',
+                        border: '1px solid #333',
+                        color: '#CCC',
                       }}
                     >
                       <Plus size={14} />
-                      {product.isLennyBurger ? 'Ver Lenny Burger' : 'Añadir al carrito'}
+                      Añadir al carrito
                     </button>
                   </div>
                 </motion.div>
@@ -358,9 +471,28 @@ export default function QuikesRanchCatalog() {
               {/* Content */}
               <div className="p-5">
                 <div className="flex justify-between items-start mb-3">
-                  <h2 className="text-xl font-extrabold uppercase tracking-wide text-white leading-tight">
-                    {selectedProduct.name}
-                  </h2>
+                  <div className="flex flex-col gap-1">
+                    <h2 className="text-xl font-extrabold uppercase tracking-wide text-white leading-tight">
+                      {selectedProduct.name}
+                    </h2>
+                    <div className="flex items-center gap-3 mt-1">
+                      <button 
+                        onClick={(e) => toggleFavorite(selectedProduct.id, e)}
+                        className="flex items-center gap-1.5 text-xs font-bold uppercase transition-colors"
+                        style={{ color: favorites.includes(selectedProduct.id) ? ORANGE : '#888' }}
+                      >
+                        <Heart size={14} fill={favorites.includes(selectedProduct.id) ? ORANGE : 'none'} />
+                        {favorites.includes(selectedProduct.id) ? 'Guardado' : 'Guardar'}
+                      </button>
+                      <button 
+                        onClick={(e) => handleShare(selectedProduct, e)}
+                        className="flex items-center gap-1.5 text-xs font-bold uppercase transition-colors text-gray-400 hover:text-white"
+                      >
+                        <Share2 size={14} />
+                        Compartir
+                      </button>
+                    </div>
+                  </div>
                   <span className="font-bold text-lg ml-3 shrink-0" style={{ color: selectedProduct.isLennyBurger ? GOLD : ORANGE }}>
                     {selectedProduct.price > 0 ? `$${selectedProduct.price.toFixed(2)}` : '—'}
                   </span>
@@ -534,10 +666,22 @@ export default function QuikesRanchCatalog() {
                       <span>${(i.price * i.quantity).toFixed(2)}</span>
                     </div>
                   ))}
-                  <div className="border-t mt-2 pt-2" style={{ borderColor: '#2A2A2A' }}>
-                    <div className="flex justify-between font-bold text-sm">
-                      <span className="text-white">Total</span>
-                      <span style={{ color: GOLD }}>${cartTotal.toFixed(2)}</span>
+                  <div className="border-t mt-2 pt-2 space-y-1" style={{ borderColor: '#2A2A2A' }}>
+                    {deliveryCost > 0 && (
+                      <div className="flex justify-between text-xs text-gray-400">
+                        <span>Envío a domicilio</span>
+                        <span>+${deliveryCost.toFixed(2)}</span>
+                      </div>
+                    )}
+                    {discountAmount > 0 && (
+                      <div className="flex justify-between text-xs text-[#25D366]">
+                        <span>Descuento (PROMO10)</span>
+                        <span>-${discountAmount.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between font-bold text-sm mt-1">
+                      <span className="text-white">Total Final</span>
+                      <span style={{ color: GOLD }}>${finalTotal.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
@@ -597,7 +741,7 @@ export default function QuikesRanchCatalog() {
                 {/* Payment */}
                 <div className="space-y-3">
                   <p className="text-xs font-bold uppercase tracking-wider" style={{ color: ORANGE }}>Método de pago</p>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     {[
                       { key: 'Efectivo',       label: 'Efectivo',      icon: <Banknote size={16} /> },
                       { key: 'Transferencia',  label: 'Transferencia', icon: <Landmark size={16} /> },
@@ -657,17 +801,32 @@ export default function QuikesRanchCatalog() {
                   )}
                 </div>
 
-                {/* Notes */}
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: ORANGE }}>Notas (opcional)</p>
-                  <textarea
-                    placeholder="Sin cebolla, extra picante, indicaciones especiales…"
-                    value={form.notes}
-                    onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
-                    rows={2}
-                    className="w-full py-3 px-4 rounded-xl text-sm outline-none text-white placeholder-gray-600 resize-none"
-                    style={{ background: '#1A1A1A', border: '1px solid #2A2A2A' }}
-                  />
+                {/* Notes & Coupon */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: ORANGE }}>Cupón de Descuento</p>
+                    <input
+                      placeholder="Ej. PROMO10"
+                      value={form.coupon}
+                      onChange={e => setForm(f => ({ ...f, coupon: e.target.value }))}
+                      className="w-full py-3 px-4 rounded-xl text-sm outline-none text-white placeholder-gray-600"
+                      style={{ background: '#1A1A1A', border: '1px solid #2A2A2A' }}
+                    />
+                    {form.coupon.toUpperCase() === 'PROMO10' && (
+                      <p className="text-[10px] text-[#25D366] mt-1">¡Cupón del 10% aplicado!</p>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: ORANGE }}>Notas (opcional)</p>
+                    <textarea
+                      placeholder="Sin cebolla, extra picante…"
+                      value={form.notes}
+                      onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+                      rows={2}
+                      className="w-full py-3 px-4 rounded-xl text-sm outline-none text-white placeholder-gray-600 resize-none"
+                      style={{ background: '#1A1A1A', border: '1px solid #2A2A2A' }}
+                    />
+                  </div>
                 </div>
 
               </div>
@@ -686,6 +845,89 @@ export default function QuikesRanchCatalog() {
                 <p className="text-center text-[10px] mt-2" style={{ color: '#444' }}>
                   Se abrirá WhatsApp con tu pedido listo para enviar
                 </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          MODAL — FILTERS
+      ══════════════════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {isFilterOpen && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[80] flex justify-start"
+            style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(3px)' }}
+            onClick={() => setIsFilterOpen(false)}
+          >
+            <motion.div
+              initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+              onClick={e => e.stopPropagation()}
+              className="w-full max-w-xs h-full flex flex-col shadow-2xl overflow-y-auto"
+              style={{ background: '#0A0A0A', borderRight: `1px solid ${ORANGE}33` }}
+            >
+              <div className="p-5 flex justify-between items-center border-b sticky top-0 bg-[#0A0A0A] z-10" style={{ borderColor: '#222' }}>
+                <h2 className="font-extrabold text-xl text-white">Filtros</h2>
+                <button onClick={() => setIsFilterOpen(false)} className="text-gray-500 hover:text-white">
+                  <X size={22} />
+                </button>
+              </div>
+
+              <div className="p-5 space-y-8">
+                {/* Badges / Destacados */}
+                <div>
+                  <h3 className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: '#888' }}>Destacados</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {['Popular', 'Especial', 'Nuevo'].map(badge => {
+                      const isActive = activeBadgeFilter === badge;
+                      return (
+                        <button
+                          key={badge}
+                          onClick={() => setActiveBadgeFilter(isActive ? null : badge)}
+                          className="px-3 py-1.5 rounded-full text-xs font-bold transition-all"
+                          style={{
+                            background: isActive ? `${ORANGE}22` : '#111',
+                            border: `1px solid ${isActive ? ORANGE : '#222'}`,
+                            color: isActive ? ORANGE : '#CCC'
+                          }}
+                        >
+                          {badge === 'Popular' && '🔥 '}
+                          {badge === 'Especial' && '⭐ '}
+                          {badge === 'Nuevo' && '✨ '}
+                          {badge}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Categorías en cuadrícula */}
+                <div>
+                  <h3 className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: '#888' }}>Categorías</h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[{ id: 'todo', name: 'Todo', icon: <LayoutGrid size={18} /> }, ...CATEGORIES].map(cat => {
+                      const isActive = activeCategory === cat.id;
+                      return (
+                        <button
+                          key={cat.id}
+                          onClick={() => { setActiveCategory(cat.id); setIsFilterOpen(false); }}
+                          className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl transition-all"
+                          style={{
+                            background: isActive ? `${ORANGE}1A` : '#111',
+                            border: `1px solid ${isActive ? ORANGE : '#222'}`,
+                            color: isActive ? ORANGE : '#888'
+                          }}
+                        >
+                          <span style={{ color: isActive ? ORANGE : '#888' }}>{cat.icon}</span>
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-center line-clamp-1">{cat.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </motion.div>
           </motion.div>
