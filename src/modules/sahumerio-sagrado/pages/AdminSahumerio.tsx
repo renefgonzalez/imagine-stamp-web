@@ -13,7 +13,7 @@ import {
   Folder, ClipboardList, ArrowUp, ArrowDown, Phone, Clock, CheckCircle, Settings, Ticket
 } from 'lucide-react';
 import { supabaseSahumerio as supabase } from '../lib/supabase';
-import { SAHUMERIO_CATEGORIES } from '../constants';
+
 
 function mergeCategoriesWithDefaults(dbCategories: any[]) {
   return dbCategories.map(dbCat => {
@@ -185,7 +185,7 @@ const ProductForm = ({
   title: string;
   categoriesList: {id: string, label: string, emoji?: string}[];
 }) => {
-  const [form, setForm] = useState(initial);
+  const [form, setForm] = useState({ ...initial, sizes: initial.sizes || [] });
   const [sizeInput, setSizeInput] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageFile2, setImageFile2] = useState<File | null>(null);
