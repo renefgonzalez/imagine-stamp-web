@@ -1125,7 +1125,7 @@ export default function SahumerioCatalog() {
                           <ShoppingBag size={14} strokeWidth={2.5} />
                         </button>
                         <button
-                          onClick={() => toggleFavorite(product.id)}
+                          onClick={(e) => toggleFavorite(e, product.id)}
                           className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-colors"
                           title="Eliminar de favoritos"
                         >
