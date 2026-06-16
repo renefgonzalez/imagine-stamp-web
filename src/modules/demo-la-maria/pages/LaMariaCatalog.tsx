@@ -244,7 +244,10 @@ export default function LaMariaCatalog() {
             </a>
           </div>
           <div className="w-24 h-px bg-[#C5A059]/30 mx-auto mb-8" />
-          <p className="text-gray-600 text-xs font-light tracking-wider">© {new Date().getFullYear()} {COMPANY_INFO.name}. TODOS LOS DERECHOS RESERVADOS.</p>
+          <p className="text-gray-600 text-xs font-light tracking-wider mb-2">© {new Date().getFullYear()} {COMPANY_INFO.name}. TODOS LOS DERECHOS RESERVADOS.</p>
+          <p className="text-gray-500 text-xs font-light">
+            Página web realizada por <span className="text-[#FF6600] font-bold">IMAGINE & STAMP</span>. <a href="#" className="underline hover:text-gray-300 ml-2">Aviso de Privacidad y Términos de Servicio</a>
+          </p>
         </div>
       </footer>
 
