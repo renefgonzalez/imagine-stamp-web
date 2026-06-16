@@ -256,7 +256,7 @@ export default function SahumerioCatalog() {
   };
 
   const handleCheckout = () => {
-    const phoneNumber = '525650469993';
+    const phoneNumber = '525549893248';
     const shippingCost = customerInfo.shippingMethod === 'Envío a domicilio' ? 150 : 0;
     const finalTotal = totalPrice + shippingCost;
     
@@ -717,15 +717,15 @@ export default function SahumerioCatalog() {
             <ul className="space-y-4 text-sm text-white/70 font-light">
               <li className="flex items-center gap-3">
                 <span className="text-[#25D366]"><MessageCircle size={18} /></span>
-                <span>WhatsApp Pedidos: 55 1234 5678</span>
+                <span>WhatsApp Pedidos: 55 4989 3248</span>
               </li>
               <li className="flex items-center gap-3">
                 <span className="text-[#B892FF]"><Phone size={18} /></span>
-                <span>55 8765 4321</span>
+                <span>55 5633 6232</span>
               </li>
               <li className="flex items-center gap-3">
                 <span className="text-[#B892FF]"><Mail size={18} /></span>
-                <span>hola@sahumeriosagrado.com</span>
+                <span>ventas@sahumeriosagrado.com</span>
               </li>
             </ul>
             <button className="mt-2 w-full md:w-auto px-6 py-3 border border-[#B892FF]/50 text-[#B892FF] rounded-full hover:bg-[#B892FF]/10 transition-colors flex items-center justify-center gap-2 font-medium text-sm">
@@ -740,7 +740,7 @@ export default function SahumerioCatalog() {
             <ul className="space-y-4 text-sm text-white/70 font-light">
               <li className="flex gap-3">
                 <span className="text-[#B892FF] shrink-0 mt-0.5"><MapPin size={18} /></span>
-                <span className="leading-relaxed">Ignacio Allende 45, Del Carmen,<br/>Coyoacán, 04100 Ciudad de México,<br/>CDMX</span>
+                <span className="leading-relaxed">Guillermo Prieto #185, Col. Benito Juárez,<br/>Del. Iztacalco, C.P. 08930,<br/>Ciudad de México</span>
               </li>
               <li className="flex items-center gap-3 text-[#B892FF] font-medium mt-2">
                 <Clock size={18} />
