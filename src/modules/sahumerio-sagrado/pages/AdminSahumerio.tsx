@@ -1233,7 +1233,7 @@ export default function AdminSahumerio({
                             image: product.image,
                             category: product.category,
                             type: product.type,
-                            sizes: [...product.sizes],
+                            sizes: [...(product.sizes || [])],
                             badge: product.badge,
                             soldOut: product.soldOut,
                             image_2: product.image_2,
