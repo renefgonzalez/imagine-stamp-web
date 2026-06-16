@@ -385,13 +385,23 @@ export default function SahumerioCatalog() {
       message += `\n\n⚠️ Requiero mi link de Mercado Pago para concretar el pedido de Sahumerios.`;
     }
 
-    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
-    
-    // Limpiar carrito y cerrar modales después de enviar el pedido
+    const waUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+    // Limpiar carrito y cerrar modales antes de abrir WhatsApp
     setCart([]);
     setIsCheckoutOpen(false);
     setIsCartOpen(false);
     setCartStep('cart');
+    
+    // Intentar abrir en nueva pestaña, si el navegador lo bloquea, redirigir en la misma
+    try {
+      const newWin = window.open(waUrl, '_blank');
+      if (!newWin) {
+        window.location.href = waUrl;
+      }
+    } catch (e) {
+      window.location.href = waUrl;
+    }
   };
 
   return (
@@ -1158,7 +1168,7 @@ export default function SahumerioCatalog() {
                     <p className="text-xs text-gray-500 mt-1">¡Explora nuestra magia y guarda tus preferidos!</p>
                   </div>
                 ) : (
-                  SAHUMERIO_PRODUCTS.filter(p => favorites.includes(p.id)).map(product => (
+                  menuItems.filter(p => favorites.includes(p.id)).map(product => (
                     <div key={product.id} className="flex items-center gap-3 p-3 bg-[#222] border border-[#333] rounded-2xl group">
                       <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-black">
                         <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
