@@ -16,6 +16,7 @@ import MenuAbanico from './modules/menu-taqueria/pages/MenuAbanico';
 import MenuPatrona from './modules/cazuelitas-patrona/MenuPatrona';
 import JuiceMenu from './modules/menu-juice-and-go/pages/JuiceMenu';
 import SahumerioCatalog from './modules/sahumerio-sagrado/pages/SahumerioCatalog';
+import LaMariaCatalog from './modules/demo-la-maria/pages/LaMariaCatalog';
 
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
@@ -1064,6 +1065,7 @@ export default function App() {
         <Route path="/cazuelitas-patrona" element={<MenuPatrona />} />
         <Route path="/demo-juice-and-go" element={<JuiceMenu />} />
         <Route path="/sahumerio-sagrado" element={<SahumerioCatalog />} />
+        <Route path="/demo-la-maria" element={<LaMariaCatalog />} />
       </Routes>
     </HashRouter>
   );
