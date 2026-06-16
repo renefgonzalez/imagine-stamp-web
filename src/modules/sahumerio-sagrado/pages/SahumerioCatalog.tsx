@@ -4,7 +4,7 @@ import {
   ShoppingBag, Plus, Minus, X, MapPin, Sparkles, Heart, Share2,
   MessageCircle, Moon, Star, ArrowLeft, Volume2, VolumeX, ChevronDown,
   Globe, Search, Menu, ZoomIn, ZoomOut, Phone, Mail, QrCode, Clock,
-  SlidersHorizontal, Check, CreditCard
+  SlidersHorizontal, Check, CreditCard, Landmark, Copy
 } from 'lucide-react';
 import { SAHUMERIO_CATEGORIES, SAHUMERIO_PRODUCTS } from '../constants';
 import bgImage from '../assets/sahumerio-bg.png';
@@ -101,6 +101,18 @@ export default function SahumerioCatalog() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [activeBadgeFilter, setActiveBadgeFilter] = useState<string | null>(null);
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
+
+  // Bank Info States
+  const [bankInfo, setBankInfo] = useState<any>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 2000);
+    });
+  };
 
   useEffect(() => {
     if (audioRef.current) {
@@ -114,7 +126,17 @@ export default function SahumerioCatalog() {
 
   useEffect(() => {
     async function loadData() {
-      const { data: catData } = await supabase.from('categories').select('*').order('order_index', { ascending: true });
+      const [catRes, prodRes, settingsRes] = await Promise.all([
+        supabase.from('categories').select('*').order('order_index', { ascending: true }),
+        supabase.from('products').select('*').order('created_at', { ascending: false }),
+        supabase.from('settings').select('*').eq('id', 'bank').maybeSingle()
+      ]);
+
+      if (settingsRes.data) {
+        setBankInfo(settingsRes.data);
+      }
+
+      const catData = catRes.data;
       if (catData && catData.length > 0) {
         const hardcodedById = new Map(SAHUMERIO_CATEGORIES.map(c => [c.id, c]));
         const supabaseIds = new Set(catData.map(c => c.id));
@@ -131,7 +153,7 @@ export default function SahumerioCatalog() {
         setCategories(SAHUMERIO_CATEGORIES);
       }
 
-      const { data: prodData } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+      const prodData = prodRes.data;
       if (prodData && prodData.length > 0) {
         setMenuItems(prodData.map((d: any) => ({
           ...d,
@@ -196,6 +218,11 @@ export default function SahumerioCatalog() {
 
   const filteredProducts = useMemo(() => {
     let result = menuItems;
+    
+    if (showOnlyFavorites) {
+      result = result.filter(p => favorites.includes(p.id));
+    }
+
     if (selectedCategory !== 'all') {
       result = result.filter(p => p.category === selectedCategory);
     }
@@ -210,7 +237,7 @@ export default function SahumerioCatalog() {
       );
     }
     return result;
-  }, [selectedCategory, activeBadgeFilter, searchQuery]);
+  }, [selectedCategory, activeBadgeFilter, searchQuery, showOnlyFavorites, favorites, menuItems]);
 
   useEffect(() => {
     setVisibleCount(10);
@@ -593,12 +620,25 @@ export default function SahumerioCatalog() {
               <SlidersHorizontal size={16} />
             </button>
 
+            {/* Favorites toggle button */}
+            <button
+              onClick={() => setShowOnlyFavorites(prev => !prev)}
+              className={`flex-shrink-0 px-4 py-2 h-10 rounded-full text-sm font-medium transition-all duration-300 border shadow-sm flex items-center gap-2 ${
+                showOnlyFavorites
+                  ? 'bg-[#B892FF] text-white border-[#B892FF] shadow-[0_0_15px_rgba(184,146,255,0.4)]'
+                  : 'bg-white text-[#8A799E] border-[#8A799E]/10 hover:bg-[#FDFBF7] hover:text-[#4A4056]'
+              }`}
+            >
+              <Heart size={16} className={showOnlyFavorites ? 'fill-current' : ''} />
+              <span className="hidden sm:inline">Ver Favoritos</span>
+            </button>
+
             {/* Pill chips */}
             {SAHUMERIO_CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 border shadow-sm ${
+                className={`flex-shrink-0 px-5 py-2 h-10 rounded-full text-sm font-medium transition-all duration-300 border shadow-sm ${
                   selectedCategory === cat.id
                     ? 'bg-[#B892FF] text-white border-[#B892FF] shadow-[0_0_15px_rgba(184,146,255,0.4)]'
                     : 'bg-white text-[#8A799E] border-[#8A799E]/10 hover:bg-[#FDFBF7] hover:text-[#4A4056]'
@@ -1233,15 +1273,73 @@ export default function SahumerioCatalog() {
                       </select>
                     </div>
 
-                    {customerInfo.paymentMethod === 'Transferencia' && (
-                      <div className="bg-[#2A2A2A] border border-[#3A3A3A] rounded-xl p-4 mt-2">
-                        <p className="text-[#B892FF] text-xs font-bold mb-2 uppercase">Datos Bancarios</p>
-                        <p className="text-sm text-gray-300">Banco: <span className="text-white font-medium">BBVA</span></p>
-                        <p className="text-sm text-gray-300">Cuenta: <span className="text-white font-medium">0123456789</span></p>
-                        <p className="text-sm text-gray-300">CLABE: <span className="text-white font-medium">012345678901234567</span></p>
-                        <p className="text-xs text-gray-500 mt-2">*Por favor envíanos tu comprobante por WhatsApp al finalizar.</p>
-                      </div>
-                    )}
+                    {/* ── Datos bancarios para transferencia ── */}
+                    <AnimatePresence>
+                      {customerInfo.paymentMethod === 'Transferencia' && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="overflow-hidden mt-2"
+                        >
+                          <div className="bg-[#2A2A2A] border border-[#B892FF]/20 rounded-2xl p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                              <div className="w-8 h-8 rounded-full bg-[#B892FF]/20 flex items-center justify-center text-[#B892FF] shrink-0">
+                                <Landmark size={16} />
+                              </div>
+                              <div>
+                                <p className="text-[10px] font-black text-[#B892FF] uppercase tracking-widest leading-none">Datos para transferencia</p>
+                                <p className="text-[9px] font-medium text-gray-400 mt-0.5">Realiza tu pago y envía el comprobante por WhatsApp</p>
+                              </div>
+                            </div>
+
+                            {(() => {
+                              const rows = [
+                                { label: 'Banco', value: bankInfo?.bank_name, field: 'bank_name' },
+                                { label: 'Titular', value: bankInfo?.account_holder, field: 'account_holder' },
+                                { label: 'CLABE', value: bankInfo?.clabe, field: 'clabe' },
+                                { label: 'No. de Cuenta', value: bankInfo?.account_number, field: 'account_number' },
+                                { label: 'No. de Tarjeta', value: bankInfo?.card_number, field: 'card_number' },
+                              ].filter(r => r.value && String(r.value).trim() !== '');
+
+                              if (rows.length === 0) {
+                                return (
+                                  <p className="text-xs text-gray-400 italic py-2">
+                                    Los datos bancarios se mostrarán aquí. Escríbenos por WhatsApp para coordinar tu pago.
+                                  </p>
+                                );
+                              }
+
+                              return (
+                                <div className="space-y-2">
+                                  {rows.map(row => (
+                                    <div key={row.field} className="flex items-center justify-between gap-2 bg-[#222] rounded-xl px-3 py-2 border border-[#333]">
+                                      <div className="min-w-0">
+                                        <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{row.label}</p>
+                                        <p className="text-sm font-bold text-gray-200 truncate">{row.value}</p>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={() => copyToClipboard(String(row.value), row.field)}
+                                        title="Copiar"
+                                        className="shrink-0 w-8 h-8 rounded-lg bg-[#B892FF]/10 flex items-center justify-center text-[#B892FF] hover:bg-[#B892FF] hover:text-white transition-all"
+                                      >
+                                        {copiedField === row.field ? <Check size={14} /> : <Copy size={14} />}
+                                      </button>
+                                    </div>
+                                  ))}
+                                  {bankInfo?.instructions && String(bankInfo.instructions).trim() !== '' && (
+                                    <p className="text-[10px] text-gray-400 leading-relaxed bg-[#222] rounded-xl px-3 py-2 border border-[#333] whitespace-pre-line">
+                                      {bankInfo.instructions}
+                                    </p>
+                                  )}
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-400 mb-1">Notas Adicionales (Opcional)</label>
