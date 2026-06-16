@@ -143,7 +143,7 @@ export default function SahumerioCatalog() {
         const supabaseIds = new Set(catData.map(c => c.id));
         const merged = catData.map((c: any) => ({
           ...c,
-          label: c.label || (hardcodedById.get(c.id) as any)?.name || c.id,
+          label: c.label || (hardcodedById.get(c.id) as any)?.label || c.id,
           emoji: c.emoji || (hardcodedById.get(c.id) as any)?.emoji || '✨',
         }));
         for (const hc of SAHUMERIO_CATEGORIES) {
@@ -616,21 +616,20 @@ export default function SahumerioCatalog() {
                 {[...Array(4)].fill(menuItems.filter(p => p.sub_category_2 === 'CARRUSEL_SAHUMERIO' || p.badge === 'EN OFERTA')).flat().map((item, idx) => (
                   <div 
                     key={idx} 
-                    className="flex-shrink-0 w-64 bg-white/40 backdrop-blur-md rounded-2xl p-3 border border-[#8A799E]/20 shadow-sm flex gap-3 cursor-pointer hover:bg-white/70 hover:shadow-md transition-all group"
+                    className="flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32 bg-white/40 rounded-2xl p-1 border border-[#8A799E]/20 shadow-sm flex items-center justify-center cursor-pointer hover:bg-[#B892FF]/20 hover:border-[#B892FF] hover:shadow-lg transition-all group overflow-hidden relative"
                     onClick={() => {
                       setSelectedProductDetails(item);
                     }}
+                    title={item.name}
                   >
-                    <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-black/5">
-                      {item.image ? (
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[#8A799E]/50"><ImageIcon size={16} /></div>
-                      )}
-                    </div>
-                    <div className="flex flex-col justify-center flex-1 min-w-0">
-                      <div className="text-[#4A4056] font-black text-[12px] leading-tight truncate mb-1 group-hover:text-[#B892FF] transition-colors">{item.name}</div>
-                      <div className="text-[#8A799E] font-bold text-[13px]">${item.price} MXN</div>
+                    {item.image ? (
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-500" />
+                    ) : (
+                      <ImageIcon size={24} className="text-[#8A799E]/50" />
+                    )}
+                    {/* Overlay al pasar el mouse */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-xl pointer-events-none">
+                      <span className="text-white text-[10px] font-black tracking-widest uppercase text-center px-2">Ver Info</span>
                     </div>
                   </div>
                 ))}
@@ -675,21 +674,10 @@ export default function SahumerioCatalog() {
               <SlidersHorizontal size={16} />
             </button>
 
-            {/* Favorites toggle button */}
-            <button
-              onClick={() => setShowOnlyFavorites(prev => !prev)}
-              className={`flex-shrink-0 px-4 py-2 h-10 rounded-full text-sm font-medium transition-all duration-300 border shadow-sm flex items-center gap-2 ${
-                showOnlyFavorites
-                  ? 'bg-[#B892FF] text-white border-[#B892FF] shadow-[0_0_15px_rgba(184,146,255,0.4)]'
-                  : 'bg-white text-[#8A799E] border-[#8A799E]/10 hover:bg-[#FDFBF7] hover:text-[#4A4056]'
-              }`}
-            >
-              <Heart size={16} className={showOnlyFavorites ? 'fill-current' : ''} />
-              <span className="hidden sm:inline">Ver Favoritos</span>
-            </button>
+
 
             {/* Pill chips */}
-            {SAHUMERIO_CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
@@ -699,7 +687,7 @@ export default function SahumerioCatalog() {
                     : 'bg-white text-[#8A799E] border-[#8A799E]/10 hover:bg-[#FDFBF7] hover:text-[#4A4056]'
                 }`}
               >
-                {cat.name}
+                {cat.label}
               </button>
             ))}
           </div>
@@ -755,7 +743,7 @@ export default function SahumerioCatalog() {
 
                   <h4 className="m-0 mb-3 text-xs font-bold text-[#8A799E] uppercase tracking-wider">Categorías</h4>
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                    {SAHUMERIO_CATEGORIES.map((cat) => (
+                    {categories.map((cat) => (
                       <button
                         key={cat.id}
                         onClick={() => { setSelectedCategory(cat.id); setIsCategoryOpen(false); }}
@@ -766,7 +754,7 @@ export default function SahumerioCatalog() {
                         }}
                       >
                         <span className="text-xs font-bold text-center leading-tight" style={{ color: selectedCategory === cat.id ? '#B892FF' : '#4A4056' }}>
-                          {cat.name}
+                          {cat.label}
                         </span>
                       </button>
                     ))}
@@ -782,7 +770,7 @@ export default function SahumerioCatalog() {
           {(selectedCategory !== 'all' || activeBadgeFilter) && (
             <h2 className="text-[#8A799E] text-xs font-bold uppercase tracking-widest mb-4">
               {activeBadgeFilter ? `${activeBadgeFilter} • ` : ''}
-              {selectedCategory !== 'all' ? SAHUMERIO_CATEGORIES.find(c => c.id === selectedCategory)?.name : 'Todas las categorías'} — {filteredProducts.length} resultados
+              {selectedCategory !== 'all' ? categories.find(c => c.id === selectedCategory)?.label : 'Todas las categorías'} — {filteredProducts.length} resultados
             </h2>
           )}
           

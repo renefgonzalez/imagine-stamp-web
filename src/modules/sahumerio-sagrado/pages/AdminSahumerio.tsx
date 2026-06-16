@@ -103,9 +103,7 @@ const BADGE_OPTIONS = [
 ];
 
 const COMMON_SIZES = [
-  'CH', 'M', 'G', 'XG', 'Unitalla',
-  'Infantil T2', 'Infantil T4', 'Infantil T6', 'Infantil T8', 'Infantil T10',
-  '4-6', '7-9', '10-12',
+  'CH', 'M', 'G',
 ];
 
 const EMPTY_FORM: Omit<Product, 'id'> = {
@@ -115,7 +113,7 @@ const EMPTY_FORM: Omit<Product, 'id'> = {
   rentalPrice: undefined,
   image: '',
   category: 'otros',
-  type: 'Renta y Venta',
+  type: 'Venta',
   sizes: ['M', 'G'],
   badge: undefined,
   soldOut: false,
@@ -267,29 +265,17 @@ const ProductForm = ({
         />
       </DarkField>
 
-      {/* Precio Venta + Precio Renta */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <DarkField label="Precio de Venta ($) *">
-          <input
-            style={inputStyle} type="number" min="0" step="0.01"
-            value={form.price || ''} required
-            placeholder="850"
-            onChange={e => set('price', parseFloat(e.target.value) || 0)}
-            onFocus={e => (e.target.style.borderColor = '#B892FF')}
-            onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
-          />
-        </DarkField>
-        <DarkField label="Precio de Renta ($)">
-          <input
-            style={inputStyle} type="number" min="0" step="0.01"
-            value={form.rentalPrice || ''}
-            placeholder="350 (opcional)"
-            onChange={e => set('rentalPrice', e.target.value ? parseFloat(e.target.value) : undefined)}
-            onFocus={e => (e.target.style.borderColor = '#7c3aed')}
-            onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
-          />
-        </DarkField>
-      </div>
+      {/* Precio Venta */}
+      <DarkField label="Precio de Venta ($) *">
+        <input
+          style={inputStyle} type="number" min="0" step="0.01"
+          value={form.price || ''} required
+          placeholder="Ej: 150"
+          onChange={e => set('price', parseFloat(e.target.value) || 0)}
+          onFocus={e => (e.target.style.borderColor = '#B892FF')}
+          onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+        />
+      </DarkField>
 
       {form.badge === 'EN OFERTA' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -311,36 +297,23 @@ const ProductForm = ({
         </div>
       )}
 
-      {/* Categoría + Tipo */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <DarkField label="Categoría *">
-          <select
-            style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
-            value={form.category}
-            onChange={e => set('category', e.target.value)}
-          >
-            {categoriesList.filter(c => c.id !== 'all').map(c => (
-              <option key={c.id} value={c.id} style={{ background: '#1a1a1a' }}>
-                {c.emoji ? `${c.emoji} ` : ''}{c.label}
-              </option>
-            ))}
-          </select>
-        </DarkField>
-        <DarkField label="Tipo de Operación">
-          <select
-            style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
-            value={form.type}
-            onChange={e => set('type', e.target.value as Product['type'])}
-          >
-            <option style={{ background: '#1a1a1a' }} value="Renta y Venta">Renta y Venta</option>
-            <option style={{ background: '#1a1a1a' }} value="Renta">Solo Renta</option>
-            <option style={{ background: '#1a1a1a' }} value="Venta">Solo Venta</option>
-          </select>
-        </DarkField>
-      </div>
+      {/* Categoría */}
+      <DarkField label="Categoría *">
+        <select
+          style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
+          value={form.category}
+          onChange={e => set('category', e.target.value)}
+        >
+          {categoriesList.filter(c => c.id !== 'all').map(c => (
+            <option key={c.id} value={c.id} style={{ background: '#1a1a1a' }}>
+              {c.emoji ? `${c.emoji} ` : ''}{c.label}
+            </option>
+          ))}
+        </select>
+      </DarkField>
 
       {/* Insignia + Calificación */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'end' }}>
         <DarkField label="Insignia / Badge">
           <select
             style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}

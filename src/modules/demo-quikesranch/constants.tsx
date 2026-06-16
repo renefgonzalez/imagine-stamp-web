@@ -1,0 +1,254 @@
+import React from 'react';
+import { Beef, UtensilsCrossed, Flame, Pizza, ChefHat, LayoutGrid } from 'lucide-react';
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  image: string;
+  popular?: boolean;
+  isLennyBurger?: boolean;
+  hasLennyOption?: boolean;
+  badge?: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+}
+
+export const CATEGORIES: Category[] = [
+  { id: 'burgers',  name: 'Burgers',  icon: <Beef size={20} /> },
+  { id: 'tortas',   name: 'Tortas',   icon: <UtensilsCrossed size={20} /> },
+  { id: 'dogos',    name: 'Dogos',    icon: <Pizza size={20} /> },
+  { id: 'papas',    name: 'Papas',    icon: <Flame size={20} /> },
+  { id: 'boneless', name: 'Boneless', icon: <ChefHat size={20} /> },
+];
+
+export const PRODUCTS: Product[] = [
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BURGERS — Con Delicioso Pan de Ajonjolí Negro
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'burg_lenny',
+    category: 'burgers',
+    name: 'LENNY BURGER',
+    price: 60,
+    description: 'Carne, queso amarillo, verduras y aderezos… envuelta en hojas de lechuga.',
+    image: '/quikesranch/lenny-burger.jpg',
+    popular: true,
+    isLennyBurger: true,
+  },
+  {
+    id: 'burg_sencilla',
+    category: 'burgers',
+    name: 'BURGER SENCILLA',
+    price: 60,
+    description: 'Carne, queso amarillo, verduras y aderezos. Con delicioso pan de ajonjolí negro.',
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&h=400&fit=crop',
+    hasLennyOption: true,
+  },
+  {
+    id: 'burg_doble',
+    category: 'burgers',
+    name: 'BURGER DOBLE',
+    price: 80,
+    description: 'Doble carne, queso amarillo, verduras y aderezos. Con pan de ajonjolí negro.',
+    image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433c?w=500&h=400&fit=crop',
+    popular: true,
+    hasLennyOption: true,
+  },
+  {
+    id: 'burg_hawaiana',
+    category: 'burgers',
+    name: 'BURGER HAWAIANA',
+    price: 80,
+    description: 'Carne, piña asada, queso amarillo, tocino, jamón, verdura y aderezos.',
+    image: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=500&h=400&fit=crop',
+    hasLennyOption: true,
+  },
+  {
+    id: 'burg_bbq',
+    category: 'burgers',
+    name: 'BURGER BBQ',
+    price: 80,
+    description: 'Carne bañada en BBQ, queso amarillo, jamón, tocino, verdura y aderezos.',
+    image: 'https://images.unsplash.com/photo-1586816001966-79b736744398?w=500&h=400&fit=crop',
+    popular: true,
+    hasLennyOption: true,
+  },
+  {
+    id: 'burg_nortena',
+    category: 'burgers',
+    name: 'BURGER NORTEÑA',
+    price: 80,
+    description: 'Carne, chorizo, asadero, jamón, verdura y aderezos. 🌶',
+    image: 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=500&h=400&fit=crop',
+    hasLennyOption: true,
+    badge: '🌶 Picante',
+  },
+  {
+    id: 'burg_especial',
+    category: 'burgers',
+    name: 'BURGER ESPECIAL',
+    price: 80,
+    description: 'Carne, queso amarillo, jamón, tocino, verdura y aderezos.',
+    image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433c?w=500&h=400&fit=crop',
+    hasLennyOption: true,
+  },
+  {
+    id: 'burg_monster',
+    category: 'burgers',
+    name: 'BURGER MONSTER',
+    price: 100,
+    description: 'Carne, salchicha para asar, tocino, asadero, jamón, trozos de piña, verdura y aderezos.',
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&h=400&fit=crop',
+    popular: true,
+    hasLennyOption: true,
+    badge: '👹 Monster',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TORTAS
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'tort_lomo',
+    category: 'tortas',
+    name: 'LOMO DE RES',
+    price: 80,
+    description: 'Carne deshebrada, asadero, aguacate y verdura.',
+    image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433c?w=500&h=400&fit=crop',
+    popular: true,
+  },
+  {
+    id: 'tort_pierna',
+    category: 'tortas',
+    name: 'PIERNA DE PUERCO',
+    price: 80,
+    description: 'Carne de pierna de puerco, tocino, panela, asadero, aguacate y verdura.',
+    image: 'https://images.unsplash.com/photo-1620921568790-c1cf8984a0b9?w=500&h=400&fit=crop',
+  },
+  {
+    id: 'tort_ahumado',
+    category: 'tortas',
+    name: 'LOMO AHUMADO',
+    price: 80,
+    description: 'Chuleta ahumada asada, asadero, aguacate y verdura.',
+    image: 'https://images.unsplash.com/photo-1544025162-8315ea07f440?w=500&h=400&fit=crop',
+  },
+  {
+    id: 'tort_sirlon',
+    category: 'tortas',
+    name: 'SIRLÓN',
+    price: 90,
+    description: 'Sirlón asado, aguacate y verdura.',
+    image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&h=400&fit=crop',
+    popular: true,
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DOGOS
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'dogo_sencillo',
+    category: 'dogos',
+    name: 'SENCILLO',
+    price: 25,
+    description: 'Pico de gallo y aderezos.',
+    image: 'https://images.unsplash.com/photo-1619740455993-9d622bf99e8b?w=500&h=400&fit=crop',
+  },
+  {
+    id: 'dogo_chillibeens',
+    category: 'dogos',
+    name: 'CHILLIBEENS',
+    price: 35,
+    description: 'Pico de gallo, inglés con chorizo y aderezos.',
+    image: 'https://images.unsplash.com/photo-1619740455993-9d622bf99e8b?w=500&h=400&fit=crop',
+    popular: true,
+  },
+  {
+    id: 'dogo_tocino',
+    category: 'dogos',
+    name: 'TOCINO',
+    price: 35,
+    description: 'Pico de gallo, tocino y aderezos.',
+    image: 'https://images.unsplash.com/photo-1619740455993-9d622bf99e8b?w=500&h=400&fit=crop',
+  },
+  {
+    id: 'dogo_hawaiano',
+    category: 'dogos',
+    name: 'HAWAIANO',
+    price: 35,
+    description: 'Pico de gallo, trozos de piña asada y aderezos.',
+    image: 'https://images.unsplash.com/photo-1619740455993-9d622bf99e8b?w=500&h=400&fit=crop',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PAPAS
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'papa_fritas',
+    category: 'papas',
+    name: 'PAPAS FRITAS',
+    price: 55,
+    description: 'Queso amarillo y catsup.',
+    image: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?w=500&h=400&fit=crop',
+  },
+  {
+    id: 'papa_gajo',
+    category: 'papas',
+    name: 'PAPAS DE GAJO',
+    price: 65,
+    description: 'Papas en gajo doradas y sazonadas.',
+    image: 'https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=500&h=400&fit=crop',
+    popular: true,
+  },
+  {
+    id: 'papa_salchi',
+    category: 'papas',
+    name: 'SALCHIPAPAS',
+    price: 65,
+    description: 'Wienies, queso amarillo y catsup.',
+    image: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?w=500&h=400&fit=crop',
+    popular: true,
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BONELESS — 250 grs.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'bone_sencillos',
+    category: 'boneless',
+    name: 'SENCILLOS',
+    price: 85,
+    description: '250 grs. Verdura (zanahoria y apio) y aderezos.',
+    image: 'https://images.unsplash.com/photo-1524114664604-cd8133cd67ad?w=500&h=400&fit=crop',
+  },
+  {
+    id: 'bone_sabores',
+    category: 'boneless',
+    name: 'BÚFALO · BBQ · MANGO HABANERO',
+    price: 135,
+    description: '250 grs. Aros de cebolla, papas fritas, verdura (zanahoria y apio) y aderezo ranch.',
+    image: 'https://images.unsplash.com/photo-1524114664604-cd8133cd67ad?w=500&h=400&fit=crop',
+    popular: true,
+    badge: '🔥 Picante disponible',
+  },
+];
+
+export const COMPANY_INFO = {
+  name: "Quike's Ranch",
+  whatsapp: '5216391249030',
+  phone: '639-124-90-30',
+  schedule: 'Viernes a Domingo: 7:00 PM – 12:00 AM',
+  bankTransfer: {
+    bank: 'BANCO (por confirmar)',
+    accountHolder: 'Nombre del titular (por confirmar)',
+    clabe: '000000000000000000',
+    accountNumber: '0000000000',
+  },
+};
