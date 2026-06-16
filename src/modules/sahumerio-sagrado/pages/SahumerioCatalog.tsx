@@ -4,7 +4,7 @@ import {
   ShoppingBag, Plus, Minus, X, MapPin, Sparkles, Heart, Share2,
   MessageCircle, Moon, Star, ArrowLeft, Volume2, VolumeX, ChevronDown,
   Globe, Search, Menu, ZoomIn, ZoomOut, Phone, Mail, QrCode, Clock,
-  SlidersHorizontal, Check, CreditCard, Landmark, Copy
+  SlidersHorizontal, Check, CreditCard, Landmark, Copy, Image as ImageIcon
 } from 'lucide-react';
 import { SAHUMERIO_CATEGORIES, SAHUMERIO_PRODUCTS } from '../constants';
 import bgImage from '../assets/sahumerio-bg.png';

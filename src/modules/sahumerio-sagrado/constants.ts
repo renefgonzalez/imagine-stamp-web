@@ -12,6 +12,7 @@ export const SAHUMERIO_PRODUCTS = [
     description: 'Atrae abundancia y purifica energías densas.', 
     price: 150, 
     category: 'inciensos', 
+    sub_category_2: 'CARRUSEL_SAHUMERIO',
     image: '/productos/copal_incense.png' 
   },
   { 
