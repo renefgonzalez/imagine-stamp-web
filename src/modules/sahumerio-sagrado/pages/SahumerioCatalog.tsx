@@ -628,7 +628,7 @@ export default function SahumerioCatalog() {
                       className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ${cart.some(item => item.id === product.id) ? 'opacity-90' : ''}`}
                     />
                     {cart.some(item => item.id === product.id) && (
-                      <div className="absolute inset-0 bg-[#B892FF]/10 flex items-center justify-center z-[5] pointer-events-none">
+                      <div className="absolute inset-0 bg-[#B892FF]/40 flex items-center justify-center z-[5] pointer-events-none transition-all duration-300">
                         <motion.div 
                           initial={{ scale: 0, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
