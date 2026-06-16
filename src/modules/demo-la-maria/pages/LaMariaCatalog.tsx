@@ -154,10 +154,10 @@ export default function LaMariaCatalog() {
             {/* Botón Filtros */}
             <button 
               onClick={() => setIsFiltersOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-[#1A1A1A] border border-[#C5A059]/30 rounded-full text-[#C5A059] hover:bg-[#C5A059]/10 transition-colors mr-2 sticky left-0 z-10 backdrop-blur-md"
+              className="flex flex-col items-center gap-1.5 transition-all px-2 text-[#C5A059] hover:opacity-100 sticky left-0 z-10 bg-[#0F0F0F]/90 backdrop-blur-sm mr-2 py-1"
             >
-              <SlidersHorizontal size={16} />
-              <span className="text-[10px] font-bold uppercase tracking-widest">Filtros</span>
+              <span className="text-xl transition-transform hover:scale-110"><SlidersHorizontal size={20} /></span>
+              <span className="text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">Filtros</span>
             </button>
 
             <button
