@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, X, Plus, Minus, MessageCircle, ChevronRight, Check, Search } from 'lucide-react';
+import { ShoppingBag, X, Plus, Minus, MessageCircle, ChevronRight, Check, Search, SlidersHorizontal, Sparkles, Flame, Star, Clock, LayoutGrid } from 'lucide-react';
 import { CATEGORIES, PRODUCTS, COMPANY_INFO, Product } from '../constants';
 
 // Mismos tipos que usamos en los otros módulos
@@ -9,11 +9,13 @@ interface CartItem extends Product {
 }
 
 export default function LaMariaCatalog() {
-  const [activeCategory, setActiveCategory] = useState(CATEGORIES[0].id);
+  const [activeCategory, setActiveCategory] = useState('todo');
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [selectedProductDetails, setSelectedProductDetails] = useState<Product | null>(null);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   // Formulario de checkout avanzado
   const [customerInfo, setCustomerInfo] = useState({
@@ -91,12 +93,17 @@ export default function LaMariaCatalog() {
 
   const activeProducts = useMemo(() => {
     return PRODUCTS.filter(p => {
-      const matchCategory = p.category === activeCategory;
+      const matchCategory = activeCategory === 'todo' || p.category === activeCategory;
       const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           p.description.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchCategory && matchSearch;
+      
+      let matchFilter = true;
+      if (activeFilter === 'popular') matchFilter = !!p.popular;
+      // Other filters like 'oferta', 'nuevo', 'proximamente' could be added here if PRODUCTS had those flags.
+      
+      return matchCategory && matchSearch && matchFilter;
     });
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, activeFilter]);
 
   return (
     <div 
@@ -142,8 +149,35 @@ export default function LaMariaCatalog() {
         </div>
 
         {/* NAVEGACIÓN CATEGORÍAS */}
-        <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden bg-[#0F0F0F] border-t border-[#1A1A1A]">
-          <div className="flex px-4 py-3 gap-6 w-max">
+        <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden bg-[#0F0F0F] border-t border-[#1A1A1A] relative shadow-sm">
+          <div className="flex px-4 py-3 gap-4 w-max items-center">
+            {/* Botón Filtros */}
+            <button 
+              onClick={() => setIsFiltersOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-[#1A1A1A] border border-[#C5A059]/30 rounded-full text-[#C5A059] hover:bg-[#C5A059]/10 transition-colors mr-2 sticky left-0 z-10 backdrop-blur-md"
+            >
+              <SlidersHorizontal size={16} />
+              <span className="text-[10px] font-bold uppercase tracking-widest">Filtros</span>
+            </button>
+
+            <button
+              onClick={() => { setActiveCategory('todo'); setActiveFilter(null); }}
+              className={`flex flex-col items-center gap-1.5 transition-all px-2 ${
+                activeCategory === 'todo' && !activeFilter
+                  ? 'text-[#C5A059] opacity-100' 
+                  : 'text-gray-500 opacity-60 hover:opacity-100'
+              }`}
+            >
+              <span className={`text-xl transition-transform ${activeCategory === 'todo' && !activeFilter ? 'scale-110 drop-shadow-md' : ''}`}><LayoutGrid size={20} /></span>
+              <span className="text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">Todo</span>
+              {activeCategory === 'todo' && !activeFilter && (
+                <motion.div 
+                  layoutId="activeCategoryLaMaria"
+                  className="h-0.5 bg-[#C5A059] w-full mt-1 rounded-full shadow-[0_0_8px_rgba(197,160,89,0.5)]"
+                />
+              )}
+            </button>
+
             {CATEGORIES.map(category => (
               <button
                 key={category.id}
@@ -597,6 +631,116 @@ export default function LaMariaCatalog() {
                   <MessageCircle size={22} className="fill-white" />
                   Finalizar Pedido vía WhatsApp
                 </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+      {/* MODAL FILTROS */}
+      <AnimatePresence>
+        {isFiltersOpen && (
+          <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-0 sm:p-4">
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="w-full max-w-2xl bg-[#121212] rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col border border-[#C5A059]/30 max-h-[85vh]"
+            >
+              <div className="p-5 border-b border-[#333] flex justify-between items-center bg-[#1A1A1A] rounded-t-3xl sm:rounded-t-2xl">
+                <h3 className="text-xl font-serif font-bold text-white flex items-center gap-2">
+                  <SlidersHorizontal size={20} className="text-[#C5A059]" />
+                  Filtros
+                </h3>
+                <button onClick={() => setIsFiltersOpen(false)} className="text-gray-400 hover:text-[#C5A059]">
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto space-y-8 flex-1 [&::-webkit-scrollbar]:hidden">
+                {/* Destacados */}
+                <div>
+                  <h4 className="text-gray-400 font-bold mb-4 uppercase text-xs tracking-widest">Destacados</h4>
+                  <div className="flex flex-wrap gap-3">
+                    <button 
+                      onClick={() => { setActiveFilter('nuevo'); setIsFiltersOpen(false); }}
+                      className={`flex items-center gap-2 px-4 py-2 border rounded-full transition-colors text-xs font-bold uppercase tracking-widest ${activeFilter === 'nuevo' ? 'bg-[#C5A059]/20 border-[#C5A059] text-[#C5A059]' : 'bg-[#1A1A1A] border-[#333] text-gray-300 hover:border-[#C5A059]'}`}
+                    >
+                      <Sparkles size={14} className="text-[#C5A059]" />
+                      Nuevo
+                    </button>
+                    <button 
+                      onClick={() => { setActiveFilter('oferta'); setIsFiltersOpen(false); }}
+                      className={`flex items-center gap-2 px-4 py-2 border rounded-full transition-colors text-xs font-bold uppercase tracking-widest ${activeFilter === 'oferta' ? 'bg-[#C5A059]/20 border-[#C5A059] text-[#C5A059]' : 'bg-[#1A1A1A] border-[#333] text-gray-300 hover:border-[#C5A059]'}`}
+                    >
+                      <Flame size={14} className="text-[#C5A059]" />
+                      Oferta
+                    </button>
+                    <button 
+                      onClick={() => { setActiveFilter('popular'); setIsFiltersOpen(false); }}
+                      className={`flex items-center gap-2 px-4 py-2 border rounded-full transition-colors text-xs font-bold uppercase tracking-widest ${activeFilter === 'popular' ? 'bg-[#C5A059]/20 border-[#C5A059] text-[#C5A059]' : 'bg-[#1A1A1A] border-[#333] text-gray-300 hover:border-[#C5A059]'}`}
+                    >
+                      <Star size={14} className="text-[#C5A059]" />
+                      Más Vendido
+                    </button>
+                    <button 
+                      onClick={() => { setActiveFilter('proximamente'); setIsFiltersOpen(false); }}
+                      className={`flex items-center gap-2 px-4 py-2 border rounded-full transition-colors text-xs font-bold uppercase tracking-widest ${activeFilter === 'proximamente' ? 'bg-[#C5A059]/20 border-[#C5A059] text-[#C5A059]' : 'bg-[#1A1A1A] border-[#333] text-gray-300 hover:border-[#C5A059]'}`}
+                    >
+                      <Clock size={14} className="text-[#C5A059]" />
+                      Próximamente
+                    </button>
+                  </div>
+                </div>
+
+                {/* Categorías Grid */}
+                <div>
+                  <h4 className="text-gray-400 font-bold mb-4 uppercase text-xs tracking-widest">Categorías</h4>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                    <button
+                      onClick={() => {
+                        setActiveCategory('todo');
+                        setActiveFilter(null);
+                        setIsFiltersOpen(false);
+                      }}
+                      className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl border transition-all ${
+                        activeCategory === 'todo' && !activeFilter
+                          ? 'bg-[#1A1A1A] border-[#C5A059] shadow-[0_0_15px_rgba(197,160,89,0.15)]'
+                          : 'bg-[#121212] border-[#333] hover:border-[#C5A059]/50 hover:bg-[#1A1A1A]'
+                      }`}
+                    >
+                      <span className="text-2xl drop-shadow-md"><LayoutGrid size={24} className={activeCategory === 'todo' && !activeFilter ? "text-[#C5A059]" : "text-gray-400"} /></span>
+                      <span className={`text-[10px] font-bold uppercase tracking-widest text-center ${
+                        activeCategory === 'todo' && !activeFilter ? 'text-[#C5A059]' : 'text-gray-400'
+                      }`}>
+                        Todo
+                      </span>
+                    </button>
+
+                    {CATEGORIES.map(category => (
+                      <button
+                        key={category.id}
+                        onClick={() => {
+                          setActiveCategory(category.id);
+                          setActiveFilter(null);
+                          setIsFiltersOpen(false);
+                        }}
+                        className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl border transition-all ${
+                          activeCategory === category.id && !activeFilter
+                            ? 'bg-[#1A1A1A] border-[#C5A059] shadow-[0_0_15px_rgba(197,160,89,0.15)]'
+                            : 'bg-[#121212] border-[#333] hover:border-[#C5A059]/50 hover:bg-[#1A1A1A]'
+                        }`}
+                      >
+                        <span className="text-2xl drop-shadow-md">{category.icon}</span>
+                        <span className={`text-[10px] font-bold uppercase tracking-widest text-center ${
+                          activeCategory === category.id && !activeFilter ? 'text-[#C5A059]' : 'text-gray-400'
+                        }`}>
+                          {category.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>
