@@ -4,7 +4,7 @@ import {
   ShoppingBag, Plus, Minus, X, MapPin, Sparkles, Heart, Share2,
   MessageCircle, Moon, Star, ArrowLeft, Volume2, VolumeX, ChevronDown,
   Globe, Search, Menu, ZoomIn, ZoomOut, Phone, Mail, QrCode, Clock,
-  SlidersHorizontal, Check
+  SlidersHorizontal, Check, CreditCard
 } from 'lucide-react';
 import { SAHUMERIO_CATEGORIES, SAHUMERIO_PRODUCTS } from '../constants';
 import bgImage from '../assets/sahumerio-bg.png';
@@ -34,6 +34,8 @@ export default function SahumerioCatalog() {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [mpLoading, setMpLoading] = useState(false);
+  const [cartToast, setCartToast] = useState<{name: string} | null>(null);
   const [reviewForm, setReviewForm] = useState({ name: '', rating: 5, comment: '' });
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
@@ -262,6 +264,76 @@ export default function SahumerioCatalog() {
     }
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const pago = params.get('pago');
+    if (!pago) return;
+
+    const status = params.get('status') || params.get('collection_status');
+    const orderRef = params.get('external_reference');
+    const paymentId = params.get('payment_id') || params.get('collection_id');
+
+    if (pago === 'exito' && status === 'approved' && orderRef) {
+      supabase.from('orders')
+        .update({ payment_reference: `MP-${paymentId || 'aprobado'}` })
+        .eq('id', orderRef)
+        .then(() => {});
+      setCartToast({ name: '✅ ¡Pago aprobado! Tu pedido fue registrado.' });
+      setTimeout(() => setCartToast(null), 6000);
+    } else if (pago === 'error') {
+      setCartToast({ name: '❌ El pago fue rechazado. Intenta de nuevo u otra forma de pago.' });
+      setTimeout(() => setCartToast(null), 6000);
+    } else if (pago === 'pendiente') {
+      setCartToast({ name: '⏳ Tu pago está pendiente de confirmación.' });
+      setTimeout(() => setCartToast(null), 6000);
+    }
+
+    window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+  }, []);
+
+  const handleMercadoPagoCheckout = async () => {
+    if (mpLoading) return;
+    setMpLoading(true);
+
+    const orderId = 'ORD-' + Date.now();
+    const newOrder = {
+      id: orderId,
+      customer_name: customerInfo.name,
+      customer_phone: customerInfo.phone,
+      customer_city: customerInfo.address || 'Por confirmar',
+      delivery_notes: customerInfo.notes,
+      payment_method: 'Tarjeta (Mercado Pago)',
+      items: cart.map(item => ({ name: item.name, price: item.price, quantity: item.quantity })),
+      total_amount: totalPrice + (customerInfo.shippingMethod === 'Envío a domicilio' ? 150 : 0),
+      status: 'pending',
+      internal_notes: []
+    };
+
+    try {
+      const { error: orderError } = await supabase.from('orders').insert([newOrder]);
+      if (orderError) throw new Error('No se pudo crear el pedido. Intenta de nuevo.');
+
+      const { data, error } = await supabase.functions.invoke('create-preference', {
+        body: {
+          orderId,
+          items: cart.map(item => ({ name: item.name, price: item.price, quantity: item.quantity })),
+          siteUrl: window.location.origin
+        }
+      });
+
+      if (error) throw error;
+
+      const redirectUrl = data?.init_point || data?.sandbox_init_point;
+      if (!redirectUrl) throw new Error(data?.error ? JSON.stringify(data.error) : 'Mercado Pago no devolvió un enlace de pago.');
+
+      window.location.href = redirectUrl;
+    } catch (err: any) {
+      console.error('Error en pago Mercado Pago:', err);
+      alert('Hubo un problema al iniciar el pago con tarjeta. ' + (err?.message || '') + '\n\nPuedes elegir otra forma de pago o escribirnos por WhatsApp.');
+      setMpLoading(false);
+    }
+  };
+
   const handleCheckout = () => {
     const phoneNumber = '525549893248';
     const shippingCost = customerInfo.shippingMethod === 'Envío a domicilio' ? 150 : 0;
@@ -296,6 +368,19 @@ export default function SahumerioCatalog() {
 
   return (
     <div className="bg-[#FDFBF7] font-sans text-[#4A4056] relative scroll-smooth selection:bg-[#6B5A7E]/20">
+      <AnimatePresence>
+        {cartToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-black/90 backdrop-blur-md text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-white/10"
+          >
+            <div className="w-2 h-2 bg-[#B892FF] rounded-full animate-pulse" />
+            <span className="font-medium text-sm whitespace-nowrap">{cartToast.name}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       {/* HEADER TRANSLÚCIDO MINIMALISTA TIPO BRASA URBANA */}
       <header className="fixed top-0 w-full z-40 bg-transparent transition-all duration-300 border-b border-white/5">
@@ -1201,20 +1286,47 @@ export default function SahumerioCatalog() {
                       </div>
                     </div>
 
-                    <button 
-                      onClick={handleCheckout}
-                      disabled={
-                        !customerInfo.name || 
-                        !customerInfo.phone || 
-                        customerInfo.shippingMethod === 'Selecciona una opción' || 
-                        (customerInfo.shippingMethod === 'Envío a domicilio' && !customerInfo.address) ||
-                        customerInfo.paymentMethod === 'Selecciona una opción'
-                      }
-                      className="w-full py-4 bg-[#1EBE5D] text-white rounded-xl font-extrabold text-lg hover:bg-[#179B4A] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(30,190,93,0.3)]"
-                    >
-                      <MessageCircle size={22} className="fill-white" />
-                      Finalizar Pedido vía WhatsApp
-                    </button>
+                    {customerInfo.paymentMethod === 'Mercado Pago' && (
+                      <div className="bg-[#009EE3]/10 border border-[#009EE3]/20 rounded-xl p-3 mb-4 flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-[#009EE3] flex items-center justify-center text-white shrink-0">
+                          <CreditCard size={16} />
+                        </div>
+                        <p className="text-xs font-medium text-gray-300 leading-relaxed">
+                          Al confirmar, te llevaremos a la pantalla segura de <strong className="text-[#009EE3]">Mercado Pago</strong> para pagar con tarjeta.
+                        </p>
+                      </div>
+                    )}
+                    {customerInfo.paymentMethod === 'Mercado Pago' ? (
+                      <button 
+                        onClick={handleMercadoPagoCheckout}
+                        disabled={
+                          !customerInfo.name || 
+                          !customerInfo.phone || 
+                          customerInfo.shippingMethod === 'Selecciona una opción' || 
+                          (customerInfo.shippingMethod === 'Envío a domicilio' && !customerInfo.address) ||
+                          mpLoading
+                        }
+                        className="w-full py-4 bg-[#009EE3] text-white rounded-xl font-extrabold text-lg hover:bg-[#008FCC] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,158,227,0.3)]"
+                      >
+                        <CreditCard size={22} className="text-white" />
+                        {mpLoading ? 'Redirigiendo...' : 'Pagar con Tarjeta'}
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={handleCheckout}
+                        disabled={
+                          !customerInfo.name || 
+                          !customerInfo.phone || 
+                          customerInfo.shippingMethod === 'Selecciona una opción' || 
+                          (customerInfo.shippingMethod === 'Envío a domicilio' && !customerInfo.address) ||
+                          customerInfo.paymentMethod === 'Selecciona una opción'
+                        }
+                        className="w-full py-4 bg-[#1EBE5D] text-white rounded-xl font-extrabold text-lg hover:bg-[#179B4A] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(30,190,93,0.3)]"
+                      >
+                        <MessageCircle size={22} className="fill-white" />
+                        Finalizar Pedido vía WhatsApp
+                      </button>
+                    )}
                   </div>
                 </div>
             </motion.div>
