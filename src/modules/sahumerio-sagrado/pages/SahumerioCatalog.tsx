@@ -34,6 +34,7 @@ export default function SahumerioCatalog() {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isFavoritesModalOpen, setIsFavoritesModalOpen] = useState(false);
   const [mpLoading, setMpLoading] = useState(false);
   const [cartToast, setCartToast] = useState<{name: string} | null>(null);
   const [reviewForm, setReviewForm] = useState({ name: '', rating: 5, comment: '' });
@@ -434,14 +435,7 @@ export default function SahumerioCatalog() {
             </button>
 
             <button 
-              onClick={() => {
-                if(favorites.length > 0) {
-                  const favItems = SAHUMERIO_PRODUCTS.filter(p => favorites.includes(p.id)).map(p => p.name).join(', ');
-                  alert('Tus favoritos:\n' + favItems);
-                } else {
-                  alert('Aún no tienes favoritos.');
-                }
-              }}
+              onClick={() => setIsFavoritesModalOpen(true)}
               className="relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-white/20 bg-black/60 hover:bg-black/80 transition-colors group shadow-lg"
               title="Mis Favoritos"
             >
@@ -1075,6 +1069,73 @@ export default function SahumerioCatalog() {
                 </div>
               </div>
 
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Favoritos Modal */}
+      <AnimatePresence>
+        {isFavoritesModalOpen && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="w-full max-w-sm bg-[#1A1A1A] border border-white/10 rounded-3xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)]"
+            >
+              <div className="flex items-center justify-between p-5 border-b border-white/5 bg-gradient-to-r from-[#B892FF]/10 to-transparent">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#B892FF]/20 flex items-center justify-center text-[#B892FF]">
+                    <Heart size={20} fill="#B892FF" />
+                  </div>
+                  <h2 className="text-base font-black text-white uppercase tracking-widest">Mis Favoritos</h2>
+                </div>
+                <button 
+                  onClick={() => setIsFavoritesModalOpen(false)}
+                  className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="p-5 max-h-[60vh] overflow-y-auto space-y-3 custom-scrollbar">
+                {favorites.length === 0 ? (
+                  <div className="text-center py-10 flex flex-col items-center">
+                    <Heart size={48} className="text-white/10 mb-3" />
+                    <p className="text-gray-400 text-sm font-medium">Aún no tienes favoritos guardados.</p>
+                    <p className="text-xs text-gray-500 mt-1">¡Explora nuestra magia y guarda tus preferidos!</p>
+                  </div>
+                ) : (
+                  SAHUMERIO_PRODUCTS.filter(p => favorites.includes(p.id)).map(product => (
+                    <div key={product.id} className="flex items-center gap-3 p-3 bg-[#222] border border-[#333] rounded-2xl group">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-black">
+                        <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-white text-sm font-bold truncate">{product.name}</h4>
+                        <p className="text-[#B892FF] text-xs font-black mt-1">${product.price} MXN</p>
+                      </div>
+                      <div className="flex flex-col gap-2 shrink-0">
+                        <button
+                          onClick={() => addToCart(product)}
+                          className="w-8 h-8 rounded-full bg-[#B892FF] flex items-center justify-center text-white hover:bg-[#A37AE6] transition-colors shadow-lg shadow-[#B892FF]/30"
+                          title="Agregar al carrito"
+                        >
+                          <ShoppingBag size={14} strokeWidth={2.5} />
+                        </button>
+                        <button
+                          onClick={() => toggleFavorite(product.id)}
+                          className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-colors"
+                          title="Eliminar de favoritos"
+                        >
+                          <X size={14} strokeWidth={2.5} />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </motion.div>
           </div>
         )}
