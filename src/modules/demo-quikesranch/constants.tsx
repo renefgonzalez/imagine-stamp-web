@@ -185,7 +185,7 @@ export const PRODUCTS: Product[] = [
     name: 'HAWAIANO',
     price: 35,
     description: 'Pico de gallo, trozos de piña asada y aderezos.',
-    image: 'https://images.unsplash.com/photo-1619740455993-9d622bf99e8b?w=500&h=400&fit=crop',
+    image: '/quikesranch/dogo-hawaiano.png',
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -205,7 +205,7 @@ export const PRODUCTS: Product[] = [
     name: 'PAPAS DE GAJO',
     price: 65,
     description: 'Papas en gajo doradas y sazonadas.',
-    image: 'https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=500&h=400&fit=crop',
+    image: '/quikesranch/papa-gajo.png',
     popular: true,
   },
   {
