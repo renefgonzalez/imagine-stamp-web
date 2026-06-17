@@ -255,9 +255,9 @@ export const PRODUCTS: Product[] = [
 
 export const COMPANY_INFO = {
   name: "Quike's Ranch",
-  whatsapp: '5216391249030',
+  whatsapp: '526391249030',
   phone: '639-124-90-30',
-  schedule: 'Viernes a Domingo: 7:00 PM – 12:00 AM',
+  schedule: 'Viernes, Sábado y Domingo: 7:00 PM – 12:00 AM',
   bankTransfer: {
     bank: 'BANCO (por confirmar)',
     accountHolder: 'Nombre del titular (por confirmar)',

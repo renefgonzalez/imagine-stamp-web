@@ -404,29 +404,73 @@ export default function QuikesRanchCatalog() {
       </main>
 
       {/* ── FOOTER ─────────────────────────────────────────────────────────── */}
-      <footer className="border-t py-12 text-center" style={{ background: '#0D0D0D', borderColor: `${ORANGE}22` }}>
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Flame style={{ color: ORANGE }} />
-            <h2 className="text-2xl font-extrabold uppercase tracking-widest" style={{ color: GOLD }}>Quike's Ranch</h2>
-            <Flame style={{ color: ORANGE }} />
+      <footer className="border-t py-10" style={{ background: '#0D0D0D', borderColor: `${ORANGE}22` }}>
+        <div className="container mx-auto px-4 max-w-md md:max-w-3xl">
+          {/* Brand & Desc */}
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-3">
+              <Flame style={{ color: ORANGE }} size={28} />
+              <h2 className="text-xl font-extrabold uppercase tracking-widest" style={{ color: GOLD }}>Quike's Ranch</h2>
+            </div>
+            <p className="text-sm leading-relaxed" style={{ color: '#888' }}>
+              Tu destino definitivo para los mejores antojos, hamburguesas y tortas en Delicias.
+            </p>
           </div>
-          <p className="text-sm mb-1" style={{ color: '#888' }}>
-            🕐 {COMPANY_INFO.schedule}
-          </p>
-          <a
-            href={`tel:${COMPANY_INFO.phone}`}
-            className="inline-flex items-center gap-1.5 text-sm mt-1 transition-colors hover:opacity-80"
-            style={{ color: ORANGE }}
-          >
-            <Phone size={14} />
-            {COMPANY_INFO.phone}
-          </a>
-          <div className="w-20 h-px mx-auto my-6" style={{ background: `${ORANGE}44` }} />
-          <p className="text-xs" style={{ color: '#444' }}>
-            Página web realizada por{' '}
-            <span style={{ color: ORANGE }} className="font-bold">IMAGINE & STAMP</span>
-          </p>
+
+          {/* Redes */}
+          <div className="mb-8">
+            <h3 className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: ORANGE }}>Síguenos en Redes</h3>
+            <a 
+              href="#" 
+              className="flex items-center gap-3 p-3 rounded-xl transition-colors w-full sm:w-auto inline-flex"
+              style={{ background: '#1A1A1A', border: '1px solid #222' }}
+            >
+              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: '#1877F2' }}>
+                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </div>
+              <span className="text-sm font-bold text-white">Quike's Ranch Oficial</span>
+            </a>
+          </div>
+
+          {/* Contacto */}
+          <div className="mb-8">
+            <h3 className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: ORANGE }}>Contacto</h3>
+            <div className="space-y-3">
+              <a href={`https://wa.me/${COMPANY_INFO.whatsapp}`} className="flex items-center gap-3 text-sm transition-colors hover:text-white" style={{ color: '#CCC' }}>
+                <MessageCircle size={18} style={{ color: '#25D366' }} />
+                <span>WhatsApp Pedidos: {COMPANY_INFO.phone}</span>
+              </a>
+              <a href={`tel:${COMPANY_INFO.phone.replace(/-/g, '')}`} className="flex items-center gap-3 text-sm transition-colors hover:text-white" style={{ color: '#CCC' }}>
+                <Phone size={18} style={{ color: '#E1306C' }} />
+                <span>{COMPANY_INFO.phone}</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Ubicacion */}
+          <div className="mb-10">
+            <h3 className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: ORANGE }}>Ubicación y Horarios</h3>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3 text-sm" style={{ color: '#CCC' }}>
+                <MapPin size={18} className="shrink-0 mt-0.5" style={{ color: '#E1306C' }} />
+                <span className="leading-relaxed">Avenida Cerina 1002 El Mirador CP 33086<br/>Delicias, Chihuahua</span>
+              </div>
+              <div className="flex items-start gap-3 text-sm" style={{ color: '#CCC' }}>
+                <div className="shrink-0 mt-0.5 w-[18px] h-[18px] rounded-full border-[1.5px] border-gray-400 flex items-center justify-center">
+                  <div className="w-1 h-1 bg-gray-400 rounded-full" />
+                </div>
+                <span>{COMPANY_INFO.schedule}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full h-px mb-6" style={{ background: `${ORANGE}22` }} />
+          <div className="text-center">
+            <p className="text-xs" style={{ color: '#444' }}>
+              Página web realizada por{' '}
+              <span style={{ color: ORANGE }} className="font-bold">IMAGINE & STAMP</span>
+            </p>
+          </div>
         </div>
       </footer>
 
