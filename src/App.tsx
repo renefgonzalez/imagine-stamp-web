@@ -15,7 +15,7 @@ import { CrepasCatalog } from './modules/menu-crepas/pages/CrepasCatalog';
 import MenuAbanico from './modules/menu-taqueria/pages/MenuAbanico';
 import MenuPatrona from './modules/cazuelitas-patrona/MenuPatrona';
 import JuiceMenu from './modules/menu-juice-and-go/pages/JuiceMenu';
-import SahumerioCatalog from './modules/sahumerio-sagrado/pages/SahumerioCatalog';
+
 import LaMariaCatalog from './modules/demo-la-maria/pages/LaMariaCatalog';
 import QuikesRanchCatalog from './modules/demo-quikesranch/pages/QuikesRanchCatalog';
 
@@ -1065,7 +1065,7 @@ export default function App() {
         <Route path="/taqueria-abanico" element={<MenuAbanico />} />
         <Route path="/cazuelitas-patrona" element={<MenuPatrona />} />
         <Route path="/demo-juice-and-go" element={<JuiceMenu />} />
-        <Route path="/sahumerio-sagrado" element={<SahumerioCatalog />} />
+
         <Route path="/demo-la-maria" element={<LaMariaCatalog />} />
         <Route path="/demo-quikesranch" element={<QuikesRanchCatalog />} />
       </Routes>

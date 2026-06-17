@@ -195,7 +195,7 @@ export default function QuikesRanchCatalog() {
           {/* Brand */}
           <div className="shrink-0 text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-2">
-              <img src="/quikesranch/logo.png" alt={COMPANY_INFO.name} className="h-14 object-contain" />
+              <img src="/quikesranch/logo.png" alt={COMPANY_INFO.name} className="h-24 sm:h-32 object-contain" />
             </div>
             <p className="text-[9px] sm:text-[10px] tracking-wider sm:tracking-[0.25em] uppercase mt-1 md:mt-0 text-center max-w-[280px] sm:max-w-none mx-auto leading-relaxed" style={{ color: '#666' }}>
               Burgers · Tortas · Dogos · Papas · Boneless
@@ -405,7 +405,7 @@ export default function QuikesRanchCatalog() {
           {/* Brand & Desc */}
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-3">
-              <img src="/quikesranch/logo.png" alt={COMPANY_INFO.name} className="h-16 object-contain" />
+              <img src="/quikesranch/logo.png" alt={COMPANY_INFO.name} className="h-24 sm:h-32 object-contain" />
             </div>
             <p className="text-sm leading-relaxed" style={{ color: '#888' }}>
               Tu destino definitivo para los mejores antojos, hamburguesas y tortas en Delicias.
