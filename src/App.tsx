@@ -11,12 +11,6 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Product } from './data/products';
 import logo from './logo.png';
 import DemoMenu from './modules/demo-menu/pages/DemoMenu';
-import { CrepasCatalog } from './modules/menu-crepas/pages/CrepasCatalog';
-import MenuAbanico from './modules/menu-taqueria/pages/MenuAbanico';
-import MenuPatrona from './modules/cazuelitas-patrona/MenuPatrona';
-import JuiceMenu from './modules/menu-juice-and-go/pages/JuiceMenu';
-
-import LaMariaCatalog from './modules/demo-la-maria/pages/LaMariaCatalog';
 import QuikesRanchCatalog from './modules/demo-quikesranch/pages/QuikesRanchCatalog';
 
 
@@ -1061,12 +1055,6 @@ export default function App() {
           </ErrorBoundary>
         } />
         <Route path="/demo-menu" element={<DemoMenu />} />
-        <Route path="/menu-crepas" element={<CrepasCatalog />} />
-        <Route path="/taqueria-abanico" element={<MenuAbanico />} />
-        <Route path="/cazuelitas-patrona" element={<MenuPatrona />} />
-        <Route path="/demo-juice-and-go" element={<JuiceMenu />} />
-
-        <Route path="/demo-la-maria" element={<LaMariaCatalog />} />
         <Route path="/demo-quikesranch" element={<QuikesRanchCatalog />} />
       </Routes>
     </HashRouter>
