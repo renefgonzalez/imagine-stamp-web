@@ -259,9 +259,9 @@ export const COMPANY_INFO = {
   phone: '639-124-90-30',
   schedule: 'Viernes, Sábado y Domingo: 7:00 PM – 12:00 AM',
   bankTransfer: {
-    bank: 'BANCO (por confirmar)',
-    accountHolder: 'Nombre del titular (por confirmar)',
-    clabe: '000000000000000000',
-    accountNumber: '0000000000',
+    bank: 'BBVA',
+    accountHolder: 'Ana Celia Delgado',
+    clabe: '',
+    accountNumber: '4152-3140-2401-7280',
   },
 };

@@ -829,8 +829,8 @@ export default function QuikesRanchCatalog() {
                         { label: 'Banco',    value: COMPANY_INFO.bankTransfer.bank },
                         { label: 'Titular',  value: COMPANY_INFO.bankTransfer.accountHolder },
                         { label: 'CLABE',    value: COMPANY_INFO.bankTransfer.clabe,         key: 'clabe' },
-                        { label: 'Cuenta',   value: COMPANY_INFO.bankTransfer.accountNumber, key: 'cuenta' },
-                      ].map(row => (
+                        { label: 'Tarjeta',  value: COMPANY_INFO.bankTransfer.accountNumber, key: 'cuenta' },
+                      ].filter(row => row.value).map(row => (
                         <div key={row.label} className="flex items-center justify-between gap-2">
                           <div className="min-w-0">
                             <p className="text-[10px] uppercase tracking-wider" style={{ color: '#666' }}>{row.label}</p>
