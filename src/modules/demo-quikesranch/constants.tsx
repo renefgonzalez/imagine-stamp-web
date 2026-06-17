@@ -177,7 +177,7 @@ export const PRODUCTS: Product[] = [
     name: 'TOCINO',
     price: 35,
     description: 'Pico de gallo, tocino y aderezos.',
-    image: 'https://images.unsplash.com/photo-1619740455993-9d622bf99e8b?w=500&h=400&fit=crop',
+    image: '/quikesranch/dogo-tocino.png',
   },
   {
     id: 'dogo_hawaiano',
