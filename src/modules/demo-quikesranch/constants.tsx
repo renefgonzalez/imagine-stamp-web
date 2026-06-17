@@ -158,9 +158,9 @@ export const PRODUCTS: Product[] = [
     id: 'dogo_sencillo',
     category: 'dogos',
     name: 'SENCILLO',
-    price: 25,
-    description: 'Pico de gallo y aderezos.',
-    image: 'https://images.unsplash.com/photo-1619740455993-9d622bf99e8b?w=500&h=400&fit=crop',
+    price: 35,
+    description: 'Pico de gallo, winny y aderezos.',
+    image: '/quikesranch/dogo-sencillo.png',
   },
   {
     id: 'dogo_chillibeens',
