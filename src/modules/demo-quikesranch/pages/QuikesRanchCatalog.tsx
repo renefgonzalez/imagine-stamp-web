@@ -451,10 +451,18 @@ export default function QuikesRanchCatalog() {
           <div className="mb-10">
             <h3 className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: ORANGE }}>Ubicación y Horarios</h3>
             <div className="space-y-4">
-              <div className="flex items-start gap-3 text-sm" style={{ color: '#CCC' }}>
+              <a 
+                href="https://www.google.com/maps/search/?api=1&query=Avenida+Cerina+1002+El+Mirador+CP+33086+Delicias,+Chihuahua"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-3 text-sm hover:opacity-80 transition-opacity" 
+                style={{ color: '#CCC' }}
+              >
                 <MapPin size={18} className="shrink-0 mt-0.5" style={{ color: '#E1306C' }} />
-                <span className="leading-relaxed">Avenida Cerina 1002 El Mirador CP 33086<br/>Delicias, Chihuahua</span>
-              </div>
+                <span className="leading-relaxed underline underline-offset-4 decoration-gray-700">
+                  Avenida Cerina 1002 El Mirador CP 33086<br/>Delicias, Chihuahua
+                </span>
+              </a>
               <div className="flex items-start gap-3 text-sm" style={{ color: '#CCC' }}>
                 <div className="shrink-0 mt-0.5 w-[18px] h-[18px] rounded-full border-[1.5px] border-gray-400 flex items-center justify-center">
                   <div className="w-1 h-1 bg-gray-400 rounded-full" />
