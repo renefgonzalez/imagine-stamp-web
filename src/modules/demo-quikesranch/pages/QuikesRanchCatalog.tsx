@@ -197,9 +197,6 @@ export default function QuikesRanchCatalog() {
             <div className="flex items-center justify-center md:justify-start gap-2">
               <img src="/quikesranch/logo.png" alt={COMPANY_INFO.name} className="h-24 sm:h-32 object-contain" />
             </div>
-            <p className="text-[9px] sm:text-[10px] tracking-wider sm:tracking-[0.25em] uppercase mt-1 md:mt-0 text-center max-w-[280px] sm:max-w-none mx-auto leading-relaxed" style={{ color: '#666' }}>
-              Burgers · Tortas · Dogos · Papas · Boneless
-            </p>
           </div>
 
           {/* Search + Cart */}
