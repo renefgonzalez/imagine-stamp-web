@@ -212,9 +212,9 @@ export const PRODUCTS: Product[] = [
     id: 'papa_salchi',
     category: 'papas',
     name: 'SALCHIPAPAS',
-    price: 65,
-    description: 'Wienies, queso amarillo y catsup.',
-    image: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?w=500&h=400&fit=crop',
+    price: 35,
+    description: 'Salchicha para asar, papas a la francesa, aderezos y verdura.',
+    image: '/quikesranch/salchipapas.png',
     popular: true,
   },
 
