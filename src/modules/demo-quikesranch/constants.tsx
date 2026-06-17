@@ -122,7 +122,7 @@ export const PRODUCTS: Product[] = [
     name: 'LOMO DE RES',
     price: 80,
     description: 'Carne deshebrada, asadero, aguacate y verdura.',
-    image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433c?w=500&h=400&fit=crop',
+    image: '/quikesranch/torta-lomo-res.png',
     popular: true,
   },
   {
@@ -131,7 +131,7 @@ export const PRODUCTS: Product[] = [
     name: 'PIERNA DE PUERCO',
     price: 80,
     description: 'Carne de pierna de puerco, tocino, panela, asadero, aguacate y verdura.',
-    image: 'https://images.unsplash.com/photo-1620921568790-c1cf8984a0b9?w=500&h=400&fit=crop',
+    image: '/quikesranch/torta-pierna-puerco.png',
   },
   {
     id: 'tort_ahumado',
@@ -139,7 +139,7 @@ export const PRODUCTS: Product[] = [
     name: 'LOMO AHUMADO',
     price: 80,
     description: 'Chuleta ahumada asada, asadero, aguacate y verdura.',
-    image: 'https://images.unsplash.com/photo-1544025162-8315ea07f440?w=500&h=400&fit=crop',
+    image: '/quikesranch/torta-lomo-ahumado.png',
   },
   {
     id: 'tort_sirlon',
@@ -147,7 +147,7 @@ export const PRODUCTS: Product[] = [
     name: 'SIRLÓN',
     price: 90,
     description: 'Sirlón asado, aguacate y verdura.',
-    image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&h=400&fit=crop',
+    image: '/quikesranch/torta-sirlon.png',
     popular: true,
   },
 
