@@ -165,10 +165,10 @@ export const PRODUCTS: Product[] = [
   {
     id: 'dogo_chillibeens',
     category: 'dogos',
-    name: 'CHILLIBEENS',
+    name: 'CHILLI BEANS',
     price: 35,
-    description: 'Pico de gallo, inglés con chorizo y aderezos.',
-    image: 'https://images.unsplash.com/photo-1619740455993-9d622bf99e8b?w=500&h=400&fit=crop',
+    description: 'Chilli beans, queso amarillo y aderezos.',
+    image: '/quikesranch/dogo-chillibeans.png',
     popular: true,
   },
   {
