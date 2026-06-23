@@ -51,8 +51,10 @@ cambiar el valor del secret de `TEST-...` a `APP_USR-...`. **Nada de código cam
   - **CORS:** responder a `OPTIONS` y mandar `Access-Control-Allow-*` en toda respuesta.
   - `external_reference = orderId` (para ligar el pago con el pedido).
   - `back_urls` → `https://SITIO/?pago=exito | error | pendiente`.
-  - `auto_return: "approved"` **solo si NO es localhost** (MP lo rechaza en local).
+  - `auto_return: "approved"` **solo si NO es localhost**. (⚠️ *Dato Clave:* MP desactiva el retorno automático si detecta `localhost`. En producción, el usuario volverá a la tienda automáticamente en 5 segundos).
   - Devolver `init_point` y `sandbox_init_point`.
+
+> 💡 **Tip de Caché en Supabase:** Cuando cambias el valor de un *Secret* (como tu Access Token), las Edge Functions a veces se quedan "congeladas" leyendo el secreto viejo por varios minutos debido a la caché interna. Para forzar a que lea el secreto nuevo **inmediatamente**, abre el código de tu función en Supabase, haz un cambio diminuto (ej. un espacio en blanco) y dale a **Deploy**.
 
 ### 2.3 Tabla `settings` (datos bancarios) — opcional pero útil
 - Ejecutar el SQL de `supabase-settings.sql` en **SQL Editor** (crea tabla `settings`
@@ -80,12 +82,18 @@ supabase.from('settings').select('*').eq('id','bank').maybeSingle()
 2. `insert` del pedido en `orders` con `status: 'pending'`.
 3. `supabase.functions.invoke('create-preference', { body: { orderId, items, siteUrl: window.location.origin }})`.
    - `functions.invoke` ya manda la anon key como Authorization → pasa el verify_jwt.
-4. `window.location.href = data.init_point` (redirige a Mercado Pago).
+4. **Guardar el enlace de WhatsApp en memoria:** `localStorage.setItem('pendingWhatsappUrl', whatsappUrl)`.
+   - ⚠️ *Dato Clave:* No abras WhatsApp *antes* de redirigir a Mercado Pago. Corta la experiencia de usuario y resulta confuso. Y no intentes abrir WhatsApp automáticamente por código al regresar del pago, porque Safari y navegadores móviles bloquean ventanas emergentes que no nacen de un "clic" directo del usuario.
+5. `window.location.href = data.init_point` (redirige la pestaña actual a Mercado Pago).
 
 ### Regreso del pago (useEffect al cargar la página)
 - Leer `new URLSearchParams(window.location.search)`.
-- Si `pago=exito` y `status=approved` → actualizar `orders.payment_reference = MP-<payment_id>`
-  para el `external_reference`, mostrar toast "✅ Pago aprobado".
+- Si `pago=exito` y `status=approved` → actualizar `orders.payment_status = 'approved'`
+  para el `external_reference`.
+- **Flujo de WhatsApp post-pago:** 
+  - Leer `const savedWa = localStorage.getItem('pendingWhatsappUrl')`.
+  - Si existe, lo guardamos en un estado (ej. `setPendingWhatsappUrl(savedWa)`) y limpiamos la memoria (`localStorage.removeItem`).
+  - Mostrar un **Modal en pantalla** ("¡Pago Aprobado!") con un botón grande que diga "Enviar comprobante por WhatsApp". Solo cuando el cliente dé clic a este botón se ejecutará `window.open`, garantizando que ningún navegador lo bloquee.
 - Limpiar la URL con `window.history.replaceState`.
 
 ### Botón condicional (paso "Datos de Entrega")
