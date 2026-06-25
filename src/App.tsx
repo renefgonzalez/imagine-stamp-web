@@ -11,8 +11,7 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Product } from './data/products';
 import logo from './logo.png';
 import DemoMenu from './modules/demo-menu/pages/DemoMenu';
-import QuikesRanchCatalog from './modules/demo-quikesranch/pages/QuikesRanchCatalog';
-import ConejoBlakCatalog from './modules/demo-conejoblak/pages/ConejoBlakCatalog';
+
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
 import { CartButton } from './components/common/CartButton';
@@ -651,8 +650,6 @@ export default function App() {
           </ErrorBoundary>
         } />
         <Route path="/demo-menu" element={<DemoMenu />} />
-        <Route path="/demo-quikesranch" element={<QuikesRanchCatalog />} />
-        <Route path="/demo-conejoblak" element={<ConejoBlakCatalog />} />
       </Routes>
     </HashRouter>
   );
