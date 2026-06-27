@@ -1,23 +1,32 @@
 import React, { useState, useMemo, useEffect } from 'react';
 
+import t1Img from '../assets/t1.jpg';
+import t2Img from '../assets/t2.jpg';
+import tcImg from '../assets/tc.jpg';
+import gImg from '../assets/g.jpg';
+import b1Img from '../assets/b1.jpg';
+import b2Img from '../assets/b2.jpg';
+import b3b4Img from '../assets/b3b4.jpg';
+import b5Img from '../assets/b5.jpg';
+
 const NUMERO_WHATSAPP = "5218334460594";
 
 const MENU = [
   { sec:"🍴 Tortas", items:[
-    { id:"t1", nombre:"Torta de la Barda", desc:"La especialidad de la casa 🔥", precio:70, emoji:"🍔", img:"/tortas-jimmy/t1.jpg", especial: true, ribbon: "⭐ ESPECIAL" },
-    { id:"t2", nombre:"Torta de Pierna", desc:"Pierna jugosa al estilo Jimmy", precio:75, emoji:"🍔", img:"/tortas-jimmy/t2.jpg" },
+    { id:"t1", nombre:"Torta de la Barda", desc:"La especialidad de la casa 🔥", precio:70, emoji:"🍔", img:t1Img, especial: true, ribbon: "⭐ ESPECIAL" },
+    { id:"t2", nombre:"Torta de Pierna", desc:"Pierna jugosa al estilo Jimmy", precio:75, emoji:"🍔", img:t2Img },
   ]},
   { sec:"🌮 Antojitos", items:[
-    { id:"tc", nombre:"Tacos de Cochinita", desc:"Con tortilla recién hecha a mano", precio:15, unidad:"c/u", emoji:"🌮", img:"/tortas-jimmy/tc.jpg" },
-    { id:"g", nombre:"Gorditas", desc:"Elige tu guiso favorito 👇", precio:14, unidad:"c/u", emoji:"🌮", img:"/tortas-jimmy/g.jpg",
+    { id:"tc", nombre:"Tacos de Cochinita", desc:"Con tortilla recién hecha a mano", precio:15, unidad:"c/u", emoji:"🌮", img:tcImg },
+    { id:"g", nombre:"Gorditas", desc:"Elige tu guiso favorito 👇", precio:14, unidad:"c/u", emoji:"🌮", img:gImg,
       guisos:["Huevo con verde","Chicharrón","Desebrada","Papa con chorizo","Frijol con queso","Carne molida"] },
   ]},
   { sec:"🥤 Bebidas", items:[
-    { id:"b1", nombre:"Refresco 600 ml", desc:"Bien frío", precio:26, emoji:"🥤", img:"/tortas-jimmy/b1.jpg" },
-    { id:"b2", nombre:"Café", desc:"Calientito", precio:18, emoji:"☕", img:"/tortas-jimmy/b2.jpg" },
-    { id:"b3", nombre:"Agua de sabor – 1 Litro", desc:"Sabor del día", precio:40, emoji:"🥤", img:"/tortas-jimmy/b3b4.jpg" },
-    { id:"b4", nombre:"Agua de sabor – ½ Litro", desc:"Sabor del día", precio:25, emoji:"🥤", img:"/tortas-jimmy/b3b4.jpg" },
-    { id:"b5", nombre:"Agua Ciel 500 ml", desc:"Natural", precio:26, emoji:"🥤", img:"/tortas-jimmy/b5.jpg" },
+    { id:"b1", nombre:"Refresco 600 ml", desc:"Bien frío", precio:26, emoji:"🥤", img:b1Img },
+    { id:"b2", nombre:"Café", desc:"Calientito", precio:18, emoji:"☕", img:b2Img },
+    { id:"b3", nombre:"Agua de sabor – 1 Litro", desc:"Sabor del día", precio:40, emoji:"🥤", img:b3b4Img },
+    { id:"b4", nombre:"Agua de sabor – ½ Litro", desc:"Sabor del día", precio:25, emoji:"🥤", img:b3b4Img },
+    { id:"b5", nombre:"Agua Ciel 500 ml", desc:"Natural", precio:26, emoji:"🥤", img:b5Img },
   ]},
 ];
 
