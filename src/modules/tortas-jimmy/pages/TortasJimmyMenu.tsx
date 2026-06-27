@@ -939,6 +939,9 @@ export default function TortasJimmyMenu() {
           </>
         )}
       </div>
+      <a href="#/tortas-jimmy/admin" style={{ position: 'absolute', bottom: '10px', right: '10px', opacity: 0.2, fontSize: '12px', textDecoration: 'none' }}>
+        🔒
+      </a>
     </div>
   );
 }
