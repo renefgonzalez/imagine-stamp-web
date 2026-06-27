@@ -116,6 +116,20 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
       const redirectUrl = data?.init_point || data?.sandbox_init_point;
       if (!redirectUrl) throw new Error(data?.error ? JSON.stringify(data.error) : 'Mercado Pago no devolvió un enlace de pago.');
 
+      const lines = cart.map(item => `    ${item.name} x${item.quantity} = $${item.price * item.quantity} MXN`).join('\n');
+      const message =
+        `Hola! Quiero realizar el siguiente pedido 🛍️\n\n` +
+        `*Productos:*\n${lines}\n\n` +
+        `*Total: $${total} MXN*\n\n` +
+        `*Datos de entrega:*\n` +
+        `👤 Nombre: ${customerInfo.name}\n` +
+        `📱 WhatsApp: ${customerInfo.phone}\n` +
+        `📍 Ciudad: ${customerInfo.city}\n` +
+        `💳 Pago: Tarjeta (Mercado Pago)` +
+        (customerInfo.notes ? `\n📝 Notas: ${customerInfo.notes}` : '');
+
+      localStorage.setItem('imagine-pending-whatsapp', encodeURIComponent(message));
+
       clearCart();
       setCustomerInfo({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo' });
       setCartStep('cart');

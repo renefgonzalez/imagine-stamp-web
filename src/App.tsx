@@ -11,6 +11,7 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Product } from './data/products';
 import logo from './logo.png';
 import DemoMenu from './modules/demo-menu/pages/DemoMenu';
+import TortasJimmyMenu from './modules/tortas-jimmy/pages/TortasJimmyMenu';
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -86,6 +87,7 @@ export default function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [bankInfo, setBankInfo] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [paymentResult, setPaymentResult] = useState<{ status: string; whatsappMessage: string | null } | null>(null);
   const [favorites, setFavorites] = useState<(string | number)[]>(() => {
     const saved = localStorage.getItem('imagine_stamp_favorites');
     return saved ? JSON.parse(saved) : [];
@@ -201,15 +203,23 @@ export default function App() {
         .update({ payment_reference: `MP-${paymentId || 'aprobado'}` })
         .eq('id', orderRef)
         .then(() => {});
-      setCartToast({ name: '✅ ¡Pago aprobado! Tu pedido fue registrado.' });
-      setTimeout(() => setCartToast(null), 6000);
-    } else if (pago === 'error') {
-      setCartToast({ name: '❌ El pago fue rechazado. Intenta de nuevo u otra forma de pago.' });
-      setTimeout(() => setCartToast(null), 6000);
-    } else if (pago === 'pendiente') {
-      setCartToast({ name: '⏳ Tu pago está pendiente de confirmación.' });
-      setTimeout(() => setCartToast(null), 6000);
     }
+
+    let savedMessage = localStorage.getItem('imagine-pending-whatsapp');
+    localStorage.removeItem('imagine-pending-whatsapp');
+
+    // Agregar el texto de confirmación al mensaje si el pago fue exitoso
+    if (savedMessage && pago === 'exito' && status === 'approved') {
+      try {
+        const decoded = decodeURIComponent(savedMessage);
+        const confirmationText = `\n\n✅ *PAGO EN LÍNEA CONFIRMADO*\nFolio MP: ${paymentId || 'Aprobado'}\n`;
+        savedMessage = encodeURIComponent(decoded + confirmationText);
+      } catch (e) {
+        console.error("Error decoding whatsapp message", e);
+      }
+    }
+
+    setPaymentResult({ status: pago, whatsappMessage: savedMessage });
 
     // Limpiar los parámetros de la URL para que no se repita el aviso al recargar
     window.history.replaceState({}, '', window.location.pathname + window.location.hash);
@@ -646,10 +656,76 @@ export default function App() {
               </div>
 
               <CartDrawer bankInfo={bankInfo} />
+
+              {/* MODAL RESULTADO DE PAGO (regreso de Mercado Pago) */}
+              <AnimatePresence>
+                {paymentResult && (
+                  <div className="fixed inset-0 z-[95] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                    <motion.div
+                      initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                      animate={{ scale: 1, opacity: 1, y: 0 }}
+                      exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                      className="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full border border-primary/10 shadow-2xl relative text-center"
+                    >
+                      {paymentResult.status === 'exito' ? (
+                        <>
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-green-600">
+                            <Check size={32} />
+                          </div>
+                          <h3 className="text-primary text-xl font-black uppercase mb-2">¡Pago Aprobado!</h3>
+                          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 mt-2">
+                            <p className="text-amber-600 font-bold text-xs mb-1 uppercase tracking-wider flex items-center justify-center gap-1">
+                              ⚠️ Paso Final Obligatorio
+                            </p>
+                            <p className="text-primary/70 text-xs">Para que preparemos tu pedido, <strong className="text-primary">DEBES ENVIARLO</strong> haciendo clic en el botón verde de WhatsApp aquí abajo.</p>
+                          </div>
+                        </>
+                      ) : paymentResult.status === 'pendiente' ? (
+                        <>
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-500">
+                            <ShoppingBag size={32} />
+                          </div>
+                          <h3 className="text-primary text-xl font-black uppercase mb-2">Pago Pendiente</h3>
+                          <p className="text-primary/60 text-sm mb-6">Tu pago está siendo procesado. Avísanos por WhatsApp para darle seguimiento.</p>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 border border-red-200 flex items-center justify-center text-red-500">
+                            <X size={32} />
+                          </div>
+                          <h3 className="text-primary text-xl font-black uppercase mb-2">Pago no completado</h3>
+                          <p className="text-primary/60 text-sm mb-6">No pudimos procesar tu pago. Puedes intentarlo de nuevo o contactarnos por WhatsApp.</p>
+                        </>
+                      )}
+
+                      <div className="flex flex-col gap-3">
+                        {paymentResult.whatsappMessage && (
+                          <a
+                            href={`https://wa.me/525650469993?text=${paymentResult.whatsappMessage}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={() => setPaymentResult(null)}
+                            className="w-full py-4 bg-[#25D366] text-white font-black uppercase tracking-wider text-xs rounded-2xl shadow-lg shadow-[#25D366]/30 hover:bg-[#1EBE5D] transition-colors flex items-center justify-center gap-2"
+                          >
+                            <MessageCircle size={18} /> Enviar pedido por WhatsApp
+                          </a>
+                        )}
+                        <button
+                          onClick={() => setPaymentResult(null)}
+                          className="w-full py-3 bg-primary/5 text-primary font-bold uppercase tracking-wider text-xs rounded-xl hover:bg-primary/10 transition-colors"
+                        >
+                          Cerrar
+                        </button>
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+              </AnimatePresence>
             </div>
           </ErrorBoundary>
         } />
         <Route path="/demo-menu" element={<DemoMenu />} />
+        <Route path="/tortas-jimmy" element={<ErrorBoundary><TortasJimmyMenu /></ErrorBoundary>} />
       </Routes>
     </HashRouter>
   );
