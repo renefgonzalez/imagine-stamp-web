@@ -527,30 +527,30 @@ export default function TortasJimmyMenu() {
     let lineas = "";
     Object.keys(cart).forEach(k => {
       const it = cart[k];
-      let itemText = `- ${it.qty}x ${it.nombre} — $${it.precio * it.qty}`;
+      let itemText = `• ${it.qty}x ${it.nombre} — $${it.precio * it.qty}`;
       if (it.itemNote) {
-        itemText += `\n   * ${it.itemNote}`;
+        itemText += `\n   👉 ${it.itemNote}`;
       }
       lineas += itemText + `\n`;
     });
 
-    let msg = `*NUEVO PEDIDO — Tortas de la Barda Jimmy*\n\n`;
-    msg += `*Cliente:* ${n}\n`;
-    msg += `*Teléfono:* ${t}\n`;
+    let msg = `🍴 *NUEVO PEDIDO — Tortas de la Barda Jimmy*\n\n`;
+    msg += `👤 *Cliente:* ${n}\n`;
+    msg += `📱 *Teléfono:* ${t}\n`;
     
     if(metodoEntrega === "domicilio") {
-      msg += `*Tipo:* Entrega a domicilio\n`;
-      msg += `*Dirección:* ${calle.trim()}, Col. ${colonia.trim()}\n`;
-      if(entreCalles.trim()) msg += `*Entre calles:* ${entreCalles.trim()}\n`;
-      if(referencia.trim()) msg += `*Referencias:* ${referencia.trim()}\n`;
+      msg += `🛵 *Tipo:* Entrega a domicilio\n`;
+      msg += `📍 *Dirección:* ${calle.trim()}, Col. ${colonia.trim()}\n`;
+      if(entreCalles.trim()) msg += `↔️ *Entre calles:* ${entreCalles.trim()}\n`;
+      if(referencia.trim()) msg += `📝 *Referencias:* ${referencia.trim()}\n`;
     } else {
-      msg += `*Tipo:* Recoger en el local\n`;
+      msg += `🏪 *Tipo:* Recoger en el local\n`;
     }
     
-    msg += `\n*Pedido:*\n${lineas}`;
-    msg += `\n*Total productos:* $${totalPrice}\n`;
+    msg += `\n🧾 *Pedido:*\n${lineas}`;
+    msg += `\n💰 *Total productos:* $${totalPrice}\n`;
     if (formaPago === "Efectivo") {
-      msg += `*Pago:* Efectivo`;
+      msg += `💵 *Pago:* Efectivo`;
       if (cambio) {
         const cambioNum = parseFloat(cambio);
         if (!isNaN(cambioNum) && cambioNum >= totalPrice) {
@@ -560,16 +560,16 @@ export default function TortasJimmyMenu() {
         }
       }
     } else {
-      msg += `*Pago:* ${formaPago}`;
+      msg += `💳 *Pago:* ${formaPago}`;
     }
     msg += `\n`;
     
-    if(notas.trim()) msg += `*Comentarios:* ${notas.trim()}\n`;
+    if(notas.trim()) msg += `🗒️ *Comentarios:* ${notas.trim()}\n`;
     
     if(metodoEntrega === "domicilio") {
-      msg += `\n*Por favor confírmenme el costo de envío a mi dirección. ¡Gracias!*`;
+      msg += `\n❗ Por favor confírmenme el *costo de envío* a mi dirección. ¡Gracias! 🙌`;
     } else {
-      msg += `\n*Paso a recogerlo. ¿Cuánto tiempo me dicen?*`;
+      msg += `\n✅ Paso a recogerlo. ¿Cuánto tiempo me dicen? 🙌`;
     }
 
     window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
