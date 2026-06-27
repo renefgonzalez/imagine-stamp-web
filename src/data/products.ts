@@ -7,6 +7,8 @@ export interface Product {
   sub_category?: string;
   sub_category_2?: string;
   image: string;
+  hasNotes?: boolean;
+  flavors?: string[];
 }
 
 export const PRODUCTS: Product[] = [

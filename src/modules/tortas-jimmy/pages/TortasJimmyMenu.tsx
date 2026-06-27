@@ -13,19 +13,19 @@ const NUMERO_WHATSAPP = "5218334460594";
 
 const MENU = [
   { sec:"🍴 Tortas", items:[
-    { id:"t1", nombre:"Torta de la Barda", desc:"La especialidad de la casa 🔥", precio:70, emoji:"🍔", img:t1Img, especial: true, ribbon: "⭐ ESPECIAL" },
-    { id:"t2", nombre:"Torta de Pierna", desc:"Pierna jugosa al estilo Jimmy", precio:75, emoji:"🍔", img:t2Img },
+    { id:"t1", nombre:"Torta de la Barda", desc:"La especialidad de la casa 🔥", precio:70, emoji:"🍔", img:t1Img, especial: true, ribbon: "⭐ ESPECIAL", hasNotes: true },
+    { id:"t2", nombre:"Torta de Pierna", desc:"Pierna jugosa al estilo Jimmy", precio:75, emoji:"🍔", img:t2Img, hasNotes: true },
   ]},
   { sec:"🌮 Antojitos", items:[
-    { id:"tc", nombre:"Tacos de Cochinita", desc:"Con tortilla recién hecha a mano", precio:15, unidad:"c/u", emoji:"🌮", img:tcImg },
+    { id:"tc", nombre:"Tacos de Cochinita", desc:"Con tortilla recién hecha a mano", precio:15, unidad:"c/u", emoji:"🌮", img:tcImg, hasNotes: true },
     { id:"g", nombre:"Gorditas", desc:"Elige tu guiso favorito 👇", precio:14, unidad:"c/u", emoji:"🌮", img:gImg,
-      guisos:["Huevo con verde","Chicharrón","Desebrada","Papa con chorizo","Frijol con queso","Carne molida"] },
+      guisos:["Huevo con verde","Chicharrón","Desebrada","Papa con chorizo","Frijol con queso","Carne molida"], hasNotes: true },
   ]},
   { sec:"🥤 Bebidas", items:[
     { id:"b1", nombre:"Refresco 600 ml", desc:"Bien frío", precio:26, emoji:"🥤", img:b1Img },
     { id:"b2", nombre:"Café", desc:"Calientito", precio:18, emoji:"☕", img:b2Img },
-    { id:"b3", nombre:"Agua de sabor – 1 Litro", desc:"Sabor del día", precio:40, emoji:"🥤", img:b3b4Img },
-    { id:"b4", nombre:"Agua de sabor – ½ Litro", desc:"Sabor del día", precio:25, emoji:"🥤", img:b3b4Img },
+    { id:"b3", nombre:"Agua de sabor – 1 Litro", desc:"Sabor del día", precio:40, emoji:"🥤", img:b3b4Img, flavors: ["Manzana", "Naranja", "Limón", "Jamaica", "Horchata"] },
+    { id:"b4", nombre:"Agua de sabor – ½ Litro", desc:"Sabor del día", precio:25, emoji:"🥤", img:b3b4Img, flavors: ["Manzana", "Naranja", "Limón", "Jamaica", "Horchata"] },
     { id:"b5", nombre:"Agua Ciel 500 ml", desc:"Natural", precio:26, emoji:"🥤", img:b5Img },
   ]},
 ];
@@ -383,10 +383,17 @@ const Embers = () => {
 };
 
 export default function TortasJimmyMenu() {
-  type CartItem = { nombre: string; precio: number; qty: number; emoji: string; img?: string };
+  type CartItem = { nombre: string; precio: number; qty: number; emoji: string; img?: string; hasNotes?: boolean; flavors?: string[]; itemNote?: string };
   const [cart, setCart] = useState<Record<string, CartItem>>({});
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cartStep, setCartStep] = useState<'cart'|'details'>('cart');
   const [bumpCart, setBumpCart] = useState(false);
+
+  useEffect(() => {
+    if (!isCartOpen) {
+      setTimeout(() => setCartStep('cart'), 300);
+    }
+  }, [isCartOpen]);
   
   // Selection state per item ID for guisos
   const [selectedGuisos, setSelectedGuisos] = useState<Record<string, string>>({});
@@ -435,7 +442,7 @@ export default function TortasJimmyMenu() {
       if (existing) {
         return { ...prev, [key]: { ...existing, qty: existing.qty + 1 } };
       }
-      return { ...prev, [key]: { nombre: itemName, precio: item.precio, qty: 1, emoji: item.emoji, img: item.img } };
+      return { ...prev, [key]: { nombre: itemName, precio: item.precio, qty: 1, emoji: item.emoji, img: item.img, hasNotes: item.hasNotes, flavors: item.flavors } };
     });
 
     setBumpCart(true);
@@ -483,6 +490,14 @@ export default function TortasJimmyMenu() {
     });
   };
 
+  const updateItemNote = (key: string, note: string) => {
+    setCart(prev => {
+      const existing = prev[key];
+      if (!existing) return prev;
+      return { ...prev, [key]: { ...existing, itemNote: note } };
+    });
+  };
+
   const enviarWhatsApp = () => {
     if(totalItems === 0) {
       alert("Agrega productos a tu pedido primero 🙂");
@@ -512,7 +527,11 @@ export default function TortasJimmyMenu() {
     let lineas = "";
     Object.keys(cart).forEach(k => {
       const it = cart[k];
-      lineas += `• ${it.qty}x ${it.nombre} — $${it.precio * it.qty}\n`;
+      let itemText = `• ${it.qty}x ${it.nombre} — $${it.precio * it.qty}`;
+      if (it.itemNote) {
+        itemText += `\n   👉 ${it.itemNote}`;
+      }
+      lineas += itemText + `\n`;
     });
 
     let msg = `🍴 *NUEVO PEDIDO — Tortas de la Barda Jimmy*\n\n`;
@@ -530,8 +549,19 @@ export default function TortasJimmyMenu() {
     
     msg += `\n🧾 *Pedido:*\n${lineas}`;
     msg += `\n💰 *Total productos:* $${totalPrice}\n`;
-    msg += `💳 *Pago:* ${formaPago}`;
-    if(formaPago === "Efectivo" && cambio.trim()) msg += ` (paga con $${cambio.trim()})`;
+    if (formaPago === "Efectivo") {
+      msg += `💵 *Pago:* Efectivo`;
+      if (cambio) {
+        const cambioNum = parseFloat(cambio);
+        if (!isNaN(cambioNum) && cambioNum >= totalPrice) {
+          msg += ` (Paga con $${cambioNum}, Cambio: ${money(cambioNum - totalPrice)})`;
+        } else {
+          msg += ` (Paga con $${cambio})`;
+        }
+      }
+    } else {
+      msg += `💳 *Pago:* ${formaPago}`;
+    }
     msg += `\n`;
     
     if(notas.trim()) msg += `🗒️ *Comentarios:* ${notas.trim()}\n`;
@@ -543,6 +573,7 @@ export default function TortasJimmyMenu() {
     }
 
     window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+    setIsCartOpen(false);
   };
 
   const money = (amount: number) => "$" + amount;
@@ -687,47 +718,90 @@ export default function TortasJimmyMenu() {
       <div className={`tj-sheet ${isCartOpen ? 'show' : ''}`}>
         <div className="tj-sheet-grip"></div>
         <button className="tj-close-x" onClick={() => setIsCartOpen(false)}>✕</button>
-        <h2>🛒 Tu Pedido</h2>
-        <p className="hint">Revisa tu orden y envíala por WhatsApp</p>
-
-        <div>
-          {Object.keys(cart).length === 0 ? (
-            <div className="tj-cart-empty"><span className="big">🛒</span>Tu pedido está vacío.<br/>¡Agrega algo rico del menú!</div>
-          ) : (
-            Object.entries(cart).map(([key, it]) => {
-              return (
-                <div className="tj-cart-item" key={key}>
-                  <div className="tj-ci-emoji">
-                    {it.img ? <img src={it.img} alt={it.nombre} /> : it.emoji}
-                  </div>
-                  <div className="tj-ci-name">
-                    <b>{it.nombre}</b>
-                    <span>{money(it.precio)} c/u</span>
-                  </div>
-                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                    <div className="tj-stepper" style={{transform: 'scale(.85)'}}>
-                      <button onClick={() => cambiarQty(key, -1)}>−</button>
-                      <span className="qty">{it.qty}</span>
-                      <button onClick={() => cambiarQty(key, 1)}>+</button>
-                    </div>
-                    <span className="tj-ci-price">{money(it.precio * it.qty)}</span>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        {Object.keys(cart).length > 0 && (
+        
+        {cartStep === 'cart' ? (
           <>
-            <div className="tj-totals">
-              <div className="row"><span>Subtotal</span><span>{money(totalPrice)}</span></div>
-              <div className="row grand"><span>Total</span><b>{money(totalPrice)}</b></div>
+            <h2>🛒 Tu Pedido</h2>
+            <p className="hint">Revisa tu orden y selecciona opciones</p>
+
+            <div>
+              {Object.keys(cart).length === 0 ? (
+                <div className="tj-cart-empty"><span className="big">🛒</span>Tu pedido está vacío.<br/>¡Agrega algo rico del menú!</div>
+              ) : (
+                Object.entries(cart).map(([key, it]) => {
+                  return (
+                    <div className="tj-cart-item" key={key} style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="tj-ci-emoji">
+                          {it.img ? <img src={it.img} alt={it.nombre} /> : it.emoji}
+                        </div>
+                        <div className="tj-ci-name">
+                          <b>{it.nombre}</b>
+                          <span>{money(it.precio)} c/u</span>
+                        </div>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                          <div className="tj-stepper" style={{transform: 'scale(.85)'}}>
+                            <button onClick={() => cambiarQty(key, -1)}>−</button>
+                            <span className="qty">{it.qty}</span>
+                            <button onClick={() => cambiarQty(key, 1)}>+</button>
+                          </div>
+                          <span className="tj-ci-price">{money(it.precio * it.qty)}</span>
+                        </div>
+                      </div>
+                      {(it.hasNotes || it.flavors) && (
+                        <div className="tj-field" style={{ marginTop: '8px', marginBottom: '0' }}>
+                          {it.flavors ? (
+                            <select 
+                              value={it.itemNote || ''} 
+                              onChange={(e) => updateItemNote(key, e.target.value)}
+                              style={{ padding: '8px', fontSize: '13px' }}
+                            >
+                              <option value="">Selecciona sabor...</option>
+                              {it.flavors.map(f => (
+                                <option key={f} value={f}>{f}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input 
+                              type="text" 
+                              placeholder="Notas (ej. sin cebolla, sin picante...)"
+                              value={it.itemNote || ''}
+                              onChange={(e) => updateItemNote(key, e.target.value)}
+                              style={{ padding: '8px', fontSize: '13px' }}
+                            />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
             </div>
 
-            <div className="tj-form-block">
-              <h3>📋 Datos de Entrega</h3>
+            {Object.keys(cart).length > 0 && (
+              <>
+                <div className="tj-totals">
+                  <div className="row"><span>Subtotal</span><span>{money(totalPrice)}</span></div>
+                  <div className="row grand"><span>Total</span><b>{money(totalPrice)}</b></div>
+                </div>
+                <button 
+                  className="tj-send-wa" 
+                  style={{ background: 'linear-gradient(180deg, var(--oro), var(--oro-osc))', color: '#3a0a00', boxShadow: '0 5px 0 #9c6a06, 0 8px 14px rgba(0,0,0,.4)' }}
+                  onClick={() => setCartStep('details')}
+                >
+                  Siguiente — Datos de Entrega ➔
+                </button>
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+              <button onClick={() => setCartStep('cart')} style={{ background: 'transparent', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '24px', padding: '0 10px', marginLeft: '-10px' }}>⬅</button>
+              <h2 style={{ margin: 0, flex: 1, textAlign: 'center', paddingRight: '34px' }}>📋 Datos de Entrega</h2>
+            </div>
 
+            <div className="tj-form-block" style={{ marginTop: 0 }}>
               <div className="tj-toggle">
                 <button 
                   className={metodoEntrega === 'recoger' ? 'active' : ''} 
@@ -804,41 +878,63 @@ export default function TortasJimmyMenu() {
               )}
 
               <div className="tj-field">
-                <label>Forma de pago</label>
+                <label>Forma de Pago*</label>
                 <select value={formaPago} onChange={e => setFormaPago(e.target.value)}>
-                  <option value="Efectivo">Efectivo</option>
-                  <option value="Transferencia">Transferencia (Pido datos)</option>
+                  <option value="Efectivo">💵 Efectivo</option>
+                  <option value="Transferencia">🏦 Transferencia (te pasamos los datos por WA)</option>
+                  <option value="Tarjeta">💳 Tarjeta (clip al repartidor)</option>
                 </select>
               </div>
 
               {formaPago === 'Efectivo' && (
                 <div className="tj-field">
-                  <label>¿Con cuánto vas a pagar? (Para el cambio)</label>
+                  <label>¿Con cuánto vas a pagar? (Total: {money(totalPrice)})</label>
                   <input 
                     type="number"
-                    placeholder="Ej. 200, 500 (Opcional)" 
+                    placeholder="Ej. 200, 500" 
                     value={cambio} 
-                    onChange={e => setCambio(e.target.value)} 
+                    onChange={e => setCambio(e.target.value)}
                   />
+                  {!isNaN(parseFloat(cambio)) && parseFloat(cambio) > totalPrice && (
+                    <div style={{ marginTop: '8px', padding: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '13px', color: '#ffeb3b' }}>
+                      💰 Cambio a entregar: <b>{money(parseFloat(cambio) - totalPrice)}</b>
+                    </div>
+                  )}
+                  {!isNaN(parseFloat(cambio)) && parseFloat(cambio) > 0 && parseFloat(cambio) < totalPrice && (
+                    <div style={{ marginTop: '8px', padding: '8px', background: 'rgba(255,0,0,0.2)', borderRadius: '6px', fontSize: '13px', color: '#ff8a80' }}>
+                      ⚠️ La cantidad es menor al total ({money(totalPrice)}).
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {formaPago === 'Transferencia' && (
+                <div className="tj-field" style={{ padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <label style={{ color: '#ffcc00', marginBottom: '8px' }}>🏦 Datos de Transferencia</label>
+                  <div style={{ fontSize: '13px', lineHeight: '1.5', opacity: 0.9 }}>
+                    <b>Banco:</b> BBVA (Ejemplo)<br/>
+                    <b>Beneficiario:</b> Tortas Jimmy<br/>
+                    <b>Clabe / Tarjeta:</b> 0123 4567 8901 2345<br/>
+                    <b>Concepto:</b> Pago pedido<br/>
+                    <br/>
+                    <i>*Por favor, envíanos la captura del comprobante por WhatsApp una vez enviado tu pedido.</i>
+                  </div>
                 </div>
               )}
 
               <div className="tj-field">
-                <label>Notas adicionales (opcional)</label>
+                <label>Comentarios adicionales sobre la entrega (opcional)</label>
                 <textarea 
-                  placeholder="Sin cebolla, extra salsa, etc." 
+                  placeholder="Ej. Tocar fuerte, dejar en caseta..." 
                   value={notas} 
                   onChange={e => setNotas(e.target.value)}
                 />
               </div>
             </div>
 
-            <button 
-              className="tj-send-wa" 
-              onClick={enviarWhatsApp} 
-            >
-              <svg viewBox="0 0 24 24"><path d="M17.47 14.38c-.29-.15-1.7-.84-1.96-.94-.26-.1-.46-.15-.65.15-.19.29-.74.94-.91 1.13-.17.19-.34.22-.63.07-.29-.14-1.22-.45-2.32-1.43-.86-.77-1.44-1.71-1.61-2-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.51.14-.17.19-.29.29-.49.1-.19.05-.36-.02-.51-.07-.14-.65-1.57-.89-2.15-.24-.57-.48-.49-.65-.5h-.56c-.19 0-.51.07-.78.36-.26.29-1.01 1-1.01 2.43 0 1.43 1.04 2.82 1.18 3.01.14.19 2.04 3.12 4.94 4.38.69.3 1.23.48 1.65.61.69.22 1.32.19 1.82.12.56-.08 1.7-.7 1.94-1.37.24-.67.24-1.25.17-1.37-.07-.12-.26-.19-.55-.34zM12.05 21.79c-1.79 0-3.55-.48-5.09-1.39l-.36-.22-3.79.99 1.01-3.69-.24-.38A9.7 9.7 0 012.25 12c0-5.39 4.38-9.77 9.77-9.77a9.7 9.7 0 016.91 2.87 9.7 9.7 0 012.86 6.9c0 5.39-4.38 9.79-9.74 9.79zM12.05.46C5.66.46.46 5.66.46 12.05c0 2.04.53 4.03 1.54 5.78L.36 24l6.33-1.66a11.5 11.5 0 005.36 1.32c6.38 0 11.59-5.2 11.59-11.59A11.53 11.53 0 0012.05.46z"/></svg>
-              Enviar Pedido por WhatsApp
+            <button className="tj-send-wa" onClick={enviarWhatsApp}>
+              <svg viewBox="0 0 24 24"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07s-3.58-.01-4.85-.07c-3.26-.15-4.77-1.7-4.92-4.92-.06-1.27-.07-1.64-.07-4.85s.01-3.58.07-4.85C2.38 3.86 3.89 2.3 7.15 2.15c1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07c-4.26.19-6.78 2.71-6.97 6.98C.01 8.33 0 8.74 0 12s.01 3.67.08 4.95c.19 4.27 2.71 6.79 6.97 6.98 1.28.06 1.69.07 4.95.07s3.67-.01 4.95-.08c4.27-.19 6.79-2.71 6.98-6.98.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.19-4.27-2.71-6.79-6.98-6.98C15.67.01 15.26 0 12 0zm0 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4zm6.4-11.44a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0z"/></svg>
+              Finalizar Pedido vía WhatsApp
             </button>
           </>
         )}

@@ -2,6 +2,13 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save, Instagram, Facebook, Phone, Mail, Clock } from 'lucide-react';
 
+import burgerClassicImg from '../assets/burger-classic.png';
+import burgerDoubleSmashImg from '../assets/burger-double-smash.png';
+import burgerBbqBaconImg from '../assets/burger-bbq-bacon.png';
+import burgerMushroomSwissImg from '../assets/burger-mushroom-swiss.png';
+import chickenFingersImg from '../assets/chicken-fingers.png';
+import brownieSundaeImg from '../assets/brownie-sundae.png';
+
 const TikTokIcon = ({ size = 24, color = "currentColor" }) => (
   <svg
     width={size}
@@ -53,7 +60,7 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
     name: 'Classic Burger',
     description: 'Jugosa carne de res, cheddar derretido, lechuga fresca, tomate y nuestra salsa secreta en pan brioche dorado.',
     price: 149,
-    image: './burger-classic.png',
+    image: burgerClassicImg,
     category: 'burgers',
     badge: 'popular',
     rating: 4.8,
@@ -64,7 +71,7 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
     name: 'Double Smash',
     description: 'Doble carne aplastada al carbón, queso americano x2, cebolla caramelizada y salsa smash sobre pan brioche.',
     price: 199,
-    image: './burger-double-smash.png',
+    image: burgerDoubleSmashImg,
     category: 'burgers',
     badge: 'popular',
     rating: 4.9,
@@ -75,7 +82,7 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
     name: 'BBQ Bacon Burger',
     description: 'Tocino crujiente extra, aros de cebolla crujientes, salsa BBQ ahumada y cheddar sobre carne de res premium.',
     price: 189,
-    image: './burger-bbq-bacon.png',
+    image: burgerBbqBaconImg,
     category: 'burgers',
     badge: 'spicy',
     rating: 4.7,
@@ -86,7 +93,7 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
     name: 'Mushroom Swiss',
     description: 'Champiñones salteados con ajo, queso suizo derretido, cebolla caramelizada y aioli de trufa.',
     price: 179,
-    image: './burger-mushroom-swiss.png',
+    image: burgerMushroomSwissImg,
     category: 'burgers',
     badge: 'new',
     rating: 4.6,
@@ -98,7 +105,7 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
     name: 'Loaded Fries',
     description: 'Papas fritas crujientes bañadas en queso cheddar derretido, tocino, jalapeños y crema ácida.',
     price: 89,
-    image: './fries-loaded.png',
+    image: './demo-menu/fries-loaded.png',
     category: 'sides',
     badge: 'popular',
     rating: 4.7,
@@ -109,7 +116,7 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
     name: 'Onion Rings',
     description: 'Aros de cebolla gigantes empanizados en cerveza, con salsa ranch casera para dipping.',
     price: 69,
-    image: './onion-rings.png',
+    image: './demo-menu/onion-rings.png',
     category: 'sides',
     rating: 4.5,
     calories: 340,
@@ -119,7 +126,7 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
     name: 'Chicken Fingers',
     description: 'Tiras de pollo marinado, crujientes por fuera y jugosas por dentro. Con salsa de miel-mostaza.',
     price: 109,
-    image: './chicken-fingers.png',
+    image: chickenFingersImg,
     category: 'sides',
     badge: 'new',
     rating: 4.6,
@@ -131,7 +138,7 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
     name: 'Malteada Chocolate',
     description: 'Malteada espesa de chocolate oscuro belga con crema batida, drizzle de fudge caliente y cereza.',
     price: 99,
-    image: './milkshake-chocolate.png',
+    image: './demo-menu/milkshake-chocolate.png',
     category: 'drinks',
     badge: 'popular',
     rating: 4.9,
@@ -142,7 +149,7 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
     name: 'Malteada Fresa',
     description: 'Malteada cremosa de fresas naturales, helado de vainilla y fresas frescas de temporada.',
     price: 99,
-    image: './milkshake-strawberry.png',
+    image: './demo-menu/milkshake-strawberry.png',
     category: 'drinks',
     rating: 4.7,
     calories: 480,
@@ -153,7 +160,7 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
     name: 'Brownie Sundae',
     description: 'Brownie tibio de chocolate amargo con helado de vainilla artesanal, salsa de caramelo y nueces.',
     price: 119,
-    image: './brownie-sundae.png',
+    image: brownieSundaeImg,
     category: 'desserts',
     badge: 'popular',
     rating: 4.8,
@@ -165,16 +172,16 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
 // Banco de imágenes "de stock" que el dueño puede asignar a cualquier platillo
 // desde el panel de admin. Se pueden ir generando con IA y sumar aquí.
 const STOCK_IMAGES: { url: string; label: string }[] = [
-  { url: './burger-classic.png',       label: 'Burger Clásica' },
-  { url: './burger-double-smash.png',  label: 'Double Smash' },
-  { url: './burger-bbq-bacon.png',     label: 'BBQ Bacon' },
-  { url: './burger-mushroom-swiss.png',label: 'Mushroom Swiss' },
-  { url: './fries-loaded.png',         label: 'Loaded Fries' },
-  { url: './onion-rings.png',          label: 'Onion Rings' },
-  { url: './chicken-fingers.png',      label: 'Chicken Fingers' },
-  { url: './milkshake-chocolate.png',  label: 'Malteada Chocolate' },
-  { url: './milkshake-strawberry.png', label: 'Malteada Fresa' },
-  { url: './brownie-sundae.png',       label: 'Brownie Sundae' },
+  { url: burgerClassicImg,       label: 'Burger Clásica' },
+  { url: burgerDoubleSmashImg,  label: 'Double Smash' },
+  { url: burgerBbqBaconImg,     label: 'BBQ Bacon' },
+  { url: burgerMushroomSwissImg,label: 'Mushroom Swiss' },
+  { url: './demo-menu/fries-loaded.png',         label: 'Loaded Fries' },
+  { url: './demo-menu/onion-rings.png',          label: 'Onion Rings' },
+  { url: chickenFingersImg,      label: 'Chicken Fingers' },
+  { url: './demo-menu/milkshake-chocolate.png',  label: 'Malteada Chocolate' },
+  { url: './demo-menu/milkshake-strawberry.png', label: 'Malteada Fresa' },
+  { url: brownieSundaeImg,       label: 'Brownie Sundae' },
 ];
 
 // ─── GOOGLE SHEETS CONNECTION (PREPARADO) ─────────────────────────────────────
