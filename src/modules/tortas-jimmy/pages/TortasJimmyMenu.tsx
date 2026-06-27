@@ -9,7 +9,7 @@ import b2Img from '../assets/b2.jpg';
 import b3b4Img from '../assets/b3b4.jpg';
 import b5Img from '../assets/b5.jpg';
 
-const NUMERO_WHATSAPP = "5218334460594";
+const NUMERO_WHATSAPP = "5218332038593";
 
 const MENU = [
   { sec:"🍴 Tortas", items:[
@@ -667,7 +667,7 @@ export default function TortasJimmyMenu() {
           <div className="tj-footer-grid">
             <div className="tj-footer-col">
               <h4>Contacto</h4>
-              <p><a href="https://wa.me/5218334460594" target="_blank" rel="noreferrer">📞 WhatsApp</a></p>
+              <p><a href="https://wa.me/5218332038593" target="_blank" rel="noreferrer">📞 WhatsApp</a></p>
               <p><a href="mailto:imagineandstamp@gmail.com">✉️ imagineandstamp@gmail.com</a></p>
             </div>
             <div className="tj-footer-col">
