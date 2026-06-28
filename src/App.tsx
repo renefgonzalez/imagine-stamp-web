@@ -13,6 +13,7 @@ import logo from './logo.png';
 import DemoMenu from './modules/demo-menu/pages/DemoMenu';
 import TortasJimmyMenu from './modules/tortas-jimmy/pages/TortasJimmyMenu';
 import TortasJimmyAdmin from './modules/tortas-jimmy/pages/TortasJimmyAdmin';
+import ChilapenaMenu from './modules/pozoleria-chilapena/pages/ChilapenaMenu';
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -728,6 +729,7 @@ export default function App() {
         <Route path="/demo-menu" element={<DemoMenu />} />
         <Route path="/tortas-jimmy" element={<ErrorBoundary><TortasJimmyMenu /></ErrorBoundary>} />
         <Route path="/tortas-jimmy/admin" element={<ErrorBoundary><TortasJimmyAdmin /></ErrorBoundary>} />
+        <Route path="/la-chilapena" element={<ErrorBoundary><ChilapenaMenu /></ErrorBoundary>} />
       </Routes>
     </HashRouter>
   );
