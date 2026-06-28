@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, Plus, List, Tag, Settings, ShoppingBag, Edit, Trash, Search, LogOut, CheckCircle, XCircle, Package } from 'lucide-react';
+import { Lock, Plus, List, Tag, Settings, ShoppingBag, Edit, Trash, Search, LogOut, CheckCircle, XCircle, Package, Ticket, Star, ImageIcon, Save } from 'lucide-react';
 
 const MASTER_PASSWORD = '1212';
 const ALT_PASSWORD = 'tortas';
@@ -17,6 +17,23 @@ const INITIAL_CATEGORIES = [
   { id: 'antojitos', name: '🌮 Antojitos', sort_order: 2 },
   { id: 'bebidas', name: '🥤 Bebidas', sort_order: 3 }
 ];
+
+const INITIAL_CUPONES = [
+  { id: 'c1', code: 'TORTAS10', discount: '10%', active: true },
+  { id: 'c2', code: 'ENVIOFREE', discount: 'Envío Gratis', active: false }
+];
+
+const INITIAL_OPINIONES = [
+  { id: 'o1', name: 'Juan P.', rating: 5, text: '¡Las mejores tortas de la barda!', date: '2023-10-25' },
+  { id: 'o2', name: 'Ana M.', rating: 4, text: 'Muy ricas, pero tardó un poco.', date: '2023-10-26' }
+];
+
+const INITIAL_PROMO = {
+  active: true,
+  title: '¡Promoción del Mes!',
+  image: '/assets/promo.jpg',
+  link: '/menu'
+};
 
 const INITIAL_ORDERS = [
   {
@@ -43,6 +60,9 @@ export default function TortasJimmyAdmin() {
   const [products, setProducts] = useState<any[]>(INITIAL_PRODUCTS);
   const [categories, setCategories] = useState<any[]>(INITIAL_CATEGORIES);
   const [orders, setOrders] = useState<any[]>(INITIAL_ORDERS);
+  const [cupones, setCupones] = useState<any[]>(INITIAL_CUPONES);
+  const [opiniones, setOpiniones] = useState<any[]>(INITIAL_OPINIONES);
+  const [promo, setPromo] = useState<any>(INITIAL_PROMO);
   const [bankSettings, setBankSettings] = useState<any>({
     bank_name: 'BBVA',
     account_holder: 'Tortas Jimmy',
@@ -86,7 +106,10 @@ export default function TortasJimmyAdmin() {
     { id: 'inventario', name: 'INVENTARIO', icon: Package },
     { id: 'nuevo', name: 'NUEVO', icon: Plus },
     { id: 'categorias', name: 'CATEGORÍAS', icon: Tag },
+    { id: 'cupones', name: 'CUPONES', icon: Ticket },
     { id: 'pedidos', name: 'PEDIDOS', icon: ShoppingBag },
+    { id: 'opiniones', name: 'OPINIONES', icon: Star },
+    { id: 'promo', name: 'PROMO', icon: ImageIcon },
     { id: 'ajustes', name: 'AJUSTES', icon: Settings }
   ];
 
@@ -336,6 +359,100 @@ export default function TortasJimmyAdmin() {
                   <p className="text-gray-500 font-medium">No hay pedidos registrados</p>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+        {/* Tab Content: Cupones */}
+        {activeTab === 'cupones' && (
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl font-black text-white uppercase tracking-wider mb-6">Cupones de Descuento</h2>
+            <div className="bg-[#141414] p-6 rounded-2xl border border-gray-800 mb-6 flex gap-3">
+              <input type="text" className="flex-1 bg-[#0a0a0a] border border-gray-800 text-white rounded-xl p-3 focus:border-red-500 focus:outline-none" placeholder="Ej. TORTAS20" />
+              <input type="text" className="w-1/3 bg-[#0a0a0a] border border-gray-800 text-white rounded-xl p-3 focus:border-red-500 focus:outline-none" placeholder="Descuento (ej. 20%)" />
+              <button className="bg-red-600 text-white px-6 rounded-xl font-bold hover:bg-red-700">Crear</button>
+            </div>
+            <div className="bg-[#141414] rounded-2xl border border-gray-800 overflow-hidden">
+              <ul className="divide-y divide-gray-800">
+                {cupones.map(c => (
+                  <li key={c.id} className="p-4 sm:p-6 flex justify-between items-center hover:bg-white/5 transition-colors">
+                    <div>
+                      <span className="font-black text-red-500 text-lg mr-3">{c.code}</span>
+                      <span className="text-gray-400 text-sm font-bold">{c.discount}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className={`text-xs font-bold uppercase tracking-widest px-2 py-1 rounded-full ${c.active ? 'bg-green-500/10 text-green-500' : 'bg-gray-800 text-gray-500'}`}>
+                        {c.active ? 'Activo' : 'Inactivo'}
+                      </span>
+                      <button className="w-10 h-10 rounded-full bg-[#1a1a1a] border border-gray-800 flex items-center justify-center text-red-500 hover:bg-red-500/10 hover:border-red-500/30 transition-colors">
+                        <Trash size={16} />
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* Tab Content: Opiniones */}
+        {activeTab === 'opiniones' && (
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl font-black text-white uppercase tracking-wider mb-6">Reseñas de Clientes</h2>
+            <div className="grid gap-4">
+              {opiniones.map(o => (
+                <div key={o.id} className="bg-[#141414] p-6 rounded-2xl border border-gray-800 relative overflow-hidden">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-black text-white text-lg">{o.name}</h3>
+                    <div className="flex text-yellow-500">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} size={16} fill={i < o.rating ? "currentColor" : "none"} strokeWidth={i < o.rating ? 0 : 2} className={i >= o.rating ? "text-gray-600" : ""} />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-gray-300 mb-4">"{o.text}"</p>
+                  <div className="flex justify-between items-center text-xs text-gray-500 font-bold uppercase tracking-widest">
+                    <span>{o.date}</span>
+                    <button className="text-red-500 hover:text-red-400">Eliminar</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Tab Content: Promo */}
+        {activeTab === 'promo' && (
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl font-black text-white uppercase tracking-wider mb-6">Promoción Activa</h2>
+            <div className="bg-[#141414] p-6 sm:p-8 rounded-2xl border border-gray-800">
+              <div className="flex items-center justify-between mb-8 border-b border-gray-800 pb-6">
+                <div>
+                  <h3 className="font-bold text-white text-lg">Estado de la Promo</h3>
+                  <p className="text-sm text-gray-500">Habilitar modal promocional en la tienda</p>
+                </div>
+                <button 
+                  onClick={() => setPromo({...promo, active: !promo.active})}
+                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${promo.active ? 'bg-red-600' : 'bg-gray-700'}`}
+                >
+                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${promo.active ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
+              </div>
+              
+              <form onSubmit={e => { e.preventDefault(); alert("Promo guardada (modo demostración)."); }}>
+                <div className="grid gap-6 mb-8 opacity-100 transition-opacity" style={{ opacity: promo.active ? 1 : 0.5, pointerEvents: promo.active ? 'auto' : 'none' }}>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Título de Promoción</label>
+                    <input type="text" value={promo.title} onChange={e=>setPromo({...promo, title: e.target.value})} className="w-full bg-[#0a0a0a] border border-gray-800 text-white rounded-xl p-3 focus:border-red-500 focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Imagen (URL)</label>
+                    <input type="text" value={promo.image} onChange={e=>setPromo({...promo, image: e.target.value})} className="w-full bg-[#0a0a0a] border border-gray-800 text-white rounded-xl p-3 focus:border-red-500 focus:outline-none" />
+                  </div>
+                </div>
+                <button type="submit" disabled={!promo.active} className="w-full bg-red-600 text-white font-black py-4 rounded-xl hover:bg-red-700 uppercase tracking-widest shadow-[0_0_15px_rgba(220,38,38,0.3)] disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2">
+                  <Save size={20} /> Guardar Promoción
+                </button>
+              </form>
             </div>
           </div>
         )}
