@@ -149,30 +149,30 @@ export default function ChilapenaMenu() {
     
     let lineas = "";
     cart.forEach(item => {
-      lineas += • x  - {item.price * item.qty}\n;
+      lineas += `• ${item.qty}x ${item.name} - $${item.price * item.qty}\n`;
     });
     
-    let mensaje = 🍲 *NUEVO PEDIDO - LA CHILAPEÑA*\n\n;
-    mensaje += 👤 *Cliente:* \n;
-    mensaje += 📱 *Teléfono:* \n;
+    let mensaje = `🍲 *NUEVO PEDIDO - LA CHILAPEÑA*\n\n`;
+    mensaje += `👤 *Cliente:* ${nombre}\n`;
+    mensaje += `📱 *Teléfono:* ${telefono}\n`;
     
     if (metodoEntrega === "domicilio") {
-      mensaje += 🛵 *Tipo:* Entrega a domicilio\n;
-      mensaje += 📍 *Dirección:* , Col. \n;
+      mensaje += `🛵 *Tipo:* Entrega a domicilio\n`;
+      mensaje += `📍 *Dirección:* ${calle.trim()}, Col. ${colonia.trim()}\n`;
     } else {
-      mensaje += 🏪 *Tipo:* Recoger en el local\n;
+      mensaje += `🏪 *Tipo:* Recoger en el local\n`;
     }
 
-    mensaje += \n🧾 *Pedido:*\n;
-    mensaje += \n💰 *Total a pagar:* {cartTotal}\n;
-    mensaje += 💳 *Pago:* \n;
+    mensaje += `\n🧾 *Pedido:*\n${lineas}`;
+    mensaje += `\n💰 *Total a pagar:* $${cartTotal}\n`;
+    mensaje += `💳 *Pago:* ${formaPago}\n`;
     
-    if (notas.trim()) mensaje += \n🗒️ *Notas:* \n;
+    if (notas.trim()) mensaje += `\n🗒️ *Notas:* ${notas.trim()}\n`;
 
-    mensaje += \n¿Me podrían confirmar mi pedido, por favor?;
+    mensaje += `\n¿Me podrían confirmar mi pedido, por favor?`;
     
     const phone = '5214779784805';
-    const url = https://wa.me/?text=;
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(mensaje)}`;
     window.open(url, '_blank');
     setIsCartOpen(false);
   };
@@ -234,7 +234,7 @@ export default function ChilapenaMenu() {
                       </div>
                       
                       <div className="flex justify-between items-end mt-2">
-                        <span className="text-[#f4c430] font-black text-lg"></span>
+                        <span className="text-[#f4c430] font-black text-lg">${item.price.toFixed(2)}</span>
                         <button 
                           onClick={() => addToCart(item)}
                           className="bg-white/10 hover:bg-[#f4c430] hover:text-black text-white p-2 rounded-full transition-colors shadow-sm"
@@ -258,7 +258,7 @@ export default function ChilapenaMenu() {
         style={{ boxShadow: '0 10px 25px rgba(34,197,94,0.5)' }}
       >
         <Phone size={24} fill="currentColor" />
-        {cart.length > 0 && <span className="font-bold pr-2">Pedir ()</span>}
+        {cart.length > 0 && <span className="font-bold pr-2">Pedir (${cartTotal})</span>}
       </button>
 
       {/* CART DRAWER */}
@@ -305,7 +305,7 @@ export default function ChilapenaMenu() {
                         </div>
                         <div className="flex-1">
                           <h4 className="text-white font-bold leading-tight">{item.name}</h4>
-                          <p className="text-[#f4c430] font-black"></p>
+                          <p className="text-[#f4c430] font-black">${item.price * item.qty}</p>
                           <button onClick={() => removeFromCart(item.id)} className="text-red-400 hover:text-red-300 text-xs mt-2 underline">Eliminar</button>
                         </div>
                         <div className="flex flex-col items-end justify-center">
@@ -323,13 +323,13 @@ export default function ChilapenaMenu() {
                   <div className="space-y-4 text-white">
                     <div className="flex bg-white/10 rounded-lg p-1">
                       <button 
-                        className={lex-1 py-2 text-sm font-bold rounded-md }
+                        className={`flex-1 py-2 text-sm font-bold rounded-md ${metodoEntrega === 'recoger' ? 'bg-[#f4c430] text-black shadow' : 'text-white/60'}`}
                         onClick={() => setMetodoEntrega('recoger')}
                       >
                         🏪 Paso a recoger
                       </button>
                       <button 
-                        className={lex-1 py-2 text-sm font-bold rounded-md }
+                        className={`flex-1 py-2 text-sm font-bold rounded-md ${metodoEntrega === 'domicilio' ? 'bg-[#f4c430] text-black shadow' : 'text-white/60'}`}
                         onClick={() => setMetodoEntrega('domicilio')}
                       >
                         🛵 Envío a domicilio
@@ -341,7 +341,7 @@ export default function ChilapenaMenu() {
                       <input 
                         type="text" 
                         value={nombre} onChange={e => setNombre(e.target.value)}
-                        className={w-full bg-white/5 border  rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430]} 
+                        className={`w-full bg-white/5 border ${errors.nombre ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430]`} 
                         placeholder="Ej: Juan Pérez"
                       />
                     </div>
@@ -351,7 +351,7 @@ export default function ChilapenaMenu() {
                       <input 
                         type="tel" 
                         value={telefono} onChange={e => setTelefono(e.target.value)}
-                        className={w-full bg-white/5 border  rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430]} 
+                        className={`w-full bg-white/5 border ${errors.telefono ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430]`} 
                         placeholder="10 dígitos"
                       />
                     </div>
@@ -363,7 +363,7 @@ export default function ChilapenaMenu() {
                           <input 
                             type="text" 
                             value={calle} onChange={e => setCalle(e.target.value)}
-                            className={w-full bg-white/5 border  rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430]} 
+                            className={`w-full bg-white/5 border ${errors.calle ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430]`} 
                             placeholder="Ej. Zaragoza 123"
                           />
                         </div>
@@ -372,7 +372,7 @@ export default function ChilapenaMenu() {
                           <input 
                             type="text" 
                             value={colonia} onChange={e => setColonia(e.target.value)}
-                            className={w-full bg-white/5 border  rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430]} 
+                            className={`w-full bg-white/5 border ${errors.colonia ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430]`} 
                             placeholder="Ej. Centro"
                           />
                         </div>
@@ -406,7 +406,7 @@ export default function ChilapenaMenu() {
                 <div className="p-6 bg-[#0f4c81] border-t border-white/10">
                   <div className="flex justify-between items-center mb-6">
                     <span className="text-white/80 font-bold uppercase tracking-wider">Total</span>
-                    <span className="text-3xl font-black text-[#f4c430]"></span>
+                    <span className="text-3xl font-black text-[#f4c430]">${cartTotal}</span>
                   </div>
                   
                   {cartStep === 'cart' ? (
