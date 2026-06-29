@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect, ErrorInfo, ReactNode, Component } from 'react';
+import React, { useState, useMemo, useEffect, ErrorInfo, ReactNode, Component } from 'react';
 import { supabase } from './lib/supabase';
 import { 
   Search, Heart, Plus, Sparkles, X, ShoppingBag,
@@ -11,8 +11,9 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Product } from './data/products';
 import logo from './logo.png';
 import DemoMenu from './modules/demo-menu/pages/DemoMenu';
-import TortasJimmyMenu from './modules/tortas-jimmy/pages/TortasJimmyMenu';
-import TortasJimmyAdmin from './modules/tortas-jimmy/pages/TortasJimmyAdmin';
+import CorteLaserCatalog from './modules/corte-laser/pages/CorteLaserCatalog';
+import CorteLaserAdmin from './modules/corte-laser/pages/CorteLaserAdmin';
+import DigitalDownload from './modules/corte-laser/pages/DigitalDownload';
 import ChilapenaMenu from './modules/pozoleria-chilapena/pages/ChilapenaMenu';
 
 import { GlobalFooter } from './components/common/GlobalFooter';
@@ -727,9 +728,11 @@ export default function App() {
           </ErrorBoundary>
         } />
         <Route path="/demo-menu" element={<DemoMenu />} />
-        <Route path="/tortas-jimmy" element={<ErrorBoundary><TortasJimmyMenu /></ErrorBoundary>} />
-        <Route path="/tortas-jimmy/admin" element={<ErrorBoundary><TortasJimmyAdmin /></ErrorBoundary>} />
-        <Route path="/la-chilapena" element={<ErrorBoundary><ChilapenaMenu /></ErrorBoundary>} />`n        <Route path="/la-chilapeña" element={<ErrorBoundary><ChilapenaMenu /></ErrorBoundary>} />
+        <Route path="/corte-laser" element={<ErrorBoundary><CorteLaserCatalog /></ErrorBoundary>} />
+        <Route path="/corte-laser-admin" element={<ErrorBoundary><CorteLaserAdmin /></ErrorBoundary>} />
+        <Route path="/descarga/:token" element={<ErrorBoundary><DigitalDownload /></ErrorBoundary>} />
+        <Route path="/la-chilapena" element={<ErrorBoundary><ChilapenaMenu /></ErrorBoundary>} />
+        <Route path="/la-chilapeña" element={<ErrorBoundary><ChilapenaMenu /></ErrorBoundary>} />
       </Routes>
     </HashRouter>
   );

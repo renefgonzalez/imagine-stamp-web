@@ -25,4 +25,17 @@ export interface Product {
   description?: string;
   sub_category?: string;
   sub_category_2?: string;
+  is_digital?: boolean;
+  drive_url?: string;
+}
+
+export interface DigitalOrder {
+  id: number;
+  product_id: number;
+  download_token: string;
+  status: 'pending' | 'paid';
+  download_count: number;
+  max_downloads: number;
+  internal_notes?: string;
+  created_at: string;
 }
