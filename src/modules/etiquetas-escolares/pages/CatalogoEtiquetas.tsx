@@ -41,7 +41,7 @@ const mockData: LabelDesign[] = [
   { id: 25, name: "Batman", folder: "Batman", imageFile: "Etiquetas_Escolares_214.png" },
   { id: 26, name: "Bebes Llorones", folder: "Bebes Llorones", imageFile: "Etiquetas_Escolares_225.png" },
   { id: 27, name: "Beli y beto", folder: "Beli y beto", imageFile: "Etiquetas_Escolares_119.png" },
-  { id: 28, name: "Bella", folder: "Bella", imageFile: "Etiquetas_Escolares_139.png" },
+  { id: 28, name: "Bella", folder: "Bella", imageFile: "Etiquetas_Escolares_139 (6).png" },
   { id: 29, name: "Bella 2", folder: "Bella 2", imageFile: "Etiquetas_Escolares_140.png" },
   { id: 30, name: "Bely y Beto 2", folder: "Bely y Beto 2", imageFile: "Etiquetas_Escolares_120 (6).png" },
   { id: 31, name: "Ben 10", folder: "Ben 10", imageFile: "Etiquetas_Escolares_236.png" },
