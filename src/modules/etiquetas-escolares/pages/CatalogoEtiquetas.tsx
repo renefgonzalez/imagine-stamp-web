@@ -72,7 +72,7 @@ const mockData: LabelDesign[] = [
   { id: 56, name: "Care Bears", folder: "Care Bears", imageFile: "Etiquetas_Escolares_45 (6).png" },
   { id: 57, name: "Carl Fredricksen", folder: "Carl Fredricksen", imageFile: "Etiquetas_Escolares_125.png" },
   { id: 58, name: "Charizard", folder: "Charizard", imageFile: "Etiquetas_Escolares_04.png" },
-  { id: 59, name: "Charmander", folder: "Charmander", imageFile: "Etiquetas_Escolares_05.png" },
+  { id: 59, name: "Charmander", folder: "Charmander", imageFile: "Etiquetas_Escolares_05 (5).png" },
   { id: 60, name: "Chase", folder: "Chase", imageFile: "Etiquetas_Escolares_255.png" },
   { id: 61, name: "Chicas Super Poderosas", folder: "Chicas Super Poderosas", imageFile: "Etiquetas_Escolares_103.png" },
   { id: 62, name: "Chimuelo", folder: "Chimuelo", imageFile: "Etiquetas_Escolares_170.png" },
