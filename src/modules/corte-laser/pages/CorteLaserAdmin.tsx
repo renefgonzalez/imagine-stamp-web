@@ -81,7 +81,7 @@ export default function CorteLaserAdmin() {
     }
   };
 
-  const handleApproveOrder = async (id: string) => {
+  const handleApproveOrder = async (id: string, token: string) => {
     try {
       const { error } = await supabase
         .from('digital_orders')
@@ -90,6 +90,10 @@ export default function CorteLaserAdmin() {
         
       if (error) throw error;
       fetchOrders();
+
+      const url = `${window.location.origin}/#/descarga/${token}`;
+      const message = `¡Hola! Tu pago ha sido aprobado. Aquí tienes el enlace para descargar tus archivos digitales:\n\n${url}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
     } catch (err) {
       console.error("Error approving order", err);
       alert("Hubo un error al aprobar la orden.");
@@ -392,7 +396,7 @@ export default function CorteLaserAdmin() {
                           <td className="px-6 py-4 text-right">
                             {order.status === 'pending' ? (
                               <button 
-                                onClick={() => handleApproveOrder(order.id)}
+                                onClick={() => handleApproveOrder(order.id, order.download_token)}
                                 className="bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors"
                               >
                                 Aprobar Pago
