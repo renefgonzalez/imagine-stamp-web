@@ -102,8 +102,8 @@ export default function CorteLaserAdmin() {
 
   const handleCopyLink = (token: string) => {
     const url = `${window.location.origin}/#/descarga/${token}`;
-    navigator.clipboard.writeText(url);
-    alert('¡Enlace de descarga copiado al portapapeles!');
+    const message = `¡Hola! Aquí tienes nuevamente tu enlace para descargar tus archivos digitales:\n\n${url}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const handleCreateProduct = (e: React.FormEvent) => {
@@ -406,7 +406,7 @@ export default function CorteLaserAdmin() {
                                 onClick={() => handleCopyLink(order.download_token)}
                                 className="bg-gray-800 hover:bg-gray-700 text-amber-500 border border-gray-700 hover:border-amber-500/50 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center justify-end gap-2 ml-auto"
                               >
-                                Copiar Enlace
+                                Compartir por WhatsApp
                               </button>
                             )}
                           </td>
