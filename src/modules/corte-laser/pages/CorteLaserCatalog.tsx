@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Search, Heart, Share2, X, Download, Check, Lock, SlidersHorizontal, Landmark, Copy } from 'lucide-react';
+import { ShoppingBag, Search, Heart, Share2, X, Download, Check, Lock, SlidersHorizontal, Landmark, Copy, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import CorteLaserFooter from '../components/CorteLaserFooter';
 import { supabase } from '../../../lib/supabase';
@@ -50,7 +50,8 @@ export default function CorteLaserCatalog() {
   const [cart, setCart] = useState<(Product & { quantity: number })[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState<'cart' | 'checkout' | 'success'>('cart');
-  const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', shippingMethod: '', notes: '', paymentMethod: '', discountCode: '' });
+  const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', shippingMethod: '', notes: '', paymentMethod: '', discountCode: '', address: '', locationLink: '' });
+  const [gettingLocation, setGettingLocation] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [loginError, setLoginError] = useState(false);
@@ -84,6 +85,27 @@ export default function CorteLaserCatalog() {
                           product.category.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCat && matchesSearch;
   });
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Tu navegador no soporta geolocalización');
+      return;
+    }
+    setGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const link = `https://maps.google.com/?q=${latitude},${longitude}`;
+        setCustomerInfo(prev => ({ ...prev, locationLink: link }));
+        setGettingLocation(false);
+      },
+      (error) => {
+        console.error(error);
+        alert('No se pudo obtener la ubicación. Por favor asegúrate de haber dado permisos.');
+        setGettingLocation(false);
+      }
+    );
+  };
 
   const addToCart = (product: Product) => {
     setCart(prev => {
@@ -149,12 +171,23 @@ export default function CorteLaserCatalog() {
       cart.forEach(item => {
         message += `- ${item.quantity}x ${item.name} ($${(item.price * item.quantity).toFixed(2)}) ${item.isDigital ? '*(DIGITAL)*' : ''}%0A`;
       });
-      message += `%0A*Total: $${cartTotal.toFixed(2)}*%0A%0A`;
+      const shippingCost = customerInfo.shippingMethod === 'Envío a domicilio' ? 150 : 0;
+      const finalTotal = cartTotal + shippingCost;
+
+      if (shippingCost > 0) {
+        message += `%0A*Subtotal: $${cartTotal.toFixed(2)}*%0A`;
+        message += `*Costo de Envío: $${shippingCost.toFixed(2)}*%0A`;
+      }
+      message += `%0A*Total: $${finalTotal.toFixed(2)}*%0A%0A`;
       
       message += `*Datos de entrega:*%0A`;
       message += `👤 Nombre: ${customerInfo.name}%0A`;
       message += `📱 WhatsApp: ${customerInfo.phone}%0A`;
       message += `🚚 Envío: ${customerInfo.shippingMethod}%0A`;
+      if (customerInfo.shippingMethod === 'Envío a domicilio') {
+        if (customerInfo.address) message += `📍 Dirección: ${customerInfo.address}%0A`;
+        if (customerInfo.locationLink) message += `📍 Ubicación: ${customerInfo.locationLink}%0A`;
+      }
       message += `💳 Pago: ${customerInfo.paymentMethod}`;
       if (customerInfo.notes) {
         message += `%0A📝 Notas: ${customerInfo.notes}`;
@@ -173,7 +206,7 @@ export default function CorteLaserCatalog() {
       const whatsappUrl = `https://wa.me/525650469993?text=${message}`;
       
       setCheckoutStep('success');
-      setCustomerInfo({ name: '', phone: '', shippingMethod: '', notes: '', paymentMethod: '', discountCode: '' });
+      setCustomerInfo({ name: '', phone: '', shippingMethod: '', notes: '', paymentMethod: '', discountCode: '', address: '', locationLink: '' });
       setCart([]);
       
       // Abrir WhatsApp en nueva pestaña
@@ -556,6 +589,28 @@ export default function CorteLaserCatalog() {
                         <option value="Por confirmar">⏳ Por confirmar</option>
                       </select>
                     </div>
+                    
+                    {customerInfo.shippingMethod === 'Envío a domicilio' && (
+                      <div>
+                        <label className="text-xs font-bold text-gray-400 block mb-1.5 ml-1">Dirección de Envío *</label>
+                        <textarea
+                          value={customerInfo.address}
+                          onChange={e => setCustomerInfo(p => ({ ...p, address: e.target.value }))}
+                          className="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-2xl text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all resize-none"
+                          rows={2}
+                          placeholder="Calle, Número, Colonia, C.P., Ciudad"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleGetLocation}
+                          disabled={gettingLocation}
+                          className="mt-2 ml-1 flex items-center gap-2 text-xs font-bold text-cyan-500 hover:text-cyan-400 transition-colors disabled:opacity-50"
+                        >
+                          <MapPin size={14} />
+                          {gettingLocation ? 'Obteniendo ubicación...' : customerInfo.locationLink ? 'Ubicación compartida ✓' : 'Compartir mi ubicación actual'}
+                        </button>
+                      </div>
+                    )}
                     <div>
                       <label className="text-xs font-bold text-gray-400 block mb-1.5 ml-1">Forma de Pago *</label>
                       <select
@@ -672,12 +727,12 @@ export default function CorteLaserCatalog() {
                     
                     <div className="flex justify-between items-center px-1 mb-2">
                       <span className="text-sm font-bold text-white">Total a pagar</span>
-                      <span className="text-xl font-black text-white">${cartTotal} <span className="text-sm font-normal text-gray-500">MXN</span></span>
+                      <span className="text-xl font-black text-white">${cartTotal + (customerInfo.shippingMethod === 'Envío a domicilio' ? 150 : 0)} <span className="text-sm font-normal text-gray-500">MXN</span></span>
                     </div>
                     
                     <button 
                       onClick={handleFinalCheckout}
-                      disabled={isProcessing || !customerInfo.name || !customerInfo.phone || !customerInfo.shippingMethod || !customerInfo.paymentMethod}
+                      disabled={isProcessing || !customerInfo.name || !customerInfo.phone || !customerInfo.shippingMethod || (customerInfo.shippingMethod === 'Envío a domicilio' && !customerInfo.address) || !customerInfo.paymentMethod}
                       className="w-full py-4 rounded-full bg-[#1e7e43] hover:bg-[#196b38] text-white font-bold text-sm transition-colors shadow-sm disabled:opacity-50 disabled:shadow-none uppercase tracking-wide flex items-center justify-center gap-2"
                     >
                       <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center shrink-0">
