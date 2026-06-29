@@ -111,7 +111,7 @@ const mockData: LabelDesign[] = [
   { id: 95, name: "Ghost", folder: "Ghost", imageFile: "Etiquetas_Escolares_12.png" },
   { id: 96, name: "Godzilla", folder: "Godzilla", imageFile: "Etiquetas_Escolares_151.png" },
   { id: 97, name: "Goku", folder: "Goku", imageFile: "Etiquetas_Escolares_94.png" },
-  { id: 98, name: "Goku 2", folder: "Goku 2", imageFile: "Etiquetas_Escolares_94.png" },
+  { id: 98, name: "Goku 2", folder: "Goku 2", imageFile: "Etiquetas_Escolares_94 (3).png" },
   { id: 99, name: "Goku 3", folder: "Goku 3", imageFile: "Etiquetas_Escolares_145.png" },
   { id: 100, name: "Goku 4", folder: "Goku 4", imageFile: "Etiquetas_Escolares_166.png" },
   { id: 101, name: "Goku 5", folder: "Goku 5", imageFile: "Etiquetas_Escolares_178.png" },
