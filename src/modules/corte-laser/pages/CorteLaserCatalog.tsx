@@ -544,8 +544,6 @@ export default function CorteLaserCatalog() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <CorteLaserFooter onAdminAccess={handleAdminAccess} />
     </div>
   );
 }
