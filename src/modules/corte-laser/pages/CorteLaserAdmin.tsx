@@ -369,7 +369,7 @@ export default function CorteLaserAdmin() {
                       digitalOrders.map(order => (
                         <tr key={order.id} className="border-b border-gray-800 hover:bg-[#1A1A1A]/50 transition-colors">
                           <td className="px-6 py-4">
-                            <div className="font-mono text-xs text-gray-400">{order.id.split('-')[0]}</div>
+                            <div className="font-mono text-xs text-gray-400">{String(order.id).split('-')[0]}</div>
                             <div className="text-xs text-gray-500">{new Date(order.created_at).toLocaleDateString()}</div>
                           </td>
                           <td className="px-6 py-4 font-medium">
