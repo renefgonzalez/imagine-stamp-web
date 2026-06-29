@@ -163,7 +163,7 @@ const mockData: LabelDesign[] = [
   { id: 147, name: "Luffy", folder: "Luffy", imageFile: "Etiquetas_Escolares_254.png" },
   { id: 148, name: "Mabel", folder: "Mabel", imageFile: "Etiquetas_Escolares_109 (6).png" },
   { id: 149, name: "Madagascar", folder: "Madagascar", imageFile: "Etiquetas_Escolares_162.png" },
-  { id: 150, name: "Marge", folder: "Marge", imageFile: "Etiquetas_Escolares_14.png" },
+  { id: 150, name: "Marge", folder: "Marge", imageFile: "Etiquetas_Escolares_14 (6).png" },
   { id: 151, name: "Mario Bros", folder: "Mario Bros", imageFile: "Etiquetas_Escolares_228.png" },
   { id: 152, name: "Mario Bros 2", folder: "Mario Bros 2", imageFile: "Etiquetas_Escolares_229.png" },
   { id: 153, name: "Marshmello", folder: "Marshmello", imageFile: "Etiquetas_Escolares_206.png" },
