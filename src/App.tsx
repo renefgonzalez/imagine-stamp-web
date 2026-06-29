@@ -16,6 +16,7 @@ import CorteLaserAdmin from './modules/corte-laser/pages/CorteLaserAdmin';
 import DigitalDownload from './modules/corte-laser/pages/DigitalDownload';
 import ChilapenaMenu from './modules/pozoleria-chilapena/pages/ChilapenaMenu';
 import PaleteriaMenu from './modules/paleteria/pages/PaleteriaMenu';
+import CatalogoEtiquetas from './modules/etiquetas-escolares/pages/CatalogoEtiquetas';
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -735,6 +736,7 @@ export default function App() {
         <Route path="/la-chilapena" element={<ErrorBoundary><ChilapenaMenu /></ErrorBoundary>} />
         <Route path="/la-chilapeña" element={<ErrorBoundary><ChilapenaMenu /></ErrorBoundary>} />
         <Route path="/paleteria" element={<ErrorBoundary><PaleteriaMenu /></ErrorBoundary>} />
+        <Route path="/etiquetas-escolares" element={<ErrorBoundary><CatalogoEtiquetas /></ErrorBoundary>} />
       </Routes>
     </HashRouter>
   );
