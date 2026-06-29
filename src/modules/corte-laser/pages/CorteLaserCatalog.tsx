@@ -50,6 +50,7 @@ export default function CorteLaserCatalog() {
   const [cart, setCart] = useState<(Product & { quantity: number })[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState<'cart' | 'checkout' | 'success'>('cart');
+  const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo' });
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [loginError, setLoginError] = useState(false);
@@ -72,13 +73,31 @@ export default function CorteLaserCatalog() {
     });
   };
 
+  const updateQuantity = (id: string, delta: number) => {
+    setCart(prev => prev.map(item => {
+      if (item.id === id) {
+        const newQ = Math.max(1, item.quantity + delta);
+        return { ...item, quantity: newQ };
+      }
+      return item;
+    }));
+  };
+
+  const removeFromCart = (id: string) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  };
+
   const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const hasDigitalItems = cart.some(item => item.isDigital);
 
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
+    setCheckoutStep('checkout');
+  };
+
+  const handleFinalCheckout = async () => {
     setIsProcessing(true);
     try {
       const orderId = `CL-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -110,6 +129,16 @@ export default function CorteLaserCatalog() {
       });
       message += `%0A*Total: $${cartTotal.toFixed(2)}*%0A%0A`;
       
+      message += `*Datos de entrega:*%0A`;
+      message += `👤 Nombre: ${customerInfo.name}%0A`;
+      message += `📱 WhatsApp: ${customerInfo.phone}%0A`;
+      message += `📍 Ciudad: ${customerInfo.city}%0A`;
+      message += `💳 Pago: ${customerInfo.paymentMethod}`;
+      if (customerInfo.notes) {
+        message += `%0A📝 Notas: ${customerInfo.notes}`;
+      }
+      message += `%0A%0A`;
+      
       if (hasDigitalItems) {
         message += `_Nota: Este pedido incluye archivos digitales. Por favor confírmame los datos de transferencia para realizar el pago y recibir mis enlaces de descarga._`;
       } else {
@@ -119,6 +148,8 @@ export default function CorteLaserCatalog() {
       const whatsappUrl = `https://wa.me/525650469993?text=${message}`;
       
       setCheckoutStep('success');
+      setCustomerInfo({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo' });
+      setCart([]);
       
       // Abrir WhatsApp en nueva pestaña
       setTimeout(() => {
@@ -393,15 +424,28 @@ export default function CorteLaserCatalog() {
                       </div>
                     ) : (
                       cart.map(item => (
-                        <div key={item.id} className="flex gap-4 bg-gray-800 p-3 rounded-2xl border border-gray-700">
+                        <div key={item.id} className="flex gap-4 bg-gray-800 p-3 rounded-2xl border border-gray-700 items-center">
                           <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-xl opacity-90" />
                           <div className="flex-1 flex flex-col justify-center">
                             <h4 className="text-sm font-semibold text-gray-200 leading-tight mb-1">{item.name}</h4>
                             <div className="flex justify-between items-end mt-auto">
-                              <span className="text-xs text-gray-500">Cant: {item.quantity}</span>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => updateQuantity(item.id, -1)}
+                                  className="w-7 h-7 rounded-full bg-gray-700 flex items-center justify-center text-white font-black hover:bg-cyan-500 hover:text-gray-900 transition-colors"
+                                >−</button>
+                                <span className="w-4 text-center text-sm">{item.quantity}</span>
+                                <button
+                                  onClick={() => updateQuantity(item.id, 1)}
+                                  className="w-7 h-7 rounded-full bg-gray-700 flex items-center justify-center text-white font-black hover:bg-cyan-500 hover:text-gray-900 transition-colors"
+                                >+</button>
+                              </div>
                               <PriceDisplay amount={item.price * item.quantity} />
                             </div>
                           </div>
+                          <button onClick={() => removeFromCart(item.id)} className="text-gray-500 hover:text-red-400 transition-colors p-2">
+                            <X size={18} />
+                          </button>
                         </div>
                       ))
                     )}
@@ -412,7 +456,7 @@ export default function CorteLaserCatalog() {
                       {hasDigitalItems && (
                         <div className="mb-4 p-3 bg-cyan-900/20 text-cyan-400 text-xs rounded-lg border border-cyan-500/30 flex items-start gap-2 shadow-[0_0_10px_rgba(6,182,212,0.1)]">
                           <span className="shrink-0 mt-0.5">ℹ️</span>
-                          <p>Tu carrito contiene archivos digitales. <strong>El enlace de descarga se enviará por correo o WhatsApp al confirmar el pago.</strong></p>
+                          <p>Tu carrito contiene archivos digitales. <strong>El enlace de descarga se enviará por WhatsApp al confirmar el pago.</strong></p>
                         </div>
                       )}
                       
@@ -423,13 +467,75 @@ export default function CorteLaserCatalog() {
                       
                       <button 
                         onClick={handleCheckout}
-                        className="w-full py-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold text-lg transition-colors shadow-[0_0_20px_rgba(6,182,212,0.4)] uppercase tracking-wider"
+                        className="w-full py-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold text-lg transition-colors shadow-[0_0_20px_rgba(6,182,212,0.4)] uppercase tracking-wider flex items-center justify-center gap-2"
                       >
-                        Confirmar Pago
+                        Siguiente — Datos de Entrega
                       </button>
                     </div>
                   )}
                 </>
+              ) : checkoutStep === 'checkout' ? (
+                <div className="flex-1 flex flex-col h-full bg-gray-900 text-gray-300 overflow-y-auto">
+                  <div className="p-4 border-b border-gray-800 flex items-center gap-2">
+                    <button onClick={() => setCheckoutStep('cart')} className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700 text-gray-400 transition-colors">
+                      <X size={16} className="rotate-45 transform" /> 
+                    </button>
+                    <h3 className="font-bold text-lg text-white">Datos de Entrega</h3>
+                  </div>
+                  
+                  <div className="p-4 space-y-4">
+                    <div>
+                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Nombre Completo *</label>
+                      <input
+                        value={customerInfo.name}
+                        onChange={e => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+                        placeholder="Ej: María García López"
+                        className="w-full bg-gray-800 border border-gray-700 text-white p-3 rounded-xl text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Teléfono WhatsApp *</label>
+                      <input
+                        value={customerInfo.phone}
+                        onChange={e => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
+                        placeholder="10 dígitos"
+                        type="tel"
+                        className="w-full bg-gray-800 border border-gray-700 text-white p-3 rounded-xl text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Ciudad *</label>
+                      <input
+                        value={customerInfo.city}
+                        onChange={e => setCustomerInfo({ ...customerInfo, city: e.target.value })}
+                        placeholder="Ej: Guadalajara, Jalisco"
+                        className="w-full bg-gray-800 border border-gray-700 text-white p-3 rounded-xl text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Forma de Pago *</label>
+                      <select
+                        value={customerInfo.paymentMethod}
+                        onChange={e => setCustomerInfo({ ...customerInfo, paymentMethod: e.target.value })}
+                        className="w-full bg-gray-800 border border-gray-700 text-white p-3 rounded-xl text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all cursor-pointer"
+                      >
+                        <option value="Efectivo">💵 Efectivo</option>
+                        <option value="Transferencia">🏦 Transferencia Bancaria</option>
+                        <option value="Por Confirmar">⏳ Por Confirmar</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="p-4 mt-auto border-t border-gray-800 bg-gray-900">
+                    <button 
+                      onClick={handleFinalCheckout}
+                      disabled={isProcessing || !customerInfo.name || !customerInfo.phone || !customerInfo.city}
+                      className="w-full py-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold text-lg transition-colors shadow-[0_0_20px_rgba(6,182,212,0.4)] disabled:opacity-50 disabled:shadow-none uppercase tracking-wider"
+                    >
+                      {isProcessing ? 'Procesando...' : 'Finalizar Pedido'}
+                    </button>
+                  </div>
+                </div>
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
                   <div className="w-16 h-16 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 rounded-full flex items-center justify-center mb-4 shrink-0 shadow-[0_0_20px_rgba(6,182,212,0.3)]">
@@ -438,30 +544,18 @@ export default function CorteLaserCatalog() {
                   <h3 className="text-2xl font-bold text-white mb-2">¡Gracias por tu compra!</h3>
                   <p className="text-gray-400 mb-6 text-sm">
                     {hasDigitalItems 
-                      ? 'Tu pago ha sido confirmado. Puedes descargar tus archivos digitales a continuación.'
-                      : 'Hemos registrado tu orden. Nos pondremos en contacto para los detalles de envío.'}
+                      ? 'Tu pedido ha sido enviado. Por WhatsApp te pasaremos el enlace de descarga una vez validado el pago.'
+                      : 'Hemos registrado tu orden. Nos pondremos en contacto por WhatsApp.'}
                   </p>
 
                   {hasDigitalItems && (
                     <div className="w-full text-left bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6 space-y-3 shadow-inner">
                       <h4 className="font-semibold text-cyan-400 text-sm mb-3 uppercase tracking-wider">Archivos Digitales Solicitados:</h4>
                       <p className="text-xs text-gray-400 mb-2">Una vez confirmado el pago, te enviaremos los enlaces seguros por WhatsApp.</p>
-                      {cart.filter(item => item.isDigital).map(item => (
-                        <div key={`download-${item.id}`} className="flex items-center justify-between bg-gray-900 p-3 rounded-lg border border-gray-700 shadow-sm">
-                          <div className="flex items-center gap-3 overflow-hidden">
-                            <div className="w-10 h-10 bg-cyan-900/40 rounded-md border border-cyan-500/20 flex items-center justify-center shrink-0 text-cyan-400">
-                              <Download className="w-5 h-5" />
-                            </div>
-                            <div className="truncate">
-                              <p className="text-sm font-semibold text-gray-200 truncate">{item.name}</p>
-                              <p className="text-xs text-gray-500">Formato: {item.fileFormat || 'Digital'}</p>
-                            </div>
-                          </div>
-                          <span className="shrink-0 bg-gray-700/50 text-gray-400 px-3 py-1.5 rounded-md text-sm font-bold border border-gray-600">
-                            Pendiente
-                          </span>
-                        </div>
-                      ))}
+                      <div className="bg-gray-900 p-3 rounded-lg border border-gray-700 shadow-sm flex items-center gap-3 text-cyan-400">
+                        <Check className="w-5 h-5 shrink-0" />
+                        <span className="text-sm text-gray-300">¡Pedido Digital Registrado Correctamente!</span>
+                      </div>
                     </div>
                   )}
 
