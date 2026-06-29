@@ -15,6 +15,7 @@ import CorteLaserCatalog from './modules/corte-laser/pages/CorteLaserCatalog';
 import CorteLaserAdmin from './modules/corte-laser/pages/CorteLaserAdmin';
 import DigitalDownload from './modules/corte-laser/pages/DigitalDownload';
 import ChilapenaMenu from './modules/pozoleria-chilapena/pages/ChilapenaMenu';
+import PaleteriaMenu from './modules/paleteria/pages/PaleteriaMenu';
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -733,6 +734,7 @@ export default function App() {
         <Route path="/descarga/:token" element={<ErrorBoundary><DigitalDownload /></ErrorBoundary>} />
         <Route path="/la-chilapena" element={<ErrorBoundary><ChilapenaMenu /></ErrorBoundary>} />
         <Route path="/la-chilapeña" element={<ErrorBoundary><ChilapenaMenu /></ErrorBoundary>} />
+        <Route path="/paleteria" element={<ErrorBoundary><PaleteriaMenu /></ErrorBoundary>} />
       </Routes>
     </HashRouter>
   );
