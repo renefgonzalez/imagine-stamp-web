@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ShoppingBag, Search, Heart, Share2, X, Download, Check, Lock, SlidersHorizontal } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ShoppingBag, Search, Heart, Share2, X, Download, Check, Lock, SlidersHorizontal, Landmark, Copy } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import CorteLaserFooter from '../components/CorteLaserFooter';
 import { supabase } from '../../../lib/supabase';
@@ -50,11 +50,33 @@ export default function CorteLaserCatalog() {
   const [cart, setCart] = useState<(Product & { quantity: number })[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState<'cart' | 'checkout' | 'success'>('cart');
-  const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo' });
+  const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', shippingMethod: '', notes: '', paymentMethod: '', discountCode: '' });
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [loginError, setLoginError] = useState(false);
   const [showCategoriesModal, setShowCategoriesModal] = useState(false);
+  const [bankInfo, setBankInfo] = useState<any>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchBankInfo = async () => {
+      const { data, error } = await supabase.from('settings').select('*').eq('id', 'bank').single();
+      if (!error && data) {
+        setBankInfo(data);
+      }
+    };
+    fetchBankInfo();
+  }, []);
+
+  const copyToClipboard = async (text: string, field: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy', err);
+    }
+  };
 
   const filteredProducts = INITIAL_PRODUCTS.filter(product => {
     const matchesCat = activeCategory === "Todos" || product.category === activeCategory;
@@ -132,10 +154,13 @@ export default function CorteLaserCatalog() {
       message += `*Datos de entrega:*%0A`;
       message += `👤 Nombre: ${customerInfo.name}%0A`;
       message += `📱 WhatsApp: ${customerInfo.phone}%0A`;
-      message += `📍 Ciudad: ${customerInfo.city}%0A`;
+      message += `🚚 Envío: ${customerInfo.shippingMethod}%0A`;
       message += `💳 Pago: ${customerInfo.paymentMethod}`;
       if (customerInfo.notes) {
         message += `%0A📝 Notas: ${customerInfo.notes}`;
+      }
+      if (customerInfo.discountCode) {
+        message += `%0A🎟️ Cupón: ${customerInfo.discountCode}`;
       }
       message += `%0A%0A`;
       
@@ -148,7 +173,7 @@ export default function CorteLaserCatalog() {
       const whatsappUrl = `https://wa.me/525650469993?text=${message}`;
       
       setCheckoutStep('success');
-      setCustomerInfo({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo' });
+      setCustomerInfo({ name: '', phone: '', shippingMethod: '', notes: '', paymentMethod: '', discountCode: '' });
       setCart([]);
       
       // Abrir WhatsApp en nueva pestaña
@@ -483,56 +508,179 @@ export default function CorteLaserCatalog() {
                     <h3 className="font-bold text-lg text-white">Datos de Entrega</h3>
                   </div>
                   
-                  <div className="p-4 space-y-4">
+                    {/* Resumen compacto de Sahumerio */}
+                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700 mb-6 mx-4">
+                      {cart.map(item => (
+                        <div key={item.id} className="flex justify-between text-xs py-1">
+                          <span className="text-gray-400 truncate pr-2">{item.name} <span className="font-bold text-gray-300">x{item.quantity}</span></span>
+                          <span className="font-bold text-white shrink-0">${item.price * item.quantity} MXN</span>
+                        </div>
+                      ))}
+                      <div className="border-t border-gray-700 mt-2 pt-2 flex justify-between">
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Subtotal</span>
+                        <span className="font-bold text-white">${cartTotal} MXN</span>
+                      </div>
+                    </div>
+
+                  <div className="px-4 space-y-4">
                     <div>
-                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Nombre Completo *</label>
+                      <label className="text-xs font-bold text-gray-400 block mb-1.5 ml-1">Nombre Completo *</label>
                       <input
                         value={customerInfo.name}
                         onChange={e => setCustomerInfo({ ...customerInfo, name: e.target.value })}
-                        placeholder="Ej: María García López"
-                        className="w-full bg-gray-800 border border-gray-700 text-white p-3 rounded-xl text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
+                        placeholder="Ej. Juan Pérez"
+                        className="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-full text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Teléfono WhatsApp *</label>
+                      <label className="text-xs font-bold text-gray-400 block mb-1.5 ml-1">Teléfono WhatsApp *</label>
                       <input
                         value={customerInfo.phone}
                         onChange={e => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
-                        placeholder="10 dígitos"
+                        placeholder="Ej. 5512345678"
                         type="tel"
-                        className="w-full bg-gray-800 border border-gray-700 text-white p-3 rounded-xl text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
+                        className="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-full text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Ciudad *</label>
-                      <input
-                        value={customerInfo.city}
-                        onChange={e => setCustomerInfo({ ...customerInfo, city: e.target.value })}
-                        placeholder="Ej: Guadalajara, Jalisco"
-                        className="w-full bg-gray-800 border border-gray-700 text-white p-3 rounded-xl text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
-                      />
+                      <label className="text-xs font-bold text-gray-400 block mb-1.5 ml-1">Método de Envío *</label>
+                      <select
+                        value={customerInfo.shippingMethod}
+                        onChange={e => setCustomerInfo({ ...customerInfo, shippingMethod: e.target.value })}
+                        className="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-full text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all cursor-pointer appearance-none"
+                      >
+                        <option value="" disabled>Selecciona una opción</option>
+                        <option value="Recoger en Sucursal">Recoger en Sucursal</option>
+                        <option value="Envío Local">Envío Local</option>
+                        <option value="Envío Nacional">Envío Nacional</option>
+                      </select>
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Forma de Pago *</label>
+                      <label className="text-xs font-bold text-gray-400 block mb-1.5 ml-1">Forma de Pago *</label>
                       <select
                         value={customerInfo.paymentMethod}
                         onChange={e => setCustomerInfo({ ...customerInfo, paymentMethod: e.target.value })}
-                        className="w-full bg-gray-800 border border-gray-700 text-white p-3 rounded-xl text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all cursor-pointer"
+                        className="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-full text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all cursor-pointer appearance-none"
                       >
-                        <option value="Efectivo">💵 Efectivo</option>
-                        <option value="Transferencia">🏦 Transferencia Bancaria</option>
-                        <option value="Por Confirmar">⏳ Por Confirmar</option>
+                        <option value="" disabled>Selecciona una opción</option>
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia Bancaria">Transferencia Bancaria</option>
                       </select>
+                    </div>
+                    
+                    {/* Datos bancarios para transferencia */}
+                    <AnimatePresence>
+                      {customerInfo.paymentMethod === 'Transferencia Bancaria' && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="bg-cyan-900/10 border border-cyan-900/30 rounded-2xl p-4 mt-2">
+                            <div className="flex items-center gap-2 mb-3">
+                              <div className="w-8 h-8 rounded-full bg-cyan-600 flex items-center justify-center text-white shrink-0">
+                                <Landmark size={16} />
+                              </div>
+                              <div>
+                                <p className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest leading-none">Datos para transferencia</p>
+                                <p className="text-[9px] font-medium text-gray-400 mt-0.5">Realiza tu pago y envía el comprobante por WhatsApp</p>
+                              </div>
+                            </div>
+                            
+                            {(() => {
+                              const rows = [
+                                { label: 'Banco', value: bankInfo?.bank_name, field: 'bank_name' },
+                                { label: 'Titular', value: bankInfo?.account_holder, field: 'account_holder' },
+                                { label: 'CLABE', value: bankInfo?.clabe, field: 'clabe' },
+                                { label: 'No. de Cuenta', value: bankInfo?.account_number, field: 'account_number' },
+                                { label: 'No. de Tarjeta', value: bankInfo?.card_number, field: 'card_number' },
+                              ].filter(r => r.value && String(r.value).trim() !== '');
+
+                              if (rows.length === 0) {
+                                return (
+                                  <p className="text-xs text-gray-500 italic py-2">
+                                    Los datos bancarios se mostrarán aquí. Escríbenos por WhatsApp para coordinar tu pago.
+                                  </p>
+                                );
+                              }
+
+                              return (
+                                <div className="space-y-2">
+                                  {rows.map(row => (
+                                    <div key={row.field} className="flex items-center justify-between gap-2 bg-gray-900 rounded-xl px-3 py-2 border border-gray-800">
+                                      <div className="min-w-0">
+                                        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{row.label}</p>
+                                        <p className="text-sm font-bold text-gray-200 truncate">{row.value}</p>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={() => copyToClipboard(String(row.value), row.field)}
+                                        title="Copiar"
+                                        className="shrink-0 w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-cyan-600 hover:text-white transition-all"
+                                      >
+                                        {copiedField === row.field ? <Check size={14} /> : <Copy size={14} />}
+                                      </button>
+                                    </div>
+                                  ))}
+                                  {bankInfo?.instructions && String(bankInfo.instructions).trim() !== '' && (
+                                    <p className="text-[10px] text-gray-400 leading-relaxed bg-gray-900 rounded-xl px-3 py-2 border border-gray-800 whitespace-pre-line mt-2">
+                                      {bankInfo.instructions}
+                                    </p>
+                                  )}
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    
+                    <div>
+                      <label className="text-xs font-bold text-gray-400 block mb-1.5 ml-1">Notas Adicionales (Opcional)</label>
+                      <textarea
+                        value={customerInfo.notes}
+                        onChange={e => setCustomerInfo({ ...customerInfo, notes: e.target.value })}
+                        placeholder="Ej. Dejar con el guardia, es para regalo..."
+                        className="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-2xl text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all min-h-[80px]"
+                      />
+                    </div>
+                    
+                    <div className="border-t border-gray-800 pt-4 mt-2">
+                      <label className="text-xs font-bold text-gray-400 block mb-2 ml-1">Cupón de Descuento</label>
+                      <div className="flex gap-2">
+                        <input
+                          value={customerInfo.discountCode}
+                          onChange={e => setCustomerInfo({ ...customerInfo, discountCode: e.target.value })}
+                          placeholder="EJ. MAGIA20"
+                          className="flex-1 bg-gray-900 border border-gray-800 text-white p-3 rounded-full text-sm focus:border-cyan-500 outline-none transition-all"
+                        />
+                        <button className="px-5 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold text-sm transition-colors">
+                          Aplicar
+                        </button>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="p-4 mt-auto border-t border-gray-800 bg-gray-900">
+                  <div className="p-4 mt-auto border-t border-gray-800 bg-gray-900 flex flex-col gap-3">
+                    <button onClick={() => setCheckoutStep('cart')} className="text-xs font-bold text-gray-400 hover:text-white uppercase tracking-widest text-center py-2">
+                      ← Volver al carrito
+                    </button>
+                    
+                    <div className="flex justify-between items-center px-1 mb-2">
+                      <span className="text-sm font-bold text-white">Total a pagar</span>
+                      <span className="text-xl font-black text-white">${cartTotal} <span className="text-sm font-normal text-gray-500">MXN</span></span>
+                    </div>
+                    
                     <button 
                       onClick={handleFinalCheckout}
-                      disabled={isProcessing || !customerInfo.name || !customerInfo.phone || !customerInfo.city}
-                      className="w-full py-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold text-lg transition-colors shadow-[0_0_20px_rgba(6,182,212,0.4)] disabled:opacity-50 disabled:shadow-none uppercase tracking-wider"
+                      disabled={isProcessing || !customerInfo.name || !customerInfo.phone || !customerInfo.shippingMethod || !customerInfo.paymentMethod}
+                      className="w-full py-4 rounded-full bg-[#1e7e43] hover:bg-[#196b38] text-white font-bold text-sm transition-colors shadow-sm disabled:opacity-50 disabled:shadow-none uppercase tracking-wide flex items-center justify-center gap-2"
                     >
-                      {isProcessing ? 'Procesando...' : 'Finalizar Pedido'}
+                      <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                        <Share2 size={12} className="text-white fill-white" />
+                      </div>
+                      {isProcessing ? 'Procesando...' : 'Finalizar Pedido vía WhatsApp'}
                     </button>
                   </div>
                 </div>
