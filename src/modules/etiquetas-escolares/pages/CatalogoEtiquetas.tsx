@@ -151,7 +151,7 @@ const mockData: LabelDesign[] = [
   { id: 135, name: "Labubus", folder: "Labubus", imageFile: "Etiquetas_Escolares_222.png" },
   { id: 136, name: "Labubus 2", folder: "Labubus 2", imageFile: "Etiquetas_Escolares_223.png" },
   { id: 137, name: "Labubus 3", folder: "Labubus 3", imageFile: "Etiquetas_Escolares_224.png" },
-  { id: 138, name: "Labubus 4", folder: "Labubus 4", imageFile: "Etiquetas_Escolares_226.png" },
+  { id: 138, name: "Labubus 4", folder: "Labubus 4", imageFile: "Etiquetas_Escolares_226 (6).png" },
   { id: 139, name: "Ladybug", folder: "Ladybug", imageFile: "Etiquetas_Escolares_227.png" },
   { id: 140, name: "Lego 2", folder: "Lego 2", imageFile: "Etiquetas_Escolares_219.png" },
   { id: 141, name: "Liga De La Justicia", folder: "Liga De La Justicia", imageFile: "Etiquetas_Escolares_154.png" },
