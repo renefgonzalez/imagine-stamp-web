@@ -16,55 +16,16 @@ export interface Product {
 }
 
 const INITIAL_PRODUCTS: Product[] = [
-  {
-    id: '1',
-    name: 'Cruz Decorativa "La Biblia"',
-    category: 'Religiosos',
-    price: 150.00,
-    image: '/img/corte-laser/media__1782603426978.png',
-    isDigital: false
-  },
-  {
-    id: '2',
-    name: 'Servilletero Ángel Guardián',
-    category: 'Religiosos',
-    price: 120.00,
-    image: '/img/corte-laser/media__1782604663359.png',
-    isDigital: false
-  },
-  {
-    id: '3',
-    name: 'Cruz Padre Nuestro',
-    category: 'Religiosos',
-    price: 180.00,
-    image: '/img/corte-laser/media__1782604673717.png',
-    isDigital: false
-  },
-  {
-    id: '4',
-    name: 'Cruz Minimalista "JESUS"',
-    category: 'Religiosos',
-    price: 130.00,
-    image: '/img/corte-laser/media__1782614921245.png',
-    isDigital: false
-  },
-  {
-    id: '5',
-    name: 'Alcancía Princesa Peach',
-    category: 'Cajas',
-    price: 250.00,
-    image: '/img/corte-laser/media__1782695475458.png',
-    isDigital: false
-  },
-  {
-    id: '6',
-    name: 'Pack 50 Vectores Religiosos (Descarga)',
-    category: 'Vectores Premium',
-    price: 350.00,
-    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=600',
-    isDigital: true,
-    fileFormat: 'SVG/DXF'
-  }
+  { id: '1', name: 'Diseño Corte Láser 1', category: 'General', price: 100.00, image: '/img/corte-laser/prod_1.jpeg', isDigital: false },
+  { id: '2', name: 'Diseño Corte Láser 2', category: 'General', price: 100.00, image: '/img/corte-laser/prod_2.jpeg', isDigital: false },
+  { id: '3', name: 'Diseño Corte Láser 3', category: 'General', price: 100.00, image: '/img/corte-laser/prod_3.jpeg', isDigital: false },
+  { id: '4', name: 'Diseño Corte Láser 4', category: 'General', price: 100.00, image: '/img/corte-laser/prod_4.jpeg', isDigital: false },
+  { id: '5', name: 'Diseño Corte Láser 5', category: 'General', price: 100.00, image: '/img/corte-laser/prod_5.jpeg', isDigital: false },
+  { id: '6', name: 'Diseño Corte Láser 6', category: 'General', price: 100.00, image: '/img/corte-laser/prod_6.jpeg', isDigital: false },
+  { id: '7', name: 'Diseño Corte Láser 7', category: 'General', price: 100.00, image: '/img/corte-laser/prod_7.jpeg', isDigital: false },
+  { id: '8', name: 'Diseño Corte Láser 8', category: 'General', price: 100.00, image: '/img/corte-laser/prod_8.jpeg', isDigital: false },
+  { id: '9', name: 'Diseño Corte Láser 9', category: 'General', price: 100.00, image: '/img/corte-laser/prod_9.jpeg', isDigital: false },
+  { id: '10', name: 'Pack 50 Vectores Religiosos', category: 'Digital', price: 299.00, image: 'https://images.unsplash.com/photo-1618641986557-1de223cb2f4f?auto=format&fit=crop&q=80&w=600', isDigital: true, downloadUrl: 'https://drive.google.com/drive/folders/ejemplo', fileFormat: 'DXF, CDR, SVG' },
 ];
 
 const CATEGORIES = [
