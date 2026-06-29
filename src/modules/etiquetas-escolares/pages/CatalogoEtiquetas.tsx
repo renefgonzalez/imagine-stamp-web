@@ -140,7 +140,7 @@ const mockData: LabelDesign[] = [
   { id: 124, name: "Jessie", folder: "Jessie", imageFile: "Etiquetas_Escolares_113.png" },
   { id: 125, name: "Joker", folder: "Joker", imageFile: "Etiquetas_Escolares_152.png" },
   { id: 126, name: "Joker 2", folder: "Joker 2", imageFile: "Etiquetas_Escolares_153.png" },
-  { id: 127, name: "Jurassic Park", folder: "Jurassic Park", imageFile: "Etiquetas_Escolares_217.png" },
+  { id: 127, name: "Jurassic Park", folder: "Jurassic Park", imageFile: "Etiquetas_Escolares_217 (6).png" },
   { id: 128, name: "Jurassic World", folder: "Jurassic World", imageFile: "Etiquetas_Escolares_216.png" },
   { id: 129, name: "Kaonashi", folder: "Kaonashi", imageFile: "Etiquetas_Escolares_96.png" },
   { id: 130, name: "Keroppi", folder: "Keroppi", imageFile: "Etiquetas_Escolares_198.png" },
