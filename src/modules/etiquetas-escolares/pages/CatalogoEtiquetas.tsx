@@ -188,8 +188,8 @@ export default function CatalogoEtiquetas() {
   }, [searchQuery]);
 
   const handleOrder = (designName: string) => {
-    const text = `¡Hola Imagine & Stamp! Quiero hacer mi pedido de etiquetas escolares con el diseño de ${designName}. %0A%0AEl nombre del niño(a) es: _______ %0AEl grado escolar es: _______`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, '_blank');
+    const text = `¡Hola Imagine & Stamp! Quiero hacer mi pedido de etiquetas escolares con el diseño de ${designName}.\n\nEl nombre del niño(a) es: _______\nEl grado escolar es: _______`;
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   return (
