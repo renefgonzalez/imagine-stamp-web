@@ -167,7 +167,7 @@ const mockData: LabelDesign[] = [
   { id: 151, name: "Mario Bros", folder: "Mario Bros", imageFile: "Etiquetas_Escolares_228.png" },
   { id: 152, name: "Mario Bros 2", folder: "Mario Bros 2", imageFile: "Etiquetas_Escolares_229.png" },
   { id: 153, name: "Marshmello", folder: "Marshmello", imageFile: "Etiquetas_Escolares_206.png" },
-  { id: 154, name: "Megamind", folder: "Megamind", imageFile: "Etiquetas_Escolares_173.png" },
+  { id: 154, name: "Megamind", folder: "Megamind", imageFile: "Etiquetas_Escolares_173 (6).png" },
   { id: 155, name: "Merlina", folder: "Merlina", imageFile: "Etiquetas_Escolares_71.png" },
   { id: 156, name: "Minecraft 2", folder: "Minecraft 2", imageFile: "Etiquetas_Escolares_241.png" },
   { id: 157, name: "Minecraft 3", folder: "Minecraft 3", imageFile: "Etiquetas_Escolares_242.png" },
