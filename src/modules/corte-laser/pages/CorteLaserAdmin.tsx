@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Settings, Package, Plus, Grid, Tag, ShoppingCart, MessageSquare, Megaphone, Check, Trash2, Edit, Save, X, Image as ImageIcon, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 
 type TabType = 'Inventario' | 'Nuevo' | 'Categorias' | 'Cupones' | 'Pedidos' | 'Opiniones' | 'Promo' | 'Ajustes';
 

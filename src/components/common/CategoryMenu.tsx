@@ -61,7 +61,7 @@ export const CategoryMenu: React.FC<CategoryMenuProps> = ({
                     <button
                       key={badge.id}
                       onClick={() => {
-                        setActiveBadgeFilter(prev => prev === badge.id ? null : badge.id);
+                        setActiveBadgeFilter(activeBadgeFilter === badge.id ? null : badge.id);
                         setIsCategoryOpen(false);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
