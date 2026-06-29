@@ -25,7 +25,7 @@ const INITIAL_PRODUCTS: Product[] = [
   { id: '7', name: 'Diseño Corte Láser 7', category: 'General', price: 100.00, image: '/img/corte-laser/prod_7.jpeg', isDigital: false },
   { id: '8', name: 'Diseño Corte Láser 8', category: 'General', price: 100.00, image: '/img/corte-laser/prod_8.jpeg', isDigital: false },
   { id: '9', name: 'Diseño Corte Láser 9', category: 'General', price: 100.00, image: '/img/corte-laser/prod_9.jpeg', isDigital: false },
-  { id: '10', name: 'Pack 50 Vectores Religiosos', category: 'Digital', price: 299.00, image: 'https://images.unsplash.com/photo-1618641986557-1de223cb2f4f?auto=format&fit=crop&q=80&w=600', isDigital: true, downloadUrl: 'https://drive.google.com/drive/folders/ejemplo', fileFormat: 'DXF, CDR, SVG' },
+  { id: '10', name: 'Pack 50 Vectores Religiosos', category: 'Digital', price: 299.00, image: '/img/corte-laser/prod_1.jpeg', isDigital: true, downloadUrl: 'https://drive.google.com/file/d/1RjJgq7lR18a2j5LGKY5iPdhqDAj-75EN/view?usp=drive_link', fileFormat: 'DXF, CDR, SVG' },
 ];
 
 const CATEGORIES = [

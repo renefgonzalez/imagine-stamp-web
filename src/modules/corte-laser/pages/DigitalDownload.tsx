@@ -61,7 +61,7 @@ export default function DigitalDownload() {
     
     // Simular que el archivo viene del producto (En un sistema completo, el link estaría en el producto asociado a order.product_id)
     // Ya que para esta demo los productos están hardcodeados en el frontend, mostraremos un enlace simulado de Google Drive.
-    const driveLink = 'https://drive.google.com/uc?export=download&id=DEMO_ID'; 
+    const driveLink = 'https://drive.google.com/file/d/1RjJgq7lR18a2j5LGKY5iPdhqDAj-75EN/view?usp=drive_link'; 
 
     try {
       // Incrementar contador de descargas
