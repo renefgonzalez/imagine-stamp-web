@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { GlobalFooter } from '../../../components/common/GlobalFooter';
 
 const BASE_URL = 'https://catalogo.imagineandstamp.site/';
-const WHATSAPP_NUMBER = '521234567890'; // Replace with actual number
+const WHATSAPP_NUMBER = '525650469993'; // Replace with actual number
 
 interface LabelDesign {
   id: string | number;
