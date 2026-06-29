@@ -550,9 +550,10 @@ export default function CorteLaserCatalog() {
                         className="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-full text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all cursor-pointer appearance-none"
                       >
                         <option value="" disabled>Selecciona una opción</option>
-                        <option value="Recoger en Sucursal">Recoger en Sucursal</option>
-                        <option value="Envío Local">Envío Local</option>
-                        <option value="Envío Nacional">Envío Nacional</option>
+                        <option value="Envío a domicilio">🏠 Envío a domicilio</option>
+                        <option value="Recoger en tienda">🏪 Recoger en tienda</option>
+                        <option value="Entrega digital">💻 Entrega digital</option>
+                        <option value="Por confirmar">⏳ Por confirmar</option>
                       </select>
                     </div>
                     <div>
@@ -563,14 +564,16 @@ export default function CorteLaserCatalog() {
                         className="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-full text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all cursor-pointer appearance-none"
                       >
                         <option value="" disabled>Selecciona una opción</option>
-                        <option value="Efectivo">Efectivo</option>
-                        <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+                        <option value="Efectivo">💵 Efectivo</option>
+                        <option value="Transferencia">🏦 Transferencia</option>
+                        <option value="Tarjeta">💳 Tarjeta</option>
+                        <option value="Por confirmar">⏳ Por Confirmar</option>
                       </select>
                     </div>
                     
                     {/* Datos bancarios para transferencia */}
                     <AnimatePresence>
-                      {customerInfo.paymentMethod === 'Transferencia Bancaria' && (
+                      {customerInfo.paymentMethod === 'Transferencia' && (
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
