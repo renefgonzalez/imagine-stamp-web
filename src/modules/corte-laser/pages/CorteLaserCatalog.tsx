@@ -134,10 +134,14 @@ export default function CorteLaserCatalog() {
   const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const hasDigitalItems = cart.some(item => item.isDigital);
+  const hasOnlyDigitalItems = cart.length > 0 && cart.every(item => item.isDigital);
 
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleCheckout = () => {
+    if (hasOnlyDigitalItems) {
+      setCustomerInfo(prev => ({ ...prev, shippingMethod: 'Entrega digital' }));
+    }
     setCheckoutStep('checkout');
   };
 
@@ -580,7 +584,8 @@ export default function CorteLaserCatalog() {
                       <select
                         value={customerInfo.shippingMethod}
                         onChange={e => setCustomerInfo({ ...customerInfo, shippingMethod: e.target.value })}
-                        className="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-full text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all cursor-pointer appearance-none"
+                        disabled={hasOnlyDigitalItems}
+                        className={`w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-full text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all cursor-pointer appearance-none ${hasOnlyDigitalItems ? 'opacity-70 cursor-not-allowed' : ''}`}
                       >
                         <option value="" disabled>Selecciona una opción</option>
                         <option value="Envío a domicilio">🏠 Envío a domicilio</option>
