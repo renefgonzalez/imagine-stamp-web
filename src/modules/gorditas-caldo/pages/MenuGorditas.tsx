@@ -101,7 +101,6 @@ export default function MenuGorditas() {
   const [metodoEntrega, setMetodoEntrega] = useState<'recoger' | 'domicilio'>('domicilio');
   const [calle, setCalle] = useState('');
   const [colonia, setColonia] = useState('');
-  const [notas, setNotas] = useState('');
   const [formaPago, setFormaPago] = useState('Efectivo');
   const [errors, setErrors] = useState<Record<string, boolean>>({});
 
@@ -129,6 +128,10 @@ export default function MenuGorditas() {
       }
       return p;
     }));
+  };
+
+  const updateItemNotes = (id: string, notas: string) => {
+    setCart(prev => prev.map(p => p.id === id ? { ...p, notas } : p));
   };
 
   const cartTotal = useMemo(() => cart.reduce((acc, item) => acc + (item.price * item.qty), 0), [cart]);
@@ -163,6 +166,9 @@ export default function MenuGorditas() {
     let lineas = "";
     cart.forEach(item => {
       lineas += `• ${item.qty}x ${item.name}${item.base ? ' (En ' + item.base + ')' : ''} - $${item.price * item.qty}\n`;
+      if (item.notas && item.notas.trim()) {
+        lineas += `   ↳ Nota: ${item.notas.trim()}\n`;
+      }
     });
     
     let mensaje = `🍲 *NUEVO PEDIDO - GORDITAS Y CALDO DE PATA*\n\n`;
@@ -179,11 +185,12 @@ export default function MenuGorditas() {
     mensaje += `\n🧾 *Pedido:*\n${lineas}`;
     mensaje += `\n💰 *Total a pagar:* $${cartTotal}\n`;
     
-    if (notas.trim()) {
-      mensaje += `\n📝 *Notas para cocina:*\n${notas.trim()}\n`;
+    if (formaPago === 'Transferencia') {
+      mensaje += `💳 *Pago:* Transferencia (Te enviaré el comprobante por este medio)\n`;
+    } else {
+      mensaje += `💳 *Pago:* ${formaPago}\n`;
     }
 
-    mensaje += `💳 *Pago:* ${formaPago}\n`;
     mensaje += `\n¿Me podrían confirmar mi pedido, por favor?`;
     
     const encoded = encodeURIComponent(mensaje);
@@ -322,34 +329,35 @@ export default function MenuGorditas() {
                     </div>
                   ) : (
                     cart.map(item => (
-                      <div key={item.id} className="bg-white/5 border border-white/10 rounded-2xl p-4 flex gap-4">
-                        <div className="w-16 h-16 bg-white/10 rounded-xl overflow-hidden">
-                          {item.img ? <img src={item.img} alt="" className="w-full h-full object-cover" /> : <ImageIcon className="text-white/30 m-auto mt-4" size={24}/>}
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="text-white font-bold leading-tight">{item.name}</h4>
-                          <p className="text-[#f4c430] font-black">${item.price * item.qty}</p>
-                          <button onClick={() => removeFromCart(item.id)} className="text-red-400 hover:text-red-300 text-xs mt-2 underline">Eliminar</button>
-                        </div>
-                        <div className="flex flex-col items-end justify-center">
-                          <div className="flex items-center gap-3 bg-white/10 rounded-full px-2 py-1">
-                            <button onClick={() => updateQty(item.id, -1)} className="text-white hover:text-[#f4c430]"><Minus size={14}/></button>
-                            <span className="text-white font-bold text-sm w-4 text-center">{item.qty}</span>
-                            <button onClick={() => updateQty(item.id, 1)} className="text-white hover:text-[#f4c430]"><Plus size={14}/></button>
+                      <div key={item.id} className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col gap-3">
+                        <div className="flex gap-4">
+                          <div className="w-16 h-16 bg-white/10 rounded-xl overflow-hidden">
+                            {item.img ? <img src={item.img} alt="" className="w-full h-full object-cover" /> : <ImageIcon className="text-white/30 m-auto mt-4" size={24}/>}
                           </div>
+                          <div className="flex-1">
+                            <h4 className="text-white font-bold leading-tight">{item.name}{item.base ? ` (${item.base})` : ''}</h4>
+                            <p className="text-[#f4c430] font-black">${item.price * item.qty}</p>
+                            <button onClick={() => removeFromCart(item.id)} className="text-red-400 hover:text-red-300 text-xs mt-2 underline">Eliminar</button>
+                          </div>
+                          <div className="flex flex-col items-end justify-center">
+                            <div className="flex items-center gap-3 bg-white/10 rounded-full px-2 py-1">
+                              <button onClick={() => updateQty(item.id, -1)} className="text-white hover:text-[#f4c430]"><Minus size={14}/></button>
+                              <span className="text-white font-bold text-sm w-4 text-center">{item.qty}</span>
+                              <button onClick={() => updateQty(item.id, 1)} className="text-white hover:text-[#f4c430]"><Plus size={14}/></button>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="w-full pt-1">
+                          <input 
+                            type="text"
+                            value={item.notas || ''} 
+                            onChange={(e) => updateItemNotes(item.id, e.target.value)}
+                            placeholder="Nota opcional (ej. sin cebolla)"
+                            className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-xs text-white focus:outline-none focus:border-[#f4c430]"
+                          />
                         </div>
                       </div>
                     ))
-                  )}
-                  {cart.length > 0 && (
-                    <div className="space-y-2 mt-4 pt-4 border-t border-white/10">
-                      <label className="text-xs font-bold text-white/80">Notas para tu pedido (Opcional)</label>
-                      <textarea 
-                        value={notas} onChange={(e) => setNotas(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430] min-h-[80px]" 
-                        placeholder="Ej. Gordita regia sin cebolla, sin picante..."
-                      />
-                    </div>
                   )}
                   </>
                 ) : (
@@ -420,8 +428,18 @@ export default function MenuGorditas() {
                         className="w-full bg-[#0f4c81] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430]"
                       >
                         <option value="Efectivo">💵 Efectivo</option>
-                        <option value="Transferencia">🏦 Transferencia (te pasamos los datos por WA)</option>
+                        <option value="Transferencia">🏦 Transferencia</option>
                       </select>
+                      {formaPago === 'Transferencia' && (
+                        <div className="bg-white/10 rounded-lg p-3 text-sm text-white/90 mt-2 space-y-1">
+                          <p className="font-bold text-[#f4c430]">Datos para transferencia:</p>
+                          <p>Banco: <span className="font-bold">[TU BANCO]</span></p>
+                          <p>Cuenta: <span className="font-bold">[TU CUENTA]</span></p>
+                          <p>CLABE: <span className="font-bold">[TU CLABE]</span></p>
+                          <p>A nombre de: <span className="font-bold">[TU NOMBRE]</span></p>
+                          <p className="text-xs mt-2 text-white/70 font-bold">⚠️ Por favor, envíanos el comprobante por WhatsApp al terminar tu pedido.</p>
+                        </div>
+                      )}
                     </div>
 
                   </div>
