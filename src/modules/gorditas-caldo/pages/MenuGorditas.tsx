@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { ShoppingBag, Plus, Minus, Phone, X, ArrowLeft, Image as ImageIcon } from 'lucide-react';
+import { ShoppingBag, Plus, Minus, Phone, X, ArrowLeft, Image as ImageIcon, MapPin, Instagram, Facebook } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { GlobalFooter } from '../../../components/common/GlobalFooter';
 
 // Using high quality Unsplash placeholders for Mexican food
 const MENU_DATA = [
@@ -477,7 +476,51 @@ export default function MenuGorditas() {
           </>
         )}
       </AnimatePresence>
-      <GlobalFooter />
+
+      {/* FOOTER ESPECÍFICO DE GORDITAS */}
+      <footer className="bg-[#0c3960] border-t border-[#f4c430]/20 pt-12 pb-24 px-6 mt-12">
+        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-white">
+          <div className="space-y-4">
+            <h2 className="text-2xl font-black italic tracking-widest text-white" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
+              Gorditas y<br/><span className="text-[#f4c430]">Caldo de Pata</span>
+            </h2>
+            <p className="text-white/60 text-sm max-w-xs">
+              Antojitos mexicanos calientitos, recién hechos y con el mejor sabor tradicional.
+            </p>
+          </div>
+          
+          <div className="space-y-4">
+            <h3 className="font-bold text-[#f4c430] text-lg uppercase tracking-wider">Contáctanos</h3>
+            <div className="space-y-3 text-sm text-white/80">
+              <a href="https://wa.me/525650469993" target="_blank" rel="noreferrer" className="flex items-center gap-3 hover:text-white transition-colors">
+                <Phone size={18} /> 5650469993
+              </a>
+              <div className="flex items-start gap-3">
+                <MapPin size={18} className="shrink-0 mt-0.5" />
+                <span className="leading-snug">Av. Principal #123,<br/>Colonia Centro, C.P. 50000</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="font-bold text-[#f4c430] text-lg uppercase tracking-wider">Síguenos</h3>
+            <div className="flex gap-4">
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[#f4c430] hover:text-black transition-all">
+                <Facebook size={20} />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[#f4c430] hover:text-black transition-all">
+                <Instagram size={20} />
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div className="max-w-4xl mx-auto mt-12 pt-6 border-t border-white/10 text-center">
+          <p className="text-white/30 text-[10px] uppercase tracking-widest">
+            © {new Date().getFullYear()} Gorditas y Caldo de Pata. Todos los derechos reservados.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
