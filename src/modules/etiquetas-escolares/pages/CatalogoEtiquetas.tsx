@@ -383,7 +383,7 @@ export default function CatalogoEtiquetas() {
                         <img 
                           src={imageUrl} 
                           alt={`Diseño ${design.name}`} 
-                          className="w-full h-full object-cover"
+                          className={`w-full h-full ${activeTab.includes('silueta') ? 'object-contain p-4' : 'object-cover'}`}
                           loading="lazy"
                         />
                       </div>
