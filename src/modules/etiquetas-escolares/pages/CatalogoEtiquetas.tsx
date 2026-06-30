@@ -11,7 +11,7 @@ interface LabelDesign {
   name: string;
   folder: string;
   imageFile: string;
-  category?: 'personajes' | 'siluetas';
+  category?: 'personajes' | 'siluetas_nina' | 'siluetas_nino';
 }
 
 const mockData: LabelDesign[] = [
@@ -177,12 +177,79 @@ const mockData: LabelDesign[] = [
   { id: 160, name: "Mirabel", folder: "Mirabel", imageFile: "Etiquetas_Escolares_202.png" },
   { id: 161, name: "Mis Pastelitos", folder: "Mis Pastelitos", imageFile: "Etiquetas_Escolares_191.png" },
   { id: 162, name: "Moana", folder: "Moana", imageFile: "Etiquetas_Escolares_72.png" },
-  { id: 's1', name: "Silueta Ejemplo", folder: "Siluetas", imageFile: "Silueta_1.png", category: "siluetas" }
+  { id: 'snina_0', name: "Silueta 1 Niña", folder: "Silueta Niña", imageFile: "Silueta 1 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_1', name: "Silueta 10 Niña", folder: "Silueta Niña", imageFile: "Silueta 10 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_2', name: "Silueta 11 Niña", folder: "Silueta Niña", imageFile: "Silueta 11 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_3', name: "Silueta 12 Niña", folder: "Silueta Niña", imageFile: "Silueta 12 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_4', name: "Silueta 13 Niña", folder: "Silueta Niña", imageFile: "Silueta 13 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_5', name: "Silueta 14 Niña", folder: "Silueta Niña", imageFile: "Silueta 14 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_6', name: "Silueta 15 Niña", folder: "Silueta Niña", imageFile: "Silueta 15 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_7', name: "Silueta 16 Niña", folder: "Silueta Niña", imageFile: "Silueta 16 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_8', name: "Silueta 17 Niña", folder: "Silueta Niña", imageFile: "Silueta 17 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_9', name: "Silueta 18 Niña", folder: "Silueta Niña", imageFile: "Silueta 18 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_10', name: "Silueta 19 Niña", folder: "Silueta Niña", imageFile: "Silueta 19 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_11', name: "Silueta 2 Niña", folder: "Silueta Niña", imageFile: "Silueta 2 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_12', name: "Silueta 20 Niña", folder: "Silueta Niña", imageFile: "Silueta 20 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_13', name: "Silueta 21 Niña", folder: "Silueta Niña", imageFile: "Silueta 21 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_14', name: "Silueta 22 Niña", folder: "Silueta Niña", imageFile: "Silueta 22 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_15', name: "Silueta 23 Niña", folder: "Silueta Niña", imageFile: "Silueta 23 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_16', name: "Silueta 24 Niña", folder: "Silueta Niña", imageFile: "Silueta 24 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_17', name: "Silueta 25 Niña", folder: "Silueta Niña", imageFile: "Silueta 25 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_18', name: "Silueta 26 Niña", folder: "Silueta Niña", imageFile: "Silueta 26 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_19', name: "Silueta 27 Niña", folder: "Silueta Niña", imageFile: "Silueta 27 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_20', name: "Silueta 28 Niña", folder: "Silueta Niña", imageFile: "Silueta 28 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_21', name: "Silueta 29Niña", folder: "Silueta Niña", imageFile: "Silueta 29Niña.png", category: "siluetas_nina" },
+  { id: 'snina_22', name: "Silueta 3 Niña", folder: "Silueta Niña", imageFile: "Silueta 3 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_23', name: "Silueta 30 Niña", folder: "Silueta Niña", imageFile: "Silueta 30 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_24', name: "Silueta 31 Niña", folder: "Silueta Niña", imageFile: "Silueta 31 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_25', name: "Silueta 32 Niña", folder: "Silueta Niña", imageFile: "Silueta 32 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_26', name: "Silueta 33 Niña", folder: "Silueta Niña", imageFile: "Silueta 33 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_27', name: "Silueta 34 Niña", folder: "Silueta Niña", imageFile: "Silueta 34 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_28', name: "Silueta 35 Niña", folder: "Silueta Niña", imageFile: "Silueta 35 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_29', name: "Silueta 37 Niña", folder: "Silueta Niña", imageFile: "Silueta 37 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_30', name: "Silueta 38 Niña", folder: "Silueta Niña", imageFile: "Silueta 38 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_31', name: "Silueta 39 Niña", folder: "Silueta Niña", imageFile: "Silueta 39 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_32', name: "Silueta 4 Niña", folder: "Silueta Niña", imageFile: "Silueta 4 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_33', name: "Silueta 40 Niña", folder: "Silueta Niña", imageFile: "Silueta 40 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_34', name: "Silueta 41 Niña", folder: "Silueta Niña", imageFile: "Silueta 41 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_35', name: "Silueta 42 Niña", folder: "Silueta Niña", imageFile: "Silueta 42 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_36', name: "Silueta 43 Niña", folder: "Silueta Niña", imageFile: "Silueta 43 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_37', name: "Silueta 44 Niña", folder: "Silueta Niña", imageFile: "Silueta 44 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_38', name: "Silueta 45 Niña", folder: "Silueta Niña", imageFile: "Silueta 45 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_39', name: "Silueta 46 Niña", folder: "Silueta Niña", imageFile: "Silueta 46 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_40', name: "Silueta 47 Niña", folder: "Silueta Niña", imageFile: "Silueta 47 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_41', name: "Silueta 48 Niña", folder: "Silueta Niña", imageFile: "Silueta 48 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_42', name: "Silueta 49 Niña", folder: "Silueta Niña", imageFile: "Silueta 49 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_43', name: "Silueta 5 Niña", folder: "Silueta Niña", imageFile: "Silueta 5 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_44', name: "Silueta 50 Niña", folder: "Silueta Niña", imageFile: "Silueta 50 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_45', name: "Silueta 51 Niña", folder: "Silueta Niña", imageFile: "Silueta 51 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_46', name: "Silueta 52 Niña", folder: "Silueta Niña", imageFile: "Silueta 52 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_47', name: "Silueta 53 Niña", folder: "Silueta Niña", imageFile: "Silueta 53 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_48', name: "Silueta 54 Niña", folder: "Silueta Niña", imageFile: "Silueta 54 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_49', name: "Silueta 55 Niña", folder: "Silueta Niña", imageFile: "Silueta 55 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_50', name: "Silueta 56 Niña", folder: "Silueta Niña", imageFile: "Silueta 56 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_51', name: "Silueta 57 Niña", folder: "Silueta Niña", imageFile: "Silueta 57 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_52', name: "Silueta 58 Niña", folder: "Silueta Niña", imageFile: "Silueta 58 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_53', name: "Silueta 59 Niña", folder: "Silueta Niña", imageFile: "Silueta 59 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_54', name: "Silueta 6 Niña", folder: "Silueta Niña", imageFile: "Silueta 6 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_55', name: "Silueta 60 Niña", folder: "Silueta Niña", imageFile: "Silueta 60 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_56', name: "Silueta 61 Niña", folder: "Silueta Niña", imageFile: "Silueta 61 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_57', name: "Silueta 62 Niña", folder: "Silueta Niña", imageFile: "Silueta 62 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_58', name: "Silueta 63  Niña", folder: "Silueta Niña", imageFile: "Silueta 63  Niña.png", category: "siluetas_nina" },
+  { id: 'snina_59', name: "Silueta 64 Niña", folder: "Silueta Niña", imageFile: "Silueta 64 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_60', name: "Silueta 65 Niña", folder: "Silueta Niña", imageFile: "Silueta 65 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_61', name: "Silueta 66 Niña", folder: "Silueta Niña", imageFile: "Silueta 66 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_62', name: "Silueta 67 Niña", folder: "Silueta Niña", imageFile: "Silueta 67 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_63', name: "Silueta 68 Niña", folder: "Silueta Niña", imageFile: "Silueta 68 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_64', name: "Silueta 69 Niña", folder: "Silueta Niña", imageFile: "Silueta 69 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_65', name: "Silueta 7 Niña", folder: "Silueta Niña", imageFile: "Silueta 7 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_66', name: "Silueta 8 Niña", folder: "Silueta Niña", imageFile: "Silueta 8 Niña.png", category: "siluetas_nina" },
+  { id: 'snina_67', name: "Silueta 9 Niña", folder: "Silueta Niña", imageFile: "Silueta 9 Niña.png", category: "siluetas_nina" }
 ];
 
 export default function CatalogoEtiquetas() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'personajes' | 'siluetas'>('personajes');
+  const [activeTab, setActiveTab] = useState<'personajes' | 'siluetas_nina' | 'siluetas_nino'>('personajes');
 
   // Modal state
   const [selectedDesign, setSelectedDesign] = useState<string | null>(null);
@@ -244,7 +311,7 @@ export default function CatalogoEtiquetas() {
           </div>
 
           {/* Tabs */}
-          <div className="mt-8 flex justify-center gap-4">
+          <div className="mt-8 flex justify-center gap-4 flex-wrap">
             <button
               onClick={() => setActiveTab('personajes')}
               className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-colors ${
@@ -256,14 +323,24 @@ export default function CatalogoEtiquetas() {
               Personajes
             </button>
             <button
-              onClick={() => setActiveTab('siluetas')}
+              onClick={() => setActiveTab('siluetas_nina')}
               className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-colors ${
-                activeTab === 'siluetas' 
+                activeTab === 'siluetas_nina' 
                   ? 'bg-blue-600 text-white shadow-md' 
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              Siluetas de Nombres
+              Siluetas Niñas
+            </button>
+            <button
+              onClick={() => setActiveTab('siluetas_nino')}
+              className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-colors ${
+                activeTab === 'siluetas_nino' 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Siluetas Niños
             </button>
           </div>
         </div>
