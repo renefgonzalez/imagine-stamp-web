@@ -545,7 +545,7 @@ export default function CorteLaserCatalog() {
                     <h3 className="font-bold text-lg text-white">Datos de Entrega</h3>
                   </div>
                   
-                    {/* Resumen compacto de Sahumerio */}
+                    {/* Resumen compacto del pedido */}
                     <div className="bg-gray-800 rounded-xl p-4 border border-gray-700 mb-6 mx-4">
                       {cart.map(item => (
                         <div key={item.id} className="flex justify-between text-xs py-1">
