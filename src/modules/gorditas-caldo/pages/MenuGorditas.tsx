@@ -194,10 +194,10 @@ export default function MenuGorditas() {
     <div className="min-h-screen font-sans" style={{ background: 'linear-gradient(to bottom, #0f4c81, #1b365d)' }}>
       
       {/* HEADER */}
-      <header className="sticky top-0 z-40 bg-[#3d0309]/90 backdrop-blur-md border-b border-white/10 shadow-lg px-4 py-4 flex justify-between items-center">
+      <header className="sticky top-0 z-40 bg-[#0f4c81]/90 backdrop-blur-md border-b border-white/10 shadow-lg px-4 py-4 flex justify-between items-center">
         <div>
           <h1 className="text-2xl md:text-3xl font-black text-white italic tracking-widest" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>Gorditas y Caldo de Pata</h1>
-          <p className="text-[#ffff99] text-xs font-bold uppercase tracking-[0.2em]">Antojitos Mexicanos</p>
+          <p className="text-[#f4c430] text-xs font-bold uppercase tracking-[0.2em]">Antojitos Mexicanos</p>
         </div>
         
         <button 
@@ -218,7 +218,7 @@ export default function MenuGorditas() {
         <div className="space-y-12">
           {MENU_DATA.map((section, idx) => (
             <section key={idx} className="bg-black/20 rounded-3xl p-6 md:p-8 border border-white/5 backdrop-blur-sm">
-              <h2 className="text-3xl md:text-4xl font-black mb-2 text-center" style={{ color: '#ffff99', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
+              <h2 className="text-3xl md:text-4xl font-black mb-2 text-center" style={{ color: '#f4c430', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
                 {section.category}
               </h2>
               {section.description && (
@@ -254,10 +254,10 @@ export default function MenuGorditas() {
                       )}
                       
                       <div className="flex items-center gap-3">
-                        <span className="text-[#ffff99] font-black text-lg">${item.price}</span>
+                        <span className="text-[#f4c430] font-black text-lg">${item.price}</span>
                         <button 
                           onClick={() => addToCart(item, section.category)}
-                          className="w-10 h-10 rounded-full bg-[#ffff99] flex items-center justify-center hover:bg-[#e6e68a] text-black transition-colors shadow-lg"
+                          className="w-10 h-10 rounded-full bg-[#f4c430] flex items-center justify-center hover:bg-[#e0b220] text-black transition-colors shadow-lg"
                         >
                           <Plus size={20} />
                         </button>
@@ -293,14 +293,14 @@ export default function MenuGorditas() {
             <motion.div 
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 right-0 w-full md:w-[420px] bg-[#5b0811] shadow-2xl z-50 flex flex-col border-l border-white/10"
+              className="fixed inset-y-0 right-0 w-full md:w-[420px] bg-[#1b365d] shadow-2xl z-50 flex flex-col border-l border-white/10"
             >
-              <div className="p-4 border-b border-white/10 flex justify-between items-center bg-[#3d0309]">
+              <div className="p-4 border-b border-white/10 flex justify-between items-center bg-[#0f4c81]">
                 <h2 className="text-xl font-black text-white flex items-center gap-2">
                   {cartStep === 'details' ? (
                     <button onClick={() => setCartStep('cart')} className="hover:bg-white/10 p-1 rounded-full text-white"><ArrowLeft size={20}/></button>
                   ) : (
-                    <ShoppingBag className="text-[#ffff99]" /> 
+                    <ShoppingBag className="text-[#f4c430]" /> 
                   )}
                   {cartStep === 'cart' ? 'Tu Pedido' : 'Datos de Entrega'}
                 </h2>
@@ -325,14 +325,14 @@ export default function MenuGorditas() {
                         </div>
                         <div className="flex-1">
                           <h4 className="text-white font-bold leading-tight">{item.name}</h4>
-                          <p className="text-[#ffff99] font-black">${item.price * item.qty}</p>
+                          <p className="text-[#f4c430] font-black">${item.price * item.qty}</p>
                           <button onClick={() => removeFromCart(item.id)} className="text-red-400 hover:text-red-300 text-xs mt-2 underline">Eliminar</button>
                         </div>
                         <div className="flex flex-col items-end justify-center">
                           <div className="flex items-center gap-3 bg-white/10 rounded-full px-2 py-1">
-                            <button onClick={() => updateQty(item.id, -1)} className="text-white hover:text-[#ffff99]"><Minus size={14}/></button>
+                            <button onClick={() => updateQty(item.id, -1)} className="text-white hover:text-[#f4c430]"><Minus size={14}/></button>
                             <span className="text-white font-bold text-sm w-4 text-center">{item.qty}</span>
-                            <button onClick={() => updateQty(item.id, 1)} className="text-white hover:text-[#ffff99]"><Plus size={14}/></button>
+                            <button onClick={() => updateQty(item.id, 1)} className="text-white hover:text-[#f4c430]"><Plus size={14}/></button>
                           </div>
                         </div>
                       </div>
@@ -343,13 +343,13 @@ export default function MenuGorditas() {
                   <div className="space-y-4 text-white">
                     <div className="flex bg-white/10 rounded-lg p-1">
                       <button 
-                        className={`flex-1 py-2 text-sm font-bold rounded-md ${metodoEntrega === 'recoger' ? 'bg-[#ffff99] text-black shadow' : 'text-white/60'}`}
+                        className={`flex-1 py-2 text-sm font-bold rounded-md ${metodoEntrega === 'recoger' ? 'bg-[#f4c430] text-black shadow' : 'text-white/60'}`}
                         onClick={() => setMetodoEntrega('recoger')}
                       >
                         🏪 Paso a recoger
                       </button>
                       <button 
-                        className={`flex-1 py-2 text-sm font-bold rounded-md ${metodoEntrega === 'domicilio' ? 'bg-[#ffff99] text-black shadow' : 'text-white/60'}`}
+                        className={`flex-1 py-2 text-sm font-bold rounded-md ${metodoEntrega === 'domicilio' ? 'bg-[#f4c430] text-black shadow' : 'text-white/60'}`}
                         onClick={() => setMetodoEntrega('domicilio')}
                       >
                         🛵 Envío a domicilio
@@ -361,7 +361,7 @@ export default function MenuGorditas() {
                       <input 
                         type="text" 
                         value={nombre} onChange={e => setNombre(e.target.value)}
-                        className={`w-full bg-white/5 border ${errors.nombre ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-[#ffff99]`} 
+                        className={`w-full bg-white/5 border ${errors.nombre ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430]`} 
                         placeholder="Ej: Juan Pérez"
                       />
                     </div>
@@ -371,7 +371,7 @@ export default function MenuGorditas() {
                       <input 
                         type="tel" 
                         value={telefono} onChange={e => setTelefono(e.target.value)}
-                        className={`w-full bg-white/5 border ${errors.telefono ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-[#ffff99]`} 
+                        className={`w-full bg-white/5 border ${errors.telefono ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430]`} 
                         placeholder="10 dígitos"
                       />
                     </div>
@@ -383,7 +383,7 @@ export default function MenuGorditas() {
                           <input 
                             type="text" 
                             value={calle} onChange={e => setCalle(e.target.value)}
-                            className={`w-full bg-white/5 border ${errors.calle ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-[#ffff99]`} 
+                            className={`w-full bg-white/5 border ${errors.calle ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430]`} 
                             placeholder="Ej. Zaragoza 123"
                           />
                         </div>
@@ -392,7 +392,7 @@ export default function MenuGorditas() {
                           <input 
                             type="text" 
                             value={colonia} onChange={e => setColonia(e.target.value)}
-                            className={`w-full bg-white/5 border ${errors.colonia ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-[#ffff99]`} 
+                            className={`w-full bg-white/5 border ${errors.colonia ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430]`} 
                             placeholder="Ej. Centro"
                           />
                         </div>
@@ -403,7 +403,7 @@ export default function MenuGorditas() {
                       <label className="text-xs font-bold text-white/80">Forma de Pago*</label>
                       <select 
                         value={formaPago} onChange={e => setFormaPago(e.target.value)}
-                        className="w-full bg-[#3d0309] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-[#ffff99]"
+                        className="w-full bg-[#0f4c81] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430]"
                       >
                         <option value="Efectivo">💵 Efectivo</option>
                         <option value="Transferencia">🏦 Transferencia (te pasamos los datos por WA)</option>
@@ -414,7 +414,7 @@ export default function MenuGorditas() {
                       <label className="text-xs font-bold text-white/80">Comentarios (Opcional)</label>
                       <textarea 
                         value={notas} onChange={e => setNotas(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-[#ffff99] min-h-[80px]" 
+                        className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430] min-h-[80px]" 
                         placeholder="Ej. Sin verdura, sin cebolla..."
                       />
                     </div>
@@ -423,16 +423,16 @@ export default function MenuGorditas() {
               </div>
 
               {cart.length > 0 && (
-                <div className="p-6 bg-[#3d0309] border-t border-white/10">
+                <div className="p-6 bg-[#0f4c81] border-t border-white/10">
                   <div className="flex justify-between items-center mb-6">
                     <span className="text-white/80 font-bold uppercase tracking-wider">Total</span>
-                    <span className="text-3xl font-black text-[#ffff99]">${cartTotal}</span>
+                    <span className="text-3xl font-black text-[#f4c430]">${cartTotal}</span>
                   </div>
                   
                   {cartStep === 'cart' ? (
                     <button 
                       onClick={handleSiguiente}
-                      className="w-full bg-[#ffff99] hover:bg-[#e6e68a] text-black font-black py-4 rounded-xl flex justify-center items-center gap-2 transition-colors text-lg"
+                      className="w-full bg-[#f4c430] hover:bg-[#e0b220] text-black font-black py-4 rounded-xl flex justify-center items-center gap-2 transition-colors text-lg"
                     >
                       Siguiente - Datos de Entrega
                     </button>
