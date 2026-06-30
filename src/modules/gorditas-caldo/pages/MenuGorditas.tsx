@@ -5,74 +5,86 @@ import { motion, AnimatePresence } from 'motion/react';
 // Using high quality Unsplash placeholders for Mexican food
 const MENU_DATA = [
   {
-    category: 'Pozole',
-    description: 'Verde: Auténtica receta guerrerense a base de semilla de pipián.\nRojo: Guisado con Chile guajillo, inigualable sabor.\nBlanco: Elaborado de la forma tradicional artesanal 100%.',
+    category: 'Tradicionales',
+    description: 'Gorditas de maíz o harina. $55 MXN c/u.',
     items: [
-      { id: 'poz-1', name: 'Pozole Mini', price: 85, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=200' },
-      { id: 'poz-2', name: 'Pozole Chico', price: 110, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=200' },
-      { id: 'poz-3', name: 'Pozole Grande', price: 160, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=200' },
-      { id: 'poz-4', name: 'Para llevar (Litro)', price: 150, img: 'https://images.unsplash.com/photo-1596624021204-7476831d2ba3?q=80&w=200' },
-      { id: 'poz-5', name: 'Para llevar (Medio Litro)', price: 80, img: 'https://images.unsplash.com/photo-1596624021204-7476831d2ba3?q=80&w=200' },
+      { id: 'trad-1', name: 'Regia', desc: 'Rellena de carne Arrachera, frijoles refritos, guacamole o pico de gallo', price: 55 },
+      { id: 'trad-2', name: 'Banquetera', desc: 'Rellena de Bistec, Cecina, Longaniza o Campechana, papas a la francesa, rajas y cebolla', price: 55 },
+      { id: 'trad-3', name: 'Michoacana', desc: 'Rellena de carnitas de puerco Maciza, cuerito o buche, cebolla y cilantro', price: 55 },
+      { id: 'trad-4', name: 'Mestiza', desc: 'Rellena de Mixiote de res, frijoles refritos, nopales, cebolla encurtida o salsa', price: 55 },
+      { id: 'trad-5', name: 'Tapatía', desc: 'Rellena de Birria de res, quesillo, cebolla, cilantro y salsa', price: 55 },
     ]
   },
   {
-    category: 'Extras',
-    description: 'Complementa tu platillo.',
+    category: 'Taqueras',
+    description: 'Gordita de maíz rellena de tu carne favorita. $50 MXN c/u.',
     items: [
-      { id: 'ext-1', name: 'Tostadas', price: 40, img: 'https://images.unsplash.com/photo-1615486171448-4fd93b6831d1?q=80&w=200' },
-      { id: 'ext-2', name: 'Aguacate', price: 45, img: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?q=80&w=200' },
-      { id: 'ext-3', name: 'Crema', price: 30 },
-      { id: 'ext-4', name: 'Queso', price: 35, img: 'https://images.unsplash.com/photo-1631452296720-334da839db99?q=80&w=200' },
-      { id: 'ext-5', name: 'Carne (Pollo o Puerco)', price: 35 },
-      { id: 'ext-6', name: 'Chicharrón (Duro)', price: 40 },
-      { id: 'ext-7', name: 'Consomé', price: 40 },
+      { id: 'taq-1', name: 'Cabeza (surtida)', desc: 'Gordita de maíz rellena de cabeza', price: 50 },
+      { id: 'taq-2', name: 'Suadero', desc: 'Gordita de maíz rellena de suadero', price: 50 },
+      { id: 'taq-3', name: 'Tripa', desc: 'Gordita de maíz rellena de tripa', price: 50 },
+      { id: 'taq-4', name: 'Chorizo', desc: 'Gordita de maíz rellena de chorizo', price: 50 },
+      { id: 'taq-5', name: 'Campechana', desc: 'Gordita de maíz rellena de campechana', price: 50 },
     ]
   },
   {
-    category: 'Antojitos',
+    category: 'Al Comal',
+    description: 'Gordita de maíz calientita. $45 MXN c/u.',
+    items: [
+      { id: 'com-1', name: 'Bistec', desc: 'Gordita de maíz rellena de bistec', price: 45 },
+      { id: 'com-2', name: 'Costilla', desc: 'Gordita de maíz rellena de costilla', price: 45 },
+      { id: 'com-3', name: 'Chuleta', desc: 'Gordita de maíz rellena de chuleta', price: 45 },
+      { id: 'com-4', name: 'Entrecot', desc: 'Gordita de maíz rellena de entrecot', price: 45 },
+    ]
+  },
+  {
+    category: 'Torteras',
+    description: 'Gordita de maíz o harina con quesillo. Sencillas $45, Combinadas $55.',
+    items: [
+      { id: 'tor-1', name: 'Pierna', desc: 'Con quesillo', price: 45 },
+      { id: 'tor-2', name: 'Jamón', desc: 'Con quesillo', price: 45 },
+      { id: 'tor-3', name: 'Milanesa', desc: 'Con quesillo', price: 45 },
+      { id: 'tor-4', name: 'Huevo', desc: 'Con quesillo', price: 45 },
+      { id: 'tor-5', name: 'Combinada (Elegir 2)', desc: 'Con quesillo', price: 55 },
+    ]
+  },
+  {
+    category: 'Infantil',
+    description: 'Para los más peques de la casa.',
+    items: [
+      { id: 'inf-1', name: 'Abuelita', desc: 'Gordita de maíz mezclada con piloncillo, anís y canela', price: 10 },
+      { id: 'inf-2', name: 'Hawaiana', desc: 'Gordita de harina rellena de jamón, piña y quesillo', price: 15 },
+      { id: 'inf-3', name: 'Napolitana', desc: 'Gordita de harina rellena de milanesa, queso y piña', price: 20 },
+      { id: 'inf-4', name: 'Gordiburger', desc: 'Gordita de maíz rellena de hamburguesa, tocino, queso, papas a la francesa', price: 60 },
+    ]
+  },
+  {
+    category: 'Contemporánea',
+    description: 'Gordita de maíz o harina. $40 MXN c/u (Chicharrón clásico $30).',
+    items: [
+      { id: 'con-1', name: 'Chicharrón rojo', desc: '', price: 40 },
+      { id: 'con-2', name: 'Tinga de res', desc: '', price: 40 },
+      { id: 'con-3', name: 'Tinga de pollo', desc: '', price: 40 },
+      { id: 'con-4', name: 'Flor de calabaza', desc: '', price: 40 },
+      { id: 'con-5', name: 'Queso con rajas', desc: '', price: 40 },
+      { id: 'con-6', name: 'Chicharrón clásico', desc: '', price: 30 },
+    ]
+  },
+  {
+    category: 'Especiales',
+    description: 'Nuestra especialidad.',
+    items: [
+      { id: 'esp-1', name: 'Caldo de Pata', desc: 'Pata con chamorro de res enchilada, garbanzo, arroz, tortillas y salsa', price: 120 },
+    ]
+  },
+  {
+    category: 'Bebidas y Extras',
     description: '',
     items: [
-      { id: 'ant-1', name: 'Pieza de Tostada', desc: 'Pollo, puerco, tinga, cueritos o pata', price: 90, img: 'https://images.unsplash.com/photo-1615486171448-4fd93b6831d1?q=80&w=200' },
-      { id: 'ant-2', name: 'Chalupas (5 piezas)', desc: 'Pollo, puerco o tinga', price: 105, img: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=200' },
-      { id: 'ant-3', name: 'Enchiladas Rojas (4 piezas)', desc: 'Pollo, queso o papa', price: 125, img: 'https://images.unsplash.com/photo-1584347209700-1c3906a20bc2?q=80&w=200' },
-      { id: 'ant-4', name: 'Enchiladas Verdes (4 piezas)', desc: 'Pollo, queso o papa', price: 130, img: 'https://images.unsplash.com/photo-1584347209700-1c3906a20bc2?q=80&w=200' },
-      { id: 'ant-5', name: 'Enchiladas Con Consomé', desc: 'Rojas, pollo, queso o papa', price: 155, img: 'https://images.unsplash.com/photo-1584347209700-1c3906a20bc2?q=80&w=200' },
-      { id: 'ant-6', name: 'Enchiladas Suizas (4 piezas)', desc: 'Pollo, queso o papa', price: 170, img: 'https://images.unsplash.com/photo-1584347209700-1c3906a20bc2?q=80&w=200' },
-      { id: 'ant-7', name: 'Enmoladas (4 piezas)', desc: 'Pollo, queso o papa', price: 160 },
-      { id: 'ant-8', name: 'Flautas (5 piezas)', desc: 'Pollo, papa o requesón', price: 95, img: 'https://images.unsplash.com/photo-1615486171448-4fd93b6831d1?q=80&w=200' },
-      { id: 'ant-9', name: 'Flautas con consomé (5 piezas)', desc: 'Pollo, papa o requesón', price: 130 },
-      { id: 'ant-10', name: 'Sopes (3 piezas)', desc: 'Pollo, puerco, tinga y papa', price: 120, img: 'https://images.unsplash.com/photo-1515443961218-a51367888e4b?q=80&w=200' },
-    ]
-  },
-  {
-    category: 'Mixtos',
-    description: 'Combinaciones perfectas.',
-    items: [
-      { id: 'mix-1', name: 'Mixto 1', desc: '2 Chalupas, 2 Flautas, 1 Tostada', price: 165, img: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=200' },
-      { id: 'mix-2', name: 'Mixto 2', desc: '2 Enchiladas, 2 Flautas, 1 Tostada', price: 165 },
-      { id: 'mix-3', name: 'Mixto 3', desc: '2 Enchiladas, 2 Flautas, 2 Chalupas, 1 Tostada', price: 195 },
-      { id: 'mix-4', name: 'Mixto 4', desc: '2 Enchiladas Rojas, 2 Verdes y 2 Enmoladas', price: 210 },
-    ]
-  },
-  {
-    category: 'Bebidas',
-    description: '',
-    items: [
-      { id: 'beb-1', name: 'Refrescos', price: 45, img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=200' },
-      { id: 'beb-2', name: 'Yoli', price: 75, img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=200' },
-      { id: 'beb-3', name: 'Café o té', price: 35, img: 'https://images.unsplash.com/photo-1559525839-b184a4d698c7?q=80&w=200' },
-      { id: 'beb-4', name: 'Agua Fresca (Vaso)', price: 45, img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=200' },
-      { id: 'beb-5', name: 'Agua Fresca (Litro)', price: 90, img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=200' },
-      { id: 'beb-6', name: 'Agua Fresca (Jarra 2 Litros)', price: 140, img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=200' },
-    ]
-  },
-  {
-    category: 'Postres',
-    description: '',
-    items: [
-      { id: 'pos-1', name: 'Flan Napolitano', price: 75, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=200' },
-      { id: 'pos-2', name: 'Elote y Vainilla', price: 55, img: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?q=80&w=200' },
-      { id: 'pos-3', name: 'Arroz con leche', price: 55, img: 'https://images.unsplash.com/photo-1633519895085-f855e97669b7?q=80&w=200' },
+      { id: 'beb-1', name: 'Agua', desc: '', price: 25 },
+      { id: 'beb-2', name: 'Tepache', desc: '', price: 30 },
+      { id: 'beb-3', name: 'Refresco', desc: '', price: 28 },
+      { id: 'beb-4', name: 'Cerveza', desc: '', price: 50 },
+      { id: 'ext-1', name: 'Ingredientes extra', desc: '', price: 15 },
     ]
   }
 ];
@@ -152,7 +164,7 @@ export default function MenuGorditas() {
       lineas += `• ${item.qty}x ${item.name} - $${item.price * item.qty}\n`;
     });
     
-    let mensaje = `🍲 *NUEVO PEDIDO - LA CHILAPEÑA*\n\n`;
+    let mensaje = `🍲 *NUEVO PEDIDO - GORDITAS Y CALDO DE PATA*\n\n`;
     mensaje += `👤 *Cliente:* ${nombre}\n`;
     mensaje += `📱 *Teléfono:* ${telefono}\n`;
     
@@ -183,8 +195,8 @@ export default function MenuGorditas() {
       {/* HEADER */}
       <header className="sticky top-0 z-40 bg-[#0f4c81]/90 backdrop-blur-md border-b border-white/10 shadow-lg px-4 py-4 flex justify-between items-center">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-white italic tracking-widest" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>La Chilapeña</h1>
-          <p className="text-[#f4c430] text-xs font-bold uppercase tracking-[0.2em]">Pozolería Tradicional</p>
+          <h1 className="text-2xl md:text-3xl font-black text-white italic tracking-widest" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>Gorditas y Caldo de Pata</h1>
+          <p className="text-[#f4c430] text-xs font-bold uppercase tracking-[0.2em]">Antojitos Mexicanos</p>
         </div>
         
         <button 
@@ -214,34 +226,22 @@ export default function MenuGorditas() {
                 </p>
               )}
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-3">
                 {section.items.map(item => (
-                  <div key={item.id} className="bg-white/5 hover:bg-white/10 border border-white/10 p-4 rounded-2xl flex gap-4 transition-colors">
-                    {/* Item Image */}
-                    <div className="w-20 h-20 bg-white/10 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
-                      {item.img ? (
-                        <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <ImageIcon className="text-white/30" size={32} />
-                      )}
+                  <div key={item.id} className="bg-white/5 rounded-xl border border-white/10 hover:border-white/30 transition-all p-4 flex justify-between items-center">
+                    <div className="flex-1 pr-4">
+                      <h3 className="font-bold text-white text-lg">{item.name}</h3>
+                      {item.desc && <p className="text-sm text-white/60 leading-snug mt-1">{item.desc}</p>}
                     </div>
                     
-                    {/* Item Details */}
-                    <div className="flex-1 flex flex-col justify-between">
-                      <div>
-                        <h3 className="text-white font-bold text-lg leading-tight">{item.name}</h3>
-                        {item.desc && <p className="text-white/60 text-xs mt-1">{item.desc}</p>}
-                      </div>
-                      
-                      <div className="flex justify-between items-end mt-2">
-                        <span className="text-[#f4c430] font-black text-lg">${item.price.toFixed(2)}</span>
-                        <button 
-                          onClick={() => addToCart(item)}
-                          className="bg-white/10 hover:bg-[#f4c430] hover:text-black text-white p-2 rounded-full transition-colors shadow-sm"
-                        >
-                          <Plus size={18} />
-                        </button>
-                      </div>
+                    <div className="flex items-center gap-4 shrink-0">
+                      <span className="text-[#f4c430] font-black text-lg">${item.price}</span>
+                      <button 
+                        onClick={() => addToCart(item)}
+                        className="w-10 h-10 rounded-full bg-[#f4c430] flex items-center justify-center hover:bg-[#e0b220] text-black transition-colors shadow-lg"
+                      >
+                        <Plus size={20} />
+                      </button>
                     </div>
                   </div>
                 ))}
