@@ -14,7 +14,7 @@ import DemoMenu from './modules/demo-menu/pages/DemoMenu';
 import CorteLaserCatalog from './modules/corte-laser/pages/CorteLaserCatalog';
 import CorteLaserAdmin from './modules/corte-laser/pages/CorteLaserAdmin';
 import DigitalDownload from './modules/corte-laser/pages/DigitalDownload';
-import ChilapenaMenu from './modules/pozoleria-chilapena/pages/ChilapenaMenu';
+import MenuGorditas from './modules/gorditas-caldo/pages/MenuGorditas';
 import PaleteriaMenu from './modules/paleteria/pages/PaleteriaMenu';
 import CatalogoEtiquetas from './modules/etiquetas-escolares/pages/CatalogoEtiquetas';
 
@@ -733,8 +733,7 @@ export default function App() {
         <Route path="/corte-laser" element={<ErrorBoundary><CorteLaserCatalog /></ErrorBoundary>} />
         <Route path="/corte-laser-admin" element={<ErrorBoundary><CorteLaserAdmin /></ErrorBoundary>} />
         <Route path="/descarga/:token" element={<ErrorBoundary><DigitalDownload /></ErrorBoundary>} />
-        <Route path="/la-chilapena" element={<ErrorBoundary><ChilapenaMenu /></ErrorBoundary>} />
-        <Route path="/la-chilapeña" element={<ErrorBoundary><ChilapenaMenu /></ErrorBoundary>} />
+        <Route path="/gorditas-y-caldo" element={<ErrorBoundary><MenuGorditas /></ErrorBoundary>} />
         <Route path="/paleteria" element={<ErrorBoundary><PaleteriaMenu /></ErrorBoundary>} />
         <Route path="/etiquetas-escolares" element={<ErrorBoundary><CatalogoEtiquetas /></ErrorBoundary>} />
       </Routes>

@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ShoppingBag, Plus, Minus, Phone, X, ArrowLeft, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -77,7 +77,7 @@ const MENU_DATA = [
   }
 ];
 
-export default function ChilapenaMenu() {
+export default function MenuGorditas() {
   const [cart, setCart] = useState<any[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartStep, setCartStep] = useState<'cart' | 'details'>('cart');
