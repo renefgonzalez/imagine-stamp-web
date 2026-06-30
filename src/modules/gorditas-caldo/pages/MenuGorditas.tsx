@@ -162,7 +162,7 @@ export default function MenuGorditas() {
     
     let lineas = "";
     cart.forEach(item => {
-      lineas += `• ${item.qty}x ${item.name} - $${item.price * item.qty}\n`;
+      lineas += `• ${item.qty}x ${item.name}${item.base ? ' (En ' + item.base + ')' : ''} - $${item.price * item.qty}\n`;
     });
     
     let mensaje = `🍲 *NUEVO PEDIDO - GORDITAS Y CALDO DE PATA*\n\n`;
@@ -178,15 +178,17 @@ export default function MenuGorditas() {
 
     mensaje += `\n🧾 *Pedido:*\n${lineas}`;
     mensaje += `\n💰 *Total a pagar:* $${cartTotal}\n`;
-    mensaje += `💳 *Pago:* ${formaPago}\n`;
     
-    if (notas.trim()) mensaje += `\n🗒️ *Notas:* ${notas.trim()}\n`;
+    if (notas.trim()) {
+      mensaje += `\n📝 *Notas para cocina:*\n${notas.trim()}\n`;
+    }
 
+    mensaje += `💳 *Pago:* ${formaPago}\n`;
     mensaje += `\n¿Me podrían confirmar mi pedido, por favor?`;
     
-    const phone = '5214779784805';
-    const url = `https://wa.me/${phone}?text=${encodeURIComponent(mensaje)}`;
-    window.open(url, '_blank');
+    const encoded = encodeURIComponent(mensaje);
+    window.open(`https://wa.me/5214779784805?text=${encoded}`, '_blank');
+    setCart([]);
     setIsCartOpen(false);
   };
 
@@ -337,7 +339,18 @@ export default function MenuGorditas() {
                         </div>
                       </div>
                     ))
-                  )
+                  )}
+                  {cart.length > 0 && (
+                    <div className="space-y-2 mt-4 pt-4 border-t border-white/10">
+                      <label className="text-xs font-bold text-white/80">Notas para tu pedido (Opcional)</label>
+                      <textarea 
+                        value={notas} onChange={e => setNotas(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430] min-h-[80px]" 
+                        placeholder="Ej. Gordita regia sin cebolla, sin picante..."
+                      />
+                    </div>
+                  )}
+                </>
                 ) : (
                   /* STEP 2: CHECKOUT DETAILS */
                   <div className="space-y-4 text-white">
@@ -410,14 +423,6 @@ export default function MenuGorditas() {
                       </select>
                     </div>
 
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-white/80">Comentarios (Opcional)</label>
-                      <textarea 
-                        value={notas} onChange={e => setNotas(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430] min-h-[80px]" 
-                        placeholder="Ej. Sin verdura, sin cebolla..."
-                      />
-                    </div>
                   </div>
                 )}
               </div>
