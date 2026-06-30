@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ShoppingBag, Plus, Minus, Phone, X, ArrowLeft, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { GlobalFooter } from '../../components/common/GlobalFooter';
 
 // Using high quality Unsplash placeholders for Mexican food
 const MENU_DATA = [
@@ -476,6 +477,7 @@ export default function MenuGorditas() {
           </>
         )}
       </AnimatePresence>
+      <GlobalFooter />
     </div>
   );
 }
