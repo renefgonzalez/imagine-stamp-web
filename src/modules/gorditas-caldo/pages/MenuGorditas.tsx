@@ -107,7 +107,7 @@ export default function MenuGorditas() {
   // Cart operations
   const addToCart = (item: any, category: string) => {
     let base = undefined;
-    if (category !== 'Especiales' && category !== 'Bebidas y Extras') {
+    if (!['Especiales', 'Bebidas y Extras', 'Infantil'].includes(category)) {
       base = selectedBases[item.id] || 'Maíz';
     }
     const cartItemId = base ? `${item.id}-${base}` : item.id;
@@ -246,7 +246,7 @@ export default function MenuGorditas() {
                     </div>
                     
                     <div className="flex flex-col md:flex-row items-end md:items-center gap-3 md:gap-4 shrink-0 mt-3 md:mt-0">
-                      {!['Especiales', 'Bebidas y Extras'].includes(section.category) && (
+                      {!['Especiales', 'Bebidas y Extras', 'Infantil'].includes(section.category) && (
                         <div className="flex bg-black/40 rounded-full p-1 border border-white/20">
                           <button 
                             onClick={() => setSelectedBases({...selectedBases, [item.id]: 'Maíz'})}
