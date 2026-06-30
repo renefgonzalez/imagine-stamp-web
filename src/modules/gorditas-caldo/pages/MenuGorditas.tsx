@@ -200,7 +200,7 @@ export default function MenuGorditas() {
     mensaje += `\n¿Me podrían confirmar mi pedido, por favor?`;
     
     const encoded = encodeURIComponent(mensaje);
-    window.open(`https://wa.me/5214779784805?text=${encoded}`, '_blank');
+    window.open(`https://wa.me/525650469993?text=${encoded}`, '_blank');
     setCart([]);
     setIsCartOpen(false);
   };
