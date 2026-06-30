@@ -105,24 +105,30 @@ export default function MenuGorditas() {
   const [errors, setErrors] = useState<Record<string, boolean>>({});
 
   // Cart operations
-  const addToCart = (item: any) => {
+  const addToCart = (item: any, category: string) => {
+    let base = undefined;
+    if (category !== 'Especiales' && category !== 'Bebidas y Extras') {
+      base = selectedBases[item.id] || 'Maíz';
+    }
+    const cartItemId = base ? `${item.id}-${base}` : item.id;
+
     setCart(prev => {
-      const existing = prev.find(p => p.id === item.id);
+      const existing = prev.find(p => p.cartItemId === cartItemId);
       if (existing) {
-        return prev.map(p => p.id === item.id ? { ...p, qty: p.qty + 1 } : p);
+        return prev.map(p => p.cartItemId === cartItemId ? { ...p, qty: p.qty + 1 } : p);
       }
-      return [...prev, { ...item, qty: 1 }];
+      return [...prev, { ...item, cartItemId, base, qty: 1 }];
     });
   };
 
-  const removeFromCart = (id: string) => {
-    setCart(prev => prev.filter(p => p.id !== id));
+  const removeFromCart = (cartItemId: string) => {
+    setCart(prev => prev.filter(p => p.cartItemId !== cartItemId));
     if (cart.length === 1) setCartStep('cart');
   };
 
-  const updateQty = (id: string, delta: number) => {
+  const updateQty = (cartItemId: string, delta: number) => {
     setCart(prev => prev.map(p => {
-      if (p.id === id) {
+      if (p.cartItemId === cartItemId) {
         const newQty = Math.max(1, p.qty + delta);
         return { ...p, qty: newQty };
       }
@@ -130,8 +136,8 @@ export default function MenuGorditas() {
     }));
   };
 
-  const updateItemNotes = (id: string, notas: string) => {
-    setCart(prev => prev.map(p => p.id === id ? { ...p, notas } : p));
+  const updateItemNotes = (cartItemId: string, notas: string) => {
+    setCart(prev => prev.map(p => p.cartItemId === cartItemId ? { ...p, notas } : p));
   };
 
   const cartTotal = useMemo(() => cart.reduce((acc, item) => acc + (item.price * item.qty), 0), [cart]);
@@ -329,7 +335,7 @@ export default function MenuGorditas() {
                     </div>
                   ) : (
                     cart.map(item => (
-                      <div key={item.id} className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col gap-3">
+                      <div key={item.cartItemId} className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col gap-3">
                         <div className="flex gap-4">
                           <div className="w-16 h-16 bg-white/10 rounded-xl overflow-hidden">
                             {item.img ? <img src={item.img} alt="" className="w-full h-full object-cover" /> : <ImageIcon className="text-white/30 m-auto mt-4" size={24}/>}
@@ -337,13 +343,13 @@ export default function MenuGorditas() {
                           <div className="flex-1">
                             <h4 className="text-white font-bold leading-tight">{item.name}{item.base ? ` (${item.base})` : ''}</h4>
                             <p className="text-[#f4c430] font-black">${item.price * item.qty}</p>
-                            <button onClick={() => removeFromCart(item.id)} className="text-red-400 hover:text-red-300 text-xs mt-2 underline">Eliminar</button>
+                            <button onClick={() => removeFromCart(item.cartItemId)} className="text-red-400 hover:text-red-300 text-xs mt-2 underline">Eliminar</button>
                           </div>
                           <div className="flex flex-col items-end justify-center">
                             <div className="flex items-center gap-3 bg-white/10 rounded-full px-2 py-1">
-                              <button onClick={() => updateQty(item.id, -1)} className="text-white hover:text-[#f4c430]"><Minus size={14}/></button>
+                              <button onClick={() => updateQty(item.cartItemId, -1)} className="text-white hover:text-[#f4c430]"><Minus size={14}/></button>
                               <span className="text-white font-bold text-sm w-4 text-center">{item.qty}</span>
-                              <button onClick={() => updateQty(item.id, 1)} className="text-white hover:text-[#f4c430]"><Plus size={14}/></button>
+                              <button onClick={() => updateQty(item.cartItemId, 1)} className="text-white hover:text-[#f4c430]"><Plus size={14}/></button>
                             </div>
                           </div>
                         </div>
@@ -351,7 +357,7 @@ export default function MenuGorditas() {
                           <input 
                             type="text"
                             value={item.notas || ''} 
-                            onChange={(e) => updateItemNotes(item.id, e.target.value)}
+                            onChange={(e) => updateItemNotes(item.cartItemId, e.target.value)}
                             placeholder="Nota opcional (ej. sin cebolla)"
                             className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-xs text-white focus:outline-none focus:border-[#f4c430]"
                           />
