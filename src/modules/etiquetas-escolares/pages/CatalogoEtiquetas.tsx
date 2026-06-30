@@ -11,6 +11,7 @@ interface LabelDesign {
   name: string;
   folder: string;
   imageFile: string;
+  category?: 'personajes' | 'siluetas';
 }
 
 const mockData: LabelDesign[] = [
@@ -175,11 +176,13 @@ const mockData: LabelDesign[] = [
   { id: 159, name: "Minnie Mouse 2", folder: "Minnie Mouse 2", imageFile: "Etiquetas_Escolares_239.png" },
   { id: 160, name: "Mirabel", folder: "Mirabel", imageFile: "Etiquetas_Escolares_202.png" },
   { id: 161, name: "Mis Pastelitos", folder: "Mis Pastelitos", imageFile: "Etiquetas_Escolares_191.png" },
-  { id: 162, name: "Moana", folder: "Moana", imageFile: "Etiquetas_Escolares_72.png" }
+  { id: 162, name: "Moana", folder: "Moana", imageFile: "Etiquetas_Escolares_72.png" },
+  { id: 's1', name: "Silueta Ejemplo", folder: "Siluetas", imageFile: "Silueta_1.png", category: "siluetas" }
 ];
 
 export default function CatalogoEtiquetas() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<'personajes' | 'siluetas'>('personajes');
 
   // Modal state
   const [selectedDesign, setSelectedDesign] = useState<string | null>(null);
@@ -189,10 +192,13 @@ export default function CatalogoEtiquetas() {
   const [additionalInfo, setAdditionalInfo] = useState('');
 
   const filteredDesigns = useMemo(() => {
-    return mockData.filter(design => 
-      design.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery]);
+    return mockData.filter(design => {
+      const designCategory = design.category || 'personajes';
+      const matchesCategory = designCategory === activeTab;
+      const matchesSearch = design.name.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [searchQuery, activeTab]);
 
   const handleOpenModal = (designName: string) => {
     setSelectedDesign(designName);
@@ -235,6 +241,30 @@ export default function CatalogoEtiquetas() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="block w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl text-lg focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-colors shadow-sm outline-none"
             />
+          </div>
+
+          {/* Tabs */}
+          <div className="mt-8 flex justify-center gap-4">
+            <button
+              onClick={() => setActiveTab('personajes')}
+              className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-colors ${
+                activeTab === 'personajes' 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Personajes
+            </button>
+            <button
+              onClick={() => setActiveTab('siluetas')}
+              className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-colors ${
+                activeTab === 'siluetas' 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Siluetas de Nombres
+            </button>
           </div>
         </div>
       </header>
