@@ -313,8 +313,9 @@ export default function MenuGorditas() {
 
               <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
                 {cartStep === 'cart' ? (
-                  /* STEP 1: CART ITEMS */
-                  cart.length === 0 ? (
+                  <>
+                  {/* STEP 1: CART ITEMS */}
+                  {cart.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-white/40">
                       <ShoppingBag size={48} className="mb-4 opacity-20" />
                       <p>No has agregado nada a tu pedido aún.</p>
@@ -344,13 +345,13 @@ export default function MenuGorditas() {
                     <div className="space-y-2 mt-4 pt-4 border-t border-white/10">
                       <label className="text-xs font-bold text-white/80">Notas para tu pedido (Opcional)</label>
                       <textarea 
-                        value={notas} onChange={e => setNotas(e.target.value)}
+                        value={notas} onChange={(e) => setNotas(e.target.value)}
                         className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-[#f4c430] min-h-[80px]" 
                         placeholder="Ej. Gordita regia sin cebolla, sin picante..."
                       />
                     </div>
                   )}
-                </>
+                  </>
                 ) : (
                   /* STEP 2: CHECKOUT DETAILS */
                   <div className="space-y-4 text-white">
