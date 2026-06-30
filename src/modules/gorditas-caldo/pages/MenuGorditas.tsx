@@ -233,14 +233,9 @@ export default function MenuGorditas() {
         <div className="space-y-12">
           {MENU_DATA.map((section, idx) => (
             <section key={idx} className="bg-black/20 rounded-3xl p-6 md:p-8 border border-white/5 backdrop-blur-sm">
-              <h2 className="text-3xl md:text-4xl font-black mb-2 text-center" style={{ color: '#f4c430', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
+              <h2 className="text-3xl md:text-4xl font-black mb-6 text-center" style={{ color: '#f4c430', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
                 {section.category}
               </h2>
-              {section.description && (
-                <p className="text-white/80 text-center mb-8 whitespace-pre-line text-sm md:text-base max-w-2xl mx-auto font-medium leading-relaxed">
-                  {section.description}
-                </p>
-              )}
               
               <div className="flex flex-col gap-3">
                 {section.items.map(item => (
