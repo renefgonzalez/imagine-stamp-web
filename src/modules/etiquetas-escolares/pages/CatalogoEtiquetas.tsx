@@ -244,7 +244,59 @@ const mockData: LabelDesign[] = [
   { id: 'snina_64', name: "Silueta 69 Niña", folder: "silueta niñas", imageFile: "Silueta 69 Niña.png", category: "siluetas_nina" },
   { id: 'snina_65', name: "Silueta 7 Niña", folder: "silueta niñas", imageFile: "Silueta 7 Niña.png", category: "siluetas_nina" },
   { id: 'snina_66', name: "Silueta 8 Niña", folder: "silueta niñas", imageFile: "Silueta 8 Niña.png", category: "siluetas_nina" },
-  { id: 'snina_67', name: "Silueta 9 Niña", folder: "silueta niñas", imageFile: "Silueta 9 Niña.png", category: "siluetas_nina" }
+  { id: 'snina_67', name: "Silueta 9 Niña", folder: "silueta niñas", imageFile: "Silueta 9 Niña.png", category: "siluetas_nina" },
+  { id: 'silueta-nino-' + 0, name: 'Silueta 1 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 1 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 1, name: 'Silueta 10  Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 10  Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 2, name: 'Silueta 11 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 11 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 3, name: 'Silueta 12 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 12 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 4, name: 'Silueta 13 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 13 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 5, name: 'Silueta 14 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 14 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 6, name: 'Silueta 15 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 15 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 7, name: 'Silueta 16 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 16 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 8, name: 'Silueta 17 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 17 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 9, name: 'Silueta 18 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 18 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 10, name: 'Silueta 19 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 19 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 11, name: 'Silueta 2 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 2 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 12, name: 'Silueta 21 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 21 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 13, name: 'Silueta 22 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 22 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 14, name: 'Silueta 23  Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 23  Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 15, name: 'Silueta 24  Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 24  Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 16, name: 'Silueta 25 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 25 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 17, name: 'Silueta 26 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 26 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 18, name: 'Silueta 27 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 27 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 19, name: 'Silueta 28 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 28 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 20, name: 'Silueta 29 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 29 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 21, name: 'Silueta 3 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 3 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 22, name: 'Silueta 30 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 30 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 23, name: 'Silueta 31 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 31 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 24, name: 'Silueta 32 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 32 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 25, name: 'Silueta 33 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 33 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 26, name: 'Silueta 34 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 34 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 27, name: 'Silueta 35 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 35 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 28, name: 'Silueta 36 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 36 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 29, name: 'Silueta 37 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 37 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 30, name: 'Silueta 38 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 38 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 31, name: 'Silueta 39 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 39 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 32, name: 'Silueta 4 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 4 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 33, name: 'Silueta 40 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 40 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 34, name: 'Silueta 41 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 41 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 35, name: 'Silueta 42 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 42 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 36, name: 'Silueta 43 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 43 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 37, name: 'Silueta 44 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 44 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 38, name: 'Silueta 45 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 45 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 39, name: 'Silueta 46 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 46 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 40, name: 'Silueta 47 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 47 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 41, name: 'Silueta 48 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 48 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 42, name: 'Silueta 49 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 49 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 43, name: 'Silueta 5 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 5 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 44, name: 'Silueta 50 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 50 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 45, name: 'Silueta 51 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 51 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 46, name: 'Silueta 52 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 52 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 47, name: 'Silueta 53 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 53 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 48, name: 'Silueta 6 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 6 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 49, name: 'Silueta 7 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 7 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 50, name: 'Silueta 8 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 8 Niño.png', category: 'siluetas_nino' },
+  { id: 'silueta-nino-' + 51, name: 'Silueta 9 Niño', folder: 'Catalogo_web_2026/Silueta niños', imageFile: 'Silueta 9 Niño.png', category: 'siluetas_nino' }
 ];
 
 export default function CatalogoEtiquetas() {
@@ -361,7 +413,7 @@ export default function CatalogoEtiquetas() {
           ) : (
             <motion.div 
               layout
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6"
             >
               <AnimatePresence>
                 {filteredDesigns.map((design) => {
@@ -376,32 +428,32 @@ export default function CatalogoEtiquetas() {
                       whileHover={{ y: -4 }}
                       transition={{ duration: 0.2 }}
                       key={design.id}
-                      className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md border border-gray-100 flex flex-col"
+                      className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-md border border-gray-100 flex flex-col"
                     >
                       {/* Image container */}
                       <div className="aspect-square bg-gray-100 relative overflow-hidden">
                         <img 
                           src={imageUrl} 
                           alt={`Diseño ${design.name}`} 
-                          className={`w-full h-full ${activeTab.includes('silueta') ? 'object-contain p-4' : 'object-cover'}`}
+                          className={`w-full h-full ${activeTab.includes('silueta') ? 'object-contain p-2 sm:p-4' : 'object-cover'}`}
                           loading="lazy"
                         />
                       </div>
 
                       {/* Content */}
-                      <div className="p-5 flex flex-col flex-1">
-                        <h3 className="text-xl font-bold text-gray-900 text-center mb-4 flex-1">
+                      <div className="p-3 sm:p-5 flex flex-col flex-1">
+                        <h3 className="text-sm sm:text-xl font-bold text-gray-900 text-center mb-2 sm:mb-4 flex-1">
                           {design.name}
                         </h3>
                         
                         <button
                           onClick={() => handleOpenModal(design.name)}
-                          className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm"
+                          className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-2 px-2 sm:py-3 sm:px-4 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-2 transition-colors shadow-sm text-xs sm:text-base"
                         >
-                          <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
+                          <svg viewBox="0 0 24 24" className="w-4 h-4 sm:w-5 sm:h-5 fill-current">
                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                          </svg>
-                          Pedir este diseño
+                        </svg>
+                          Pedir diseño
                         </button>
                       </div>
                     </motion.div>
