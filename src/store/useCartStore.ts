@@ -11,9 +11,14 @@ export interface CartItem {
 export interface CustomerInfo {
   name: string;
   phone: string;
-  city: string;
+  city: string; // Para retrocompatibilidad
   notes: string;
   paymentMethod: string;
+  deliveryMethod: 'domicilio' | 'recoger';
+  address: string;
+  suburb: string;
+  crossStreets: string;
+  references: string;
 }
 
 interface CartState {
@@ -48,7 +53,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   isCartOpen: false,
   cartStep: 'cart',
   cartToast: null,
-  customerInfo: { name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo' },
+  customerInfo: { name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo', deliveryMethod: 'domicilio', address: '', suburb: '', crossStreets: '', references: '' },
   mpLoading: false,
 
   totalItems: () => get().cart.reduce((acc, item) => acc + item.quantity, 0),

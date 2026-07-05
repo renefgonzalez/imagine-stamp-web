@@ -42,11 +42,15 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
     const lines = cart.map(item => `    ${item.name} x${item.quantity} = $${item.price * item.quantity} MXN`).join('\n');
     const total = totalPrice();
 
+    const fullAddress = customerInfo.deliveryMethod === 'domicilio'
+      ? `${customerInfo.address}, Col. ${customerInfo.suburb}${customerInfo.crossStreets ? ` (Entre: ${customerInfo.crossStreets})` : ''}${customerInfo.references ? ` - Ref: ${customerInfo.references}` : ''}`
+      : 'Paso a recoger';
+
     const newOrder = {
       id: 'ORD-' + Date.now(),
       customer_name: customerInfo.name,
       customer_phone: customerInfo.phone,
-      customer_city: customerInfo.city,
+      customer_city: fullAddress, // Reutilizamos el campo para toda la dirección
       delivery_notes: customerInfo.notes,
       payment_method: customerInfo.paymentMethod,
       items: cart.map(item => ({ name: item.name, price: item.price, quantity: item.quantity })),
@@ -67,16 +71,21 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
       `*Datos de entrega:*\n` +
       `👤 Nombre: ${customerInfo.name}\n` +
       `📱 WhatsApp: ${customerInfo.phone}\n` +
-      `📍 Ciudad: ${customerInfo.city}\n` +
+      `📍 Entrega: ${customerInfo.deliveryMethod === 'domicilio' ? 'Envío a domicilio 🛵' : 'Paso a recoger 🛍️'}\n` +
+      (customerInfo.deliveryMethod === 'domicilio' ? `📍 Dirección: ${customerInfo.address}, Col. ${customerInfo.suburb}\n` : '') +
+      (customerInfo.deliveryMethod === 'domicilio' && customerInfo.crossStreets ? `📍 Entre calles: ${customerInfo.crossStreets}\n` : '') +
+      (customerInfo.deliveryMethod === 'domicilio' && customerInfo.references ? `📍 Referencias: ${customerInfo.references}\n` : '') +
       `💳 Pago: ${customerInfo.paymentMethod}` +
       (customerInfo.notes ? `\n📝 Notas: ${customerInfo.notes}` : '');
 
-    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
     clearCart();
-    setCustomerInfo({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo' });
+    setCustomerInfo({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo', deliveryMethod: 'domicilio', address: '', suburb: '', crossStreets: '', references: '' });
     setCartStep('cart');
     closeCart();
+
+    window.open(url, '_blank');
   };
 
   const handleMercadoPagoCheckout = async () => {
@@ -85,12 +94,16 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
 
     const orderId = 'ORD-' + Date.now();
     const total = totalPrice();
+    
+    const fullAddress = customerInfo.deliveryMethod === 'domicilio'
+      ? `${customerInfo.address}, Col. ${customerInfo.suburb}${customerInfo.crossStreets ? ` (Entre: ${customerInfo.crossStreets})` : ''}${customerInfo.references ? ` - Ref: ${customerInfo.references}` : ''}`
+      : 'Paso a recoger';
 
     const newOrder = {
       id: orderId,
       customer_name: customerInfo.name,
       customer_phone: customerInfo.phone,
-      customer_city: customerInfo.city,
+      customer_city: fullAddress,
       delivery_notes: customerInfo.notes,
       payment_method: 'Tarjeta (Mercado Pago)',
       items: cart.map(item => ({ name: item.name, price: item.price, quantity: item.quantity })),
@@ -124,14 +137,17 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
         `*Datos de entrega:*\n` +
         `👤 Nombre: ${customerInfo.name}\n` +
         `📱 WhatsApp: ${customerInfo.phone}\n` +
-        `📍 Ciudad: ${customerInfo.city}\n` +
+        `📍 Entrega: ${customerInfo.deliveryMethod === 'domicilio' ? 'Envío a domicilio 🛵' : 'Paso a recoger 🛍️'}\n` +
+        (customerInfo.deliveryMethod === 'domicilio' ? `📍 Dirección: ${customerInfo.address}, Col. ${customerInfo.suburb}\n` : '') +
+        (customerInfo.deliveryMethod === 'domicilio' && customerInfo.crossStreets ? `📍 Entre calles: ${customerInfo.crossStreets}\n` : '') +
+        (customerInfo.deliveryMethod === 'domicilio' && customerInfo.references ? `📍 Referencias: ${customerInfo.references}\n` : '') +
         `💳 Pago: Tarjeta (Mercado Pago)` +
         (customerInfo.notes ? `\n📝 Notas: ${customerInfo.notes}` : '');
 
       localStorage.setItem('imagine-pending-whatsapp', encodeURIComponent(message));
 
       clearCart();
-      setCustomerInfo({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo' });
+      setCustomerInfo({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo', deliveryMethod: 'domicilio', address: '', suburb: '', crossStreets: '', references: '' });
       setCartStep('cart');
       closeCart();
 
@@ -243,6 +259,29 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
 
                   {/* Formulario */}
                   <div className="flex-1 overflow-y-auto space-y-4">
+                    <div className="flex gap-2 mb-4">
+                      <button
+                        onClick={() => setCustomerInfo({ deliveryMethod: 'recoger' })}
+                        className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${
+                          customerInfo.deliveryMethod === 'recoger'
+                            ? 'bg-secondary text-white shadow-md'
+                            : 'bg-primary/5 text-primary/60 hover:bg-primary/10'
+                        }`}
+                      >
+                        🛍️ Paso a recoger
+                      </button>
+                      <button
+                        onClick={() => setCustomerInfo({ deliveryMethod: 'domicilio' })}
+                        className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${
+                          customerInfo.deliveryMethod === 'domicilio'
+                            ? 'bg-secondary text-white shadow-md'
+                            : 'bg-primary/5 text-primary/60 hover:bg-primary/10'
+                        }`}
+                      >
+                        🛵 Envío a domicilio
+                      </button>
+                    </div>
+
                     <div>
                       <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1.5 block ml-1">Nombre Completo *</label>
                       <input
@@ -262,15 +301,47 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
                         className="w-full bg-white border border-primary/10 text-primary p-4 rounded-2xl text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none transition-all"
                       />
                     </div>
-                    <div>
-                      <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1.5 block ml-1">Ciudad *</label>
-                      <input
-                        value={customerInfo.city}
-                        onChange={e => setCustomerInfo({ city: e.target.value })}
-                        placeholder="Ej: Guadalajara, Jalisco"
-                        className="w-full bg-white border border-primary/10 text-primary p-4 rounded-2xl text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none transition-all"
-                      />
-                    </div>
+
+                    {customerInfo.deliveryMethod === 'domicilio' && (
+                      <>
+                        <div>
+                          <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1.5 block ml-1">Calle y Número *</label>
+                          <input
+                            value={customerInfo.address}
+                            onChange={e => setCustomerInfo({ address: e.target.value })}
+                            placeholder="Ej: Zaragoza 123"
+                            className="w-full bg-white border border-primary/10 text-primary p-4 rounded-2xl text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1.5 block ml-1">Colonia *</label>
+                          <input
+                            value={customerInfo.suburb}
+                            onChange={e => setCustomerInfo({ suburb: e.target.value })}
+                            placeholder="Ej: Centro"
+                            className="w-full bg-white border border-primary/10 text-primary p-4 rounded-2xl text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1.5 block ml-1">Entre calles (opcional)</label>
+                          <input
+                            value={customerInfo.crossStreets}
+                            onChange={e => setCustomerInfo({ crossStreets: e.target.value })}
+                            placeholder="Ej: Entre Juárez y Madero"
+                            className="w-full bg-white border border-primary/10 text-primary p-4 rounded-2xl text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1.5 block ml-1">Referencias (opcional)</label>
+                          <input
+                            value={customerInfo.references}
+                            onChange={e => setCustomerInfo({ references: e.target.value })}
+                            placeholder="Portón blanco, frente al parque..."
+                            className="w-full bg-white border border-primary/10 text-primary p-4 rounded-2xl text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none transition-all"
+                          />
+                        </div>
+                      </>
+                    )}
                     <div>
                       <label className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1.5 block ml-1">Forma de Pago *</label>
                       <select
@@ -297,59 +368,24 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
                           className="overflow-hidden"
                         >
                           <div className="bg-secondary/5 border border-secondary/20 rounded-2xl p-4">
-                            <div className="flex items-center gap-2 mb-3">
-                              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white shrink-0">
-                                <Landmark size={16} />
-                              </div>
-                              <div>
-                                <p className="text-[10px] font-black text-secondary uppercase tracking-widest leading-none">Datos para transferencia</p>
-                                <p className="text-[9px] font-medium text-primary/40 mt-0.5">Realiza tu pago y envía el comprobante por WhatsApp</p>
-                              </div>
+                            <label className="text-[10px] font-black text-secondary uppercase tracking-widest mb-2 block">🏦 Datos de Transferencia</label>
+                            
+                            <div className="text-sm text-primary/80 leading-relaxed whitespace-pre-line mb-3">
+                              {bankInfo ? (
+                                <>
+                                  {bankInfo.bank_name && `Banco: ${bankInfo.bank_name}\n`}
+                                  {bankInfo.account_holder && `Titular: ${bankInfo.account_holder}\n`}
+                                  {bankInfo.clabe && `CLABE: ${bankInfo.clabe}\n`}
+                                  {bankInfo.account_number && `Cuenta: ${bankInfo.account_number}\n`}
+                                  {bankInfo.card_number && `Tarjeta: ${bankInfo.card_number}\n`}
+                                  {bankInfo.instructions && `\n${bankInfo.instructions}`}
+                                </>
+                              ) : 'Datos de cuenta no configurados por el administrador.'}
                             </div>
-
-                            {(() => {
-                              const rows = [
-                                { label: 'Banco', value: bankInfo?.bank_name, field: 'bank_name' },
-                                { label: 'Titular', value: bankInfo?.account_holder, field: 'account_holder' },
-                                { label: 'CLABE', value: bankInfo?.clabe, field: 'clabe' },
-                                { label: 'No. de Cuenta', value: bankInfo?.account_number, field: 'account_number' },
-                                { label: 'No. de Tarjeta', value: bankInfo?.card_number, field: 'card_number' },
-                              ].filter(r => r.value && String(r.value).trim() !== '');
-
-                              if (rows.length === 0) {
-                                return (
-                                  <p className="text-xs text-primary/40 italic py-2">
-                                    Los datos bancarios se mostrarán aquí. Escríbenos por WhatsApp para coordinar tu pago.
-                                  </p>
-                                );
-                              }
-
-                              return (
-                                <div className="space-y-2">
-                                  {rows.map(row => (
-                                    <div key={row.field} className="flex items-center justify-between gap-2 bg-white rounded-xl px-3 py-2 border border-primary/5">
-                                      <div className="min-w-0">
-                                        <p className="text-[9px] font-black text-primary/30 uppercase tracking-widest">{row.label}</p>
-                                        <p className="text-sm font-bold text-primary truncate">{row.value}</p>
-                                      </div>
-                                      <button
-                                        type="button"
-                                        onClick={() => copyToClipboard(String(row.value), row.field)}
-                                        title="Copiar"
-                                        className="shrink-0 w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary/40 hover:bg-secondary hover:text-white transition-all"
-                                      >
-                                        {copiedField === row.field ? <Check size={14} /> : <Copy size={14} />}
-                                      </button>
-                                    </div>
-                                  ))}
-                                  {bankInfo?.instructions && String(bankInfo.instructions).trim() !== '' && (
-                                    <p className="text-[10px] text-primary/50 leading-relaxed bg-white rounded-xl px-3 py-2 border border-primary/5 whitespace-pre-line">
-                                      {bankInfo.instructions}
-                                    </p>
-                                  )}
-                                </div>
-                              );
-                            })()}
+                            
+                            <div className="text-[11px] font-bold text-secondary italic">
+                              * Por favor enviar comprobante de transferencia al mismo número de WhatsApp del pedido.
+                            </div>
                           </div>
                         </motion.div>
                       )}
@@ -388,25 +424,32 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
                     </div>
                   </div>
 
-                  {customerInfo.paymentMethod === 'Tarjeta' ? (
-                    <button
-                      onClick={handleMercadoPagoCheckout}
-                      disabled={!customerInfo.name || !customerInfo.phone || !customerInfo.city || mpLoading}
-                      className="mt-5 w-full py-4 bg-[#009EE3] text-white rounded-2xl font-black text-base shadow-lg hover:bg-[#008FCC] transition-all flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      <CreditCard size={22} />
-                      {mpLoading ? 'Redirigiendo a Mercado Pago...' : 'Pagar con Tarjeta'}
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handleFinalCheckout}
-                      disabled={!customerInfo.name || !customerInfo.phone || !customerInfo.city}
-                      className="mt-5 w-full py-4 bg-[#25D366] text-white rounded-2xl font-black text-base shadow-lg hover:bg-[#1DAD54] transition-all flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      <MessageCircle size={22} fill="currentColor" />
-                      Finalizar Pedido vía WhatsApp
-                    </button>
-                  )}
+                  {(() => {
+                    const isFormValid = customerInfo.name && customerInfo.phone && (
+                      customerInfo.deliveryMethod === 'recoger' || 
+                      (customerInfo.deliveryMethod === 'domicilio' && customerInfo.address && customerInfo.suburb)
+                    );
+
+                    return customerInfo.paymentMethod === 'Tarjeta' ? (
+                      <button
+                        onClick={handleMercadoPagoCheckout}
+                        disabled={!isFormValid || mpLoading}
+                        className="mt-5 w-full py-4 bg-[#009EE3] text-white rounded-2xl font-black text-base shadow-lg hover:bg-[#008FCC] transition-all flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <CreditCard size={22} />
+                        {mpLoading ? 'Redirigiendo a Mercado Pago...' : 'Pagar con Tarjeta'}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleFinalCheckout}
+                        disabled={!isFormValid}
+                        className="mt-5 w-full py-4 bg-[#25D366] text-white rounded-2xl font-black text-base shadow-lg hover:bg-[#1DAD54] transition-all flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <MessageCircle size={22} fill="currentColor" />
+                        Finalizar Pedido vía WhatsApp
+                      </button>
+                    );
+                  })()}
                 </motion.div>
               )}
             </AnimatePresence>

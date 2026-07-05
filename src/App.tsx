@@ -18,6 +18,8 @@ import DigitalDownload from './modules/corte-laser/pages/DigitalDownload';
 import PaleteriaMenu from './modules/paleteria/pages/PaleteriaMenu';
 import CatalogoEtiquetas from './modules/etiquetas-escolares/pages/CatalogoEtiquetas';
 
+import ProveedoraMenu from './modules/proveedora-san-luis/pages/ProveedoraMenu';
+
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
 import { CartButton } from './components/common/CartButton';
@@ -736,6 +738,7 @@ export default function App() {
 
         <Route path="/paleteria" element={<ErrorBoundary><PaleteriaMenu /></ErrorBoundary>} />
         <Route path="/etiquetas-escolares" element={<ErrorBoundary><CatalogoEtiquetas /></ErrorBoundary>} />
+        <Route path="/proveedora-san-luis" element={<ErrorBoundary><ProveedoraMenu /></ErrorBoundary>} />
       </Routes>
     </HashRouter>
   );
