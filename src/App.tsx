@@ -13,7 +13,6 @@ import logo from './logo.png';
 import DemoMenu from './modules/demo-menu/pages/DemoMenu';
 import AdminPanel from './AdminPanel';
 
-import PaleteriaMenu from './modules/paleteria/pages/PaleteriaMenu';
 import CatalogoEtiquetas from './modules/etiquetas-escolares/pages/CatalogoEtiquetas';
 
 import ProveedoraMenu from './modules/proveedora-san-luis/pages/ProveedoraMenu';
@@ -731,7 +730,6 @@ export default function App() {
         } />
         <Route path="/demo-menu" element={<DemoMenu />} />
 
-        <Route path="/paleteria" element={<ErrorBoundary><PaleteriaMenu /></ErrorBoundary>} />
         <Route path="/etiquetas-escolares" element={<ErrorBoundary><CatalogoEtiquetas /></ErrorBoundary>} />
         <Route path="/proveedora-san-luis" element={<ErrorBoundary><ProveedoraMenu /></ErrorBoundary>} />
         <Route path="/la-cazona" element={<ErrorBoundary><LaCazonaMenu /></ErrorBoundary>} />
