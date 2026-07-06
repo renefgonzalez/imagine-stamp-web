@@ -30,6 +30,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
   } = useCartStore();
 
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [cashAmount, setCashAmount] = useState<number>(0);
+  const change = cashAmount - totalPrice();
 
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard?.writeText(text).then(() => {
@@ -76,6 +78,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
       (customerInfo.deliveryMethod === 'domicilio' && customerInfo.crossStreets ? `📍 Entre calles: ${customerInfo.crossStreets}\n` : '') +
       (customerInfo.deliveryMethod === 'domicilio' && customerInfo.references ? `📍 Referencias: ${customerInfo.references}\n` : '') +
       `💳 Pago: ${customerInfo.paymentMethod}` +
+      (customerInfo.paymentMethod === 'Efectivo' && cashAmount > 0 ? `\n💰 Pagas con: $${cashAmount.toFixed(2)}\n🔄 Cambio: $${(cashAmount - total).toFixed(2)}` : '') +
       (customerInfo.notes ? `\n📝 Notas: ${customerInfo.notes}` : '');
 
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
@@ -407,6 +410,45 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
                             <p className="text-[11px] font-medium text-primary/60 leading-relaxed">
                               Al confirmar, te llevaremos a la pantalla segura de <strong className="text-[#009EE3]">Mercado Pago</strong> para pagar con tarjeta de crédito o débito. Tu pedido se registra automáticamente.
                             </p>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* ── Campo para efectivo: "Con cuánto vas a pagar" + cambio ── */}
+                    <AnimatePresence>
+                      {customerInfo.paymentMethod === 'Efectivo' && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="bg-green-50 border border-green-200 rounded-2xl p-4">
+                            <label className="text-[10px] font-black text-green-700 uppercase tracking-widest mb-2 block">
+                              💵 ¿Con cuánto vas a pagar?
+                            </label>
+                            <div className="flex gap-3 items-center">
+                              <span className="text-green-700 font-black text-lg">$</span>
+                              <input
+                                type="number"
+                                value={cashAmount || ''}
+                                onChange={e => setCashAmount(parseFloat(e.target.value) || 0)}
+                                placeholder="0.00"
+                                className="flex-1 bg-white border border-green-300 text-green-900 p-3 rounded-xl text-lg font-bold focus:border-green-500 focus:ring-4 focus:ring-green-100 outline-none transition-all"
+                              />
+                            </div>
+                            {cashAmount > 0 && cashAmount >= totalPrice() && (
+                              <div className="mt-3 flex items-center gap-2 text-green-700 bg-green-100 rounded-xl px-4 py-3">
+                                <span className="text-sm font-medium">Cambio:</span>
+                                <span className="text-xl font-black">${(cashAmount - totalPrice()).toFixed(2)}</span>
+                              </div>
+                            )}
+                            {cashAmount > 0 && cashAmount < totalPrice() && (
+                              <p className="mt-2 text-xs font-medium text-red-500">
+                                La cantidad debe ser mayor o igual al total (${totalPrice()} MXN)
+                              </p>
+                            )}
                           </div>
                         </motion.div>
                       )}

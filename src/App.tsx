@@ -11,9 +11,7 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Product } from './data/products';
 import logo from './logo.png';
 import DemoMenu from './modules/demo-menu/pages/DemoMenu';
-import CorteLaserCatalog from './modules/corte-laser/pages/CorteLaserCatalog';
-import CorteLaserAdmin from './modules/corte-laser/pages/CorteLaserAdmin';
-import DigitalDownload from './modules/corte-laser/pages/DigitalDownload';
+import AdminPanel from './AdminPanel';
 
 import PaleteriaMenu from './modules/paleteria/pages/PaleteriaMenu';
 import CatalogoEtiquetas from './modules/etiquetas-escolares/pages/CatalogoEtiquetas';
@@ -732,14 +730,12 @@ export default function App() {
           </ErrorBoundary>
         } />
         <Route path="/demo-menu" element={<DemoMenu />} />
-        <Route path="/corte-laser" element={<ErrorBoundary><CorteLaserCatalog /></ErrorBoundary>} />
-        <Route path="/corte-laser-admin" element={<ErrorBoundary><CorteLaserAdmin /></ErrorBoundary>} />
-        <Route path="/descarga/:token" element={<ErrorBoundary><DigitalDownload /></ErrorBoundary>} />
 
         <Route path="/paleteria" element={<ErrorBoundary><PaleteriaMenu /></ErrorBoundary>} />
         <Route path="/etiquetas-escolares" element={<ErrorBoundary><CatalogoEtiquetas /></ErrorBoundary>} />
         <Route path="/proveedora-san-luis" element={<ErrorBoundary><ProveedoraMenu /></ErrorBoundary>} />
         <Route path="/la-cazona" element={<ErrorBoundary><LaCazonaMenu /></ErrorBoundary>} />
+        <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
     </HashRouter>
   );

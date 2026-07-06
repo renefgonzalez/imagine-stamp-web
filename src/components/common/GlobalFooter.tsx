@@ -10,6 +10,8 @@ interface FooterProps {
   instagramUrl?: string;
   facebookUrl?: string;
   tiktokUrl?: string;
+  address?: string;
+  hours?: string;
 }
 
 export const GlobalFooter: React.FC<FooterProps> = ({
@@ -19,7 +21,9 @@ export const GlobalFooter: React.FC<FooterProps> = ({
   email = 'imagineandstamp@gmail.com',
   instagramUrl = 'https://www.instagram.com/personalizadosimagineandstamp',
   facebookUrl = 'https://www.facebook.com/share/1CFhhieFeV/?mibextid=wwXIfr',
-  tiktokUrl = 'https://www.tiktok.com/@TU_USUARIO_AQUI'
+  tiktokUrl = 'https://www.tiktok.com/@TU_USUARIO_AQUI',
+  address = 'Ciudad de México (CDMX)',
+  hours = 'Lun - Vie: 9:00 - 18:00 | Sáb: 10:00 - 14:00'
 }) => {
   const year = new Date().getFullYear();
 
@@ -43,6 +47,14 @@ export const GlobalFooter: React.FC<FooterProps> = ({
             <a href={`mailto:${email}`} className="flex items-center gap-3">
               <MailIcon size={18} /> {email}
             </a>
+            <div className="flex items-start gap-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>{address}</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>{hours}</span>
+            </div>
           </div>
         </div>
 
@@ -66,6 +78,12 @@ export const GlobalFooter: React.FC<FooterProps> = ({
                 </svg>
               </a>
             )}
+          </div>
+          <div className="bg-secondary/5 border border-secondary/20 rounded-2xl p-4">
+            <p className="text-[10px] font-black text-secondary uppercase tracking-widest mb-1">🎉 Promociones</p>
+            <p className="text-xs text-primary/60 leading-relaxed">
+              Síguenos en redes sociales para descubrir promociones semanales, descuentos por temporada y nuevos productos.
+            </p>
           </div>
         </div>
       </div>
