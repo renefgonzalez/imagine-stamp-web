@@ -207,6 +207,19 @@ export default function LaCasaMenu() {
             {/* Columna 3: Promociones y Redes */}
             <div>
               <h3 className="text-[#FFCE00] font-bold mb-4 uppercase text-sm tracking-wider">Síguenos</h3>
+              <div className="flex gap-4 mb-4">
+                <a href="#" className="w-10 h-10 rounded-full bg-[#2b0909] flex items-center justify-center text-gray-400 hover:text-[#FFCE00] hover:bg-[#420f0f] border border-white/5 transition-all">
+                  <Facebook size={20} />
+                </a>
+                <a href="#" className="w-10 h-10 rounded-full bg-[#2b0909] flex items-center justify-center text-gray-400 hover:text-[#FFCE00] hover:bg-[#420f0f] border border-white/5 transition-all">
+                  <Instagram size={20} />
+                </a>
+                <a href="#" className="w-10 h-10 rounded-full bg-[#2b0909] flex items-center justify-center text-gray-400 hover:text-[#FFCE00] hover:bg-[#420f0f] border border-white/5 transition-all">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                  </svg>
+                </a>
+              </div>
               <div className="bg-[#2b0909] p-4 rounded-xl border border-white/5">
                 <p className="text-xs text-gray-300 font-bold mb-1">🎉 PROMOCIONES</p>
                 <p className="text-gray-400 text-xs">
