@@ -197,10 +197,10 @@ export default function LaCasaMenu() {
             {/* Columna 2: Contacto */}
             <div>
               <h3 className="text-[#FFCE00] font-bold mb-4 uppercase text-sm tracking-wider">Contacto</h3>
-              <ul className="space-y-3 text-gray-400 text-sm">
-                <li className="flex items-center gap-2">📞 WhatsApp: 555-123-4567</li>
-                <li className="flex items-center gap-2">📍 Av. Principal #123, Centro</li>
-                <li className="flex items-center gap-2">🕒 Mar - Dom: 13:00 - 22:00</li>
+              <ul className="space-y-3 text-gray-300 text-sm">
+                <li className="flex items-center gap-2">📞 WhatsApp: 481 380 1255</li>
+                <li className="flex items-center gap-2">📍 Servicio a domicilio</li>
+                <li className="flex items-center gap-2">🕒 Lunes a Domingo</li>
               </ul>
             </div>
 
