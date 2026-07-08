@@ -49,6 +49,7 @@ export default function LaCasaMenu() {
     deliveryMethod: 'Domicilio',
     address: '',
     paymentMethod: 'Efectivo',
+    cashAmount: '',
   });
 
   const filteredProducts = useMemo(() => {
@@ -96,9 +97,20 @@ export default function LaCasaMenu() {
     message += `*Datos del Cliente:*\nNombre: ${formData.name}\nEntrega: ${formData.deliveryMethod}\n`;
     if (formData.deliveryMethod === 'Domicilio') message += `Dirección: ${formData.address}\n`;
     message += `Pago: ${formData.paymentMethod}`;
+    if (formData.paymentMethod === 'Efectivo' && formData.cashAmount) {
+      message += ` (Pago con: $${formData.cashAmount})`;
+    }
 
     window.open(`https://wa.me/525555555555?text=${encodeURIComponent(message)}`, '_blank');
     setCart([]);
+    setFormData({
+      name: '',
+      phone: '',
+      deliveryMethod: 'Domicilio',
+      address: '',
+      paymentMethod: 'Efectivo',
+      cashAmount: '',
+    });
     setIsCartOpen(false);
     setCartStep(1);
   };
@@ -294,6 +306,21 @@ export default function LaCasaMenu() {
                     </div>
                     {formData.deliveryMethod === 'Domicilio' && <div><label className="block text-xs font-bold text-gray-400 mb-1">Dirección de Entrega *</label><textarea required value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full bg-[#420f0f] border border-[#5a1515] rounded-xl p-3 text-white focus:outline-none focus:border-[#FFCE00] h-20 resize-none"></textarea></div>}
                     <div><label className="block text-xs font-bold text-gray-400 mb-1">Forma de Pago</label><select value={formData.paymentMethod} onChange={e => setFormData({...formData, paymentMethod: e.target.value})} className="w-full bg-[#420f0f] border border-[#5a1515] rounded-xl p-3 text-white focus:outline-none focus:border-[#FFCE00]"><option value="Efectivo">Efectivo</option><option value="Transferencia">Transferencia</option></select></div>
+                    {formData.paymentMethod === 'Efectivo' && (
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 mb-1">¿Con cuánto vas a pagar? (Para el cambio)</label>
+                        <input type="number" placeholder="Ej. 500" value={formData.cashAmount} onChange={e => setFormData({...formData, cashAmount: e.target.value})} className="w-full bg-[#420f0f] border border-[#5a1515] rounded-xl p-3 text-white focus:outline-none focus:border-[#FFCE00]" />
+                      </div>
+                    )}
+                    {formData.paymentMethod === 'Transferencia' && (
+                      <div className="bg-[#1a0505] border border-[#420f0f] p-4 rounded-xl mt-2">
+                        <p className="text-[#FFCE00] font-bold text-sm mb-2">Datos para Transferencia</p>
+                        <p className="text-gray-300 text-xs mb-1"><span className="text-gray-500">Banco:</span> BBVA</p>
+                        <p className="text-gray-300 text-xs mb-1"><span className="text-gray-500">Cuenta:</span> 0123456789</p>
+                        <p className="text-gray-300 text-xs mb-1"><span className="text-gray-500">CLABE:</span> 012345678901234567</p>
+                        <p className="text-gray-300 text-xs"><span className="text-gray-500">Titular:</span> La Casa de la Montaña</p>
+                      </div>
+                    )}
                   </form>
                 )}
               </div>
