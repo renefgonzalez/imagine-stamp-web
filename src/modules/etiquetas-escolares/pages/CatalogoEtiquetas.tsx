@@ -299,6 +299,40 @@ const mockData: LabelDesign[] = [
   { id: 'silueta-nino-' + 51, name: 'Silueta 9 Niño', folder: 'Silueta niños', imageFile: 'Silueta 9 Niño.png', category: 'siluetas_nino' }
 ];
 
+interface PackageOption {
+  id: string;
+  material: 'DTF UV' | 'Textiles' | 'Etiquetas Adhesivas';
+  tier?: string;
+  label: string;
+  price: number;
+  includes: string[];
+  laminadoPrice?: number;
+}
+
+const PACKAGES: PackageOption[] = [
+  { id: 'dtf-uv', material: 'DTF UV', label: 'DTF UV', price: 150, includes: ['Etiquetas 100% lavables', 'Organiza tu plantilla a tu gusto', 'Tamaño carta', 'Un nombre y diseño por hoja', 'Con o sin fondo blanco'] },
+  { id: 'textiles', material: 'Textiles', label: 'Textiles', price: 100, includes: ['Etiquetas 100% lavables', 'Organiza tu plantilla a tu gusto', 'Tamaño carta', 'Un nombre y diseño por hoja'] },
+  { id: 'adhesivas-esencial', material: 'Etiquetas Adhesivas', tier: 'Esencial', label: 'Etiquetas Adhesivas · Esencial', price: 150, includes: ['20 pz libretas 9x5 cm', '30 pz lápices 6x2.5 cm'], laminadoPrice: 30 },
+  { id: 'adhesivas-clasico', material: 'Etiquetas Adhesivas', tier: 'Clásico', label: 'Etiquetas Adhesivas · Clásico', price: 250, includes: ['20 pz libretas 9x5 cm', '30 pz lápices 6x2.5 cm', '14 circulares 5 cm (vinil)', '1 tag grande'], laminadoPrice: 40 },
+  { id: 'adhesivas-premium', material: 'Etiquetas Adhesivas', tier: 'Premium', label: 'Etiquetas Adhesivas · Premium', price: 360, includes: ['24 pz libretas 9x5 cm', '48 pz lápices 6x2.5 cm', '9 circulares 5 cm (vinil)', '8 circulares 4 cm (vinil)', '1 tag grande con llavero', '1 tag chico'], laminadoPrice: 50 },
+  { id: 'adhesivas-contorno', material: 'Etiquetas Adhesivas', tier: 'Contorno', label: 'Etiquetas Adhesivas · Contorno', price: 180, includes: ['24 pz, largo 8 cm', '25 pz, largo 5 cm', '1 tag grande'], laminadoPrice: 30 },
+];
+
+interface ExtraOption {
+  id: string;
+  label: string;
+  price: number;
+}
+
+const EXTRAS: ExtraOption[] = [
+  { id: 'extra-libretas', label: '10 pz Libretas 9x5cm', price: 60 },
+  { id: 'extra-lapices', label: '30 pz Lápices 6x2.5cm', price: 60 },
+  { id: 'extra-contorno', label: '12 pz Contorno, largo 8cm', price: 60 },
+  { id: 'extra-tag-grande', label: 'Tag Grande', price: 50 },
+  { id: 'extra-tag-chico', label: 'Tag Chico', price: 35 },
+  { id: 'extra-materias', label: 'Materias en etiqueta libreta', price: 30 },
+];
+
 export default function CatalogoEtiquetas() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'personajes' | 'siluetas_nina' | 'siluetas_nino'>('personajes');
@@ -309,6 +343,21 @@ export default function CatalogoEtiquetas() {
   const [grade, setGrade] = useState('');
   const [group, setGroup] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
+  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null);
+  const [wantsLaminado, setWantsLaminado] = useState(false);
+  const [selectedExtraIds, setSelectedExtraIds] = useState<string[]>([]);
+
+  const selectedPackage = useMemo(
+    () => PACKAGES.find(p => p.id === selectedPackageId) || null,
+    [selectedPackageId]
+  );
+  const laminadoCost = wantsLaminado && selectedPackage?.laminadoPrice ? selectedPackage.laminadoPrice : 0;
+  const extrasCost = selectedExtraIds.reduce((sum, id) => sum + (EXTRAS.find(e => e.id === id)?.price || 0), 0);
+  const orderTotal = (selectedPackage?.price || 0) + laminadoCost + extrasCost;
+
+  const toggleExtra = (id: string) => {
+    setSelectedExtraIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
 
   const filteredDesigns = useMemo(() => {
     return mockData.filter(design => {
@@ -325,15 +374,38 @@ export default function CatalogoEtiquetas() {
     setGrade('');
     setGroup('');
     setAdditionalInfo('');
+    setSelectedPackageId(null);
+    setWantsLaminado(false);
+    setSelectedExtraIds([]);
   };
 
   const handleCloseModal = () => {
     setSelectedDesign(null);
   };
 
+  const handleSelectPackage = (packageId: string) => {
+    setSelectedPackageId(packageId);
+    setWantsLaminado(false);
+  };
+
   const handleSendWhatsApp = () => {
-    if (!selectedDesign) return;
-    const text = `¡Hola Imagine & Stamp! Quiero hacer mi pedido de etiquetas escolares con el diseño de ${selectedDesign}.\n\nNombre del niño(a): ${childName}\nGrado escolar: ${grade}\nGrupo: ${group}\nDatos adicionales: ${additionalInfo}`;
+    if (!selectedDesign || !selectedPackage) return;
+
+    let text = `¡Hola Imagine & Stamp! Quiero hacer mi pedido de etiquetas escolares con el diseño de ${selectedDesign}.\n\n`;
+    text += `*Paquete:* ${selectedPackage.label} - $${selectedPackage.price}\n`;
+    if (laminadoCost > 0) {
+      text += `*Laminado:* +$${laminadoCost}\n`;
+    }
+    if (selectedExtraIds.length > 0) {
+      text += `*Extras:*\n`;
+      selectedExtraIds.forEach(id => {
+        const extra = EXTRAS.find(e => e.id === id);
+        if (extra) text += `- ${extra.label} (+$${extra.price})\n`;
+      });
+    }
+    text += `*Total estimado:* $${orderTotal}\n\n`;
+    text += `Nombre del niño(a): ${childName}\nGrado escolar: ${grade}\nGrupo: ${group}\nDatos adicionales: ${additionalInfo}`;
+
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
     handleCloseModal();
   };
@@ -485,9 +557,89 @@ export default function CatalogoEtiquetas() {
               </button>
               
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Pedido: {selectedDesign}</h2>
-              <p className="text-gray-600 mb-6">Por favor llena estos datos para agilizar tu pedido por WhatsApp.</p>
-              
-              <div className="space-y-4">
+              <p className="text-gray-600 mb-6">Elige tu paquete y agrega extras si quieres, luego llena tus datos para enviar el pedido por WhatsApp.</p>
+
+              <div className="space-y-5">
+                {/* Selector de paquete */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-800 mb-2">Elige tu paquete *</label>
+                  {(['DTF UV', 'Textiles', 'Etiquetas Adhesivas'] as const).map(material => (
+                    <div key={material} className="mb-3">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">{material}</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {PACKAGES.filter(p => p.material === material).map(pkg => {
+                          const isSelected = selectedPackageId === pkg.id;
+                          return (
+                            <button
+                              key={pkg.id}
+                              type="button"
+                              onClick={() => handleSelectPackage(pkg.id)}
+                              className={`text-left border-2 rounded-xl p-3 transition-colors ${
+                                isSelected
+                                  ? 'border-blue-500 bg-blue-50'
+                                  : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                            >
+                              <p className="text-sm font-bold text-gray-900">{pkg.tier || pkg.label}</p>
+                              <p className="text-sm text-blue-600 font-bold">${pkg.price}</p>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Detalle + laminado del paquete elegido */}
+                {selectedPackage && (
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
+                    <p className="text-xs font-bold text-gray-700 mb-1">Incluye {selectedPackage.label}:</p>
+                    <ul className="text-xs text-gray-600 list-disc list-inside space-y-0.5 mb-2">
+                      {selectedPackage.includes.map(item => <li key={item}>{item}</li>)}
+                    </ul>
+                    {selectedPackage.laminadoPrice && (
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mt-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={wantsLaminado}
+                          onChange={(e) => setWantsLaminado(e.target.checked)}
+                          className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                        />
+                        Agregar laminado (+${selectedPackage.laminadoPrice})
+                      </label>
+                    )}
+                  </div>
+                )}
+
+                {/* Extras */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-800 mb-2">Extras (opcional)</label>
+                  <div className="space-y-1.5">
+                    {EXTRAS.map(extra => (
+                      <label key={extra.id} className="flex items-center justify-between gap-2 text-sm text-gray-700 border border-gray-200 rounded-lg px-3 py-2 cursor-pointer hover:border-gray-300">
+                        <span className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={selectedExtraIds.includes(extra.id)}
+                            onChange={() => toggleExtra(extra.id)}
+                            className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                          />
+                          {extra.label}
+                        </span>
+                        <span className="font-bold text-gray-900">+${extra.price}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Total */}
+                {selectedPackage && (
+                  <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+                    <span className="text-sm font-bold text-blue-900">Total estimado</span>
+                    <span className="text-xl font-black text-blue-700">${orderTotal}</span>
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del niño(a) *</label>
                   <input 
@@ -531,9 +683,12 @@ export default function CatalogoEtiquetas() {
                   />
                 </div>
                 
+                {!selectedPackage && (
+                  <p className="text-xs text-amber-600 font-medium text-center -mt-2">Selecciona un paquete para continuar</p>
+                )}
                 <button
                   onClick={handleSendWhatsApp}
-                  disabled={!childName.trim()}
+                  disabled={!childName.trim() || !selectedPackage}
                   className="w-full mt-2 bg-[#25D366] hover:bg-[#128C7E] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm"
                 >
                   <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
