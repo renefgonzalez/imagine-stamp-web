@@ -463,60 +463,89 @@ export default function CatalogoEtiquetas() {
           {/* Paso 1: Elegir paquete */}
           <div
             ref={packageSectionRef}
-            className={`mt-8 scroll-mt-4 rounded-2xl transition-shadow ${highlightPackages ? 'ring-4 ring-blue-400' : ''}`}
+            className={`mt-8 relative p-4 sm:p-8 rounded-3xl transition-shadow bg-white/50 backdrop-blur-sm border-2 border-dashed border-purple-200 overflow-hidden shadow-sm ${highlightPackages ? 'ring-4 ring-blue-400' : ''}`}
           >
-            <h2 className="text-xl font-bold text-gray-900 mb-1">1. Elige tu paquete</h2>
-            <p className="text-sm text-gray-500 mb-4">Toca una imagen para ver el ejemplo real de cada paquete.</p>
+            {/* Elementos decorativos del paquete */}
+            <div className="absolute top-4 right-4 sm:right-10 text-gray-800 opacity-60 rotate-12 pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 2L11 13" />
+                <path d="M22 2L15 22L11 13L2 9L22 2z" />
+              </svg>
+            </div>
+            <div className="absolute -top-4 -left-4 text-purple-400 opacity-60 -rotate-12 pointer-events-none">
+               <svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+                 <path d="M 10,90 Q 30,10 60,50 T 110,10" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray="6 6" strokeLinecap="round" />
+               </svg>
+            </div>
+            <div className="absolute bottom-10 right-1/4 text-yellow-400 opacity-80 pointer-events-none rotate-45">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+              </svg>
+            </div>
+
+            <div className="relative z-10">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-purple-600 mb-1 flex items-center gap-2">
+                <span className="bg-purple-500 text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl shadow-md">1</span> 
+                Elige tu paquete
+              </h2>
+              <p className="text-sm sm:text-base font-semibold text-purple-400 mb-6 ml-10 sm:ml-12">Toca una imagen para ver el ejemplo real de cada paquete.</p>
 
             {!selectedPackage ? (
               <>
-                <div className="mb-6">
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Etiquetas Adhesivas</p>
+                <div className="mb-8">
+                  <p className="text-sm sm:text-base font-bold text-pink-500 uppercase tracking-wider mb-3 ml-2 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-pink-400"></span>
+                    Etiquetas Adhesivas
+                  </p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
                     {PACKAGES.filter(p => p.material === 'Etiquetas Adhesivas').map(pkg => (
                       <button
                         key={pkg.id}
                         type="button"
                         onClick={() => handleSelectPackage(pkg.id)}
-                        className="text-left border-2 border-gray-200 hover:border-blue-400 rounded-2xl overflow-hidden bg-white transition-colors shadow-sm hover:shadow-md"
+                        className="text-left border-4 border-transparent hover:border-pink-300 rounded-3xl overflow-hidden bg-white/90 backdrop-blur-md transition-all transform hover:-translate-y-1 shadow-md hover:shadow-xl hover:shadow-pink-500/20 group"
                       >
-                        <div className="h-36 sm:h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
+                        <div className="h-36 sm:h-44 bg-[#fdf2f8] flex items-center justify-center overflow-hidden relative">
                           <img
                             src={pkg.previewImage}
                             alt={`Ejemplo del paquete ${pkg.tier || pkg.label}`}
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                             loading="lazy"
                           />
                         </div>
-                        <div className="p-3">
-                          <p className="text-sm sm:text-base font-bold text-gray-900">{pkg.tier || pkg.label}</p>
-                          <p className="text-base sm:text-lg text-blue-600 font-bold">${pkg.price}</p>
+                        <div className="p-3 sm:p-4">
+                          <p className="text-sm sm:text-lg font-bold text-purple-700">{pkg.tier || pkg.label}</p>
+                          <p className="text-base sm:text-xl text-pink-500 font-extrabold">${pkg.price}</p>
                         </div>
                       </button>
                     ))}
                   </div>
                 </div>
 
-                <div className="mb-6">
+                <div className="mb-4">
+                  <p className="text-sm sm:text-base font-bold text-cyan-500 uppercase tracking-wider mb-3 ml-2 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
+                    Especiales (DTF UV / Textiles)
+                  </p>
                   <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-md">
                     {PACKAGES.filter(p => p.material === 'DTF UV' || p.material === 'Textiles').map(pkg => (
                       <button
                         key={pkg.id}
                         type="button"
                         onClick={() => handleSelectPackage(pkg.id)}
-                        className="text-left border-2 border-gray-200 hover:border-blue-400 rounded-2xl overflow-hidden bg-white transition-colors shadow-sm hover:shadow-md"
+                        className="text-left border-4 border-transparent hover:border-cyan-300 rounded-3xl overflow-hidden bg-white/90 backdrop-blur-md transition-all transform hover:-translate-y-1 shadow-md hover:shadow-xl hover:shadow-cyan-500/20 group"
                       >
-                        <div className="h-36 sm:h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
+                        <div className="h-36 sm:h-44 bg-[#f0fdfa] flex items-center justify-center overflow-hidden relative">
                           <img
                             src={pkg.previewImage}
                             alt={`Ejemplo del paquete ${pkg.tier || pkg.label}`}
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                             loading="lazy"
                           />
                         </div>
-                        <div className="p-3">
-                          <p className="text-sm sm:text-base font-bold text-gray-900">{pkg.tier || pkg.label}</p>
-                          <p className="text-base sm:text-lg text-blue-600 font-bold">${pkg.price}</p>
+                        <div className="p-3 sm:p-4">
+                          <p className="text-sm sm:text-lg font-bold text-purple-700">{pkg.tier || pkg.label}</p>
+                          <p className="text-base sm:text-xl text-pink-500 font-extrabold">${pkg.price}</p>
                         </div>
                       </button>
                     ))}
@@ -524,24 +553,24 @@ export default function CatalogoEtiquetas() {
                 </div>
               </>
             ) : (
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4 bg-blue-50 border border-blue-200 rounded-2xl p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 bg-white/80 backdrop-blur-sm border-2 border-pink-200 shadow-md rounded-3xl p-4 sm:p-6 mt-4">
                 <img
                   src={selectedPackage.previewImage}
                   alt={`Paquete elegido: ${selectedPackage.label}`}
-                  className="w-24 h-32 object-cover rounded-xl flex-shrink-0 mx-auto sm:mx-0"
+                  className="w-28 h-36 object-cover rounded-2xl flex-shrink-0 mx-auto sm:mx-0 shadow-sm border border-gray-100"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-base font-bold text-gray-900">{selectedPackage.tier || selectedPackage.label} · <span className="text-blue-600">${selectedPackage.price}</span></p>
-                  <ul className="text-xs text-gray-600 list-disc list-inside space-y-0.5 mt-1">
+                  <p className="text-lg sm:text-xl font-extrabold text-purple-700">{selectedPackage.tier || selectedPackage.label} · <span className="text-pink-500">${selectedPackage.price}</span></p>
+                  <ul className="text-sm text-gray-600 list-disc list-inside space-y-1 mt-2 font-medium">
                     {selectedPackage.includes.map(item => <li key={item}>{item}</li>)}
                   </ul>
                   {selectedPackage.laminadoPrice && (
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mt-2 cursor-pointer">
+                    <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mt-4 cursor-pointer bg-pink-50 p-3 rounded-xl border border-pink-100 hover:bg-pink-100 transition-colors w-max">
                       <input
                         type="checkbox"
                         checked={wantsLaminado}
                         onChange={(e) => setWantsLaminado(e.target.checked)}
-                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                        className="w-5 h-5 rounded text-pink-500 focus:ring-pink-400"
                       />
                       Agregar laminado (+${selectedPackage.laminadoPrice})
                     </label>
@@ -549,12 +578,13 @@ export default function CatalogoEtiquetas() {
                 </div>
                 <button
                   onClick={() => setSelectedPackageId(null)}
-                  className="text-sm font-bold text-blue-600 hover:text-blue-800 underline flex-shrink-0 self-start sm:self-center"
+                  className="text-sm sm:text-base font-bold text-white bg-purple-400 hover:bg-purple-500 py-2 px-4 rounded-full flex-shrink-0 self-start sm:self-center shadow-md transition-colors"
                 >
                   Cambiar paquete
                 </button>
               </div>
             )}
+            </div>
           </div>
 
           {/* Paso 2: Elegir personaje */}
