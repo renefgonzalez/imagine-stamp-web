@@ -577,10 +577,10 @@ export default function CatalogoEtiquetas() {
             </div>
 
             {/* Tabs */}
-            <div className="mt-8 flex justify-center gap-4 flex-wrap">
+            <div className="mt-8 flex justify-start sm:justify-center gap-2 sm:gap-4 flex-nowrap overflow-x-auto pb-4 snap-x no-scrollbar">
               <button
                 onClick={() => setActiveTab('personajes')}
-                className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-all transform hover:scale-105 ${
+                className={`flex-shrink-0 px-4 sm:px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-all transform hover:scale-105 snap-center ${
                   activeTab === 'personajes'
                     ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/30'
                     : 'bg-white text-gray-500 border-2 border-purple-100 hover:border-purple-300'
@@ -590,7 +590,7 @@ export default function CatalogoEtiquetas() {
               </button>
               <button
                 onClick={() => setActiveTab('siluetas_nina')}
-                className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-all transform hover:scale-105 ${
+                className={`flex-shrink-0 px-4 sm:px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-all transform hover:scale-105 snap-center ${
                   activeTab === 'siluetas_nina'
                     ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/30'
                     : 'bg-white text-gray-500 border-2 border-pink-100 hover:border-pink-300'
@@ -600,7 +600,7 @@ export default function CatalogoEtiquetas() {
               </button>
               <button
                 onClick={() => setActiveTab('siluetas_nino')}
-                className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-all transform hover:scale-105 ${
+                className={`flex-shrink-0 px-4 sm:px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-all transform hover:scale-105 snap-center ${
                   activeTab === 'siluetas_nino'
                     ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
                     : 'bg-white text-gray-500 border-2 border-blue-100 hover:border-blue-300'
