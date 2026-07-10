@@ -15,7 +15,6 @@ import AdminPanel from './AdminPanel';
 
 import CatalogoEtiquetas from './modules/etiquetas-escolares/pages/CatalogoEtiquetas';
 
-import LaCazonaMenu from './modules/la-cazona/pages/LaCazonaMenu';
 import LaCasaDeLaMontana from './modules/la-casa-de-la-montana/pages/LaCasaMenu';
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -731,7 +730,6 @@ export default function App() {
         <Route path="/demo-menu" element={<DemoMenu />} />
 
         <Route path="/etiquetas-escolares" element={<ErrorBoundary><CatalogoEtiquetas /></ErrorBoundary>} />
-        <Route path="/la-cazona" element={<ErrorBoundary><LaCazonaMenu /></ErrorBoundary>} />
         <Route path="/la-casa-de-la-montana" element={<ErrorBoundary><LaCasaDeLaMontana /></ErrorBoundary>} />
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
