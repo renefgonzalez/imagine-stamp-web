@@ -18,7 +18,6 @@ import CatalogoEtiquetas from './modules/etiquetas-escolares/pages/CatalogoEtiqu
 import ProveedoraMenu from './modules/proveedora-san-luis/pages/ProveedoraMenu';
 import LaCazonaMenu from './modules/la-cazona/pages/LaCazonaMenu';
 import LaCasaDeLaMontana from './modules/la-casa-de-la-montana/pages/LaCasaMenu';
-import MarketplusMenu from './modules/marketplus/pages/MarketplusMenu';
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
 import { CartButton } from './components/common/CartButton';
@@ -736,7 +735,6 @@ export default function App() {
         <Route path="/proveedora-san-luis" element={<ErrorBoundary><ProveedoraMenu /></ErrorBoundary>} />
         <Route path="/la-cazona" element={<ErrorBoundary><LaCazonaMenu /></ErrorBoundary>} />
         <Route path="/la-casa-de-la-montana" element={<ErrorBoundary><LaCasaDeLaMontana /></ErrorBoundary>} />
-        <Route path="/marketplus" element={<ErrorBoundary><MarketplusMenu /></ErrorBoundary>} />
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
     </HashRouter>
