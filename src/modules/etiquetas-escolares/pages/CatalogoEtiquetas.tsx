@@ -2,6 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { GlobalFooter } from '../../../components/common/GlobalFooter';
+import imgDtfUv from '../assets/paquetes/dtf-uv.png';
+import imgTextiles from '../assets/paquetes/textiles.png';
+import imgEsencial from '../assets/paquetes/esencial.png';
+import imgClasico from '../assets/paquetes/clasico.png';
+import imgPremium from '../assets/paquetes/premium.png';
+import imgContorno from '../assets/paquetes/contorno.png';
 
 const BASE_URL = 'https://catalogo.imagineandstamp.site/';
 const WHATSAPP_NUMBER = '525650469993'; // Replace with actual number
@@ -307,15 +313,16 @@ interface PackageOption {
   price: number;
   includes: string[];
   laminadoPrice?: number;
+  previewImage: string;
 }
 
 const PACKAGES: PackageOption[] = [
-  { id: 'dtf-uv', material: 'DTF UV', label: 'DTF UV', price: 150, includes: ['Etiquetas 100% lavables', 'Organiza tu plantilla a tu gusto', 'Tamaño carta', 'Un nombre y diseño por hoja', 'Con o sin fondo blanco'] },
-  { id: 'textiles', material: 'Textiles', label: 'Textiles', price: 100, includes: ['Etiquetas 100% lavables', 'Organiza tu plantilla a tu gusto', 'Tamaño carta', 'Un nombre y diseño por hoja'] },
-  { id: 'adhesivas-esencial', material: 'Etiquetas Adhesivas', tier: 'Esencial', label: 'Etiquetas Adhesivas · Esencial', price: 150, includes: ['20 pz libretas 9x5 cm', '30 pz lápices 6x2.5 cm'], laminadoPrice: 30 },
-  { id: 'adhesivas-clasico', material: 'Etiquetas Adhesivas', tier: 'Clásico', label: 'Etiquetas Adhesivas · Clásico', price: 250, includes: ['20 pz libretas 9x5 cm', '30 pz lápices 6x2.5 cm', '14 circulares 5 cm (vinil)', '1 tag grande'], laminadoPrice: 40 },
-  { id: 'adhesivas-premium', material: 'Etiquetas Adhesivas', tier: 'Premium', label: 'Etiquetas Adhesivas · Premium', price: 360, includes: ['24 pz libretas 9x5 cm', '48 pz lápices 6x2.5 cm', '9 circulares 5 cm (vinil)', '8 circulares 4 cm (vinil)', '1 tag grande con llavero', '1 tag chico'], laminadoPrice: 50 },
-  { id: 'adhesivas-contorno', material: 'Etiquetas Adhesivas', tier: 'Contorno', label: 'Etiquetas Adhesivas · Contorno', price: 180, includes: ['24 pz, largo 8 cm', '25 pz, largo 5 cm', '1 tag grande'], laminadoPrice: 30 },
+  { id: 'dtf-uv', material: 'DTF UV', label: 'DTF UV', price: 150, includes: ['Etiquetas 100% lavables', 'Organiza tu plantilla a tu gusto', 'Tamaño carta', 'Un nombre y diseño por hoja', 'Con o sin fondo blanco'], previewImage: imgDtfUv },
+  { id: 'textiles', material: 'Textiles', label: 'Textiles', price: 100, includes: ['Etiquetas 100% lavables', 'Organiza tu plantilla a tu gusto', 'Tamaño carta', 'Un nombre y diseño por hoja'], previewImage: imgTextiles },
+  { id: 'adhesivas-esencial', material: 'Etiquetas Adhesivas', tier: 'Esencial', label: 'Etiquetas Adhesivas · Esencial', price: 150, includes: ['20 pz libretas 9x5 cm', '30 pz lápices 6x2.5 cm'], laminadoPrice: 30, previewImage: imgEsencial },
+  { id: 'adhesivas-clasico', material: 'Etiquetas Adhesivas', tier: 'Clásico', label: 'Etiquetas Adhesivas · Clásico', price: 250, includes: ['20 pz libretas 9x5 cm', '30 pz lápices 6x2.5 cm', '14 circulares 5 cm (vinil)', '1 tag grande'], laminadoPrice: 40, previewImage: imgClasico },
+  { id: 'adhesivas-premium', material: 'Etiquetas Adhesivas', tier: 'Premium', label: 'Etiquetas Adhesivas · Premium', price: 360, includes: ['24 pz libretas 9x5 cm', '48 pz lápices 6x2.5 cm', '9 circulares 5 cm (vinil)', '8 circulares 4 cm (vinil)', '1 tag grande con llavero', '1 tag chico'], laminadoPrice: 50, previewImage: imgPremium },
+  { id: 'adhesivas-contorno', material: 'Etiquetas Adhesivas', tier: 'Contorno', label: 'Etiquetas Adhesivas · Contorno', price: 180, includes: ['24 pz, largo 8 cm', '25 pz, largo 5 cm', '1 tag grande'], laminadoPrice: 30, previewImage: imgContorno },
 ];
 
 interface ExtraOption {
@@ -562,11 +569,11 @@ export default function CatalogoEtiquetas() {
               <div className="space-y-5">
                 {/* Selector de paquete */}
                 <div>
-                  <label className="block text-sm font-bold text-gray-800 mb-2">Elige tu paquete *</label>
+                  <label className="block text-sm font-bold text-gray-800 mb-2">Elige tu paquete * <span className="font-normal text-gray-400">(toca una imagen para ver ejemplos reales)</span></label>
                   {(['DTF UV', 'Textiles', 'Etiquetas Adhesivas'] as const).map(material => (
                     <div key={material} className="mb-3">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">{material}</p>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-2">
                         {PACKAGES.filter(p => p.material === material).map(pkg => {
                           const isSelected = selectedPackageId === pkg.id;
                           return (
@@ -574,14 +581,25 @@ export default function CatalogoEtiquetas() {
                               key={pkg.id}
                               type="button"
                               onClick={() => handleSelectPackage(pkg.id)}
-                              className={`text-left border-2 rounded-xl p-3 transition-colors ${
+                              className={`w-full text-left border-2 rounded-xl p-2 flex gap-3 items-center transition-colors ${
                                 isSelected
                                   ? 'border-blue-500 bg-blue-50'
                                   : 'border-gray-200 hover:border-gray-300'
                               }`}
                             >
-                              <p className="text-sm font-bold text-gray-900">{pkg.tier || pkg.label}</p>
-                              <p className="text-sm text-blue-600 font-bold">${pkg.price}</p>
+                              <img
+                                src={pkg.previewImage}
+                                alt={`Ejemplo del paquete ${pkg.tier || pkg.label}`}
+                                className="w-16 h-20 object-cover rounded-lg flex-shrink-0 bg-gray-100"
+                                loading="lazy"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-bold text-gray-900">{pkg.tier || pkg.label}</p>
+                                <p className="text-sm text-blue-600 font-bold mb-1">${pkg.price}</p>
+                                <ul className="text-[11px] text-gray-500 leading-snug">
+                                  {pkg.includes.map(item => <li key={item}>• {item}</li>)}
+                                </ul>
+                              </div>
                             </button>
                           );
                         })}
@@ -590,24 +608,31 @@ export default function CatalogoEtiquetas() {
                   ))}
                 </div>
 
-                {/* Detalle + laminado del paquete elegido */}
+                {/* Vista grande del paquete elegido + laminado */}
                 {selectedPackage && (
-                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
-                    <p className="text-xs font-bold text-gray-700 mb-1">Incluye {selectedPackage.label}:</p>
-                    <ul className="text-xs text-gray-600 list-disc list-inside space-y-0.5 mb-2">
-                      {selectedPackage.includes.map(item => <li key={item}>{item}</li>)}
-                    </ul>
-                    {selectedPackage.laminadoPrice && (
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mt-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={wantsLaminado}
-                          onChange={(e) => setWantsLaminado(e.target.checked)}
-                          className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
-                        />
-                        Agregar laminado (+${selectedPackage.laminadoPrice})
-                      </label>
-                    )}
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 flex gap-3">
+                    <img
+                      src={selectedPackage.previewImage}
+                      alt={`Vista de ${selectedPackage.label}`}
+                      className="w-24 h-32 object-cover rounded-lg flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-gray-700 mb-1">Elegiste: {selectedPackage.label}</p>
+                      <ul className="text-xs text-gray-600 list-disc list-inside space-y-0.5 mb-2">
+                        {selectedPackage.includes.map(item => <li key={item}>{item}</li>)}
+                      </ul>
+                      {selectedPackage.laminadoPrice && (
+                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mt-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={wantsLaminado}
+                            onChange={(e) => setWantsLaminado(e.target.checked)}
+                            className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                          />
+                          Agregar laminado (+${selectedPackage.laminadoPrice})
+                        </label>
+                      )}
+                    </div>
                   </div>
                 )}
 
