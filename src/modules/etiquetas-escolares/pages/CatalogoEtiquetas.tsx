@@ -434,17 +434,31 @@ export default function CatalogoEtiquetas() {
 
 
   return (
-    <div className="min-h-screen bg-[#f0f9ff] flex flex-col font-['Fredoka',_sans-serif]">
+    <div 
+      className="min-h-screen flex flex-col font-['Fredoka',_sans-serif] relative overflow-hidden"
+      style={{
+        backgroundColor: '#ffffff',
+        backgroundImage: 'linear-gradient(#bae6fd 1px, transparent 1px), linear-gradient(90deg, #bae6fd 1px, transparent 1px)',
+        backgroundSize: '30px 30px',
+        backgroundPosition: 'center top'
+      }}
+    >
       <style>
         {`@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');`}
       </style>
+      {/* Decoraciones de fondo (Manchas/Formas) */}
+      <div className="absolute top-0 left-0 w-64 h-64 bg-cyan-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+      <div className="absolute top-40 right-0 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 translate-x-1/3 pointer-events-none"></div>
+      <div className="absolute bottom-0 left-20 w-80 h-80 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 translate-y-1/3 pointer-events-none"></div>
+      <div className="absolute bottom-1/2 right-10 w-40 h-40 bg-yellow-300 rounded-full mix-blend-multiply filter blur-2xl opacity-40 pointer-events-none"></div>
+
       {/* Hero Section */}
-      <header className="bg-white/80 backdrop-blur-md shadow-sm border-b-4 border-yellow-400">
-        <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-center text-purple-600 tracking-tight drop-shadow-sm mb-2">
+      <header className="relative bg-white/70 backdrop-blur-md shadow-sm border-b-4 border-yellow-400 z-10">
+        <div className="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
+          <h1 className="text-5xl sm:text-6xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 tracking-tight drop-shadow-sm mb-3">
             🎒 Catálogo de Etiquetas 2026 🖍️
           </h1>
-          <p className="text-center text-pink-500 font-bold text-lg">¡Listos para el regreso a clases!</p>
+          <p className="text-center text-purple-600 font-bold text-xl sm:text-2xl">¡Luce útiles impecables en este regreso a clases!</p>
 
           {/* Paso 1: Elegir paquete */}
           <div
