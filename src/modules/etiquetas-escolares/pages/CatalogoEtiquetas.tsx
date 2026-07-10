@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { GlobalFooter } from '../../../components/common/GlobalFooter';
@@ -350,9 +350,14 @@ export default function CatalogoEtiquetas() {
   const [grade, setGrade] = useState('');
   const [group, setGroup] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
+  // Paso 1: paquete (elegido antes de navegar el catálogo de personajes)
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null);
   const [wantsLaminado, setWantsLaminado] = useState(false);
   const [selectedExtraIds, setSelectedExtraIds] = useState<string[]>([]);
+  const [highlightPackages, setHighlightPackages] = useState(false);
+
+  const packageSectionRef = useRef<HTMLDivElement>(null);
+  const catalogSectionRef = useRef<HTMLDivElement>(null);
 
   const selectedPackage = useMemo(
     () => PACKAGES.find(p => p.id === selectedPackageId) || null,
@@ -366,6 +371,12 @@ export default function CatalogoEtiquetas() {
     setSelectedExtraIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
 
+  useEffect(() => {
+    if (selectedPackageId) {
+      catalogSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [selectedPackageId]);
+
   const filteredDesigns = useMemo(() => {
     return mockData.filter(design => {
       const designCategory = design.category || 'personajes';
@@ -376,13 +387,17 @@ export default function CatalogoEtiquetas() {
   }, [searchQuery, activeTab]);
 
   const handleOpenModal = (designName: string) => {
+    if (!selectedPackageId) {
+      setHighlightPackages(true);
+      packageSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => setHighlightPackages(false), 1600);
+      return;
+    }
     setSelectedDesign(designName);
     setChildName('');
     setGrade('');
     setGroup('');
     setAdditionalInfo('');
-    setSelectedPackageId(null);
-    setWantsLaminado(false);
     setSelectedExtraIds([]);
   };
 
@@ -419,60 +434,167 @@ export default function CatalogoEtiquetas() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f0f9ff] flex flex-col font-['Fredoka',_sans-serif]">
+      <style>
+        {`@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');`}
+      </style>
       {/* Hero Section */}
-      <header className="bg-white shadow-sm sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-extrabold text-center text-gray-900 tracking-tight">
-            Catálogo de Etiquetas Escolares 2026
+      <header className="bg-white/80 backdrop-blur-md shadow-sm border-b-4 border-yellow-400">
+        <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-center text-purple-600 tracking-tight drop-shadow-sm mb-2">
+            🎒 Catálogo de Etiquetas 2026 🖍️
           </h1>
-          
-          {/* Search Bar */}
-          <div className="mt-6 max-w-xl mx-auto relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Search className="h-6 w-6 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Buscar diseño (ej. Among Us)..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl text-lg focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-colors shadow-sm outline-none"
-            />
+          <p className="text-center text-pink-500 font-bold text-lg">¡Listos para el regreso a clases!</p>
+
+          {/* Paso 1: Elegir paquete */}
+          <div
+            ref={packageSectionRef}
+            className={`mt-8 scroll-mt-4 rounded-2xl transition-shadow ${highlightPackages ? 'ring-4 ring-blue-400' : ''}`}
+          >
+            <h2 className="text-xl font-bold text-gray-900 mb-1">1. Elige tu paquete</h2>
+            <p className="text-sm text-gray-500 mb-4">Toca una imagen para ver el ejemplo real de cada paquete.</p>
+
+            {!selectedPackage ? (
+              <>
+                <div className="mb-6">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Etiquetas Adhesivas</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+                    {PACKAGES.filter(p => p.material === 'Etiquetas Adhesivas').map(pkg => (
+                      <button
+                        key={pkg.id}
+                        type="button"
+                        onClick={() => handleSelectPackage(pkg.id)}
+                        className="text-left border-2 border-gray-200 hover:border-blue-400 rounded-2xl overflow-hidden bg-white transition-colors shadow-sm hover:shadow-md"
+                      >
+                        <div className="h-36 sm:h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
+                          <img
+                            src={pkg.previewImage}
+                            alt={`Ejemplo del paquete ${pkg.tier || pkg.label}`}
+                            className="w-full h-full object-contain"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="p-3">
+                          <p className="text-sm sm:text-base font-bold text-gray-900">{pkg.tier || pkg.label}</p>
+                          <p className="text-base sm:text-lg text-blue-600 font-bold">${pkg.price}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-md">
+                    {PACKAGES.filter(p => p.material === 'DTF UV' || p.material === 'Textiles').map(pkg => (
+                      <button
+                        key={pkg.id}
+                        type="button"
+                        onClick={() => handleSelectPackage(pkg.id)}
+                        className="text-left border-2 border-gray-200 hover:border-blue-400 rounded-2xl overflow-hidden bg-white transition-colors shadow-sm hover:shadow-md"
+                      >
+                        <div className="h-36 sm:h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
+                          <img
+                            src={pkg.previewImage}
+                            alt={`Ejemplo del paquete ${pkg.tier || pkg.label}`}
+                            className="w-full h-full object-contain"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="p-3">
+                          <p className="text-sm sm:text-base font-bold text-gray-900">{pkg.tier || pkg.label}</p>
+                          <p className="text-base sm:text-lg text-blue-600 font-bold">${pkg.price}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 bg-blue-50 border border-blue-200 rounded-2xl p-4">
+                <img
+                  src={selectedPackage.previewImage}
+                  alt={`Paquete elegido: ${selectedPackage.label}`}
+                  className="w-24 h-32 object-cover rounded-xl flex-shrink-0 mx-auto sm:mx-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-base font-bold text-gray-900">{selectedPackage.tier || selectedPackage.label} · <span className="text-blue-600">${selectedPackage.price}</span></p>
+                  <ul className="text-xs text-gray-600 list-disc list-inside space-y-0.5 mt-1">
+                    {selectedPackage.includes.map(item => <li key={item}>{item}</li>)}
+                  </ul>
+                  {selectedPackage.laminadoPrice && (
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mt-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={wantsLaminado}
+                        onChange={(e) => setWantsLaminado(e.target.checked)}
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                      />
+                      Agregar laminado (+${selectedPackage.laminadoPrice})
+                    </label>
+                  )}
+                </div>
+                <button
+                  onClick={() => setSelectedPackageId(null)}
+                  className="text-sm font-bold text-blue-600 hover:text-blue-800 underline flex-shrink-0 self-start sm:self-center"
+                >
+                  Cambiar paquete
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Tabs */}
-          <div className="mt-8 flex justify-center gap-4 flex-wrap">
-            <button
-              onClick={() => setActiveTab('personajes')}
-              className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-colors ${
-                activeTab === 'personajes' 
-                  ? 'bg-blue-600 text-white shadow-md' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              Personajes
-            </button>
-            <button
-              onClick={() => setActiveTab('siluetas_nina')}
-              className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-colors ${
-                activeTab === 'siluetas_nina' 
-                  ? 'bg-blue-600 text-white shadow-md' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              Siluetas Niñas
-            </button>
-            <button
-              onClick={() => setActiveTab('siluetas_nino')}
-              className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-colors ${
-                activeTab === 'siluetas_nino' 
-                  ? 'bg-blue-600 text-white shadow-md' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              Siluetas Niños
-            </button>
+          {/* Paso 2: Elegir personaje */}
+          <div ref={catalogSectionRef} className="mt-10 scroll-mt-4">
+            <h2 className="text-xl font-bold text-gray-900 mb-1">2. Elige tu personaje</h2>
+            <p className="text-sm text-gray-500 mb-4">Busca o navega el diseño que más le guste.</p>
+
+            {/* Search Bar */}
+            <div className="max-w-xl mx-auto relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Search className="h-6 w-6 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Buscar diseño (ej. Among Us)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="block w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl text-lg focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-colors shadow-sm outline-none"
+              />
+            </div>
+
+            {/* Tabs */}
+            <div className="mt-8 flex justify-center gap-4 flex-wrap">
+              <button
+                onClick={() => setActiveTab('personajes')}
+                className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-all transform hover:scale-105 ${
+                  activeTab === 'personajes'
+                    ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/30'
+                    : 'bg-white text-gray-500 border-2 border-purple-100 hover:border-purple-300'
+                }`}
+              >
+                Personajes
+              </button>
+              <button
+                onClick={() => setActiveTab('siluetas_nina')}
+                className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-all transform hover:scale-105 ${
+                  activeTab === 'siluetas_nina'
+                    ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/30'
+                    : 'bg-white text-gray-500 border-2 border-pink-100 hover:border-pink-300'
+                }`}
+              >
+                Siluetas Niñas
+              </button>
+              <button
+                onClick={() => setActiveTab('siluetas_nino')}
+                className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base transition-all transform hover:scale-105 ${
+                  activeTab === 'siluetas_nino'
+                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
+                    : 'bg-white text-gray-500 border-2 border-blue-100 hover:border-blue-300'
+                }`}
+              >
+                Siluetas Niños
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -564,74 +686,22 @@ export default function CatalogoEtiquetas() {
               </button>
               
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Pedido: {selectedDesign}</h2>
-              <p className="text-gray-600 mb-6">Elige tu paquete y agrega extras si quieres, luego llena tus datos para enviar el pedido por WhatsApp.</p>
+              <p className="text-gray-600 mb-6">Agrega extras si quieres, luego llena tus datos para enviar el pedido por WhatsApp.</p>
 
               <div className="space-y-5">
-                {/* Selector de paquete */}
-                <div>
-                  <label className="block text-sm font-bold text-gray-800 mb-2">Elige tu paquete * <span className="font-normal text-gray-400">(toca una imagen para ver ejemplos reales)</span></label>
-                  {(['DTF UV', 'Textiles', 'Etiquetas Adhesivas'] as const).map(material => (
-                    <div key={material} className="mb-3">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">{material}</p>
-                      <div className="space-y-2">
-                        {PACKAGES.filter(p => p.material === material).map(pkg => {
-                          const isSelected = selectedPackageId === pkg.id;
-                          return (
-                            <button
-                              key={pkg.id}
-                              type="button"
-                              onClick={() => handleSelectPackage(pkg.id)}
-                              className={`w-full text-left border-2 rounded-xl p-2 flex gap-3 items-center transition-colors ${
-                                isSelected
-                                  ? 'border-blue-500 bg-blue-50'
-                                  : 'border-gray-200 hover:border-gray-300'
-                              }`}
-                            >
-                              <img
-                                src={pkg.previewImage}
-                                alt={`Ejemplo del paquete ${pkg.tier || pkg.label}`}
-                                className="w-16 h-20 object-cover rounded-lg flex-shrink-0 bg-gray-100"
-                                loading="lazy"
-                              />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-gray-900">{pkg.tier || pkg.label}</p>
-                                <p className="text-sm text-blue-600 font-bold mb-1">${pkg.price}</p>
-                                <ul className="text-[11px] text-gray-500 leading-snug">
-                                  {pkg.includes.map(item => <li key={item}>• {item}</li>)}
-                                </ul>
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Vista grande del paquete elegido + laminado */}
+                {/* Resumen del paquete ya elegido (paso 1) */}
                 {selectedPackage && (
                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 flex gap-3">
                     <img
                       src={selectedPackage.previewImage}
-                      alt={`Vista de ${selectedPackage.label}`}
-                      className="w-24 h-32 object-cover rounded-lg flex-shrink-0"
+                      alt={`Paquete elegido: ${selectedPackage.label}`}
+                      className="w-16 h-20 object-cover rounded-lg flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-gray-700 mb-1">Elegiste: {selectedPackage.label}</p>
-                      <ul className="text-xs text-gray-600 list-disc list-inside space-y-0.5 mb-2">
+                      <p className="text-xs font-bold text-gray-700 mb-1">Paquete: {selectedPackage.label} · ${selectedPackage.price}{laminadoCost > 0 ? ` + laminado $${laminadoCost}` : ''}</p>
+                      <ul className="text-xs text-gray-600 list-disc list-inside space-y-0.5">
                         {selectedPackage.includes.map(item => <li key={item}>{item}</li>)}
                       </ul>
-                      {selectedPackage.laminadoPrice && (
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mt-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={wantsLaminado}
-                            onChange={(e) => setWantsLaminado(e.target.checked)}
-                            className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
-                          />
-                          Agregar laminado (+${selectedPackage.laminadoPrice})
-                        </label>
-                      )}
                     </div>
                   </div>
                 )}
@@ -708,9 +778,6 @@ export default function CatalogoEtiquetas() {
                   />
                 </div>
                 
-                {!selectedPackage && (
-                  <p className="text-xs text-amber-600 font-medium text-center -mt-2">Selecciona un paquete para continuar</p>
-                )}
                 <button
                   onClick={handleSendWhatsApp}
                   disabled={!childName.trim() || !selectedPackage}
