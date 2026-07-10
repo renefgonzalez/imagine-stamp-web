@@ -452,6 +452,33 @@ export default function CatalogoEtiquetas() {
       <div className="absolute bottom-0 left-20 w-80 h-80 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 translate-y-1/3 pointer-events-none"></div>
       <div className="absolute bottom-1/2 right-10 w-40 h-40 bg-yellow-300 rounded-full mix-blend-multiply filter blur-2xl opacity-40 pointer-events-none"></div>
 
+      {/* Marcas de agua / Dibujos distribuidos */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-20">
+        <svg className="absolute top-[10%] left-[5%] text-yellow-400 rotate-12 w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7.5-6.3-4.8-6.3 4.8 2.3-7.5-6-4.6h7.6z" />
+        </svg>
+        <svg className="absolute top-[20%] right-[10%] text-green-500 -rotate-12 w-20 h-20" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
+        <svg className="absolute top-[40%] left-[15%] text-pink-500 rotate-45 w-12 h-12" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7.5-6.3-4.8-6.3 4.8 2.3-7.5-6-4.6h7.6z" />
+        </svg>
+        <svg className="absolute top-[50%] right-[5%] text-yellow-500 w-24 h-24 -rotate-6" fill="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm8 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm-4 7c3 0 5.5-2 6.5-5H5.5c1 3 3.5 5 6.5 5z" fill="#fff"/>
+        </svg>
+        <svg className="absolute top-[70%] left-[8%] text-purple-400 rotate-12 w-24 h-24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path d="M3 12c3-4 6-4 9 0s6 4 9 0" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M3 16c3-4 6-4 9 0s6 4 9 0" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        <svg className="absolute bottom-[10%] right-[15%] text-orange-500 rotate-12 w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7.5-6.3-4.8-6.3 4.8 2.3-7.5-6-4.6h7.6z" />
+        </svg>
+        <svg className="absolute bottom-[20%] left-[20%] text-blue-400 -rotate-45 w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+           <circle cx="12" cy="12" r="10" />
+        </svg>
+      </div>
+
       {/* Hero Section */}
       <header className="relative bg-white/70 backdrop-blur-md shadow-sm border-b-4 border-yellow-400 z-10">
         <div className="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
