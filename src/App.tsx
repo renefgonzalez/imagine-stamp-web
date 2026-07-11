@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, ErrorInfo, ReactNode, Component } from 'react';
+import React, { useState, useMemo, useEffect, ErrorInfo, ReactNode, Component, Suspense } from 'react';
 import { supabase } from './lib/supabase';
 import { 
   Search, Heart, Plus, Sparkles, X, ShoppingBag,
@@ -13,7 +13,7 @@ import logo from './logo.png';
 import DemoMenu from './modules/demo-menu/pages/DemoMenu';
 import AdminPanel from './AdminPanel';
 
-import CatalogoEtiquetas from './modules/etiquetas-escolares/pages/CatalogoEtiquetas';
+const CatalogoEtiquetas = React.lazy(() => import('./modules/etiquetas-escolares/pages/CatalogoEtiquetas'));
 
 import LaCasaDeLaMontana from './modules/la-casa-de-la-montana/pages/LaCasaMenu';
 import { GlobalFooter } from './components/common/GlobalFooter';
@@ -729,7 +729,7 @@ export default function App() {
         } />
         <Route path="/demo-menu" element={<DemoMenu />} />
 
-        <Route path="/etiquetas-escolares" element={<ErrorBoundary><CatalogoEtiquetas /></ErrorBoundary>} />
+        <Route path="/etiquetas-escolares" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" /></div>}><CatalogoEtiquetas /></Suspense></ErrorBoundary>} />
         <Route path="/la-casa-de-la-montana" element={<ErrorBoundary><LaCasaDeLaMontana /></ErrorBoundary>} />
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
