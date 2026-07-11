@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { GlobalFooter } from '../../../components/common/GlobalFooter';
@@ -340,81 +340,55 @@ const EXTRAS: ExtraOption[] = [
   { id: 'extra-materias', label: 'Materias en etiqueta libreta', price: 30 },
 ];
 
-export default function CatalogoEtiquetas() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'personajes' | 'siluetas_nina' | 'siluetas_nino'>('personajes');
+const TAB_STYLE = {
+  personajes: {
+    imageBg: 'bg-purple-50',
+    topBar: 'bg-gradient-to-r from-purple-400 to-pink-400',
+    hoverBorder: 'hover:border-purple-200',
+    hoverShadow: 'hover:shadow-purple-100',
+  },
+  siluetas_nina: {
+    imageBg: 'bg-pink-50',
+    topBar: 'bg-gradient-to-r from-pink-400 to-rose-400',
+    hoverBorder: 'hover:border-pink-200',
+    hoverShadow: 'hover:shadow-pink-100',
+  },
+  siluetas_nino: {
+    imageBg: 'bg-sky-50',
+    topBar: 'bg-gradient-to-r from-sky-400 to-blue-400',
+    hoverBorder: 'hover:border-sky-200',
+    hoverShadow: 'hover:shadow-sky-100',
+  },
+} as const;
 
-  // Modal state
-  const [selectedDesign, setSelectedDesign] = useState<string | null>(null);
+// Estado del formulario de pedido vive aquí, aislado del catálogo:
+// así escribir en estos campos no re-renderiza las 300+ tarjetas de personajes.
+interface OrderModalProps {
+  design: string;
+  pkg: PackageOption;
+  laminadoCost: number;
+  whatsappNumber: string;
+  onClose: () => void;
+  onComplete: () => void;
+}
+
+function OrderModal({ design, pkg, laminadoCost, whatsappNumber, onClose, onComplete }: OrderModalProps) {
   const [childName, setChildName] = useState('');
   const [grade, setGrade] = useState('');
   const [group, setGroup] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
-  // Paso 1: paquete (elegido antes de navegar el catálogo de personajes)
-  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null);
-  const [wantsLaminado, setWantsLaminado] = useState(false);
   const [selectedExtraIds, setSelectedExtraIds] = useState<string[]>([]);
-  const [highlightPackages, setHighlightPackages] = useState(false);
 
-  const packageSectionRef = useRef<HTMLDivElement>(null);
-  const catalogSectionRef = useRef<HTMLDivElement>(null);
-
-  const selectedPackage = useMemo(
-    () => PACKAGES.find(p => p.id === selectedPackageId) || null,
-    [selectedPackageId]
-  );
-  const laminadoCost = wantsLaminado && selectedPackage?.laminadoPrice ? selectedPackage.laminadoPrice : 0;
   const extrasCost = selectedExtraIds.reduce((sum, id) => sum + (EXTRAS.find(e => e.id === id)?.price || 0), 0);
-  const orderTotal = (selectedPackage?.price || 0) + laminadoCost + extrasCost;
+  const orderTotal = pkg.price + laminadoCost + extrasCost;
 
   const toggleExtra = (id: string) => {
     setSelectedExtraIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
 
-  useEffect(() => {
-    if (selectedPackageId) {
-      catalogSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [selectedPackageId]);
-
-  const filteredDesigns = useMemo(() => {
-    return mockData.filter(design => {
-      const designCategory = design.category || 'personajes';
-      const matchesCategory = designCategory === activeTab;
-      const matchesSearch = design.name.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
-  }, [searchQuery, activeTab]);
-
-  const handleOpenModal = (designName: string) => {
-    if (!selectedPackageId) {
-      setHighlightPackages(true);
-      packageSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setTimeout(() => setHighlightPackages(false), 1600);
-      return;
-    }
-    setSelectedDesign(designName);
-    setChildName('');
-    setGrade('');
-    setGroup('');
-    setAdditionalInfo('');
-    setSelectedExtraIds([]);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedDesign(null);
-  };
-
-  const handleSelectPackage = (packageId: string) => {
-    setSelectedPackageId(packageId);
-    setWantsLaminado(false);
-  };
-
   const handleSendWhatsApp = () => {
-    if (!selectedDesign || !selectedPackage) return;
-
-    let text = `¡Hola Imagine & Stamp! Quiero hacer mi pedido de etiquetas escolares con el diseño de ${selectedDesign}.\n\n`;
-    text += `*Paquete:* ${selectedPackage.label} - $${selectedPackage.price}\n`;
+    let text = `¡Hola Imagine & Stamp! Quiero hacer mi pedido de etiquetas escolares con el diseño de ${design}.\n\n`;
+    text += `*Paquete:* ${pkg.label} - $${pkg.price}\n`;
     if (laminadoCost > 0) {
       text += `*Laminado:* +$${laminadoCost}\n`;
     }
@@ -428,8 +402,279 @@ export default function CatalogoEtiquetas() {
     text += `*Total estimado:* $${orderTotal}\n\n`;
     text += `Nombre del niño(a): ${childName}\nGrado escolar: ${grade}\nGrupo: ${group}\nDatos adicionales: ${additionalInfo}`;
 
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
-    handleCloseModal();
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`, '_blank');
+    onComplete();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl relative max-h-[90vh] overflow-y-auto"
+      >
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          <X className="w-6 h-6" />
+        </button>
+
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Pedido: {design}</h2>
+        <p className="text-gray-600 mb-6">Agrega extras si quieres, luego llena tus datos para enviar el pedido por WhatsApp.</p>
+
+        <div className="space-y-5">
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 flex gap-3">
+            <img
+              src={pkg.previewImage}
+              alt={`Paquete elegido: ${pkg.label}`}
+              className="w-16 h-20 object-cover rounded-lg flex-shrink-0"
+            />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-gray-700 mb-1">Paquete: {pkg.label} · ${pkg.price}{laminadoCost > 0 ? ` + laminado $${laminadoCost}` : ''}</p>
+              <ul className="text-xs text-gray-600 list-disc list-inside space-y-0.5">
+                {pkg.includes.map(item => <li key={item}>{item}</li>)}
+              </ul>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-gray-800 mb-2">Extras (opcional)</label>
+            <div className="space-y-1.5">
+              {EXTRAS.map(extra => (
+                <label key={extra.id} className="flex items-center justify-between gap-2 text-sm text-gray-700 border border-gray-200 rounded-lg px-3 py-2 cursor-pointer hover:border-gray-300">
+                  <span className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedExtraIds.includes(extra.id)}
+                      onChange={() => toggleExtra(extra.id)}
+                      className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                    />
+                    {extra.label}
+                  </span>
+                  <span className="font-bold text-gray-900">+${extra.price}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+            <span className="text-sm font-bold text-blue-900">Total estimado</span>
+            <span className="text-xl font-black text-blue-700">${orderTotal}</span>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del niño(a) *</label>
+            <input
+              type="text"
+              value={childName}
+              onChange={(e) => setChildName(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-shadow"
+              placeholder="Ej. Juan Pérez"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Grado</label>
+              <input
+                type="text"
+                value={grade}
+                onChange={(e) => setGrade(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-shadow"
+                placeholder="Ej. 2do Primaria"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Grupo</label>
+              <input
+                type="text"
+                value={group}
+                onChange={(e) => setGroup(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-shadow"
+                placeholder="Ej. A"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Datos adicionales (opcional)</label>
+            <textarea
+              value={additionalInfo}
+              onChange={(e) => setAdditionalInfo(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-shadow resize-none"
+              rows={3}
+              placeholder="Materia, escuela, etc."
+            />
+          </div>
+
+          <button
+            onClick={handleSendWhatsApp}
+            disabled={!childName.trim()}
+            className="w-full mt-2 bg-[#25D366] hover:bg-[#128C7E] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm"
+          >
+            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+            </svg>
+            Enviar por WhatsApp
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// Cuadrícula memoizada: no se re-renderiza cuando cambia el estado del modal
+// de pedido ni del selector de paquete, solo cuando cambian los diseños/pestaña.
+interface DesignGridProps {
+  designs: LabelDesign[];
+  activeTab: 'personajes' | 'siluetas_nina' | 'siluetas_nino';
+  onSelectDesign: (name: string) => void;
+}
+
+const DesignGrid = React.memo(function DesignGrid({ designs, activeTab, onSelectDesign }: DesignGridProps) {
+  const tabStyle = TAB_STYLE[activeTab];
+
+  return (
+    <AnimatePresence mode="wait">
+      {designs.length === 0 ? (
+        <motion.div
+          key="empty"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="text-center py-20 text-gray-500 text-lg"
+        >
+          No encontramos diseños que coincidan con tu búsqueda.
+        </motion.div>
+      ) : (
+        <motion.div
+          key="grid"
+          layout
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6"
+        >
+          <AnimatePresence>
+            {designs.map((design) => {
+              const imageUrl = encodeURI(`${BASE_URL}${design.folder}/${design.imageFile}`);
+
+              return (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  whileHover={{ y: -4 }}
+                  transition={{ duration: 0.2 }}
+                  key={design.id}
+                  className={`bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-md border border-gray-100 ${tabStyle.hoverBorder} ${tabStyle.hoverShadow} flex flex-col`}
+                >
+                  {/* Barra de color superior */}
+                  <div className={`h-1.5 ${tabStyle.topBar}`} />
+                  {/* Image container */}
+                  <div className={`aspect-square ${tabStyle.imageBg} relative overflow-hidden`}>
+                    <img
+                      src={imageUrl}
+                      alt={`Diseño ${design.name}`}
+                      className={`w-full h-full ${activeTab.includes('silueta') ? 'object-contain p-2 sm:p-4' : 'object-cover'}`}
+                      loading="lazy"
+                    />
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-3 sm:p-5 flex flex-col flex-1">
+                    <h3 className="text-sm sm:text-xl font-bold text-gray-900 text-center mb-2 sm:mb-4 flex-1">
+                      {design.name}
+                    </h3>
+
+                    <button
+                      onClick={() => onSelectDesign(design.name)}
+                      className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-2 px-2 sm:py-3 sm:px-4 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-2 transition-colors shadow-sm text-xs sm:text-base"
+                    >
+                      <svg viewBox="0 0 24 24" className="w-4 h-4 sm:w-5 sm:h-5 fill-current">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                      </svg>
+                      Pedir diseño
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+});
+
+export default function CatalogoEtiquetas() {
+  const [searchQuery, setSearchQuery] = useState('');
+  // El filtro real usa este valor con un pequeño retraso, para no re-renderizar
+  // la cuadrícula completa en cada tecla mientras se escribe rápido.
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<'personajes' | 'siluetas_nina' | 'siluetas_nino'>('personajes');
+
+  const [selectedDesign, setSelectedDesign] = useState<string | null>(null);
+  // Paso 1: paquete (elegido antes de navegar el catálogo de personajes)
+  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null);
+  const [wantsLaminado, setWantsLaminado] = useState(false);
+  const [highlightPackages, setHighlightPackages] = useState(false);
+
+  const packageSectionRef = useRef<HTMLDivElement>(null);
+  const catalogSectionRef = useRef<HTMLDivElement>(null);
+
+  const selectedPackage = useMemo(
+    () => PACKAGES.find(p => p.id === selectedPackageId) || null,
+    [selectedPackageId]
+  );
+  const laminadoCost = wantsLaminado && selectedPackage?.laminadoPrice ? selectedPackage.laminadoPrice : 0;
+
+  useEffect(() => {
+    if (selectedPackageId) {
+      catalogSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [selectedPackageId]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(searchQuery), 150);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
+  const filteredDesigns = useMemo(() => {
+    return mockData.filter(design => {
+      const designCategory = design.category || 'personajes';
+      const matchesCategory = designCategory === activeTab;
+      const matchesSearch = design.name.toLowerCase().includes(debouncedQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [debouncedQuery, activeTab]);
+
+  // Estable entre renders (useCallback) para que DesignGrid, memoizado, no
+  // se re-renderice solo porque el componente padre cambió de estado.
+  const handleOpenModal = useCallback((designName: string) => {
+    if (!selectedPackageId) {
+      setHighlightPackages(true);
+      packageSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => setHighlightPackages(false), 1600);
+      return;
+    }
+    setSelectedDesign(designName);
+  }, [selectedPackageId]);
+
+  const handleCloseModal = () => {
+    setSelectedDesign(null);
+  };
+
+  const handleCompleteOrder = () => {
+    setSelectedDesign(null);
+    setSelectedPackageId(null);
+    setWantsLaminado(false);
+    setSearchQuery('');
+    setActiveTab('personajes');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSelectPackage = (packageId: string) => {
+    setSelectedPackageId(packageId);
+    setWantsLaminado(false);
   };
 
 
@@ -719,196 +964,22 @@ export default function CatalogoEtiquetas() {
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 w-full">
-        <AnimatePresence mode="wait">
-          {filteredDesigns.length === 0 ? (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="text-center py-20 text-gray-500 text-lg"
-            >
-              No encontramos diseños que coincidan con tu búsqueda.
-            </motion.div>
-          ) : (
-            <motion.div 
-              layout
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6"
-            >
-              <AnimatePresence>
-                {filteredDesigns.map((design) => {
-                  const imageUrl = encodeURI(`${BASE_URL}${design.folder}/${design.imageFile}`);
-                  
-                  return (
-                    <motion.div
-                      layout
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      whileHover={{ y: -4 }}
-                      transition={{ duration: 0.2 }}
-                      key={design.id}
-                      className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-md border border-gray-100 flex flex-col"
-                    >
-                      {/* Image container */}
-                      <div className="aspect-square bg-gray-100 relative overflow-hidden">
-                        <img 
-                          src={imageUrl} 
-                          alt={`Diseño ${design.name}`} 
-                          className={`w-full h-full ${activeTab.includes('silueta') ? 'object-contain p-2 sm:p-4' : 'object-cover'}`}
-                          loading="lazy"
-                        />
-                      </div>
-
-                      {/* Content */}
-                      <div className="p-3 sm:p-5 flex flex-col flex-1">
-                        <h3 className="text-sm sm:text-xl font-bold text-gray-900 text-center mb-2 sm:mb-4 flex-1">
-                          {design.name}
-                        </h3>
-                        
-                        <button
-                          onClick={() => handleOpenModal(design.name)}
-                          className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-2 px-2 sm:py-3 sm:px-4 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-2 transition-colors shadow-sm text-xs sm:text-base"
-                        >
-                          <svg viewBox="0 0 24 24" className="w-4 h-4 sm:w-5 sm:h-5 fill-current">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                        </svg>
-                          Pedir diseño
-                        </button>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <DesignGrid designs={filteredDesigns} activeTab={activeTab} onSelectDesign={handleOpenModal} />
       </main>
 
       <GlobalFooter />
 
       {/* Modal de Pedido */}
       <AnimatePresence>
-        {selectedDesign && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl relative max-h-[90vh] overflow-y-auto"
-            >
-              <button 
-                onClick={handleCloseModal}
-                className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
-              
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Pedido: {selectedDesign}</h2>
-              <p className="text-gray-600 mb-6">Agrega extras si quieres, luego llena tus datos para enviar el pedido por WhatsApp.</p>
-
-              <div className="space-y-5">
-                {/* Resumen del paquete ya elegido (paso 1) */}
-                {selectedPackage && (
-                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 flex gap-3">
-                    <img
-                      src={selectedPackage.previewImage}
-                      alt={`Paquete elegido: ${selectedPackage.label}`}
-                      className="w-16 h-20 object-cover rounded-lg flex-shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-gray-700 mb-1">Paquete: {selectedPackage.label} · ${selectedPackage.price}{laminadoCost > 0 ? ` + laminado $${laminadoCost}` : ''}</p>
-                      <ul className="text-xs text-gray-600 list-disc list-inside space-y-0.5">
-                        {selectedPackage.includes.map(item => <li key={item}>{item}</li>)}
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-                {/* Extras */}
-                <div>
-                  <label className="block text-sm font-bold text-gray-800 mb-2">Extras (opcional)</label>
-                  <div className="space-y-1.5">
-                    {EXTRAS.map(extra => (
-                      <label key={extra.id} className="flex items-center justify-between gap-2 text-sm text-gray-700 border border-gray-200 rounded-lg px-3 py-2 cursor-pointer hover:border-gray-300">
-                        <span className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={selectedExtraIds.includes(extra.id)}
-                            onChange={() => toggleExtra(extra.id)}
-                            className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
-                          />
-                          {extra.label}
-                        </span>
-                        <span className="font-bold text-gray-900">+${extra.price}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Total */}
-                {selectedPackage && (
-                  <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
-                    <span className="text-sm font-bold text-blue-900">Total estimado</span>
-                    <span className="text-xl font-black text-blue-700">${orderTotal}</span>
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del niño(a) *</label>
-                  <input 
-                    type="text" 
-                    value={childName}
-                    onChange={(e) => setChildName(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-shadow"
-                    placeholder="Ej. Juan Pérez"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Grado</label>
-                    <input 
-                      type="text" 
-                      value={grade}
-                      onChange={(e) => setGrade(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-shadow"
-                      placeholder="Ej. 2do Primaria"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Grupo</label>
-                    <input 
-                      type="text" 
-                      value={group}
-                      onChange={(e) => setGroup(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-shadow"
-                      placeholder="Ej. A"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Datos adicionales (opcional)</label>
-                  <textarea 
-                    value={additionalInfo}
-                    onChange={(e) => setAdditionalInfo(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-shadow resize-none"
-                    rows={3}
-                    placeholder="Materia, escuela, etc."
-                  />
-                </div>
-                
-                <button
-                  onClick={handleSendWhatsApp}
-                  disabled={!childName.trim() || !selectedPackage}
-                  className="w-full mt-2 bg-[#25D366] hover:bg-[#128C7E] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm"
-                >
-                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                  </svg>
-                  Enviar por WhatsApp
-                </button>
-              </div>
-            </motion.div>
-          </div>
+        {selectedDesign && selectedPackage && (
+          <OrderModal
+            design={selectedDesign}
+            pkg={selectedPackage}
+            laminadoCost={laminadoCost}
+            whatsappNumber={WHATSAPP_NUMBER}
+            onClose={handleCloseModal}
+            onComplete={handleCompleteOrder}
+          />
         )}
       </AnimatePresence>
     </div>
