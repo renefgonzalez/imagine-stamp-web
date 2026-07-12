@@ -284,7 +284,7 @@ const DesignGrid = React.memo(function DesignGrid({ designs, activeTab, onSelect
                     <img
                       src={imageUrl}
                       alt={`Diseño ${design.name}`}
-                      className={`w-full h-full ${activeTab.includes('silueta') ? 'object-contain p-2 sm:p-4' : 'object-cover'}`}
+                      className="w-full h-full object-contain p-1 sm:p-2"
                       loading="lazy"
                     />
                   </div>
@@ -453,11 +453,11 @@ export default function CatalogoEtiquetas() {
                         onClick={() => handleSelectPackage(pkg.id)}
                         className="text-left border-4 border-transparent hover:border-pink-300 rounded-3xl overflow-hidden bg-white/90 backdrop-blur-md transition-all transform hover:-translate-y-1 shadow-md hover:shadow-xl hover:shadow-pink-500/20 group"
                       >
-                        <div className="h-36 sm:h-44 bg-[#fdf2f8] flex items-center justify-center overflow-hidden relative">
+                        <div className="h-60 sm:h-72 bg-[#fdf2f8] flex items-center justify-center overflow-hidden relative">
                           <img
                             src={pkg.previewImage}
                             alt={`Ejemplo del paquete ${pkg.tier || pkg.label}`}
-                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-contain scale-110 group-hover:scale-125 transition-transform duration-300"
                             loading="lazy"
                           />
                         </div>
@@ -483,11 +483,11 @@ export default function CatalogoEtiquetas() {
                         onClick={() => handleSelectPackage(pkg.id)}
                         className="text-left border-4 border-transparent hover:border-cyan-300 rounded-3xl overflow-hidden bg-white/90 backdrop-blur-md transition-all transform hover:-translate-y-1 shadow-md hover:shadow-xl hover:shadow-cyan-500/20 group"
                       >
-                        <div className="h-36 sm:h-44 bg-[#f0fdfa] flex items-center justify-center overflow-hidden relative">
+                        <div className="h-60 sm:h-72 bg-[#f0fdfa] flex items-center justify-center overflow-hidden relative">
                           <img
                             src={pkg.previewImage}
                             alt={`Ejemplo del paquete ${pkg.tier || pkg.label}`}
-                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-contain scale-110 group-hover:scale-125 transition-transform duration-300"
                             loading="lazy"
                           />
                         </div>
