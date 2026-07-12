@@ -15,7 +15,6 @@ import AdminPanel from './AdminPanel';
 
 const CatalogoEtiquetas = React.lazy(() => import('./modules/etiquetas-escolares/pages/CatalogoEtiquetas'));
 
-import LaCasaDeLaMontana from './modules/la-casa-de-la-montana/pages/LaCasaMenu';
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
 import { CartButton } from './components/common/CartButton';
@@ -30,28 +29,28 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   static getDerivedStateFromError(_: Error) { return { hasError: true }; }
   componentDidCatch(error: Error, errorInfo: ErrorInfo) { console.error("ErrorBoundary caught error:", error, errorInfo); }
   render() {
-    if (this.state.hasError) return <div className="p-10 text-center text-red-500">Algo saliÃ³ mal. Por favor recarga la pÃ¡gina.</div>;
+    if (this.state.hasError) return <div className="p-10 text-center text-red-500">Algo saliÃƒÂ³ mal. Por favor recarga la pÃƒÂ¡gina.</div>;
     return this.props.children;
   }
 }
 
 export const DEFAULT_CATEGORIES = [
   { id: 'all', name: 'VER TODO', icon: LayoutGrid, bgColor: 'bg-gray-100', iconColor: 'text-gray-600', dotColor: 'bg-gray-400', submenus: [] },
-  { id: 'fiestas-y-cumpleanos', name: 'Fiestas y CumpleaÃ±os', icon: PartyPopper, bgColor: 'bg-purple-50', iconColor: 'text-purple-500', dotColor: 'bg-purple-500', submenus: [] },
+  { id: 'fiestas-y-cumpleanos', name: 'Fiestas y CumpleaÃƒÂ±os', icon: PartyPopper, bgColor: 'bg-purple-50', iconColor: 'text-purple-500', dotColor: 'bg-purple-500', submenus: [] },
   { id: 'invitaciones', name: 'Invitaciones', icon: MailIcon, bgColor: 'bg-orange-50', iconColor: 'text-orange-500', dotColor: 'bg-orange-500', submenus: [] },
   { id: 'empresarial', name: 'Empresarial', icon: Briefcase, bgColor: 'bg-amber-50', iconColor: 'text-amber-500', dotColor: 'bg-amber-500', submenus: [] },
-  { id: 'personalizacion', name: 'PersonalizaciÃ³n', icon: Gift, bgColor: 'bg-green-50', iconColor: 'text-green-500', dotColor: 'bg-green-500', submenus: [] },
-  { id: 'paginas-webs-y-apps', name: 'PÃ¡ginas Web y Apps', icon: Sparkles, bgColor: 'bg-blue-50', iconColor: 'text-blue-500', dotColor: 'bg-blue-500', submenus: [] },
-  { id: 'catalogo-and-portafolio', name: 'CatÃ¡logo y Portafolio', icon: Sparkles, bgColor: 'bg-indigo-50', iconColor: 'text-indigo-500', dotColor: 'bg-indigo-500', submenus: [] }
+  { id: 'personalizacion', name: 'PersonalizaciÃƒÂ³n', icon: Gift, bgColor: 'bg-green-50', iconColor: 'text-green-500', dotColor: 'bg-green-500', submenus: [] },
+  { id: 'paginas-webs-y-apps', name: 'PÃƒÂ¡ginas Web y Apps', icon: Sparkles, bgColor: 'bg-blue-50', iconColor: 'text-blue-500', dotColor: 'bg-blue-500', submenus: [] },
+  { id: 'catalogo-and-portafolio', name: 'CatÃƒÂ¡logo y Portafolio', icon: Sparkles, bgColor: 'bg-indigo-50', iconColor: 'text-indigo-500', dotColor: 'bg-indigo-500', submenus: [] }
 ];
 
 const ICON_MAP: Record<string, any> = {
-  'Fiestas y CumpleaÃ±os': PartyPopper,
+  'Fiestas y CumpleaÃƒÂ±os': PartyPopper,
   'Invitaciones': MailIcon,
   'Empresarial': Briefcase,
-  'PersonalizaciÃ³n': Gift,
-  'PÃ¡ginas Web y Apps': Sparkles,
-  'CatÃ¡logo y Portafolio': Sparkles,
+  'PersonalizaciÃƒÂ³n': Gift,
+  'PÃƒÂ¡ginas Web y Apps': Sparkles,
+  'CatÃƒÂ¡logo y Portafolio': Sparkles,
   'all': LayoutGrid
 };
 
@@ -101,7 +100,7 @@ export default function App() {
     localStorage.setItem('imagine_stamp_favorites', JSON.stringify(favorites));
   }, [favorites]);
 
-  // â”€â”€ CARGAR DATOS DESDE SUPABASE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ CARGAR DATOS DESDE SUPABASE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   useEffect(() => {
     async function loadData() {
       try {
@@ -148,7 +147,7 @@ export default function App() {
       result = result.filter(p => favorites.includes(p.id));
     }
 
-    // BÃºsqueda global (ignora acentos y mayÃºsculas)
+    // BÃƒÂºsqueda global (ignora acentos y mayÃƒÂºsculas)
     if (searchQuery.trim() !== '') {
       const q = searchQuery.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       result = result.filter(p => {
@@ -157,11 +156,11 @@ export default function App() {
         return name.includes(q) || desc.includes(q);
       });
     } else {
-      // Filtrar por categorÃ­a
+      // Filtrar por categorÃƒÂ­a
       if (selectedCategory !== 'all') {
         result = result.filter(p => p.category?.toLowerCase() === selectedCategory.toLowerCase());
       }
-      // Filtrar por subcategorÃ­a 1
+      // Filtrar por subcategorÃƒÂ­a 1
       if (selectedSubcategory) {
         result = result.filter(p => {
           const sub = (p.sub_category || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -169,7 +168,7 @@ export default function App() {
           return sub.includes(sel) || sel.includes(sub);
         });
       }
-      // Filtrar por subcategorÃ­a 2
+      // Filtrar por subcategorÃƒÂ­a 2
       if (selectedSubcategory2) {
         result = result.filter(p => {
           const sub2 = ((p as any).sub_category_2 || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -190,7 +189,7 @@ export default function App() {
   };
 
 
-  // â”€â”€ Confirmar pago al regresar de Mercado Pago â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Confirmar pago al regresar de Mercado Pago Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const pago = params.get('pago');
@@ -211,11 +210,11 @@ export default function App() {
     let savedMessage = localStorage.getItem('imagine-pending-whatsapp');
     localStorage.removeItem('imagine-pending-whatsapp');
 
-    // Agregar el texto de confirmaciÃ³n al mensaje si el pago fue exitoso
+    // Agregar el texto de confirmaciÃƒÂ³n al mensaje si el pago fue exitoso
     if (savedMessage && pago === 'exito' && status === 'approved') {
       try {
         const decoded = decodeURIComponent(savedMessage);
-        const confirmationText = `\n\nâœ… *PAGO EN LÃNEA CONFIRMADO*\nFolio MP: ${paymentId || 'Aprobado'}\n`;
+        const confirmationText = `\n\nÃ¢Å“â€¦ *PAGO EN LÃƒÂNEA CONFIRMADO*\nFolio MP: ${paymentId || 'Aprobado'}\n`;
         savedMessage = encodeURIComponent(decoded + confirmationText);
       } catch (e) {
         console.error("Error decoding whatsapp message", e);
@@ -224,7 +223,7 @@ export default function App() {
 
     setPaymentResult({ status: pago, whatsappMessage: savedMessage });
 
-    // Limpiar los parÃ¡metros de la URL para que no se repita el aviso al recargar
+    // Limpiar los parÃƒÂ¡metros de la URL para que no se repita el aviso al recargar
     window.history.replaceState({}, '', window.location.pathname + window.location.hash);
   }, []);
 
@@ -244,7 +243,7 @@ export default function App() {
                       <h1 className="text-lg md:text-xl font-black text-primary font-headline tracking-tighter hidden sm:block">Imagine & Stamp</h1>
                     </div>
 
-                    {/* Redes Sociales â€” a la derecha del nombre */}
+                    {/* Redes Sociales Ã¢â‚¬â€ a la derecha del nombre */}
                     <div className="flex items-center gap-1 ml-2 border-l border-primary/10 pl-3">
                       <a 
                         href="https://www.instagram.com/personalizadosimagineandstamp"
@@ -342,7 +341,7 @@ export default function App() {
                         onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="bg-transparent border-none focus:outline-none w-full text-sm font-medium" 
-                        placeholder="Busca productos, categorÃ­as, o palabras clave..." 
+                        placeholder="Busca productos, categorÃƒÂ­as, o palabras clave..." 
                       />
                       {searchQuery && (
                         <button 
@@ -354,7 +353,7 @@ export default function App() {
                       )}
                     </div>
 
-                    {/* Sugerencias de bÃºsqueda instantÃ¡neas */}
+                    {/* Sugerencias de bÃƒÂºsqueda instantÃƒÂ¡neas */}
                     <AnimatePresence>
                       {isSearchFocused && searchQuery.trim().length > 0 && (
                         <motion.div 
@@ -390,7 +389,7 @@ export default function App() {
                                 {filteredProducts.length > 6 && (
                                   <div className="p-3 text-center border-t border-primary/5">
                                     <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest">
-                                      Y {filteredProducts.length - 6} resultados mÃ¡s...
+                                      Y {filteredProducts.length - 6} resultados mÃƒÂ¡s...
                                     </p>
                                   </div>
                                 )}
@@ -413,7 +412,7 @@ export default function App() {
                       className="flex items-center gap-2 bg-primary/5 hover:bg-primary/10 text-primary font-bold py-2 px-4 rounded-xl transition-all"
                     >
                       <LayoutGrid size={18} />
-                      {isCategoryOpen ? 'Ocultar CategorÃ­as' : 'Mostrar CategorÃ­as y Filtros'}
+                      {isCategoryOpen ? 'Ocultar CategorÃƒÂ­as' : 'Mostrar CategorÃƒÂ­as y Filtros'}
                     </button>
                   </div>
                   
@@ -433,7 +432,7 @@ export default function App() {
                       <span className="w-8 h-1 bg-secondary rounded-full"></span>
                       Nuestros Servicios
                     </h3>
-                    {/* Contenedor con degradado para indicar scroll horizontal en mÃ³vil */}
+                    {/* Contenedor con degradado para indicar scroll horizontal en mÃƒÂ³vil */}
                     <div className="relative">
                       <div className="flex items-start gap-6 md:gap-8 overflow-x-auto hide-scrollbar py-4 px-4">
                         {categories.map((cat) => (
@@ -446,7 +445,7 @@ export default function App() {
                             }} 
                             className="flex flex-col items-center gap-2 md:gap-3 shrink-0 cursor-pointer group"
                           >
-                            {/* CÃ­rculo: pequeÃ±o en mÃ³vil, grande en escritorio */}
+                            {/* CÃƒÂ­rculo: pequeÃƒÂ±o en mÃƒÂ³vil, grande en escritorio */}
                             <div className={`w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all ${cat.bgColor} ${
                               selectedCategory === cat.id 
                                 ? 'ring-4 ring-secondary ring-offset-2 md:ring-offset-4 scale-110 shadow-xl' 
@@ -463,10 +462,10 @@ export default function App() {
                             </span>
                           </div>
                         ))}
-                        {/* Espaciado final para que el degradado no tape el Ãºltimo Ã­tem */}
+                        {/* Espaciado final para que el degradado no tape el ÃƒÂºltimo ÃƒÂ­tem */}
                         <div className="shrink-0 w-4" />
                       </div>
-                      {/* Degradado derecho â€” indica que hay mÃ¡s categorÃ­as */}
+                      {/* Degradado derecho Ã¢â‚¬â€ indica que hay mÃƒÂ¡s categorÃƒÂ­as */}
                       <div className="pointer-events-none absolute top-0 right-0 h-full w-12 bg-gradient-to-l from-background to-transparent" />
                     </div>
 
@@ -503,14 +502,14 @@ export default function App() {
                           key={selectedCategory} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
                           className="mt-8 p-6 bg-white rounded-3xl border border-primary/5 shadow-sm mx-2"
                         >
-                          {/* SubcategorÃ­a Nivel 1 */}
-                          <p className="text-[9px] font-black text-primary/30 uppercase tracking-[0.2em] mb-3">SubcategorÃ­a</p>
+                          {/* SubcategorÃƒÂ­a Nivel 1 */}
+                          <p className="text-[9px] font-black text-primary/30 uppercase tracking-[0.2em] mb-3">SubcategorÃƒÂ­a</p>
                           <div className="flex flex-wrap gap-2 mb-4">
                             {(() => {
                               const cat = categories.find(c => c.id === selectedCategory);
                               if (!cat) return null;
                               const subs = normalizeSubs(cat.submenus || []);
-                              if (subs.length === 0) return <span className="text-xs text-primary/20 italic">Sin subcategorÃ­as</span>;
+                              if (subs.length === 0) return <span className="text-xs text-primary/20 italic">Sin subcategorÃƒÂ­as</span>;
                               return subs.map((sub: any) => {
                                 const isActive = selectedSubcategory.toLowerCase() === sub.name.toLowerCase();
                                 return (
@@ -523,14 +522,14 @@ export default function App() {
                                   >
                                     <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-white' : cat.dotColor}`} />
                                     {sub.name}
-                                    {isActive && <span className="ml-1 text-white/80">âœ•</span>}
+                                    {isActive && <span className="ml-1 text-white/80">Ã¢Å“â€¢</span>}
                                   </button>
                                 );
                               });
                             })()}
                           </div>
 
-                          {/* SubcategorÃ­a Nivel 2 (solo si hay sub-1 seleccionada) */}
+                          {/* SubcategorÃƒÂ­a Nivel 2 (solo si hay sub-1 seleccionada) */}
                           {selectedSubcategory && (() => {
                             const cat = categories.find(c => c.id === selectedCategory);
                             if (!cat) return null;
@@ -551,7 +550,7 @@ export default function App() {
                                         }`}
                                       >
                                         {child}
-                                        {isActive2 && <span className="ml-1">âœ•</span>}
+                                        {isActive2 && <span className="ml-1">Ã¢Å“â€¢</span>}
                                       </button>
                                     );
                                   })}
@@ -562,7 +561,7 @@ export default function App() {
 
                           {(selectedSubcategory || selectedSubcategory2) && (
                             <p className="text-[10px] text-secondary font-black uppercase tracking-widest mt-4 px-1">
-                              Mostrando: {selectedSubcategory}{selectedSubcategory2 ? ` â€º ${selectedSubcategory2}` : ''} ({filteredProducts.length} resultado{filteredProducts.length !== 1 ? 's' : ''})
+                              Mostrando: {selectedSubcategory}{selectedSubcategory2 ? ` Ã¢â‚¬Âº ${selectedSubcategory2}` : ''} ({filteredProducts.length} resultado{filteredProducts.length !== 1 ? 's' : ''})
                             </p>
                           )}
                         </motion.div>
@@ -608,7 +607,7 @@ export default function App() {
                 </div>
               </main>
 
-              {/* â”€â”€ TOAST: Producto agregado â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+              {/* Ã¢â€â‚¬Ã¢â€â‚¬ TOAST: Producto agregado Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */}
               <AnimatePresence>
                 {cartToast && (
                   <motion.div
@@ -623,7 +622,7 @@ export default function App() {
                           <Plus size={16} className="text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Â¡Agregado al carrito!</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Ã‚Â¡Agregado al carrito!</p>
                           <p className="text-sm font-bold truncate">{cartToast.name}</p>
                         </div>
                       </div>
@@ -650,10 +649,10 @@ export default function App() {
 
               <div className="fixed bottom-8 right-6 z-50 flex flex-col gap-4 items-end">
                 <motion.a 
-                  href="https://wa.me/525650469993?text=Hola,%20vengo%20de%20la%20pÃ¡gina%20web%20y%20quiero%20cotizar" target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }}
+                  href="https://wa.me/525650469993?text=Hola,%20vengo%20de%20la%20pÃƒÂ¡gina%20web%20y%20quiero%20cotizar" target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }}
                   className="flex items-center gap-3 bg-[#25D366] text-white px-6 py-4 rounded-full shadow-2xl"
                 >
-                  <span className="font-bold text-sm">Â¡Cotiza aquÃ­!</span>
+                  <span className="font-bold text-sm">Ã‚Â¡Cotiza aquÃƒÂ­!</span>
                   <MessageCircle size={28} fill="currentColor" />
                 </motion.a>
               </div>
@@ -675,12 +674,12 @@ export default function App() {
                           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-green-600">
                             <Check size={32} />
                           </div>
-                          <h3 className="text-primary text-xl font-black uppercase mb-2">Â¡Pago Aprobado!</h3>
+                          <h3 className="text-primary text-xl font-black uppercase mb-2">Ã‚Â¡Pago Aprobado!</h3>
                           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 mt-2">
                             <p className="text-amber-600 font-bold text-xs mb-1 uppercase tracking-wider flex items-center justify-center gap-1">
-                              âš ï¸ Paso Final Obligatorio
+                              Ã¢Å¡Â Ã¯Â¸Â Paso Final Obligatorio
                             </p>
-                            <p className="text-primary/70 text-xs">Para que preparemos tu pedido, <strong className="text-primary">DEBES ENVIARLO</strong> haciendo clic en el botÃ³n verde de WhatsApp aquÃ­ abajo.</p>
+                            <p className="text-primary/70 text-xs">Para que preparemos tu pedido, <strong className="text-primary">DEBES ENVIARLO</strong> haciendo clic en el botÃƒÂ³n verde de WhatsApp aquÃƒÂ­ abajo.</p>
                           </div>
                         </>
                       ) : paymentResult.status === 'pendiente' ? (
@@ -689,7 +688,7 @@ export default function App() {
                             <ShoppingBag size={32} />
                           </div>
                           <h3 className="text-primary text-xl font-black uppercase mb-2">Pago Pendiente</h3>
-                          <p className="text-primary/60 text-sm mb-6">Tu pago estÃ¡ siendo procesado. AvÃ­sanos por WhatsApp para darle seguimiento.</p>
+                          <p className="text-primary/60 text-sm mb-6">Tu pago estÃƒÂ¡ siendo procesado. AvÃƒÂ­sanos por WhatsApp para darle seguimiento.</p>
                         </>
                       ) : (
                         <>
@@ -730,8 +729,7 @@ export default function App() {
         <Route path="/demo-menu" element={<DemoMenu />} />
 
         <Route path="/etiquetas-escolares" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" /></div>}><CatalogoEtiquetas /></Suspense></ErrorBoundary>} />
-        <Route path="/la-casa-de-la-montana" element={<ErrorBoundary><LaCasaDeLaMontana /></ErrorBoundary>} />
-        <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
+                <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
     </HashRouter>
   );
