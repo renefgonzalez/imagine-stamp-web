@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import logoPerfumes from '../assets/logo.png';
 
 // ─── Tipos ───────────────────────────────────────────────────────────────────
@@ -242,6 +242,43 @@ export default function PerfumesInfiniMenu() {
   const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHODS[0]);
   const [customerNotes, setCustomerNotes] = useState('');
 
+  // Favoritos
+  const [favorites, setFavorites] = useState<number[]>(() => {
+    const saved = localStorage.getItem('infini_favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [favoritesOpen, setFavoritesOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('infini_favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = (productId: number) => {
+    setFavorites((prev) =>
+      prev.includes(productId)
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId],
+    );
+  };
+
+  const handleShare = async (product: typeof PRODUCTS[0]) => {
+    const shareData = {
+      title: `Perfumes Infini - ${product.name}`,
+      text: `Descubre ${product.name}, inspirado en ${product.inspiration}.`,
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(`${shareData.title} - ${shareData.url}`);
+        alert('¡Enlace copiado al portapapeles!');
+      }
+    } catch (error) {
+      console.error('Error compartiendo:', error);
+    }
+  };
+
   // ─── Filtrado ─────────────────────────────────────────────────────────────
   const filteredProducts = useMemo(() => {
     return PRODUCTS.filter((p) => {
@@ -360,12 +397,31 @@ export default function PerfumesInfiniMenu() {
             </p>
           </div>
 
-          {/* Carrito */}
-          <button
-            onClick={() => setCartOpen(!cartOpen)}
-            className="relative p-2.5 text-[#D4AF37] hover:text-[#F3E5AB] transition-colors rounded-lg hover:bg-[#D4AF37]/5"
-            aria-label="Abrir carrito"
-          >
+          {/* Acciones */}
+          <div className="flex items-center gap-1 sm:gap-2">
+            {/* Favoritos */}
+            <button
+              onClick={() => setFavoritesOpen(true)}
+              className="relative p-2.5 text-[#D4AF37] hover:text-[#F3E5AB] transition-colors rounded-lg hover:bg-[#D4AF37]/5"
+              aria-label="Mis Favoritos"
+              title="Mis Favoritos"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+              </svg>
+              {favorites.length > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-[#D4AF37] text-[#050505] text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-lg shadow-[#D4AF37]/30">
+                  {favorites.length}
+                </span>
+              )}
+            </button>
+
+            {/* Carrito */}
+            <button
+              onClick={() => setCartOpen(!cartOpen)}
+              className="relative p-2.5 text-[#D4AF37] hover:text-[#F3E5AB] transition-colors rounded-lg hover:bg-[#D4AF37]/5"
+              aria-label="Abrir carrito"
+            >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6 sm:h-7 sm:w-7"
@@ -385,7 +441,8 @@ export default function PerfumesInfiniMenu() {
                 {cartCount}
               </span>
             )}
-          </button>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -537,6 +594,50 @@ export default function PerfumesInfiniMenu() {
                       {/* Overlay inferior en imagen */}
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-60" />
 
+                      {/* Botón Favorito */}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggleFavorite(product.id);
+                        }}
+                        className="absolute top-2 right-2 sm:top-3 sm:right-3 p-1.5 sm:p-2 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-sm transition-all z-10 group/btn"
+                        title={favorites.includes(product.id) ? "Quitar de favoritos" : "Agregar a favoritos"}
+                      >
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          className={`h-4 w-4 sm:h-5 sm:w-5 transition-colors ${favorites.includes(product.id) ? 'fill-[#D4AF37] text-[#D4AF37]' : 'text-white group-hover/btn:text-[#D4AF37]'}`} 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor" 
+                          strokeWidth={favorites.includes(product.id) ? 0 : 1.5}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                        </svg>
+                      </button>
+
+                      {/* Botón Compartir */}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleShare(product);
+                        }}
+                        className="absolute top-10 right-2 sm:top-14 sm:right-3 p-1.5 sm:p-2 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-sm transition-all z-10 group/shareBtn"
+                        title="Compartir"
+                      >
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          className="h-4 w-4 sm:h-5 sm:w-5 text-white group-hover/shareBtn:text-[#D4AF37] transition-colors" 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor" 
+                          strokeWidth={1.5}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+                        </svg>
+                      </button>
+
                       {/* Badge ELIXIR PREMIUM */}
                       <span className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#D4AF37]/90 text-[#050505] text-[8px] sm:text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded sm:rounded-md shadow-lg">
                         ELIXIR 40%
@@ -544,7 +645,7 @@ export default function PerfumesInfiniMenu() {
 
                       {/* Badge Más vendido */}
                       {product.bestSeller && (
-                        <span className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-[#050505] text-[8px] sm:text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded sm:rounded-md shadow-lg shadow-[#D4AF37]/30">
+                        <span className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-[#050505] text-[8px] sm:text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded sm:rounded-md shadow-lg shadow-[#D4AF37]/30 z-10">
                           ★ Top
                         </span>
                       )}
@@ -960,6 +1061,102 @@ export default function PerfumesInfiniMenu() {
           </>
         )}
       </div>
+
+      {/* ════════════════ FAVORITOS DRAWER ════════════════ */}
+      {favoritesOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 transition-opacity"
+            onClick={() => setFavoritesOpen(false)}
+          />
+
+          {/* Drawer */}
+          <aside className="fixed inset-y-0 right-0 w-full sm:w-[400px] bg-[#050505] border-l border-[#D4AF37]/20 z-50 flex flex-col shadow-2xl shadow-[#D4AF37]/10 animate-in slide-in-from-right duration-300">
+            {/* Header Favoritos */}
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-[#D4AF37]/10">
+              <h2 className="text-lg sm:text-xl font-black text-white uppercase tracking-widest">
+                Mis Favoritos
+              </h2>
+              <button
+                onClick={() => setFavoritesOpen(false)}
+                className="p-2 text-gray-400 hover:text-white rounded-full hover:bg-gray-900 transition-colors"
+                aria-label="Cerrar favoritos"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Contenido Favoritos */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar">
+              {favorites.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
+                  <div className="w-16 h-16 rounded-full bg-[#121212] flex items-center justify-center border border-[#D4AF37]/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-400 text-sm font-medium">Aún no tienes favoritos guardados.</p>
+                  <button
+                    onClick={() => setFavoritesOpen(false)}
+                    className="mt-4 px-6 py-2 bg-transparent border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/10 rounded-xl text-sm font-bold transition-all"
+                  >
+                    Seguir explorando
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {favorites.map((favId) => {
+                    const product = PRODUCTS.find((p) => p.id === favId);
+                    if (!product) return null;
+                    return (
+                      <div key={favId} className="flex gap-4 items-center bg-[#0a0a0a] border border-[#D4AF37]/10 p-3 rounded-xl">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg bg-[#121212]"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-white font-bold text-sm truncate">{product.name}</h4>
+                          <p className="text-[10px] text-gray-500 line-clamp-1">{product.inspiration}</p>
+                          <div className="mt-2">
+                            <span className="text-[#D4AF37] text-sm font-bold">${getPrice(product)}</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <button
+                            onClick={() => {
+                              addToCart(product);
+                              setFavoritesOpen(false);
+                            }}
+                            className="p-2 bg-[#D4AF37] hover:bg-[#F3E5AB] text-[#050505] rounded-lg transition-colors"
+                            title="Agregar al carrito"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => toggleFavorite(favId)}
+                            className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors"
+                            title="Eliminar de favoritos"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </aside>
+        </>
+      )}
 
       {/* ════════════════ FOOTER ════════════════ */}
       <footer className="mt-16 bg-black border-t border-[#D4AF37]/10">
