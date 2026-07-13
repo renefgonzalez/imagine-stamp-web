@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import logoPerfumes from '../assets/logo.png';
 
 // ─── Tipos ───────────────────────────────────────────────────────────────────
 interface Product {
@@ -349,9 +350,11 @@ export default function PerfumesInfiniMenu() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           {/* Logo + tagline */}
           <div className="flex flex-col">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-[0.15em] bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] bg-clip-text text-transparent">
-              PERFUMES INFINI
-            </h1>
+            <img 
+              src={logoPerfumes} 
+              alt="Perfumes Infini" 
+              className="h-16 sm:h-24 w-auto object-contain" 
+            />
             <p className="text-[10px] sm:text-xs text-[#D4AF37]/60 tracking-[0.35em] uppercase mt-0.5">
               ✦ El Aroma Infinito ✦
             </p>
@@ -514,13 +517,13 @@ export default function PerfumesInfiniMenu() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
               {displayedProducts.map((product) => {
                 const price = getPrice(product);
                 return (
                   <article
                     key={product.id}
-                    className="group bg-[#0a0a0a] border border-[#D4AF37]/10 rounded-2xl overflow-hidden hover:border-[#D4AF37]/30 hover:shadow-xl hover:shadow-[#D4AF37]/5 hover:-translate-y-1 transition-all duration-400"
+                    className="group bg-[#0a0a0a] border border-[#D4AF37]/10 rounded-xl sm:rounded-2xl overflow-hidden hover:border-[#D4AF37]/30 hover:shadow-xl hover:shadow-[#D4AF37]/5 hover:-translate-y-1 transition-all duration-400 flex flex-col"
                   >
                     {/* Imagen */}
                     <div className="relative aspect-[4/3] overflow-hidden bg-[#121212]">
@@ -535,59 +538,61 @@ export default function PerfumesInfiniMenu() {
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-60" />
 
                       {/* Badge ELIXIR PREMIUM */}
-                      <span className="absolute top-3 left-3 bg-[#D4AF37]/90 text-[#050505] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md shadow-lg">
+                      <span className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#D4AF37]/90 text-[#050505] text-[8px] sm:text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded sm:rounded-md shadow-lg">
                         ELIXIR 40%
                       </span>
 
                       {/* Badge Más vendido */}
                       {product.bestSeller && (
-                        <span className="absolute top-3 right-3 bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-[#050505] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md shadow-lg shadow-[#D4AF37]/30">
-                          ★ Más vendido
+                        <span className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-[#050505] text-[8px] sm:text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded sm:rounded-md shadow-lg shadow-[#D4AF37]/30">
+                          ★ Top
                         </span>
                       )}
                     </div>
 
                     {/* Info */}
-                    <div className="p-5 sm:p-6">
+                    <div className="p-3 sm:p-6 flex flex-col flex-1">
                       {/* Familia */}
-                      <span className="text-[10px] text-[#D4AF37]/70 uppercase tracking-[0.2em] font-medium">
+                      <span className="text-[8px] sm:text-[10px] text-[#D4AF37]/70 uppercase tracking-[0.2em] font-medium line-clamp-1">
                         {product.family}
                       </span>
 
                       {/* Nombre */}
-                      <h3 className="text-white font-bold text-lg mt-1 leading-tight group-hover:text-[#D4AF37] transition-colors">
+                      <h3 className="text-white font-bold text-xs sm:text-lg mt-1 leading-tight group-hover:text-[#D4AF37] transition-colors line-clamp-1 sm:line-clamp-none">
                         {product.name}
                       </h3>
 
                       {/* Inspiración */}
-                      <p className="text-gray-500 text-xs mt-0.5 italic">
+                      <p className="text-gray-500 text-[9px] sm:text-xs mt-0.5 italic line-clamp-1">
                         {product.inspiration}
                       </p>
 
                       {/* Descripción */}
-                      <p className="text-gray-400 text-sm mt-3 leading-relaxed line-clamp-2">
+                      <p className="text-gray-400 text-xs sm:text-sm mt-2 sm:mt-3 leading-relaxed line-clamp-2 hidden sm:block">
                         {product.description}
                       </p>
 
                       {/* Concentración */}
-                      <div className="flex items-center gap-1.5 mt-3 text-[10px] text-gray-500">
+                      <div className="items-center gap-1.5 mt-2 sm:mt-3 text-[8px] sm:text-[10px] text-gray-500 hidden sm:flex">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]/50" />
                         ELIXIR PREMIUM 40% + Feromonas
                       </div>
+                      
+                      <div className="flex-1" />
 
                       {/* Precio + Botón */}
-                      <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#D4AF37]/10">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-[#D4AF37]/10 gap-2 sm:gap-0">
                         <div>
-                          <span className="text-[#D4AF37] text-xl font-bold">
+                          <span className="text-[#D4AF37] text-sm sm:text-xl font-bold">
                             ${price}
                           </span>
-                          <span className="text-gray-500 text-xs ml-2">
+                          <span className="text-gray-500 text-[9px] sm:text-xs ml-1 sm:ml-2">
                             {selectedSize}
                           </span>
                         </div>
                         <button
                           onClick={() => addToCart(product)}
-                          className="px-5 py-2.5 bg-[#D4AF37] hover:bg-[#F3E5AB] text-[#050505] text-sm font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-[#D4AF37]/25 active:scale-95"
+                          className="w-full sm:w-auto px-3 py-1.5 sm:px-5 sm:py-2.5 bg-[#D4AF37] hover:bg-[#F3E5AB] text-[#050505] text-[10px] sm:text-sm font-bold rounded-lg sm:rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-[#D4AF37]/25 active:scale-95"
                         >
                           Agregar
                         </button>
@@ -970,9 +975,11 @@ export default function PerfumesInfiniMenu() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-10">
             {/* Col 1 — Logo + Descripción */}
             <div>
-              <h3 className="text-lg font-bold tracking-[0.15em] bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] bg-clip-text text-transparent mb-4">
-                PERFUMES INFINI
-              </h3>
+              <img 
+                src={logoPerfumes} 
+                alt="Perfumes Infini" 
+                className="h-14 sm:h-20 w-auto object-contain mb-4" 
+              />
               <p className="text-gray-500 text-sm leading-relaxed">
                 Fragancias inspiradas en las mejores casas de lujo del mundo.
                 Concentración <strong className="text-[#D4AF37]/80">ELIXIR PREMIUM 40%</strong> + Feromonas para una
