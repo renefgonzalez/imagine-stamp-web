@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { GlobalFooter } from '../../../components/common/GlobalFooter';
 import BackgroundDecorations from '../components/BackgroundDecorations';
 import { mockData, BASE_URL } from '../data/designs';
 import type { LabelDesign } from '../data/designs';
@@ -23,15 +22,17 @@ interface PackageOption {
   includes: string[];
   laminadoPrice?: number;
   previewImage: string;
+  popular?: boolean;
+  popularLabel?: string;
 }
 
 const PACKAGES: PackageOption[] = [
   { id: 'dtf-uv', material: 'DTF UV', label: 'DTF UV', price: 150, includes: ['Etiquetas 100% lavables', 'Organiza tu plantilla a tu gusto', 'Tamaño carta', 'Un nombre y diseño por hoja', 'Con o sin fondo blanco'], previewImage: imgDtfUv },
   { id: 'textiles', material: 'Textiles', label: 'Textiles', price: 100, includes: ['Etiquetas 100% lavables', 'Organiza tu plantilla a tu gusto', 'Tamaño carta', 'Un nombre y diseño por hoja'], previewImage: imgTextiles },
   { id: 'adhesivas-esencial', material: 'Etiquetas Adhesivas', tier: 'Esencial', label: 'Etiquetas Adhesivas · Esencial', price: 150, includes: ['20 pz libretas 9x5 cm', '30 pz lápices 6x2.5 cm'], laminadoPrice: 30, previewImage: imgEsencial },
-  { id: 'adhesivas-clasico', material: 'Etiquetas Adhesivas', tier: 'Clásico', label: 'Etiquetas Adhesivas · Clásico', price: 250, includes: ['20 pz libretas 9x5 cm', '30 pz lápices 6x2.5 cm', '14 circulares 5 cm (vinil)', '1 tag grande'], laminadoPrice: 40, previewImage: imgClasico },
-  { id: 'adhesivas-premium', material: 'Etiquetas Adhesivas', tier: 'Premium', label: 'Etiquetas Adhesivas · Premium', price: 360, includes: ['24 pz libretas 9x5 cm', '48 pz lápices 6x2.5 cm', '9 circulares 5 cm (vinil)', '8 circulares 4 cm (vinil)', '1 tag grande con llavero', '1 tag chico'], laminadoPrice: 50, previewImage: imgPremium },
-  { id: 'adhesivas-contorno', material: 'Etiquetas Adhesivas', tier: 'Contorno', label: 'Etiquetas Adhesivas · Contorno', price: 180, includes: ['24 pz, largo 8 cm', '25 pz, largo 5 cm', '1 tag grande'], laminadoPrice: 30, previewImage: imgContorno },
+  { id: 'adhesivas-clasico', material: 'Etiquetas Adhesivas', tier: 'Clásico', label: 'Etiquetas Adhesivas · Clásico', price: 250, includes: ['20 pz libretas 9x5 cm', '30 pz lápices 6x2.5 cm', '14 circulares 5 cm (vinil)', '1 tag grande'], laminadoPrice: 40, previewImage: imgClasico, popular: true, popularLabel: '⭐ Más vendido' },
+  { id: 'adhesivas-premium', material: 'Etiquetas Adhesivas', tier: 'Premium', label: 'Etiquetas Adhesivas · Premium', price: 360, includes: ['24 pz libretas 9x5 cm', '48 pz lápices 6x2.5 cm', '9 circulares 5 cm (vinil)', '8 circulares 4 cm (vinil)', '1 tag grande con llavero', '1 tag chico'], laminadoPrice: 50, previewImage: imgPremium, popular: true, popularLabel: '🔥 Recomendado' },
+  { id: 'adhesivas-contorno', material: 'Etiquetas Adhesivas', tier: 'Contorno', label: 'Etiquetas Adhesivas · Contorno', price: 180, includes: ['24 pz, largo 8 cm', '25 pz, largo 5 cm', '1 tag grande'], laminadoPrice: 30, previewImage: imgContorno, popular: true, popularLabel: '💡 Económico' },
 ];
 
 interface ExtraOption {
@@ -238,10 +239,12 @@ interface DesignGridProps {
   designs: LabelDesign[];
   activeTab: 'personajes' | 'siluetas_nina' | 'siluetas_nino';
   onSelectDesign: (name: string) => void;
+  whatsappNumber: string;
 }
 
-const DesignGrid = React.memo(function DesignGrid({ designs, activeTab, onSelectDesign }: DesignGridProps) {
+const DesignGrid = React.memo(function DesignGrid({ designs, activeTab, onSelectDesign, whatsappNumber }: DesignGridProps) {
   const tabStyle = TAB_STYLE[activeTab];
+  const noResultsMsg = encodeURIComponent('¡Hola! Busco un personaje que no vi en el catálogo, ¿me lo pueden diseñar?');
 
   return (
     <AnimatePresence mode="wait">
@@ -251,9 +254,23 @@ const DesignGrid = React.memo(function DesignGrid({ designs, activeTab, onSelect
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
-          className="text-center py-20 text-gray-500 text-lg"
+          className="text-center py-20"
         >
-          No encontramos diseños que coincidan con tu búsqueda.
+          <div className="max-w-md mx-auto">
+            <p className="text-5xl mb-4">🎨</p>
+            <p className="text-gray-700 font-bold text-lg mb-2">
+              No encontramos ese diseño
+            </p>
+            <p className="text-gray-500 text-base mb-6">
+              ¡Pero podemos crearlo para ti sin costo extra! Dinos qué personaje buscas y lo diseñamos especialmente.
+            </p>
+            <a
+              href={`https://wa.me/${whatsappNumber}?text=${noResultsMsg}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-white font-bold px-6 py-3 rounded-xl transition-colors shadow-sm"
+            >💬 Pedirlo por WhatsApp</a>
+          </div>
         </motion.div>
       ) : (
         <motion.div
@@ -406,7 +423,47 @@ export default function CatalogoEtiquetas() {
           <h1 className="text-5xl sm:text-6xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 tracking-tight drop-shadow-sm mb-3">
             🎒 Catálogo de Etiquetas 2026 🖍️
           </h1>
-          <p className="text-center text-purple-600 font-bold text-xl sm:text-2xl">¡Luce útiles impecables en este regreso a clases!</p>
+          <p className="text-center text-purple-600 font-bold text-xl sm:text-2xl mb-4">🍎 ¡Arma el kit perfecto para el regreso a clases!</p>
+
+          {/* Ilustración decorativa del hero */}
+          <div className="flex justify-center gap-6 sm:gap-10 py-4 mb-2">
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-4xl sm:text-5xl">✏️</span>
+              <span className="text-[10px] sm:text-xs text-purple-400 font-medium">Lápices</span>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-4xl sm:text-5xl">📓</span>
+              <span className="text-[10px] sm:text-xs text-pink-400 font-medium">Libretas</span>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-4xl sm:text-5xl">🎒</span>
+              <span className="text-[10px] sm:text-xs text-cyan-400 font-medium">Mochilas</span>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-4xl sm:text-5xl">💧</span>
+              <span className="text-[10px] sm:text-xs text-blue-400 font-medium">Lavables</span>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-4xl sm:text-5xl">🎨</span>
+              <span className="text-[10px] sm:text-xs text-pink-400 font-medium">Diseños</span>
+            </div>
+          </div>
+
+          {/* Franja de confianza */}
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mb-2">
+            <div className="flex items-center gap-1.5 bg-purple-50 border border-purple-200 rounded-full px-3 py-1.5 text-xs sm:text-sm text-purple-700 font-medium">
+              <span>🎨</span> 282 diseños
+            </div>
+            <div className="flex items-center gap-1.5 bg-pink-50 border border-pink-200 rounded-full px-3 py-1.5 text-xs sm:text-sm text-pink-700 font-medium">
+              <span>🚚</span> Envíos a todo México
+            </div>
+            <div className="flex items-center gap-1.5 bg-cyan-50 border border-cyan-200 rounded-full px-3 py-1.5 text-xs sm:text-sm text-cyan-700 font-medium">
+              <span>⭐</span> 100% personalizado
+            </div>
+            <div className="flex items-center gap-1.5 bg-blue-50 border border-blue-200 rounded-full px-3 py-1.5 text-xs sm:text-sm text-blue-700 font-medium">
+              <span>💧</span> 100% lavables
+            </div>
+          </div>
 
           {/* Paso 1: Elegir paquete */}
           <div
@@ -454,6 +511,11 @@ export default function CatalogoEtiquetas() {
                         className="text-left border-4 border-transparent hover:border-pink-300 rounded-3xl overflow-hidden bg-white/90 backdrop-blur-md transition-all transform hover:-translate-y-1 shadow-md hover:shadow-xl hover:shadow-pink-500/20 group"
                       >
                         <div className="h-60 sm:h-72 bg-[#fdf2f8] flex items-center justify-center overflow-hidden relative">
+                          {pkg.popular && (
+                            <span className="absolute top-2 left-2 z-10 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
+                              {pkg.popularLabel}
+                            </span>
+                          )}
                           <img
                             src={pkg.previewImage}
                             alt={`Ejemplo del paquete ${pkg.tier || pkg.label}`}
@@ -484,6 +546,11 @@ export default function CatalogoEtiquetas() {
                         className="text-left border-4 border-transparent hover:border-cyan-300 rounded-3xl overflow-hidden bg-white/90 backdrop-blur-md transition-all transform hover:-translate-y-1 shadow-md hover:shadow-xl hover:shadow-cyan-500/20 group"
                       >
                         <div className="h-60 sm:h-72 bg-[#f0fdfa] flex items-center justify-center overflow-hidden relative">
+                          {pkg.popular && (
+                            <span className="absolute top-2 left-2 z-10 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
+                              {pkg.popularLabel}
+                            </span>
+                          )}
                           <img
                             src={pkg.previewImage}
                             alt={`Ejemplo del paquete ${pkg.tier || pkg.label}`}
@@ -537,8 +604,11 @@ export default function CatalogoEtiquetas() {
 
           {/* Paso 2: Elegir personaje */}
           <div ref={catalogSectionRef} className="mt-10 scroll-mt-4">
-            <h2 className="text-xl font-bold text-gray-900 mb-1">2. Elige tu personaje</h2>
-            <p className="text-sm text-gray-500 mb-4">Busca o navega el diseño que más le guste.</p>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="bg-cyan-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg shadow-md">2</span>
+              <h2 className="text-xl font-bold text-gray-900">🎨 ¡Elige el diseño que más le guste!</h2>
+            </div>
+            <p className="text-sm text-gray-500 mb-4 ml-10">Busca entre cientos de personajes, siluetas y estilos.</p>
 
             {/* Search Bar */}
             <div className="max-w-xl mx-auto relative">
@@ -547,10 +617,10 @@ export default function CatalogoEtiquetas() {
               </div>
               <input
                 type="text"
-                placeholder="Buscar diseño (ej. Among Us)..."
+                placeholder='¿Buscas a Bluey, Stitch, Mario Bros, Among Us...?'
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl text-lg focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-colors shadow-sm outline-none"
+                className="block w-full pl-12 pr-4 py-4 border-2 border-purple-200 rounded-2xl text-lg focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all shadow-sm outline-none bg-white placeholder:text-gray-400"
               />
             </div>
 
@@ -593,10 +663,79 @@ export default function CatalogoEtiquetas() {
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 w-full">
-        <DesignGrid designs={filteredDesigns} activeTab={activeTab} onSelectDesign={handleOpenModal} />
+        <DesignGrid designs={filteredDesigns} activeTab={activeTab} onSelectDesign={handleOpenModal} whatsappNumber={WHATSAPP_NUMBER} />
+
+        {/* Banner: ¿no viste tu personaje? */}
+        <div className="mt-12 text-center">
+          <div className="inline-flex flex-col sm:flex-row items-center gap-3 bg-purple-50 border border-purple-200 rounded-2xl px-6 py-4 text-sm text-purple-800">
+            <span className="text-xl">✨</span>
+            <span>¿Buscas un personaje que no viste? Te lo diseñamos sin costo extra.</span>
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('¡Hola! Busco un personaje que no vi en el catálogo, ¿me lo pueden diseñar?')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0 bg-[#25D366] hover:bg-[#128C7E] text-white font-bold px-4 py-2 rounded-xl transition-colors shadow-sm text-xs"
+            >💬 Escríbenos</a>
+          </div>
+        </div>
       </main>
 
-      <GlobalFooter />
+      {/* Footer personalizado */}
+      <footer className="bg-white border-t-4 border-yellow-400 mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Col 1 — Marca */}
+          <div>
+            <h3 className="text-xl font-extrabold bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-3">
+              🎒 Etiquetas Escolares 2026
+            </h3>
+            <p className="text-gray-500 text-sm leading-relaxed">
+              Etiquetas 100% personalizadas y lavables para que los útiles de tus peques
+              siempre regresen a casa. Diseños únicos, material de calidad y envíos a todo México.
+            </p>
+            <p className="text-xs text-gray-400 mt-4 italic">
+              Hecho con ❤️ para los peques del hogar
+            </p>
+          </div>
+
+          {/* Col 2 — Contacto */}
+          <div>
+            <h4 className="text-gray-900 font-bold mb-4 uppercase tracking-wider text-xs">Contacto</h4>
+            <ul className="space-y-3 text-sm text-gray-500">
+              <li className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-sm">💬</span>
+                <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="hover:text-green-600 transition-colors">
+                  WhatsApp: {WHATSAPP_NUMBER}
+                </a>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-sm">📦</span>
+                Envíos a toda la República Mexicana
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 text-sm">🎨</span>
+                Diseños personalizados sin costo extra
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 3 — Horario / Extra */}
+          <div>
+            <h4 className="text-gray-900 font-bold mb-4 uppercase tracking-wider text-xs">Pedidos</h4>
+            <p className="text-gray-500 text-sm leading-relaxed">
+              Recibimos pedidos todo el año. Elige tu paquete, selecciona tu diseño
+              favorito y recibe tus etiquetas directamente en casa. ¡Sin complicaciones!
+            </p>
+            <p className="text-xs text-gray-400 mt-4">
+              &copy; {new Date().getFullYear()} Etiquetas Escolares. Todos los derechos reservados.
+            </p>
+          </div>
+        </div>
+        <div className="border-t border-gray-100 py-4 text-center">
+          <p className="text-[10px] text-gray-400 tracking-wider">
+            Diseñado por IMAGINE &amp; STAMP
+          </p>
+        </div>
+      </footer>
 
       {/* Modal de Pedido */}
       <AnimatePresence>
@@ -611,6 +750,23 @@ export default function CatalogoEtiquetas() {
           />
         )}
       </AnimatePresence>
+
+      {/* WhatsApp flotante */}
+      <a
+        href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('¡Hola! Tengo una duda sobre las etiquetas escolares 🙋')}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#128C7E] text-white w-14 h-14 sm:w-16 sm:h-16 rounded-full shadow-lg shadow-green-500/30 hover:shadow-green-500/50 flex items-center justify-center transition-all hover:scale-110 active:scale-95 group"
+        aria-label="Chatea por WhatsApp"
+      >
+        <svg viewBox="0 0 24 24" className="w-7 h-7 sm:w-8 sm:h-8 fill-current">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+        </svg>
+        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></span>
+        <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs font-medium px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+          ¿Dudas? Te ayudamos
+        </span>
+      </a>
     </div>
   );
 }
