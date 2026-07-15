@@ -83,7 +83,7 @@ export default function App() {
   const [selectedSubcategory2, setSelectedSubcategory2] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  
+
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [activeBadgeFilter, setActiveBadgeFilter] = useState<string | null>(null);
 
@@ -97,10 +97,16 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
+  const [visibleItems, setVisibleItems] = useState(10);
 
   useEffect(() => {
     localStorage.setItem('imagine_stamp_favorites', JSON.stringify(favorites));
   }, [favorites]);
+
+  // Reiniciar paginación cuando cambia categoría o búsqueda
+  useEffect(() => {
+    setVisibleItems(10);
+  }, [selectedCategory, searchQuery, selectedSubcategory, selectedSubcategory2]);
 
   // Ã¢â€â‚¬Ã¢â€â‚¬ CARGAR DATOS DESDE SUPABASE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   useEffect(() => {
@@ -379,7 +385,7 @@ export default function App() {
                                     className="flex items-center gap-3 p-3 hover:bg-primary/5 rounded-xl transition-all text-left group"
                                   >
                                     <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-primary/5">
-                                      <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                      <img src={product.image} alt={product.name} loading="lazy" className="w-full h-full object-cover" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       <p className="text-sm font-bold text-primary truncate group-hover:text-secondary">{product.name}</p>
@@ -573,14 +579,14 @@ export default function App() {
 
                   <div className="masonry-grid">
                     <AnimatePresence mode="popLayout">
-                      {filteredProducts.map((product) => (
-                        <motion.div 
+                      {filteredProducts.slice(0, visibleItems).map((product) => (
+                        <motion.div
                           key={product.id} id={`product-${product.id}`} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
                           className="masonry-item group bg-white rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all"
                         >
                           <div className="relative aspect-[3/4] rounded-2xl overflow-hidden mb-4">
-                            <img alt={product.name} className="w-full h-full object-cover transition-transform group-hover:scale-110" src={product.image} />
-                            <button 
+                            <img alt={product.name} loading="lazy" className="w-full h-full object-cover transition-transform group-hover:scale-110" src={product.image} />
+                            <button
                               onClick={(e) => { e.stopPropagation(); toggleFavorite(product.id); }}
                               className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm ${
                                 favorites.includes(product.id)
@@ -595,7 +601,7 @@ export default function App() {
                           <p className="text-[10px] text-primary/60 line-clamp-2 mb-2">{product.description}</p>
                           <div className="flex flex-col gap-2 mt-auto">
                             <span className="text-primary font-black text-lg">${product.price}</span>
-                      <button 
+                      <button
                               onClick={() => addToCart(product)}
                               className="w-full py-2 bg-secondary text-white rounded-xl font-bold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                             >
@@ -605,6 +611,23 @@ export default function App() {
                         </motion.div>
                       ))}
                     </AnimatePresence>
+
+                    {/* Botón "Ver más" - solo si hay más productos por mostrar */}
+                    {visibleItems < filteredProducts.length && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="col-span-full mt-12 flex justify-center"
+                      >
+                        <button
+                          onClick={() => setVisibleItems(prev => prev + 10)}
+                          className="px-8 py-3 bg-secondary text-white font-bold rounded-xl shadow-md hover:scale-[1.05] active:scale-[0.95] transition-all flex items-center gap-2"
+                        >
+                          <Plus size={18} />
+                          Ver más productos ({filteredProducts.length - visibleItems} disponibles)
+                        </button>
+                      </motion.div>
+                    )}
                   </div>
                 </div>
               </main>
@@ -651,10 +674,10 @@ export default function App() {
 
               <div className="fixed bottom-8 right-6 z-50 flex flex-col gap-4 items-end">
                 <motion.a 
-                  href="https://wa.me/525650469993?text=Hola,%20vengo%20de%20la%20pÃƒÂ¡gina%20web%20y%20quiero%20cotizar" target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }}
+                  href="https://wa.me/525650469993?text=Hola,%20vengo%20de%20la%20página%20web%20y%20quiero%20cotizar" target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }}
                   className="flex items-center gap-3 bg-[#25D366] text-white px-6 py-4 rounded-full shadow-2xl"
                 >
-                  <span className="font-bold text-sm">Ã‚Â¡Cotiza aquÃƒÂ­!</span>
+                  <span className="font-bold text-sm">¡Cotiza aquí!</span>
                   <MessageCircle size={28} fill="currentColor" />
                 </motion.a>
               </div>
