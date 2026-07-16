@@ -38,16 +38,20 @@ const PACKAGES: PackageOption[] = [
 interface ExtraOption {
   id: string;
   label: string;
-  price: number;
+  unitPrice: number;
+  fixedPrice?: boolean;
+  suffix?: string;
 }
 
 const EXTRAS: ExtraOption[] = [
-  { id: 'extra-libretas', label: '10 pz Libretas 9x5cm', price: 60 },
-  { id: 'extra-lapices', label: '30 pz Lápices 6x2.5cm', price: 60 },
-  { id: 'extra-contorno', label: '12 pz Contorno, largo 8cm', price: 60 },
-  { id: 'extra-tag-grande', label: 'Tag Grande', price: 50 },
-  { id: 'extra-tag-chico', label: 'Tag Chico', price: 35 },
-  { id: 'extra-materias', label: 'Materias en etiqueta libreta', price: 30 },
+  { id: 'extra-libretas', label: 'Etiquetas Libretas 9x5cm', unitPrice: 6, suffix: 'pz' },
+  { id: 'extra-lapices', label: 'Etiquetas Lápices 6x2.5cm', unitPrice: 2, suffix: 'pz' },
+  { id: 'extra-contorno', label: 'Etiquetas Contorno, largo 8cm', unitPrice: 5, suffix: 'pz' },
+  { id: 'extra-circ-5', label: 'Etiqueta Circular 5cm', unitPrice: 0.53, suffix: 'pz' },
+  { id: 'extra-circ-4', label: 'Etiqueta Circular 4cm', unitPrice: 0.30, suffix: 'pz' },
+  { id: 'extra-tag-grande', label: 'Tag Grande', unitPrice: 50, suffix: 'pz' },
+  { id: 'extra-tag-chico', label: 'Tag Chico', unitPrice: 35, suffix: 'pz' },
+  { id: 'extra-materias', label: 'Materias en etiqueta libreta', unitPrice: 30, fixedPrice: true },
 ];
 
 const TAB_STYLE = {
@@ -77,24 +81,20 @@ interface OrderModalProps {
   design: string;
   pkg: PackageOption;
   laminadoCost: number;
+  extrasQuantities: Record<string, number>;
+  extrasCost: number;
   whatsappNumber: string;
   onClose: () => void;
   onComplete: () => void;
 }
 
-function OrderModal({ design, pkg, laminadoCost, whatsappNumber, onClose, onComplete }: OrderModalProps) {
+function OrderModal({ design, pkg, laminadoCost, extrasQuantities, extrasCost, whatsappNumber, onClose, onComplete }: OrderModalProps) {
   const [childName, setChildName] = useState('');
   const [grade, setGrade] = useState('');
   const [group, setGroup] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
-  const [selectedExtraIds, setSelectedExtraIds] = useState<string[]>([]);
 
-  const extrasCost = selectedExtraIds.reduce((sum, id) => sum + (EXTRAS.find(e => e.id === id)?.price || 0), 0);
   const orderTotal = pkg.price + laminadoCost + extrasCost;
-
-  const toggleExtra = (id: string) => {
-    setSelectedExtraIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
-  };
 
   const handleSendWhatsApp = () => {
     let text = `¡Hola Imagine & Stamp! Quiero hacer mi pedido de etiquetas escolares con el diseño de ${design}.\n\n`;
@@ -102,14 +102,19 @@ function OrderModal({ design, pkg, laminadoCost, whatsappNumber, onClose, onComp
     if (laminadoCost > 0) {
       text += `*Laminado:* +$${laminadoCost}\n`;
     }
-    if (selectedExtraIds.length > 0) {
+    
+    const extraEntries = Object.entries(extrasQuantities);
+    if (extraEntries.length > 0) {
       text += `*Extras:*\n`;
-      selectedExtraIds.forEach(id => {
+      extraEntries.forEach(([id, qty]) => {
         const extra = EXTRAS.find(e => e.id === id);
-        if (extra) text += `- ${extra.label} (+$${extra.price})\n`;
+        if (extra) {
+          const itemCost = extra.unitPrice * qty;
+          text += `- ${extra.label} (${qty} ${extra.suffix || ''}) (+$${itemCost.toFixed(2)})\n`;
+        }
       });
     }
-    text += `*Total estimado:* $${orderTotal}\n\n`;
+    text += `*Total estimado:* $${orderTotal.toFixed(2)}\n\n`;
     text += `Nombre del niño(a): ${childName}\nGrado escolar: ${grade}\nGrupo: ${group}\nDatos adicionales: ${additionalInfo}`;
 
     window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`, '_blank');
@@ -142,36 +147,21 @@ function OrderModal({ design, pkg, laminadoCost, whatsappNumber, onClose, onComp
               className="w-16 h-20 object-cover rounded-lg flex-shrink-0"
             />
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-gray-700 mb-1">Paquete: {pkg.label} · ${pkg.price}{laminadoCost > 0 ? ` + laminado $${laminadoCost}` : ''}</p>
-              <ul className="text-xs text-gray-600 list-disc list-inside space-y-0.5">
-                {pkg.includes.map(item => <li key={item}>{item}</li>)}
+              <p className="text-xs font-bold text-gray-700 mb-1">Paquete: {pkg.label} · ${pkg.price}</p>
+              <ul className="text-xs text-gray-600 space-y-0.5">
+                {laminadoCost > 0 && <li>+ Laminado (${laminadoCost})</li>}
+                {Object.entries(extrasQuantities).map(([id, qty]) => {
+                  const extra = EXTRAS.find(e => e.id === id);
+                  if (!extra) return null;
+                  return <li key={id}>+ {qty} {extra.label} (${(extra.unitPrice * qty).toFixed(2)})</li>;
+                })}
               </ul>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-bold text-gray-800 mb-2">Extras (opcional)</label>
-            <div className="space-y-1.5">
-              {EXTRAS.map(extra => (
-                <label key={extra.id} className="flex items-center justify-between gap-2 text-sm text-gray-700 border border-gray-200 rounded-lg px-3 py-2 cursor-pointer hover:border-gray-300">
-                  <span className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={selectedExtraIds.includes(extra.id)}
-                      onChange={() => toggleExtra(extra.id)}
-                      className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
-                    />
-                    {extra.label}
-                  </span>
-                  <span className="font-bold text-gray-900">+${extra.price}</span>
-                </label>
-              ))}
             </div>
           </div>
 
           <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
             <span className="text-sm font-bold text-blue-900">Total estimado</span>
-            <span className="text-xl font-black text-blue-700">${orderTotal}</span>
+            <span className="text-xl font-black text-blue-700">${orderTotal.toFixed(2)}</span>
           </div>
 
           <div>
@@ -343,6 +333,7 @@ export default function CatalogoEtiquetas() {
   // Paso 1: paquete (elegido antes de navegar el catálogo de personajes)
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null);
   const [wantsLaminado, setWantsLaminado] = useState(false);
+  const [extrasQuantities, setExtrasQuantities] = useState<Record<string, number>>({});
   const [highlightPackages, setHighlightPackages] = useState(false);
 
   const packageSectionRef = useRef<HTMLDivElement>(null);
@@ -353,12 +344,24 @@ export default function CatalogoEtiquetas() {
     [selectedPackageId]
   );
   const laminadoCost = wantsLaminado && selectedPackage?.laminadoPrice ? selectedPackage.laminadoPrice : 0;
+  
+  const extrasCost = useMemo(() => Object.entries(extrasQuantities).reduce((sum, [id, qty]) => {
+    const extra = EXTRAS.find(e => e.id === id);
+    return sum + (extra ? extra.unitPrice * qty : 0);
+  }, 0), [extrasQuantities]);
 
-  useEffect(() => {
-    if (selectedPackageId) {
-      catalogSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [selectedPackageId]);
+  const handleQuantityChange = useCallback((id: string, qty: number) => {
+    setExtrasQuantities(prev => {
+      const next = { ...prev };
+      if (qty <= 0) {
+        delete next[id];
+      } else {
+        next[id] = qty;
+      }
+      return next;
+    });
+  }, []);
+
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedQuery(searchQuery), 150);
@@ -394,6 +397,7 @@ export default function CatalogoEtiquetas() {
     setSelectedDesign(null);
     setSelectedPackageId(null);
     setWantsLaminado(false);
+    setExtrasQuantities({});
     setSearchQuery('');
     setActiveTab('personajes');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -402,6 +406,7 @@ export default function CatalogoEtiquetas() {
   const handleSelectPackage = (packageId: string) => {
     setSelectedPackageId(packageId);
     setWantsLaminado(false);
+    setExtrasQuantities({});
   };
 
 
@@ -568,35 +573,100 @@ export default function CatalogoEtiquetas() {
                 </div>
               </>
             ) : (
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4 bg-white/80 backdrop-blur-sm border-2 border-pink-200 shadow-md rounded-3xl p-4 sm:p-6 mt-4">
-                <img
-                  src={selectedPackage.previewImage}
-                  alt={`Paquete elegido: ${selectedPackage.label}`}
-                  className="w-28 h-36 object-cover rounded-2xl flex-shrink-0 mx-auto sm:mx-0 shadow-sm border border-gray-100"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-lg sm:text-xl font-extrabold text-purple-700">{selectedPackage.tier || selectedPackage.label} · <span className="text-pink-500">${selectedPackage.price}</span></p>
-                  <ul className="text-sm text-gray-600 list-disc list-inside space-y-1 mt-2 font-medium">
-                    {selectedPackage.includes.map(item => <li key={item}>{item}</li>)}
-                  </ul>
-                  {selectedPackage.laminadoPrice && (
-                    <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mt-4 cursor-pointer bg-pink-50 p-3 rounded-xl border border-pink-100 hover:bg-pink-100 transition-colors w-max">
-                      <input
-                        type="checkbox"
-                        checked={wantsLaminado}
-                        onChange={(e) => setWantsLaminado(e.target.checked)}
-                        className="w-5 h-5 rounded text-pink-500 focus:ring-pink-400"
-                      />
-                      Agregar laminado (+${selectedPackage.laminadoPrice})
-                    </label>
+              <div className="bg-white/80 backdrop-blur-sm border-2 border-pink-200 shadow-md rounded-3xl p-4 sm:p-6 mt-4 flex flex-col gap-6">
+                <div className="flex flex-col sm:flex-row gap-4 sm:items-start">
+                  <img
+                    src={selectedPackage.previewImage}
+                    alt={`Paquete elegido: ${selectedPackage.label}`}
+                    className="w-28 h-36 object-cover rounded-2xl flex-shrink-0 mx-auto sm:mx-0 shadow-sm border border-gray-100"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-lg sm:text-xl font-extrabold text-purple-700">{selectedPackage.tier || selectedPackage.label} · <span className="text-pink-500">${selectedPackage.price}</span></p>
+                    <ul className="text-sm text-gray-600 list-disc list-inside space-y-1 mt-2 font-medium">
+                      {selectedPackage.includes.map(item => <li key={item}>{item}</li>)}
+                    </ul>
+                    {selectedPackage.laminadoPrice && (
+                      <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mt-4 cursor-pointer bg-pink-50 p-3 rounded-xl border border-pink-100 hover:bg-pink-100 transition-colors w-max">
+                        <input
+                          type="checkbox"
+                          checked={wantsLaminado}
+                          onChange={(e) => setWantsLaminado(e.target.checked)}
+                          className="w-5 h-5 rounded text-pink-500 focus:ring-pink-400"
+                        />
+                        Agregar laminado (+${selectedPackage.laminadoPrice})
+                      </label>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => setSelectedPackageId(null)}
+                    className="text-sm sm:text-base font-bold text-white bg-purple-400 hover:bg-purple-500 py-2 px-4 rounded-full flex-shrink-0 self-start sm:self-start shadow-md transition-colors"
+                  >
+                    Cambiar paquete
+                  </button>
+                </div>
+
+                <div className="border-t border-pink-100 pt-4">
+                  <label className="block text-sm font-bold text-gray-800 mb-3">✨ Extras Adicionales (Calculadora)</label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {EXTRAS.map(extra => {
+                      const qty = extrasQuantities[extra.id] || 0;
+                      return (
+                        <div key={extra.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm text-gray-700 border border-gray-200 rounded-lg px-3 py-2 bg-white hover:border-pink-300 transition-colors">
+                          <div className="flex flex-col flex-1">
+                            <span className="font-medium text-gray-800">{extra.label}</span>
+                            <span className="text-xs text-gray-500">${extra.unitPrice.toFixed(2)} c/u</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-3 self-end sm:self-auto">
+                            {extra.fixedPrice ? (
+                               <label className="flex items-center gap-2 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={qty > 0}
+                                    onChange={(e) => handleQuantityChange(extra.id, e.target.checked ? 1 : 0)}
+                                    className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500"
+                                  />
+                                  <span className="font-bold text-gray-900 w-16 text-right">+${(extra.unitPrice * qty).toFixed(2)}</span>
+                               </label>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <div className="flex items-center bg-gray-50 border border-gray-300 rounded-lg overflow-hidden h-9">
+                                  <button 
+                                    onClick={() => handleQuantityChange(extra.id, Math.max(0, qty - 1))}
+                                    className="px-3 hover:bg-gray-200 text-gray-600 font-bold transition-colors"
+                                  >-</button>
+                                  <input 
+                                    type="number" 
+                                    min="0"
+                                    value={qty === 0 ? '' : qty}
+                                    onChange={(e) => {
+                                      const val = parseInt(e.target.value);
+                                      handleQuantityChange(extra.id, isNaN(val) ? 0 : val);
+                                    }}
+                                    placeholder="0"
+                                    className="w-12 text-center bg-transparent border-x border-gray-300 outline-none text-gray-800 font-medium no-spinners"
+                                  />
+                                  <button 
+                                    onClick={() => handleQuantityChange(extra.id, qty + 1)}
+                                    className="px-3 hover:bg-gray-200 text-gray-600 font-bold transition-colors"
+                                  >+</button>
+                                </div>
+                                <span className="font-bold text-gray-900 w-16 text-right">+${(extra.unitPrice * qty).toFixed(2)}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  {extrasCost > 0 && (
+                    <div className="mt-3 text-right">
+                      <span className="text-sm font-medium text-gray-600 mr-2">Subtotal Extras:</span>
+                      <span className="text-base font-bold text-pink-600">${extrasCost.toFixed(2)}</span>
+                    </div>
                   )}
                 </div>
-                <button
-                  onClick={() => setSelectedPackageId(null)}
-                  className="text-sm sm:text-base font-bold text-white bg-purple-400 hover:bg-purple-500 py-2 px-4 rounded-full flex-shrink-0 self-start sm:self-center shadow-md transition-colors"
-                >
-                  Cambiar paquete
-                </button>
               </div>
             )}
             </div>
@@ -744,6 +814,8 @@ export default function CatalogoEtiquetas() {
             design={selectedDesign}
             pkg={selectedPackage}
             laminadoCost={laminadoCost}
+            extrasQuantities={extrasQuantities}
+            extrasCost={extrasCost}
             whatsappNumber={WHATSAPP_NUMBER}
             onClose={handleCloseModal}
             onComplete={handleCompleteOrder}
