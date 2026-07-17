@@ -251,10 +251,13 @@ export default function AmeliePatisserieMenu() {
       `*Forma de Pago:* ${clientData.paymentMethod}\n\n` +
       `_Pedido generado desde el menú web_ \u2728`;
 
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
-
+    // 1. Mostrar pantalla de éxito
     setCartStep(3);
-    // No cerramos automáticamente — el usuario lo cierra con el botón
+
+    // 2. Abrir WhatsApp tras un breve delay para permitir el renderizado
+    setTimeout(() => {
+      window.location.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    }, 500);
   };
 
   return (
