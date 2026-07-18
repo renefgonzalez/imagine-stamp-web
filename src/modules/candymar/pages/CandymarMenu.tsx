@@ -1,157 +1,12 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { Download } from 'lucide-react';
+// @ts-ignore
+import html2pdf from 'html2pdf.js';
+import CandymarPrintTemplate from './CandymarPrintTemplate';
+import { CATEGORIES, PRODUCTS, OctopusSVG, CrabSVG } from './CandymarData';
 import logo from '../assets/logo.png';
 import fondoHero from '../assets/fondo-hero.jpg';
 
-// ─── Datos ────────────────────────────────────────────────────────────────────
-
-const CATEGORIES = [
-  { name: 'Todos' },
-  { name: "Pa' Que Empieces" },
-  { name: 'Tacos' },
-  { name: 'Camarones' },
-  { name: 'Aguachile' },
-  { name: 'Bebidas' },
-];
-
-const PRODUCTS = [
-  // Pa' Que Empieces
-  { id: 1, name: 'Ceviche de Camarón', description: 'Estilo Colima y Sinaloa.', price: 195, category: "Pa' Que Empieces", featured: true },
-  { id: 2, name: 'Ceviche de Pescado', description: 'Fresco, con limón y especias.', price: 175, category: "Pa' Que Empieces" },
-  { id: 3, name: 'Aguachile de Camarón', description: 'Camarón crudo marinado en limón con chile.', price: 185, category: "Pa' Que Empieces" },
-  // Tacos
-  { id: 4, name: 'Taco Gobernador', description: 'Con costra de queso dorada.', price: 70, category: 'Tacos', featured: true },
-  { id: 5, name: 'Taco de Marlin', description: 'Marlin ahumado con pico de gallo.', price: 65, category: 'Tacos' },
-  { id: 6, name: 'Taco de Camarón', description: 'Empanizado con repollo y aderezo.', price: 68, category: 'Tacos' },
-  { id: 7, name: 'Quesadilla de Camarón', description: 'Tortilla de harina con queso gratinado.', price: 75, category: 'Tacos' },
-  // Camarones
-  { id: 8, name: 'Camarones Empanizados', description: 'Acompañados de arroz y ensalada.', price: 200, category: 'Camarones' },
-  { id: 9, name: 'Camarones al Mojo de Ajo', description: 'Salteados con ajo, mantequilla y limón.', price: 210, category: 'Camarones' },
-  { id: 10, name: 'Camarones a la Diabla', description: 'Con salsa picante de chile y especias.', price: 205, category: 'Camarones' },
-  { id: 11, name: 'Brocheta de Camarón', description: 'Al grill con verduras y adobo cítrico.', price: 195, category: 'Camarones' },
-  // Aguachile
-  { id: 12, name: 'Aguachile Negro', description: 'Con salsa de soya, chile y limón.', price: 200, category: 'Aguachile' },
-  { id: 13, name: 'Aguachile Verde', description: 'Hierbas frescas, chile serrano y pepino.', price: 195, category: 'Aguachile', featured: true },
-  { id: 14, name: 'Aguachile Rojo', description: 'Chile guajillo, ajo y camarón fresco.', price: 200, category: 'Aguachile' },
-  // Bebidas
-  { id: 15, name: 'Agua Fresca del Día', description: 'Jarra de 1 Litro.', price: 50, category: 'Bebidas' },
-  { id: 16, name: 'Limonada Mineral', description: 'Con agua mineral y hierbabuena.', price: 55, category: 'Bebidas' },
-  { id: 17, name: 'Michelada', description: 'Cerveza con limón, sal y especias.', price: 80, category: 'Bebidas' },
-  { id: 18, name: 'Refresco', description: 'Coca-Cola, Sprite, Fanta o Sidral.', price: 35, category: 'Bebidas' },
-];
-
-// ─── SVG Decorativos ──────────────────────────────────────────────────────────
-
-const OctopusSVG = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 240 280" fill="none">
-    {/* Cabeza redondeada elegante */}
-    <ellipse cx="120" cy="60" rx="45" ry="55" stroke="currentColor" strokeWidth="1.8" opacity="0.42" />
-    <path d="M90 70 Q85 85 88 100" stroke="currentColor" strokeWidth="0.8" opacity="0.2" />
-    <path d="M150 70 Q155 85 152 100" stroke="currentColor" strokeWidth="0.8" opacity="0.2" />
-
-    {/* Ojos expresivos */}
-    <circle cx="100" cy="50" r="6.5" stroke="currentColor" strokeWidth="1.3" opacity="0.5" fill="none" />
-    <circle cx="140" cy="50" r="6.5" stroke="currentColor" strokeWidth="1.3" opacity="0.5" fill="none" />
-    <circle cx="100" cy="50" r="3" fill="currentColor" opacity="0.7" />
-    <circle cx="140" cy="50" r="3" fill="currentColor" opacity="0.7" />
-
-    {/* Tentáculo 1 - izquierda extrema */}
-    <path d="M85 110 Q65 155 58 210 Q55 235 62 250 Q70 245 75 220 Q82 180 90 130" stroke="currentColor" strokeWidth="2.2" opacity="0.4" strokeLinecap="round" />
-    <circle cx="68" cy="145" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="62" cy="170" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="60" cy="195" r="1.5" fill="currentColor" opacity="0.35" />
-
-    {/* Tentáculo 2 */}
-    <path d="M95 115 Q80 165 75 225 Q73 250 80 260 Q87 255 92 230 Q98 185 105 125" stroke="currentColor" strokeWidth="2.2" opacity="0.4" strokeLinecap="round" />
-    <circle cx="82" cy="155" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="78" cy="185" r="1.5" fill="currentColor" opacity="0.35" />
-
-    {/* Tentáculo 3 - centro-izquierdo */}
-    <path d="M105 120 Q95 175 92 240 Q91 260 98 265 Q105 260 108 235 Q112 190 118 130" stroke="currentColor" strokeWidth="2.2" opacity="0.4" strokeLinecap="round" />
-    <circle cx="96" cy="165" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="93" cy="205" r="1.5" fill="currentColor" opacity="0.35" />
-
-    {/* Tentáculo 4 - centro */}
-    <path d="M120 122 Q120 180 119 245 Q119 265 126 268 Q133 263 131 238 Q130 190 128 135" stroke="currentColor" strokeWidth="2.2" opacity="0.4" strokeLinecap="round" />
-    <circle cx="119" cy="175" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="119" cy="215" r="1.5" fill="currentColor" opacity="0.35" />
-
-    {/* Tentáculo 5 - centro-derecho */}
-    <path d="M135 120 Q145 175 148 240 Q149 260 142 265 Q135 260 132 235 Q128 190 122 130" stroke="currentColor" strokeWidth="2.2" opacity="0.4" strokeLinecap="round" />
-    <circle cx="144" cy="165" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="147" cy="205" r="1.5" fill="currentColor" opacity="0.35" />
-
-    {/* Tentáculo 6 */}
-    <path d="M145 115 Q160 165 165 225 Q167 250 160 260 Q153 255 148 230 Q142 185 135 125" stroke="currentColor" strokeWidth="2.2" opacity="0.4" strokeLinecap="round" />
-    <circle cx="158" cy="155" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="162" cy="185" r="1.5" fill="currentColor" opacity="0.35" />
-
-    {/* Tentáculo 7 - derecha extrema */}
-    <path d="M155 110 Q175 155 182 210 Q185 235 178 250 Q170 245 165 220 Q158 180 150 130" stroke="currentColor" strokeWidth="2.2" opacity="0.4" strokeLinecap="round" />
-    <circle cx="172" cy="145" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="178" cy="170" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="180" cy="195" r="1.5" fill="currentColor" opacity="0.35" />
-
-    {/* Detalles de textura en la cabeza */}
-    <path d="M105 75 Q110 70 115 75" stroke="currentColor" strokeWidth="0.6" opacity="0.15" fill="none" />
-    <path d="M125 75 Q130 70 135 75" stroke="currentColor" strokeWidth="0.6" opacity="0.15" fill="none" />
-  </svg>
-);
-
-const CrabSVG = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 260 200" fill="none">
-    {/* Caparazón principal - más redondo y detallado */}
-    <ellipse cx="130" cy="70" rx="55" ry="48" stroke="currentColor" strokeWidth="2" opacity="0.42" />
-
-    {/* Textura del caparazón */}
-    <path d="M110 55 Q130 50 150 55" stroke="currentColor" strokeWidth="0.7" opacity="0.15" />
-    <path d="M105 70 Q130 68 155 70" stroke="currentColor" strokeWidth="0.7" opacity="0.15" />
-    <path d="M110 85 Q130 87 150 85" stroke="currentColor" strokeWidth="0.7" opacity="0.15" />
-
-    {/* Ojos en tallos - más reales */}
-    <path d="M115 55 Q112 45 110 35" stroke="currentColor" strokeWidth="1.2" opacity="0.35" strokeLinecap="round" />
-    <path d="M145 55 Q148 45 150 35" stroke="currentColor" strokeWidth="1.2" opacity="0.35" strokeLinecap="round" />
-
-    <circle cx="110" cy="32" r="5.5" stroke="currentColor" strokeWidth="1.3" opacity="0.48" fill="none" />
-    <circle cx="150" cy="32" r="5.5" stroke="currentColor" strokeWidth="1.3" opacity="0.48" fill="none" />
-    <circle cx="110" cy="32" r="2.5" fill="currentColor" opacity="0.7" />
-    <circle cx="150" cy="32" r="2.5" fill="currentColor" opacity="0.7" />
-
-    {/* Pinza izquierda - grande y detallada */}
-    <path d="M85 80 Q55 85 40 105" stroke="currentColor" strokeWidth="2.4" opacity="0.4" strokeLinecap="round" />
-    {/* Garra izquierda */}
-    <path d="M40 105 Q30 110 32 125 Q50 115 55 105" stroke="currentColor" strokeWidth="2.2" opacity="0.4" strokeLinecap="round" fill="none" />
-    <circle cx="36" cy="112" r="1.2" fill="currentColor" opacity="0.35" />
-    <circle cx="42" cy="118" r="1.2" fill="currentColor" opacity="0.35" />
-
-    {/* Pinza derecha - grande y detallada */}
-    <path d="M175 80 Q205 85 220 105" stroke="currentColor" strokeWidth="2.4" opacity="0.4" strokeLinecap="round" />
-    {/* Garra derecha */}
-    <path d="M220 105 Q230 110 228 125 Q210 115 205 105" stroke="currentColor" strokeWidth="2.2" opacity="0.4" strokeLinecap="round" fill="none" />
-    <circle cx="224" cy="112" r="1.2" fill="currentColor" opacity="0.35" />
-    <circle cx="218" cy="118" r="1.2" fill="currentColor" opacity="0.35" />
-
-    {/* Patas traseras izquierda - 4 patas */}
-    <path d="M95 115 Q85 145 80 175" stroke="currentColor" strokeWidth="1.6" opacity="0.35" strokeLinecap="round" />
-    <circle cx="88" cy="135" r="1" fill="currentColor" opacity="0.3" />
-    <circle cx="82" cy="160" r="1" fill="currentColor" opacity="0.3" />
-
-    <path d="M110 120 Q105 155 105 185" stroke="currentColor" strokeWidth="1.6" opacity="0.35" strokeLinecap="round" />
-    <circle cx="107" cy="145" r="1" fill="currentColor" opacity="0.3" />
-    <circle cx="105" cy="170" r="1" fill="currentColor" opacity="0.3" />
-
-    {/* Patas traseras derecha - 4 patas */}
-    <path d="M165 115 Q175 145 180 175" stroke="currentColor" strokeWidth="1.6" opacity="0.35" strokeLinecap="round" />
-    <circle cx="172" cy="135" r="1" fill="currentColor" opacity="0.3" />
-    <circle cx="178" cy="160" r="1" fill="currentColor" opacity="0.3" />
-
-    <path d="M150 120 Q155 155 155 185" stroke="currentColor" strokeWidth="1.6" opacity="0.35" strokeLinecap="round" />
-    <circle cx="153" cy="145" r="1" fill="currentColor" opacity="0.3" />
-    <circle cx="155" cy="170" r="1" fill="currentColor" opacity="0.3" />
-
-    {/* Barbilla/zona bucal */}
-    <path d="M120 110 Q130 115 140 110" stroke="currentColor" strokeWidth="0.8" opacity="0.2" />
-  </svg>
-);
 
 const OrnamentalDivider = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 300 40" fill="none">
@@ -229,6 +84,7 @@ export default function CandymarMenu() {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [searchQuery, setSearchQuery] = useState('');
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const printRef = useRef<HTMLDivElement>(null);
 
   const filteredProducts = useMemo(
     () => PRODUCTS.filter(p => {
@@ -247,6 +103,41 @@ export default function CandymarMenu() {
     }, {} as Record<string, typeof PRODUCTS>);
   }, [filteredProducts, selectedCategory]);
 
+  const handleDownloadPDF = () => {
+    try {
+      const element = printRef.current;
+      if (!element) {
+        alert("No se encontró el elemento para imprimir.");
+        return;
+      }
+
+      element.classList.remove('-left-[9999px]');
+      element.classList.add('left-0');
+
+      const opt = {
+        margin:       0,
+        filename:     'Menu_Candymar.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      // Manejar la importación en Vite (puede exportarse bajo .default)
+      const pdfGenerator = html2pdf.default ? html2pdf.default : html2pdf;
+
+      pdfGenerator().set(opt).from(element).save().then(() => {
+        element.classList.remove('left-0');
+        element.classList.add('-left-[9999px]');
+      }).catch((err: any) => {
+        alert("Hubo un error al generar el PDF: " + err);
+        element.classList.remove('left-0');
+        element.classList.add('-left-[9999px]');
+      });
+    } catch (e) {
+      alert("Error fatal al intentar usar la librería de PDF: " + e);
+    }
+  };
+
   const formatPrice = (p: number) =>
     new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 }).format(p);
 
@@ -259,6 +150,11 @@ export default function CandymarMenu() {
   return (
     <div className="font-sans" style={{ backgroundColor: '#1c1c1c', color: '#aaa' }}>
       <style>{STYLES}</style>
+
+      {/* ─── PLANTILLA DE IMPRESIÓN (OCULTA) ─── */}
+      <div className="overflow-hidden h-0 w-0 absolute -left-[9999px]">
+        <CandymarPrintTemplate ref={printRef} />
+      </div>
 
       {/* ─── HEADER ─── */}
       <header 
@@ -292,6 +188,7 @@ export default function CandymarMenu() {
             <span className="h-px w-8" style={{ backgroundColor: 'rgba(255,255,255,0.12)' }} />
           </div>
         </div>
+
       </header>
 
       {/* ─── CATEGORÍAS ─── */}
@@ -431,11 +328,19 @@ export default function CandymarMenu() {
                </div>
             </div>
 
-            {/* Créditos IMAGINE & STAMP */}
-            <div className="border-t border-[#333] pt-6 text-center">
+            {/* Créditos IMAGINE & STAMP y botón secreto de descarga */}
+            <div className="mt-12 pt-6 border-t border-[#333] flex justify-between items-center px-4">
+               <button 
+                 onClick={handleDownloadPDF}
+                 className="p-2 text-[#222] hover:text-[#555] transition-colors"
+                 title="Descargar Menú PDF (Uso Interno)"
+               >
+                 <Download size={14} />
+               </button>
                <p className="text-gray-500 text-xs">
                   Diseñado por <span className="text-gray-300 font-bold">IMAGINE & STAMP</span>
                </p>
+               <div className="w-8"></div> {/* Spacer for centering the text */}
             </div>
          </div>
       </footer>

@@ -17,7 +17,7 @@ const CatalogoEtiquetas = React.lazy(() => import('./modules/etiquetas-escolares
 const PerfumesInfiniMenu = React.lazy(() => import('./modules/perfumes-infini/pages/PerfumesInfiniMenu'));
 const CandymarMenu = React.lazy(() => import('./modules/candymar/pages/CandymarMenu'));
 const AmeliePatisserieMenu = React.lazy(() => import('./modules/amelie-patisserie/pages/AmeliePatisserieMenu'));
-
+const LaCazonaMenu = React.lazy(() => import('./modules/la-cazona/pages/LaCazonaMenu'));
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
 import { CartButton } from './components/common/CartButton';
@@ -758,6 +758,7 @@ export default function App() {
         <Route path="/perfumes-infini" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" /></div>}><PerfumesInfiniMenu /></Suspense></ErrorBoundary>} />
         <Route path="/candymar" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" /></div>}><CandymarMenu /></Suspense></ErrorBoundary>} />
         <Route path="/amelie-patisserie" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]" /></div>}><AmeliePatisserieMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/la-cazona" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" /></div>}><LaCazonaMenu /></Suspense></ErrorBoundary>} />
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
     </HashRouter>
