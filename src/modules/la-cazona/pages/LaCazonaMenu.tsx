@@ -10,10 +10,16 @@ import logo from '../assets/logo.png';
 // ─── DATA ──────────────────────────────────────────────────────────────────────
 const CATEGORIES = [
   { id: 'Hamburguesas & Entradas', label: 'Hamburguesas & Entradas' },
+  { id: 'Algo Sencillo Ligero', label: 'Algo Sencillo Ligero' },
   { id: 'Tacos y Variedades', label: 'Tacos y Variedades' },
+  { id: 'Quesos', label: 'Quesos' },
+  { id: 'Calientito y Caldosito', label: 'Calientito y Caldosito' },
+  { id: 'Carnes', label: 'Carnes' },
   { id: 'Alambres y Cazuelas', label: 'Alambres y Cazuelas' },
+  { id: 'Costillas a la BBQ', label: 'Costillas a la BBQ' },
   { id: 'Paquetes', label: 'Paquetes' },
   { id: 'Bebidas & Postres', label: 'Bebidas & Postres' },
+  { id: 'Extras', label: 'Extras' },
 ];
 
 const FEATURED_IDS = [14, 25, 16, 30, 35];
@@ -33,62 +39,186 @@ type Product = {
   category: string;
   isPromo2x1?: boolean;
   isEventTaquiza?: boolean;
+  image?: string;
 };
 
 const PRODUCTS: Product[] = [
   // ── Hamburguesas & Entradas ──
-  { id: 1, name: 'Sencilla', description: 'Carne, Pan', prices: { normal: 50 }, category: 'Hamburguesas & Entradas' },
-  { id: 2, name: 'Americana', description: 'Carne, Pan, Queso Amarillo', prices: { normal: 60 }, category: 'Hamburguesas & Entradas' },
-  { id: 3, name: 'Especial', description: 'Queso Amarillo, Queso Oaxaca', prices: { normal: 68 }, category: 'Hamburguesas & Entradas' },
-  { id: 4, name: 'Hawaiana', description: 'Jamón, Queso Amarillo y Oaxaca, Piña', prices: { normal: 70 }, category: 'Hamburguesas & Entradas' },
-  { id: 5, name: 'Con Tocino', description: 'Queso Amarillo y Oaxaca, Tocino', prices: { normal: 73 }, category: 'Hamburguesas & Entradas' },
-  { id: 6, name: 'Super', description: 'Jamón, Queso Amarillo y Oaxaca, Salchicha', prices: { normal: 73 }, category: 'Hamburguesas & Entradas' },
-  { id: 7, name: 'Cubana', description: 'Jamón, Queso Amarillo y Oaxaca, Pierna', prices: { normal: 78 }, category: 'Hamburguesas & Entradas' },
-  { id: 8, name: 'Paquete Infantil', description: 'Hamburguesa, Papas y Refresco', prices: { normal: 130 }, category: 'Hamburguesas & Entradas' },
-  { id: 9, name: 'Hochos Sencillos', description: 'Orden de 3', prices: { normal: 80 }, category: 'Hamburguesas & Entradas' },
-  { id: 10, name: 'Hochos con Queso y Tocino', description: 'Orden de 3', prices: { normal: 95 }, category: 'Hamburguesas & Entradas' },
-  { id: 11, name: 'Papas a la Francesa', description: '', prices: { normal: 75 }, category: 'Hamburguesas & Entradas' },
-  { id: 12, name: 'Orden de Nuggets', description: '', prices: { normal: 85, media: 120 }, category: 'Hamburguesas & Entradas' },
-  { id: 13, name: 'Orden de Alitas', description: '', prices: { normal: 85, media: 120 }, category: 'Hamburguesas & Entradas' },
-  { id: 14, name: 'Ensalada "La Cazona"', description: 'Lechuga, Durazno, Fresa, Jamón de pavo, Queso Panela, Arándano y Semilla de Girasol, acompañado de aderezos y Pollo a la parrilla.', prices: { normal: 160, media: 110 }, category: 'Hamburguesas & Entradas' },
-  { id: 15, name: 'Aguacates Rellenos de Atun', description: 'Acompañados de Ensalada de Pepinos, Lechuga y Jitomate', prices: { normal: 150 }, category: 'Hamburguesas & Entradas' },
+  { id: 1, name: 'Sencilla', description: 'Carne, Pan', prices: { normal: 50 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=600&auto=format&fit=crop' },
+  { id: 2, name: 'Americana', description: 'Carne, Pan, Queso Amarillo', prices: { normal: 60 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=600&auto=format&fit=crop' },
+  { id: 3, name: 'Especial', description: 'Queso Amarillo, Queso Oaxaca', prices: { normal: 68 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1586816001966-79b736744398?q=80&w=600&auto=format&fit=crop' },
+  { id: 4, name: 'Hawaiana', description: 'Jamón, Queso Amarillo y Oaxaca, Piña', prices: { normal: 70 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1615761136599-86165bdf1a83?q=80&w=600&auto=format&fit=crop' },
+  { id: 5, name: 'Con Tocino', description: 'Queso Amarillo y Oaxaca, Tocino', prices: { normal: 73 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?q=80&w=600&auto=format&fit=crop' },
+  { id: 6, name: 'Super', description: 'Jamón, Queso Amarillo y Oaxaca, Salchicha', prices: { normal: 73 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1594212691516-43f07a72382c?q=80&w=600&auto=format&fit=crop' },
+  { id: 7, name: 'Cubana', description: 'Jamón, Queso Amarillo y Oaxaca, Pierna', prices: { normal: 78 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1588675402014-9fa05f7710d0?q=80&w=600&auto=format&fit=crop' },
+  { id: 8, name: 'Paquete Infantil', description: 'Hamburguesa, Papas y Refresco', prices: { normal: 130 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1610440042657-612c34d95e9f?q=80&w=600&auto=format&fit=crop' },
+  { id: 9, name: 'Hochos Sencillos', description: 'Orden de 3', prices: { normal: 80 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1615822365922-29b1399df212?q=80&w=600&auto=format&fit=crop' },
+  { id: 10, name: 'Hochos con Queso y Tocino', description: 'Orden de 3', prices: { normal: 95 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1599599811417-76793a0c4f80?q=80&w=600&auto=format&fit=crop' },
+  { id: 11, name: 'Papas a la Francesa', description: '', prices: { normal: 75 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?q=80&w=600&auto=format&fit=crop' },
+  { id: 12, name: 'Orden de Nuggets', description: '', prices: { normal: 85 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=600&auto=format&fit=crop' },
+  { id: 13, name: 'Orden de Alitas', description: '', prices: { normal: 85 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?q=80&w=600&auto=format&fit=crop' },
+  { id: 101, name: 'Orden de Nuggets c/ Papas', description: '', prices: { normal: 120 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=600&auto=format&fit=crop' },
+  { id: 102, name: 'Orden de Alitas c/ Papas', description: '', prices: { normal: 120 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?q=80&w=600&auto=format&fit=crop' },
+  { id: 14, name: 'Ensalada "La Cazona"', description: 'Lechuga, Durazno, Fresa, Jamón de pavo, Queso Panela, Arándano y Semilla de Girasol, acompañado de aderezos y Pollo a la parrilla.', prices: { normal: 160, media: 110 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=600&auto=format&fit=crop' },
+  { id: 244, name: 'Ensalada "La Cazona" c/ Arrachera', description: 'Cambia el pollo por una porción de arrachera.', prices: { normal: 220, media: 170 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=600&auto=format&fit=crop' },
+  { id: 245, name: 'Ensalada "Cesar"', description: 'Combinación de Manzana, Jitomate, Lechuga, Queso Panela, Jamón de Pavo, Semilla de Girasol y Arandanos, acompañado de aderezos y Pollo a la parrilla.', prices: { normal: 160, media: 110 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?q=80&w=600&auto=format&fit=crop' },
+  { id: 246, name: 'Ensalada "Cesar" c/ Arrachera', description: 'Cambia el pollo por una porción de arrachera.', prices: { normal: 220, media: 170 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?q=80&w=600&auto=format&fit=crop' },
+  { id: 15, name: 'Aguacates Rellenos de Atun', description: 'Acompañados de Ensalada de Pepinos, Lechuga y Jitomate', prices: { normal: 150 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=600&auto=format&fit=crop' },
+  { id: 247, name: 'Alitas de Sabores', description: 'Tamarindo, Mango, Fresa ó Adobadas.', prices: { normal: 95 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?q=80&w=600&auto=format&fit=crop' },
+  { id: 248, name: 'Alitas de Sabores c/ Papas', description: 'Tamarindo, Mango, Fresa ó Adobadas. Con papas a la francesa, lechuga y pepinos.', prices: { normal: 140 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?q=80&w=600&auto=format&fit=crop' },
+  { id: 103, name: 'Enchiladas Verdes', description: 'Res, Pollo ó Chuleta', prices: { normal: 160 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1534352956036-cd81e27dd615?q=80&w=600&auto=format&fit=crop' },
+  { id: 104, name: 'Enchiladas Suizas', description: 'Res, Pollo ó Chuleta', prices: { normal: 180 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1534352956036-cd81e27dd615?q=80&w=600&auto=format&fit=crop' },
+  { id: 105, name: 'Burrito', description: 'Lechuga, Frijoles, Guacamole, Papas', prices: { normal: 135 }, category: 'Hamburguesas & Entradas', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?q=80&w=600&auto=format&fit=crop' },
+
+  // ── Algo Sencillo Ligero ──
+  { id: 201, name: 'Gringa Chica', description: '', prices: { normal: 90 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 202, name: 'Dobladitas', description: '', prices: { normal: 45 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 203, name: 'Sincronizada', description: '', prices: { normal: 45 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 204, name: 'Burritas de Jamón (Orden de 3)', description: 'Con Frijoles y Lechuga', prices: { normal: 100 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?q=80&w=600&auto=format&fit=crop' },
+  { id: 205, name: 'Burritas de Bistec (Orden de 3)', description: 'Con Frijoles y Lechuga', prices: { normal: 120 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?q=80&w=600&auto=format&fit=crop' },
+  { id: 206, name: 'Tostada de Pata o Tinga', description: '', prices: { normal: 45 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 207, name: 'Tortas de Suadero o Pastor', description: '', prices: { normal: 90 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 208, name: 'Tortas de Cabeza o Bistec', description: '', prices: { normal: 90 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 209, name: 'Tortas con Queso', description: '', prices: { normal: 100 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 210, name: 'Frijoles Charros', description: '', prices: { normal: 60 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 211, name: 'Frijoles Refritos c/ Totopos', description: '', prices: { normal: 75 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 212, name: 'Volcanes', description: '', prices: { normal: 85 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 213, name: 'Orden de Guacamole c/Totopos', description: '', prices: { normal: 80 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 214, name: 'Orden de Cebollitas', description: '', prices: { normal: 20 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 215, name: 'Orden de Tortillas', description: '', prices: { normal: 20 }, category: 'Algo Sencillo Ligero', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+
+  // ── Quesos ──
+  { id: 216, name: 'Queso Fundido Natural', description: '', prices: { normal: 95 }, category: 'Quesos', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 217, name: 'Queso c/ Bistec', description: '', prices: { normal: 120 }, category: 'Quesos', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 218, name: 'Queso c/ Pastor', description: '', prices: { normal: 120 }, category: 'Quesos', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 219, name: 'Queso c/ Suadero', description: '', prices: { normal: 120 }, category: 'Quesos', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 220, name: 'Queso c/ Champiñones', description: '', prices: { normal: 120 }, category: 'Quesos', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 221, name: 'Queso c/ Chorizo', description: '', prices: { normal: 120 }, category: 'Quesos', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 222, name: 'Queso c/ Jamón', description: '', prices: { normal: 120 }, category: 'Quesos', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 223, name: 'Queso c/ Chistorra', description: '', prices: { normal: 120 }, category: 'Quesos', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+
+  // ── Calientito y Caldosito ──
+  { id: 224, name: 'Pozole', description: '', prices: { normal: 100 }, category: 'Calientito y Caldosito', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 225, name: 'Birria', description: '', prices: { normal: 115 }, category: 'Calientito y Caldosito', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 226, name: 'Frijoles Charros', description: '', prices: { normal: 60 }, category: 'Calientito y Caldosito', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 227, name: 'Frijoles Charros c/ Queso', description: '', prices: { normal: 65 }, category: 'Calientito y Caldosito', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 228, name: 'Consome de Pollo', description: '', prices: { normal: 55 }, category: 'Calientito y Caldosito', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 229, name: 'Sopa Azteca', description: '', prices: { normal: 65 }, category: 'Calientito y Caldosito', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+
+  // ── Costillas a la BBQ ──
+  { id: 230, name: 'Costillas de Cerdo', description: 'Bañadas en salsa BBQ Acompañadas de papas gajo y Pico de Gallo', prices: { normal: 165 }, category: 'Costillas a la BBQ', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
 
   // ── Tacos y Variedades ──
-  { id: 16, name: 'Al Pastor', description: 'Tacos al pastor directo del trompo', prices: { individual: 17, orden5: 85 }, category: 'Tacos y Variedades', isPromo2x1: true },
-  { id: 17, name: 'Suadero', description: '', prices: { individual: 17, orden5: 85 }, category: 'Tacos y Variedades' },
-  { id: 18, name: 'Tripa', description: '', prices: { individual: 18, orden5: 85 }, category: 'Tacos y Variedades' },
-  { id: 19, name: 'Longaniza', description: '', prices: { individual: 17, orden5: 85 }, category: 'Tacos y Variedades' },
-  { id: 20, name: 'Cabeza', description: '', prices: { individual: 17, orden5: 85 }, category: 'Tacos y Variedades' },
-  { id: 21, name: 'Pastor con Queso', description: '', prices: { individual: 22 }, category: 'Tacos y Variedades' },
-  { id: 22, name: 'Bistec c/Queso', description: 'Orden de 3', prices: { orden3: 110 }, category: 'Tacos y Variedades' },
-  { id: 23, name: 'Chuleta c/Queso', description: 'Orden de 3', prices: { orden3: 120 }, category: 'Tacos y Variedades' },
-  { id: 24, name: 'Costilla c/Queso', description: 'Orden de 3', prices: { orden3: 120 }, category: 'Tacos y Variedades' },
+  { id: 16, name: 'Al Pastor', description: 'Tacos al pastor directo del trompo', prices: { individual: 17, orden5: 85 }, category: 'Tacos y Variedades', isPromo2x1: true, image: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?q=80&w=600&auto=format&fit=crop' },
+  { id: 17, name: 'Suadero', description: '', prices: { individual: 17, orden5: 85 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=600&auto=format&fit=crop' },
+  { id: 18, name: 'Tripa', description: '', prices: { individual: 18, orden5: 85 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?q=80&w=600&auto=format&fit=crop' },
+  { id: 19, name: 'Longaniza', description: '', prices: { individual: 17, orden5: 85 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1613514785940-daed07799d9b?q=80&w=600&auto=format&fit=crop' },
+  { id: 20, name: 'Cabeza', description: '', prices: { individual: 17, orden5: 85 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=600&auto=format&fit=crop' },
+  { id: 106, name: 'Lengua', description: '', prices: { individual: 28, orden5: 128 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=600&auto=format&fit=crop' },
+  { id: 107, name: 'Sesos', description: '', prices: { individual: 28, orden5: 128 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=600&auto=format&fit=crop' },
+  { id: 21, name: 'Pastor con Queso', description: '', prices: { individual: 22 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=600&auto=format&fit=crop' },
+  { id: 231, name: 'Bistec', description: 'Orden de 3', prices: { orden3: 110 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?q=80&w=600&auto=format&fit=crop' },
+  { id: 22, name: 'Bistec c/Queso', description: 'Orden de 3', prices: { orden3: 120 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?q=80&w=600&auto=format&fit=crop' },
+  { id: 232, name: 'Chuleta', description: 'Orden de 3', prices: { orden3: 110 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=600&auto=format&fit=crop' },
+  { id: 23, name: 'Chuleta c/Queso', description: 'Orden de 3', prices: { orden3: 120 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=600&auto=format&fit=crop' },
+  { id: 233, name: 'Pechuga', description: 'Orden de 3', prices: { orden3: 110 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=600&auto=format&fit=crop' },
+  { id: 234, name: 'Pechuga c/Queso', description: 'Orden de 3', prices: { orden3: 120 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=600&auto=format&fit=crop' },
+  { id: 235, name: 'Costilla', description: 'Orden de 3', prices: { orden3: 110 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 24, name: 'Costilla c/Queso', description: 'Orden de 3', prices: { orden3: 120 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 236, name: 'Cecina', description: 'Orden de 3', prices: { orden3: 110 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 237, name: 'Cecina c/Queso', description: 'Orden de 3', prices: { orden3: 120 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 108, name: 'Tacos Parrilleros', description: 'Cecina, Chistorra, Chorizo Argentino, Arrachera, Sirloin ó Rib Eye. Acompañados de Papas Gajo y Pico de Gallo. (Orden de 3)', prices: { orden3: 180 }, category: 'Tacos y Variedades', image: 'https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?q=80&w=600&auto=format&fit=crop' },
 
   // ── Alambres y Cazuelas ──
-  { id: 25, name: 'Súper Alambre Atómico (6 Personas)', description: 'Deliciosa combinación de carnes con cebolla, pimiento morrón, tocino y queso c/20 tortillas de harina.', prices: { normal: 720 }, category: 'Alambres y Cazuelas' },
-  { id: 26, name: 'Alambre Individual', description: 'De Bistec, Chuleta o Pechuga con Tocino, Morrón y Queso.', prices: { normal: 100 }, category: 'Alambres y Cazuelas' },
-  { id: 27, name: 'Alambre Sencillo', description: 'Bistec, Tocino, Cebolla, Morrón y Queso.', prices: { normal: 170 }, category: 'Alambres y Cazuelas' },
-  { id: 28, name: 'Sarape', description: 'Bistec, Chuleta, Chorizo, Pastor, Tocino, Cebolla, Morron y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas' },
-  { id: 29, name: 'Taco Loco', description: 'Tocino, Chuleta, Tocino, Nopal, Champiñones, Cebolla y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas' },
-  { id: 30, name: 'Parrillada (6 personas)', description: 'Variedad de carnes y pollo acompañadas con: cebollitas, nopales, queso fundido, frijoles charros...', prices: { normal: 750 }, category: 'Alambres y Cazuelas' },
-  { id: 31, name: 'Servicio de Taquiza', description: 'Hacemos taquizas para sus eventos', prices: { normal: 0 }, category: 'Alambres y Cazuelas', isEventTaquiza: true },
+  { id: 25, name: 'Súper Alambre Atómico (6 Personas)', description: 'Deliciosa combinación de carnes con cebolla, pimiento morrón, tocino y queso c/20 tortillas de harina.', prices: { normal: 720 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 26, name: 'Alambre Individual', description: 'De Bistec, Chuleta o Pechuga con Tocino, Morrón y Queso.', prices: { normal: 100 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 27, name: 'Alambre Sencillo', description: 'Bistec, Tocino, Cebolla, Morrón y Queso.', prices: { normal: 170 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 109, name: 'Alambre de Pollo', description: 'Pechuga de Pollo, Cebolla, Morrón, Tocino y Queso.', prices: { normal: 170 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 28, name: 'Sarape', description: 'Bistec, Chuleta, Chorizo, Pastor, Tocino, Cebolla, Morron y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 110, name: 'Alambron', description: 'Bistec, Chuleta, Jamón, Champiñon, Tocino, Cebolla, Morron y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 111, name: 'Mula Terca', description: 'Chuleta, Tocino, Jamón y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 112, name: 'Carne Suiza', description: 'Bistec, Chuleta, Tocino y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 113, name: 'Chuleta Suiza', description: 'Chuleta, Tocino y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 114, name: 'Bistec Suizo', description: 'Bistec, Tocino y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 115, name: 'Chuleta al Pastor', description: 'Combinación de Pastor c/ Chuleta, Tocino y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 116, name: 'Nopalada', description: 'Nopal, Champiñon y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 117, name: 'Que me vez', description: 'Tocino, Al Pastor, Bistec, Piña y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 29, name: 'Taco Loco', description: 'Tocino, Chuleta, Tocino, Nopal, Champiñones, Cebolla y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 118, name: 'Gringa Especial', description: 'Chuleta, Pastor, Tocino y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 119, name: 'Que me notas', description: 'Chuleta, Tocino, Cebolla, Morron, Champiñones y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 120, name: 'Alambre Vegetariano', description: 'Cebolla, Pimiento, Champiñones, Jitomate, Nopales y Queso.', prices: { normal: 180 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 121, name: 'Alambre Mar y Tierra', description: 'Bistec, Camaron, Tocino, Cebolla, Pimiento y Queso.', prices: { normal: 230 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 122, name: 'Alambre de Camaron', description: '', prices: { normal: 230 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 30, name: 'Parrillada (6 personas)', description: 'Variedad de carnes y pollo acompañadas con: cebollitas, nopales, queso fundido y frijoles charros c/ tortillas de maíz o harina y orden de guacamole', prices: { normal: 750 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 238, name: 'Cazuela Mixta (6 personas)', description: 'Combinación de alambre, pastor, carne suiza, acompañada de cebollas, nopales, orden de guacamole y tortillas de maíz y harina', prices: { normal: 750 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 239, name: 'Parrillada Argentina (6 personas)', description: '2kg de Arrachera, cebollitas, nopales, 6 Frijoles Charros, Chorizo Argentino, Guacamole, Chiles toreados y Queso Fundido', prices: { normal: 900 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 240, name: 'Parrillada Super (6 personas)', description: 'Costilla, Chistorra, Arrachera, Sirloin, Chorizo argentino, Cecina enchilada, Bisteck, Cebollas, Nopales, Frijoles, Guacamole, Chiles toreados', prices: { normal: 1000 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 241, name: 'Alambre de Sirloin', description: 'Cebolla, morron, champiñones, Sirloin y Quesillo / con tortillas de harina', prices: { normal: 220 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 242, name: 'Alambre de Arrachera', description: 'Cebolla, morron, champiñones, Arrachera y Quesillo / con tortillas de harina', prices: { normal: 220 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 243, name: 'Alambre de Rib Eye', description: 'Cebolla, morron, champiñones, Rib Eye y Quesillo / con tortillas de harina', prices: { normal: 220 }, category: 'Alambres y Cazuelas', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 31, name: 'Servicio de Taquiza', description: 'Hacemos taquizas para sus eventos', prices: { normal: 0 }, category: 'Alambres y Cazuelas', isEventTaquiza: true, image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=600&auto=format&fit=crop' },
+
+  // ── Carnes ──
+  { id: 123, name: 'Costilla Asada', description: '', prices: { normal: 180 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 124, name: 'Bistec a la Mexicana', description: '', prices: { normal: 180 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 125, name: 'Bistec Encebollado', description: '', prices: { normal: 180 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 126, name: 'Carne Asada', description: '', prices: { normal: 180 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 127, name: 'Arrachera (300grs.)', description: '', prices: { normal: 230 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 128, name: 'Cecina Enchilada', description: '', prices: { normal: 180 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 129, name: 'Chilaquiles', description: 'con Bistec, Costilla, C. Enchilada, Pastor, ó Suadero.', prices: { normal: 180 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?q=80&w=600&auto=format&fit=crop' },
+  { id: 130, name: 'Rib Eye', description: '', prices: { normal: 250 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 131, name: 'T. Bone', description: '', prices: { normal: 250 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 132, name: 'New York', description: '', prices: { normal: 250 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 133, name: 'Sirloin', description: '', prices: { normal: 250 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 134, name: 'Milanesa Grande', description: '', prices: { normal: 165 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 135, name: 'Milanesa Grande', description: 'Gratinada c/ Queso', prices: { normal: 180 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 136, name: 'Fajitas de Res', description: '', prices: { normal: 180 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 137, name: 'Fajitas de Pollo', description: '', prices: { normal: 180 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 138, name: 'Pechuga Suiza', description: '', prices: { normal: 180 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 139, name: 'Pechuga Asada', description: '', prices: { normal: 170 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 140, name: 'Pechuga a la Mexicana', description: '', prices: { normal: 170 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 141, name: 'Pechuga Empanizada', description: '', prices: { normal: 170 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 142, name: 'Pechuga Cordon Blue', description: '', prices: { normal: 175 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 143, name: 'Arrachera en Tiras', description: 'Con Queso Fundido y Guacamole', prices: { normal: 230 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
+  { id: 144, name: 'Carne a la Tampiqueña', description: '', prices: { normal: 230 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600&auto=format&fit=crop' },
+  { id: 145, name: 'Pechuga Hawaiana', description: 'Pechuga Asada, Jamon, Piña, Queso Amarillo y Queso Oaxaca', prices: { normal: 180 }, category: 'Carnes', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
 
   // ── Paquetes ──
-  { id: 32, name: 'Paquete 1', description: 'Alambre Sencillo, Frijoles, Un Refresco', prices: { normal: 185 }, category: 'Paquetes' },
-  { id: 33, name: 'Paquete 2', description: 'Costilla Asada, Frijoles, Un Refresco', prices: { normal: 190 }, category: 'Paquetes' },
-  { id: 34, name: 'Paquete 3', description: '10 Tacos a elegir, Frijoles, Un Refresco', prices: { normal: 185 }, category: 'Paquetes' },
-  { id: 35, name: 'Kilo de Carne', description: 'Pastor y Alambre para llevar. Incluye: Tortillas, Salsas, Limones y Verdura.', prices: { kilo: 400 }, category: 'Paquetes' },
+  { id: 32, name: 'Paquete 1', description: 'Alambre Sencillo, Frijoles, Un Refresco', prices: { normal: 185 }, category: 'Paquetes', image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=600&auto=format&fit=crop' },
+  { id: 33, name: 'Paquete 2', description: 'Costilla Asada, Frijoles, Un Refresco', prices: { normal: 190 }, category: 'Paquetes', image: 'https://images.unsplash.com/photo-1544025162-841f3e7a09ab?q=80&w=600&auto=format&fit=crop' },
+  { id: 34, name: 'Paquete 3', description: '10 Tacos a elegir (*Pastor *Suadero *Longaniza *Cabeza), Frijoles, Un Refresco', prices: { normal: 185 }, category: 'Paquetes', image: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?q=80&w=600&auto=format&fit=crop' },
+  { id: 35, name: 'Kilo de Carne', description: 'Pastor y Alambre para llevar. Incluye: Tortillas, Salsas, Limones y Verdura.', prices: { kilo: 400 }, category: 'Paquetes', image: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=600&auto=format&fit=crop' },
 
   // ── Bebidas & Postres ──
-  { id: 36, name: 'Agua de Horchata', description: '', prices: { individual: 35, media: 45 }, category: 'Bebidas & Postres' },
-  { id: 37, name: 'Refresco', description: '', prices: { normal: 33 }, category: 'Bebidas & Postres' },
-  { id: 38, name: 'Cerveza de Botella', description: '', prices: { normal: 55 }, category: 'Bebidas & Postres' },
-  { id: 39, name: 'Michelada 1/2 lt.', description: '', prices: { normal: 65 }, category: 'Bebidas & Postres' },
-  { id: 40, name: 'Michelada 1 lt.', description: '', prices: { normal: 115 }, category: 'Bebidas & Postres' },
-  { id: 41, name: 'Cerveza de Barril 1/2 lt.', description: '', prices: { normal: 60 }, category: 'Bebidas & Postres' },
-  { id: 42, name: 'Cerveza de Barril 1 lt.', description: '', prices: { normal: 110 }, category: 'Bebidas & Postres' },
-  { id: 43, name: 'Flan Napolitano', description: '', prices: { normal: 50 }, category: 'Bebidas & Postres' },
-  { id: 44, name: 'Fresas con Crema', description: '', prices: { normal: 50 }, category: 'Bebidas & Postres' },
+  { id: 36, name: 'Agua de Horchata', description: '', prices: { individual: 35, media: 45 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?q=80&w=600&auto=format&fit=crop' },
+  { id: 249, name: 'Agua Piña Colada de Crema', description: '', prices: { individual: 40, media: 60 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=600&auto=format&fit=crop' },
+  { id: 250, name: 'Agua Fresca de Crema', description: '', prices: { individual: 40, media: 60 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=600&auto=format&fit=crop' },
+  { id: 251, name: 'Jarra de Agua de Crema', description: '', prices: { normal: 100 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=600&auto=format&fit=crop' },
+  { id: 252, name: 'Jarra de Agua de Horchata', description: '', prices: { normal: 100 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=600&auto=format&fit=crop' },
+  { id: 37, name: 'Refresco', description: '', prices: { normal: 33 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=600&auto=format&fit=crop' },
+  { id: 253, name: 'Agua p/ Nescafe', description: '', prices: { normal: 25 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=600&auto=format&fit=crop' },
+  { id: 254, name: 'Cafe de Olla', description: '', prices: { normal: 25 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1559525839-b184a4d698c7?q=80&w=600&auto=format&fit=crop' },
+  { id: 38, name: 'Cerveza de Botella', description: '', prices: { normal: 55 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1575037614876-c3853d406b88?q=80&w=600&auto=format&fit=crop' },
+  { id: 39, name: 'Michelada 1/2 lt.', description: '', prices: { normal: 65 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1560507204-c5a4adce2611?q=80&w=600&auto=format&fit=crop' },
+  { id: 40, name: 'Michelada 1 lt.', description: '', prices: { normal: 115 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1560507204-c5a4adce2611?q=80&w=600&auto=format&fit=crop' },
+  { id: 255, name: 'Gomichela 1/2 lt.', description: '', prices: { normal: 90 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1571115177098-24def50e3037?q=80&w=600&auto=format&fit=crop' },
+  { id: 256, name: 'Gomichela 1lt.', description: '', prices: { normal: 120 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1571115177098-24def50e3037?q=80&w=600&auto=format&fit=crop' },
+  { id: 257, name: 'Cubana 1/2 lt.', description: '', prices: { normal: 75 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1615332579037-3c44b3660b53?q=80&w=600&auto=format&fit=crop' },
+  { id: 258, name: 'Cubana 1 lt.', description: '', prices: { normal: 125 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1615332579037-3c44b3660b53?q=80&w=600&auto=format&fit=crop' },
+  { id: 41, name: 'Cerveza de Barril 1/2 lt.', description: '', prices: { normal: 60 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1575037614876-c3853d406b88?q=80&w=600&auto=format&fit=crop' },
+  { id: 42, name: 'Cerveza de Barril 1 lt.', description: '', prices: { normal: 110 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1575037614876-c3853d406b88?q=80&w=600&auto=format&fit=crop' },
+  { id: 259, name: 'Cervezas de Sabores 1/2 lt', description: 'Tamarindo / Mango / Mora Azul', prices: { normal: 80 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1615332579037-3c44b3660b53?q=80&w=600&auto=format&fit=crop' },
+  { id: 260, name: 'Cervezas de Sabores 1lt', description: 'Tamarindo / Mango / Mora Azul', prices: { normal: 120 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1615332579037-3c44b3660b53?q=80&w=600&auto=format&fit=crop' },
+  { id: 43, name: 'Flan Napolitano', description: '', prices: { normal: 50 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1509482560494-4126f8225994?q=80&w=600&auto=format&fit=crop' },
+  { id: 44, name: 'Fresas con Crema', description: '', prices: { normal: 50 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?q=80&w=600&auto=format&fit=crop' },
+  { id: 261, name: 'Duraznos', description: '', prices: { normal: 50 }, category: 'Bebidas & Postres', image: 'https://images.unsplash.com/photo-1602111855648-fbcc49863a43?q=80&w=600&auto=format&fit=crop' },
+
+  // ── Extras ──
+  { id: 262, name: 'Orden de Crema', description: '', prices: { normal: 30 }, category: 'Extras', image: 'https://images.unsplash.com/photo-1596662951482-0c4ba74a6df6?q=80&w=600&auto=format&fit=crop' },
+  { id: 263, name: 'Orden de Chicharron', description: '', prices: { normal: 30 }, category: 'Extras', image: 'https://images.unsplash.com/photo-1603048297172-c92544798d5e?q=80&w=600&auto=format&fit=crop' },
+  { id: 264, name: 'Orden de Aguacate', description: '', prices: { normal: 30 }, category: 'Extras', image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=600&auto=format&fit=crop' },
+  { id: 265, name: 'Orden de Cebollitas', description: '', prices: { normal: 20 }, category: 'Extras', image: 'https://images.unsplash.com/photo-1605333177726-5b4fc5e4df5e?q=80&w=600&auto=format&fit=crop' },
+  { id: 266, name: 'Orden de Torillas de Harina', description: '', prices: { normal: 20 }, category: 'Extras', image: 'https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?q=80&w=600&auto=format&fit=crop' },
 ];
 
 type CartItem = {
@@ -464,7 +594,7 @@ export default function LaCazonaMenu() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.04, duration: 0.4 }}
-                  className={`group bg-[#1a1a1a] border rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/5 ${
+                  className={`group flex flex-col bg-[#1a1a1a] border rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/5 ${
                     product.isEventTaquiza
                       ? 'border-amber-500/30 bg-gradient-to-br from-[#1a1005] to-[#1a1a1a]'
                       : product.isPromo2x1
@@ -472,9 +602,22 @@ export default function LaCazonaMenu() {
                         : 'border-white/5 hover:border-white/10'
                   }`}
                 >
+                  {/* Product Image */}
+                  {product.image && (
+                    <div className="relative w-full h-48 overflow-hidden bg-black/20 shrink-0">
+                      <img 
+                        src={product.image} 
+                        alt={product.name} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] via-transparent to-transparent opacity-80 pointer-events-none"></div>
+                    </div>
+                  )}
+
                   {/* Card info */}
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-2">
+                  <div className="p-4 flex-1 flex flex-col">
+                    <div className="flex items-start justify-between mb-2 gap-2">
                       <h3 className="text-white font-black text-lg leading-tight group-hover:text-amber-400 transition-colors">
                         {product.name}
                       </h3>
@@ -499,13 +642,13 @@ export default function LaCazonaMenu() {
                     {product.isEventTaquiza ? (
                       <a
                         href="https://wa.me/525519217175?text=Hola,%20me%20interesa%20cotizar%20una%20Taquiza%20para%20un%20evento."
-                        className="mt-2 w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all uppercase text-xs tracking-wider flex items-center justify-center gap-2"
+                        className="mt-auto w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all uppercase text-xs tracking-wider flex items-center justify-center gap-2"
                       >
                         <MessageCircle className="w-4 h-4 fill-current" />
                         Cotizar por WhatsApp
                       </a>
                     ) : (
-                      <div className="space-y-2">
+                      <div className="space-y-2 mt-auto">
                         {Object.entries(product.prices).map(([type, price]) =>
                           price !== undefined ? (
                             <div
