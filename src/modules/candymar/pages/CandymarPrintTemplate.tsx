@@ -1,7 +1,9 @@
 import React, { forwardRef } from 'react';
-import { CATEGORIES, PRODUCTS, OctopusSVG, CrabSVG } from './CandymarData';
+import { CATEGORIES, PRODUCTS } from './CandymarData';
 import logo from '../assets/logo.png';
 import fondoHero from '../assets/fondo-hero.jpg';
+import pulpoReal from '../assets/pulpo-real.png';
+import cangrejoReal from '../assets/cangrejo-real.png';
 
 const CandymarPrintTemplate = forwardRef<HTMLDivElement>((props, ref) => {
   // Omitimos 'Todos' de las categorías para la impresión
@@ -29,10 +31,10 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((props, ref) => {
         }}
       >
         <div className="absolute top-10 right-10 text-[#00e5ff]">
-           <OctopusSVG className="w-64 h-64 opacity-50" />
+           <img src={pulpoReal} alt="Pulpo" className="w-64 h-64 object-contain opacity-50 drop-shadow-[0_0_15px_rgba(0,229,255,0.3)]" />
         </div>
         <div className="absolute bottom-10 left-10 text-[#00e5ff]">
-           <CrabSVG className="w-64 h-64 opacity-50" />
+           <img src={cangrejoReal} alt="Cangrejo" className="w-64 h-64 object-contain opacity-50 drop-shadow-[0_0_15px_rgba(0,229,255,0.3)]" />
         </div>
 
         <div className="h-40 w-40 rounded-full overflow-hidden border-4 mb-10" style={{ borderColor: '#00e5ff', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
@@ -61,52 +63,52 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((props, ref) => {
 
       {/* ─── PÁGINA 2: MENÚ A DOS COLUMNAS ─── */}
       <div 
-        className="relative px-12 py-16"
-        style={{ width: '210mm', minHeight: '297mm', backgroundColor: '#111' }}
+        className="relative px-12 py-12 flex flex-col justify-between"
+        style={{ width: '210mm', height: '296.5mm', backgroundColor: '#111' }}
       >
         {/* Gráficos de fondo de página 2 */}
         <div className="absolute top-0 right-0 text-[#00e5ff] opacity-10 pointer-events-none">
-           <OctopusSVG className="w-80 h-80" />
+           <img src={pulpoReal} alt="Pulpo" className="w-80 h-80 object-contain" />
         </div>
         <div className="absolute bottom-0 left-0 text-[#00e5ff] opacity-10 pointer-events-none">
-           <CrabSVG className="w-80 h-80" />
+           <img src={cangrejoReal} alt="Cangrejo" className="w-80 h-80 object-contain" />
         </div>
 
-        {/* Grid para compatibilidad con html2canvas */}
-        <div className="grid grid-cols-2 gap-16 relative z-10 h-full content-start">
+        {/* Grid de productos */}
+        <div className="grid grid-cols-2 gap-x-12 gap-y-10 relative z-10 content-start flex-1">
           {printableCategories.map((category, catIndex) => {
             const categoryProducts = PRODUCTS.filter(p => p.category === category.name);
             if (categoryProducts.length === 0) return null;
 
             return (
-              <div key={category.name} className="mb-10 flex flex-col">
+              <div key={category.name} className="flex flex-col">
                 {/* Listón Cyan (Ribbon) */}
                 <div 
-                  className="mb-6 px-4 py-2 font-black uppercase tracking-widest text-lg inline-block w-full text-center"
-                  style={{ backgroundColor: '#00e5ff', color: '#111', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.3)' }}
+                  className="mb-5 px-4 py-1.5 font-black uppercase tracking-widest text-base inline-block w-full text-center"
+                  style={{ backgroundColor: '#00e5ff', color: '#111', boxShadow: '0 5px 10px -3px rgba(0,0,0,0.3)' }}
                 >
                   {category.name}
                 </div>
 
                 {/* Platillos */}
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-4">
                   {categoryProducts.map(product => (
                     <div key={product.id}>
                       <div className="flex items-end gap-2">
-                        <h4 className="font-bold text-xl shrink-0" style={{ color: '#fff', fontFamily: 'Georgia, serif' }}>
+                        <h4 className="font-bold text-lg shrink-0" style={{ color: '#fff', fontFamily: 'Georgia, serif' }}>
                           {product.name}
                         </h4>
-                        <span className="flex-1 mb-1 border-b-[1.5px] border-dotted opacity-50 border-[#ccc]" />
-                        <span className="font-bold text-xl shrink-0" style={{ color: '#fff', fontFamily: 'Georgia, serif' }}>
+                        <span className="flex-1 mb-1 border-b border-dotted opacity-40 border-[#ccc]" />
+                        <span className="font-bold text-lg shrink-0" style={{ color: '#fff', fontFamily: 'Georgia, serif' }}>
                           ${product.price}
                         </span>
                       </div>
-                      <div className="flex justify-between items-start mt-1">
-                        <p className="text-[#aaa] text-sm italic w-5/6">
+                      <div className="flex justify-between items-start mt-0.5">
+                        <p className="text-[#aaa] text-xs italic w-5/6 leading-tight">
                           {product.description}
                         </p>
                         {product.featured && (
-                          <span className="text-[10px] uppercase font-bold tracking-[0.1em] px-1 py-0.5 border" style={{ color: '#00e5ff', borderColor: 'rgba(0,229,255,0.4)' }}>
+                          <span className="text-[9px] uppercase font-bold tracking-[0.1em] px-1 py-0.5 border" style={{ color: '#00e5ff', borderColor: 'rgba(0,229,255,0.4)' }}>
                             Especial
                           </span>
                         )}
@@ -117,6 +119,22 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((props, ref) => {
               </div>
             );
           })}
+        </div>
+
+        {/* Footer para rellenar el espacio vacío */}
+        <div className="relative z-10 mt-6 pt-6 border-t border-[#333] flex justify-between items-end">
+          <div>
+            <h3 className="text-[#00e5ff] font-bold text-lg mb-2 font-serif">Candymar</h3>
+            <p className="text-[#aaa] text-xs max-w-xs leading-relaxed">
+              Los mariscos más frescos de la región, preparados con recetas tradicionales. Calidad y sabor que nos distinguen.
+            </p>
+          </div>
+          <div className="text-right text-[#aaa] text-xs space-y-1">
+            <p className="font-bold text-[#fff]">Contacto y Reservaciones</p>
+            <p>Av. Ignacio Sandoval #1401</p>
+            <p>(312) 123-4567</p>
+            <p>@candymar_oficial</p>
+          </div>
         </div>
       </div>
     </div>
