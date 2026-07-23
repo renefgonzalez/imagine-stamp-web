@@ -4,6 +4,7 @@ import { ShoppingBag, X, ChevronRight, Landmark, Copy, Check, CreditCard, Messag
 import { supabase } from '../../lib/supabase';
 import { useCartStore } from '../../store/useCartStore';
 import { siteConfig } from '../../config/siteConfig';
+import { trackMetaEvent } from '../../utils/metaPixel';
 
 interface CartDrawerProps {
   phoneNumber?: string;
@@ -83,6 +84,15 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
 
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
+    trackMetaEvent('Purchase', {
+      content_ids: cart.map(i => String(i.id)),
+      content_type: 'product',
+      value: total,
+      currency: 'MXN',
+      num_items: cart.reduce((acc, i) => acc + i.quantity, 0),
+      order_id: newOrder.id,
+    });
+
     clearCart();
     setCustomerInfo({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo', deliveryMethod: 'domicilio', address: '', suburb: '', crossStreets: '', references: '' });
     setCartStep('cart');
@@ -148,6 +158,15 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
         (customerInfo.notes ? `\n📝 Notas: ${customerInfo.notes}` : '');
 
       localStorage.setItem('imagine-pending-whatsapp', encodeURIComponent(message));
+
+      trackMetaEvent('Purchase', {
+        content_ids: cart.map(i => String(i.id)),
+        content_type: 'product',
+        value: total,
+        currency: 'MXN',
+        num_items: cart.reduce((acc, i) => acc + i.quantity, 0),
+        order_id: orderId,
+      });
 
       clearCart();
       setCustomerInfo({ name: '', phone: '', city: '', notes: '', paymentMethod: 'Efectivo', deliveryMethod: 'domicilio', address: '', suburb: '', crossStreets: '', references: '' });
@@ -227,7 +246,16 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ phoneNumber = '525650469
                         <span className="text-2xl font-black text-primary">${totalPrice()} <span className="text-sm font-bold text-primary/40">MXN</span></span>
                       </div>
                       <button
-                        onClick={() => setCartStep('details')}
+                        onClick={() => {
+                          trackMetaEvent('InitiateCheckout', {
+                            content_ids: cart.map(i => String(i.id)),
+                            content_type: 'product',
+                            value: totalPrice(),
+                            currency: 'MXN',
+                            num_items: totalItems(),
+                          });
+                          setCartStep('details');
+                        }}
                         className="w-full py-4 bg-secondary text-white rounded-2xl font-black text-base shadow-lg shadow-secondary/20 hover:bg-orange-600 transition-all flex items-center justify-center gap-3"
                       >
                         Siguiente — Datos de Entrega

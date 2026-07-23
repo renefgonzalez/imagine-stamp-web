@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, ErrorInfo, ReactNode, Component, Suspense } from 'react';
+import React, { useState, useMemo, useEffect, useRef, ErrorInfo, ReactNode, Component, Suspense } from 'react';
 import { supabase } from './lib/supabase';
 import { 
   Search, Heart, Plus, Sparkles, X, ShoppingBag,
@@ -14,15 +14,16 @@ import DemoMenu from './modules/demo-menu/pages/DemoMenu';
 import AdminPanel from './AdminPanel';
 
 const CatalogoEtiquetas = React.lazy(() => import('./modules/etiquetas-escolares/pages/CatalogoEtiquetas'));
-const PerfumesInfiniMenu = React.lazy(() => import('./modules/perfumes-infini/pages/PerfumesInfiniMenu'));
 const CandymarMenu = React.lazy(() => import('./modules/candymar/pages/CandymarMenu'));
 const LaCazonaMenu = React.lazy(() => import('./modules/la-cazona/pages/LaCazonaMenu'));
 const LaMichoacanaMenu = React.lazy(() => import('./modules/la-michoacana/pages/LaMichoacanaMenu'));
+const GaoliPizzaMenu = React.lazy(() => import('./modules/gaoli-pizza/pages/GaoliPizzaMenu'));
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
 import { CartButton } from './components/common/CartButton';
 import { CartDrawer } from './components/common/CartDrawer';
 import { CategoryMenu } from './components/common/CategoryMenu';
+import { trackMetaEvent } from './utils/metaPixel';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   constructor(props: { children: ReactNode }) {
@@ -108,6 +109,26 @@ export default function App() {
   useEffect(() => {
     setVisibleItems(10);
   }, [selectedCategory, searchQuery, selectedSubcategory, selectedSubcategory2]);
+
+  // Meta Pixel: ViewContent cuando se muestran productos (solo cuando cambia el conjunto)
+  const lastViewContentKey = useRef('');
+  useEffect(() => {
+    const visible = filteredProducts.slice(0, visibleItems);
+    if (visible.length > 0) {
+      const key = visible.map(p => p.id).join(',');
+      if (key !== lastViewContentKey.current) {
+        lastViewContentKey.current = key;
+        trackMetaEvent('ViewContent', {
+          content_ids: visible.map(p => String(p.id)),
+          content_names: visible.map(p => p.name),
+          content_type: 'product',
+          contents: visible.map(p => ({ id: String(p.id), quantity: 1 })),
+          value: visible.reduce((sum, p) => sum + p.price, 0),
+          currency: 'MXN',
+        });
+      }
+    }
+  }, [filteredProducts, visibleItems]);
 
   // Ã¢â€ â‚¬Ã¢â€ â‚¬ CARGAR DATOS DESDE SUPABASE Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬
   useEffect(() => {
@@ -674,8 +695,9 @@ export default function App() {
               <GlobalFooter />
 
               <div className="fixed bottom-8 right-6 z-50 flex flex-col gap-4 items-end">
-                <motion.a 
+                <motion.a
                   href="https://wa.me/525650469993?text=Hola,%20vengo%20de%20la%20página%20web%20y%20quiero%20cotizar" target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }}
+                  onClick={() => trackMetaEvent('Contact')}
                   className="flex items-center gap-3 bg-[#25D366] text-white px-6 py-4 rounded-full shadow-2xl"
                 >
                   <span className="font-bold text-sm">¡Cotiza aquí!</span>
@@ -755,11 +777,11 @@ export default function App() {
         <Route path="/demo-menu" element={<DemoMenu />} />
 
         <Route path="/etiquetas-escolares" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" /></div>}><CatalogoEtiquetas /></Suspense></ErrorBoundary>} />
-        <Route path="/perfumes-infini" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" /></div>}><PerfumesInfiniMenu /></Suspense></ErrorBoundary>} />
         <Route path="/candymar" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" /></div>}><CandymarMenu /></Suspense></ErrorBoundary>} />
         {/* <Route path="/amelie-patisserie" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]" /></div>}><AmeliePatisserieMenu /></Suspense></ErrorBoundary>} /> */}
         <Route path="/la-cazona" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" /></div>}><LaCazonaMenu /></Suspense></ErrorBoundary>} />
         <Route path="/la-michoacana" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500" /></div>}><LaMichoacanaMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/gaoli-pizza" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500" /></div>}><GaoliPizzaMenu /></Suspense></ErrorBoundary>} />
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
     </HashRouter>

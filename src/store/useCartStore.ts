@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Product } from '../data/products';
+import { trackMetaEvent } from '../utils/metaPixel';
 
 export interface CartItem {
   id: string | number;
@@ -77,6 +78,18 @@ export const useCartStore = create<CartState>((set, get) => ({
     // Toast automático
     get().setCartToast({ name: product.name });
     setTimeout(() => get().setCartToast(null), 3500);
+
+    // Meta Pixel: AddToCart
+    const item = get().cart.find(i => String(i.id) === String(product.id));
+    const qty = item ? item.quantity : 1;
+    trackMetaEvent('AddToCart', {
+      content_name: product.name,
+      content_ids: [String(product.id)],
+      content_type: 'product',
+      value: product.price * qty,
+      currency: 'MXN',
+      contents: [{ id: String(product.id), quantity: qty }],
+    });
   },
 
   updateQuantity: (id: string | number, delta: number) => {
