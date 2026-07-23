@@ -15,7 +15,6 @@ import AdminPanel from './AdminPanel';
 
 const CatalogoEtiquetas = React.lazy(() => import('./modules/etiquetas-escolares/pages/CatalogoEtiquetas'));
 const CandymarMenu = React.lazy(() => import('./modules/candymar/pages/CandymarMenu'));
-const LaCazonaMenu = React.lazy(() => import('./modules/la-cazona/pages/LaCazonaMenu'));
 const LaMichoacanaMenu = React.lazy(() => import('./modules/la-michoacana/pages/LaMichoacanaMenu'));
 const GaoliPizzaMenu = React.lazy(() => import('./modules/gaoli-pizza/GaoliPizzaMenu'));
 import { GlobalFooter } from './components/common/GlobalFooter';
@@ -781,7 +780,6 @@ export default function App() {
         <Route path="/etiquetas-escolares" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" /></div>}><CatalogoEtiquetas /></Suspense></ErrorBoundary>} />
         <Route path="/candymar" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" /></div>}><CandymarMenu /></Suspense></ErrorBoundary>} />
         {/* <Route path="/amelie-patisserie" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]" /></div>}><AmeliePatisserieMenu /></Suspense></ErrorBoundary>} /> */}
-        <Route path="/la-cazona" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" /></div>}><LaCazonaMenu /></Suspense></ErrorBoundary>} />
         <Route path="/la-michoacana" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500" /></div>}><LaMichoacanaMenu /></Suspense></ErrorBoundary>} />
         <Route path="/gaoli-pizza" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500" /></div>}><GaoliPizzaMenu /></Suspense></ErrorBoundary>} />
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
