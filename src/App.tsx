@@ -17,7 +17,7 @@ const CatalogoEtiquetas = React.lazy(() => import('./modules/etiquetas-escolares
 const CandymarMenu = React.lazy(() => import('./modules/candymar/pages/CandymarMenu'));
 const LaCazonaMenu = React.lazy(() => import('./modules/la-cazona/pages/LaCazonaMenu'));
 const LaMichoacanaMenu = React.lazy(() => import('./modules/la-michoacana/pages/LaMichoacanaMenu'));
-const GaoliPizzaMenu = React.lazy(() => import('./modules/gaoli-pizza/pages/GaoliPizzaMenu'));
+const GaoliPizzaMenu = React.lazy(() => import('./modules/gaoli-pizza/GaoliPizzaMenu'));
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
 import { CartButton } from './components/common/CartButton';
@@ -110,25 +110,7 @@ export default function App() {
     setVisibleItems(10);
   }, [selectedCategory, searchQuery, selectedSubcategory, selectedSubcategory2]);
 
-  // Meta Pixel: ViewContent cuando se muestran productos (solo cuando cambia el conjunto)
-  const lastViewContentKey = useRef('');
-  useEffect(() => {
-    const visible = filteredProducts.slice(0, visibleItems);
-    if (visible.length > 0) {
-      const key = visible.map(p => p.id).join(',');
-      if (key !== lastViewContentKey.current) {
-        lastViewContentKey.current = key;
-        trackMetaEvent('ViewContent', {
-          content_ids: visible.map(p => String(p.id)),
-          content_names: visible.map(p => p.name),
-          content_type: 'product',
-          contents: visible.map(p => ({ id: String(p.id), quantity: 1 })),
-          value: visible.reduce((sum, p) => sum + p.price, 0),
-          currency: 'MXN',
-        });
-      }
-    }
-  }, [filteredProducts, visibleItems]);
+
 
   // Ã¢â€ â‚¬Ã¢â€ â‚¬ CARGAR DATOS DESDE SUPABASE Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬Ã¢â€ â‚¬
   useEffect(() => {
@@ -209,6 +191,26 @@ export default function App() {
     }
     return result;
   }, [selectedCategory, selectedSubcategory, selectedSubcategory2, products, searchQuery]);
+
+  // Meta Pixel: ViewContent cuando se muestran productos (solo cuando cambia el conjunto)
+  const lastViewContentKey = useRef('');
+  useEffect(() => {
+    const visible = filteredProducts.slice(0, visibleItems);
+    if (visible.length > 0) {
+      const key = visible.map(p => p.id).join(',');
+      if (key !== lastViewContentKey.current) {
+        lastViewContentKey.current = key;
+        trackMetaEvent('ViewContent', {
+          content_ids: visible.map(p => String(p.id)),
+          content_names: visible.map(p => p.name),
+          content_type: 'product',
+          contents: visible.map(p => ({ id: String(p.id), quantity: 1 })),
+          value: visible.reduce((sum, p) => sum + p.price, 0),
+          currency: 'MXN',
+        });
+      }
+    }
+  }, [filteredProducts, visibleItems]);
 
   const toggleFavorite = (productId: string | number) => {
     setFavorites(prev => 
