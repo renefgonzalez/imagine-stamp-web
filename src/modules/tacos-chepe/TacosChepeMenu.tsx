@@ -672,7 +672,7 @@ export default function TacosChepeMenu() {
                     </div>
 
                     {/* Customer Data */}
-                    <div className="bg-white p-5 rounded-2xl border-2 border-zinc-200 shadow-sm relative overflow-hidden">
+                    <div className="bg-white p-5 rounded-2xl border-2 border-zinc-900 shadow-sm relative overflow-hidden">
                       <div className="absolute top-0 left-0 w-2 h-full bg-zinc-900" />
                       <h3 className="font-black text-zinc-900 mb-4 flex items-center gap-2 uppercase tracking-wide ml-2"><User size={20} /> Datos de Contacto</h3>
                       <div className="space-y-3 ml-2">
@@ -700,7 +700,7 @@ export default function TacosChepeMenu() {
                     </div>
 
                     {/* Payment Method */}
-                    <div className="bg-white p-5 rounded-2xl border-2 border-zinc-200 shadow-sm relative overflow-hidden">
+                    <div className="bg-white p-5 rounded-2xl border-2 border-[#E63946] shadow-sm relative overflow-hidden">
                       <div className="absolute top-0 left-0 w-2 h-full bg-[#E63946]" />
                       <h3 className="font-black text-zinc-900 mb-4 flex items-center gap-2 uppercase tracking-wide ml-2"><Wallet size={20} /> Método de Pago</h3>
                       <div className="grid grid-cols-2 gap-3 mb-4 ml-2">
