@@ -13,7 +13,7 @@ import logoImg from './assets/logo.png';
 import { getProductImage } from './productImages';
 
 type Category = 'tacos' | 'especiales' | 'tortas' | 'paquetes' | 'bebidas';
-type PaymentMethod = 'efectivo' | 'transferencia';
+type PaymentMethod = 'tarjeta' | 'transferencia';
 type DeliveryMethod = 'domicilio' | 'recoger';
 
 interface Product {
@@ -146,7 +146,7 @@ export default function TacosChepeMenu() {
     telefono: '',
     deliveryMethod: 'domicilio' as DeliveryMethod,
     direccion: '',
-    metodoPago: 'efectivo' as PaymentMethod,
+    metodoPago: 'transferencia' as PaymentMethod,
     efectivoAmount: '',
     notas: '',
   });
@@ -219,7 +219,6 @@ export default function TacosChepeMenu() {
     if (!customerInfo.nombre.trim()) newErrors.nombre = true;
     if (!customerInfo.telefono.trim()) newErrors.telefono = true;
     if (customerInfo.deliveryMethod === 'domicilio' && !customerInfo.direccion.trim()) newErrors.direccion = true;
-    if (customerInfo.metodoPago === 'efectivo' && !customerInfo.efectivoAmount.trim()) newErrors.efectivoAmount = true;
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
@@ -242,7 +241,7 @@ export default function TacosChepeMenu() {
       setCart([]);
       setCustomerInfo({
         nombre: '', telefono: '', deliveryMethod: 'domicilio', direccion: '',
-        metodoPago: 'efectivo', efectivoAmount: '', notas: '',
+        metodoPago: 'transferencia', efectivoAmount: '', notas: '',
       });
       setErrors({});
       setIsCartOpen(false);
@@ -258,12 +257,7 @@ export default function TacosChepeMenu() {
       message += `📍 *Dirección:* ${customerInfo.direccion}\n`;
     }
 
-    message += `💳 *Pago:* ${customerInfo.metodoPago === 'efectivo' ? 'Efectivo' : 'Transferencia'}`;
-
-    if (customerInfo.metodoPago === 'efectivo' && customerInfo.efectivoAmount) {
-      const cambio = parseFloat(customerInfo.efectivoAmount) - cartTotal;
-      message += `\n💵 *Paga con:* $${parseFloat(customerInfo.efectivoAmount).toFixed(2)}\n💰 *Cambio:* $${cambio > 0 ? cambio.toFixed(2) : '0.00'}`;
-    }
+    message += `💳 *Pago:* ${customerInfo.metodoPago === 'tarjeta' ? 'Tarjeta' : 'Transferencia'}`;
 
     if (customerInfo.notas) {
       message += `\n\n📝 *Nota:* ${customerInfo.notas}`;
@@ -705,34 +699,18 @@ export default function TacosChepeMenu() {
                       <h3 className="font-black text-zinc-900 mb-4 flex items-center gap-2 uppercase tracking-wide ml-2"><Wallet size={20} /> Método de Pago</h3>
                       <div className="grid grid-cols-2 gap-3 mb-4 ml-2">
                         <button
-                          onClick={() => setCustomerInfo(prev => ({ ...prev, metodoPago: 'efectivo' }))}
-                          className={`py-3.5 rounded-xl text-sm font-black uppercase tracking-wider border-2 transition-all ${customerInfo.metodoPago === 'efectivo' ? 'border-zinc-900 bg-zinc-900 text-white' : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300'}`}
-                        >
-                          💵 Efectivo
-                        </button>
-                        <button
                           onClick={() => setCustomerInfo(prev => ({ ...prev, metodoPago: 'transferencia' }))}
                           className={`py-3.5 rounded-xl text-sm font-black uppercase tracking-wider border-2 transition-all ${customerInfo.metodoPago === 'transferencia' ? 'border-zinc-900 bg-zinc-900 text-white' : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300'}`}
                         >
                           🏦 Transferencia
                         </button>
+                        <button
+                          onClick={() => setCustomerInfo(prev => ({ ...prev, metodoPago: 'tarjeta' }))}
+                          className={`py-3.5 rounded-xl text-sm font-black uppercase tracking-wider border-2 transition-all ${customerInfo.metodoPago === 'tarjeta' ? 'border-zinc-900 bg-zinc-900 text-white' : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300'}`}
+                        >
+                          💳 Tarjeta
+                        </button>
                       </div>
-
-                      {customerInfo.metodoPago === 'efectivo' && (
-                        <div className="ml-2">
-                          <input
-                            type="number" placeholder="¿Con cuánto vas a pagar? *"
-                            value={customerInfo.efectivoAmount}
-                            onChange={e => { setCustomerInfo({ ...customerInfo, efectivoAmount: e.target.value }); setErrors(prev => ({ ...prev, efectivoAmount: false })); }}
-                            className={`w-full bg-zinc-50 px-4 py-3.5 rounded-xl text-base font-bold border-2 focus:outline-none focus:bg-white transition-colors ${errors.efectivoAmount ? 'border-red-400 bg-red-50 focus:border-red-500' : 'border-zinc-200 focus:border-zinc-900'}`}
-                          />
-                          {customerInfo.efectivoAmount && !isNaN(parseFloat(customerInfo.efectivoAmount)) && parseFloat(customerInfo.efectivoAmount) >= cartTotal && (
-                            <p className="text-green-600 text-sm font-bold mt-2 flex items-center gap-1">
-                              <Check size={14} /> Cambio: ${(parseFloat(customerInfo.efectivoAmount) - cartTotal).toFixed(2)}
-                            </p>
-                          )}
-                        </div>
-                      )}
 
                       {customerInfo.metodoPago === 'transferencia' && (
                         <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 ml-2 space-y-2">
