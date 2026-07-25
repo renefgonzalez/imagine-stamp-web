@@ -123,19 +123,19 @@ const productImageMap: Record<string, string> = {
   'p-15': getImage('TACO-ALAMBRE.webp'),
 
   // ── Bebidas ──
-  'b-agua': getImage('BEBIDAS.png'),
-  'b-boing': getImage('BEBIDAS.png'),
-  'b-coca': getImage('BEBIDAS.png'),
-  'b-jarrito': getImage('BEBIDAS.png'),
-  'b-manzana': getImage('BEBIDAS.png'),
-  'b-mirinda': getImage('BEBIDAS.png'),
-  'b-penafiel': getImage('BEBIDAS.png'),
-  'b-sangria': getImage('BEBIDAS.png'),
-  'b-delawere': getImage('BEBIDAS.png'),
-  'b-agua-mineral': getImage('BEBIDAS.png'),
-  'b-electrolito': getImage('BEBIDAS.png'),
-  'b-cerveza': getImage('BEBIDAS.png'),
-  'b-queso-extra': getImage('BEBIDAS.png'),
+  'b-agua': getImage('BEBIDAS.webp'),
+  'b-boing': getImage('BEBIDAS.webp'),
+  'b-coca': getImage('BEBIDAS.webp'),
+  'b-jarrito': getImage('BEBIDAS.webp'),
+  'b-manzana': getImage('BEBIDAS.webp'),
+  'b-mirinda': getImage('BEBIDAS.webp'),
+  'b-penafiel': getImage('BEBIDAS.webp'),
+  'b-sangria': getImage('BEBIDAS.webp'),
+  'b-delawere': getImage('BEBIDAS.webp'),
+  'b-agua-mineral': getImage('BEBIDAS.webp'),
+  'b-electrolito': getImage('BEBIDAS.webp'),
+  'b-cerveza': getImage('BEBIDAS.webp'),
+  'b-queso-extra': getImage('BEBIDAS.webp'),
 };
 
 // Fallback image for products without a match

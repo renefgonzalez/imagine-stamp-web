@@ -226,7 +226,7 @@ export default function TacosChepeMenu() {
   const [cartStep, setCartStep] = useState<'cart' | 'details' | 'success'>('cart');
 
   // Catalog state
-  const [activeCategory, setActiveCategory] = useState<Category | 'destacados' | 'favoritos'>('destacados');
+  const [activeCategory, setActiveCategory] = useState<Category | 'favoritos'>('tacos');
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
 
@@ -466,18 +466,8 @@ export default function TacosChepeMenu() {
       <main className="container mx-auto px-4 py-8 -mt-8 relative z-20">
 
         {/* ── CATEGORIES ── */}
-        <div className="overflow-x-auto hide-scrollbar pb-6 mb-4">
-          <div className="flex gap-3 min-w-max px-2">
-            <button
-              onClick={() => setActiveCategory('destacados')}
-              className={`px-6 py-3 rounded-xl text-sm font-black uppercase tracking-wider transition-all flex items-center gap-2 border-2 ${
-                activeCategory === 'destacados'
-                  ? 'bg-[#E63946] text-white border-zinc-900 shadow-[4px_4px_0px_rgba(28,28,28,1)]'
-                  : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-900 hover:text-zinc-900 shadow-sm'
-              }`}
-            >
-              <Flame size={18} className={activeCategory === 'destacados' ? 'text-[#FFB800]' : 'text-orange-500'} /> Populares
-            </button>
+        <div className="overflow-x-auto pb-4 mb-4 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:bg-zinc-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
+          <div className="flex flex-nowrap gap-3 px-2 min-w-max">
             {(['tacos', 'gringas', 'volcanes', 'harina', 'queso', 'tortas', 'paquetes', 'bebidas'] as Category[]).map(cat => (
               <button
                 key={cat}
