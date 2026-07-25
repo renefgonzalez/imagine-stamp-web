@@ -73,7 +73,14 @@ export const PRODUCTS: Product[] = [
   { id: 'to-pechuga', nombre: 'Pechuga', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-pechuga') },
   { id: 'to-arrachera', nombre: 'Arrachera', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-arrachera') },
   { id: 'to-picana', nombre: 'Picaña', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-picana') },
+  { id: 'to-vegetariana', nombre: 'Vegetariana', precio: 100, descripcion: '(Champiñón, nopal, papa, cebolla y queso)', categoria: 'tortas', imagen: getProductImage('to-vegetariana') },
+  { id: 'to-argentino', nombre: 'Argentino', precio: 105, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-argentino') },
+  { id: 'to-chistorra', nombre: 'Chistorra', precio: 105, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-chistorra') },
   { id: 'to-campechana', nombre: 'Campechana', precio: 110, descripcion: '(La combinación de tu agrado) (Llevan queso)', categoria: 'tortas', imagen: getProductImage('to-campechana'), badges: ['Más Pedida'] },
+  { id: 'to-alambre', nombre: 'Alambre', precio: 115, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-alambre') },
+  { id: 'to-bistec-entero', nombre: 'Bistec Entero', precio: 115, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-bistec-entero') },
+  { id: 'to-chepe-esp', nombre: 'Chepe Especial', precio: 130, descripcion: '(Suadero en trozo) (Llevan queso)', categoria: 'tortas', imagen: getProductImage('to-chepe-esp'), badges: ['Especial'] },
+  { id: 'to-ribeye', nombre: 'Ribeye', precio: 135, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-ribeye') },
 
   // Paquetes
   { id: 'p-1', nombre: 'Paquete #1', precio: 155, descripcion: '3 Tacos de Arrachera + 1 Refresco', categoria: 'paquetes', imagen: getProductImage('p-1'), badges: ['Promo'] },

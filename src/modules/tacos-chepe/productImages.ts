@@ -50,7 +50,14 @@ const productImageMap: Record<string, string> = {
   'to-pechuga': getImage('TORTA-PECHUGA.webp'),
   'to-arrachera': getImage('TORTA-ARRACHERA.webp'),
   'to-picana': getImage('TORTA-ARRACHERA.webp'),
+  'to-vegetariana': getImage('TORTA-SUADERO.webp'),
+  'to-argentino': getImage('TORTA-LONGANIZA-CHILPETIN.webp'),
+  'to-chistorra': getImage('TORTA-LONGANIZA-CHILPETIN.webp'),
   'to-campechana': getImage('TORTA-CAMPECHANA.webp'),
+  'to-alambre': getImage('TACO-ALAMBRE.webp'),
+  'to-bistec-entero': getImage('TORTA-BISTEC.webp'),
+  'to-chepe-esp': getImage('TORTA-SUADERO.webp'),
+  'to-ribeye': getImage('TORTA-ARRACHERA.webp'),
 
   // ── Paquetes ──
   'p-1': getImage('TACO-ARRACHERA.webp'),
