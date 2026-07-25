@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ShoppingBag, X, Plus, Minus, User, Wallet, Search, Flame,
   Heart, MapPin, Clock, Phone, Copy, Check, ChevronDown, MessageCircle,
-  Facebook, Instagram, Music2
+  Facebook, Instagram, Music2, ArrowUp, ChevronLeft, ChevronRight, Sparkles
 } from 'lucide-react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/swiper-bundle.css';
 
 // Import logo
 import logoImg from './assets/logo.png';
@@ -12,11 +14,13 @@ import logoImg from './assets/logo.png';
 // Import product images
 import { getProductImage } from './productImages';
 
-type Category = 'tacos' | 'gringas' | 'tortas' | 'paquetes' | 'bebidas' | 'volcanes' | 'harina' | 'queso';
+type Category = 'tacos' | 'gringas' | 'tortas' | 'paquetes' | 'bebidas' | 'volcanes' | 'harina' | 'queso' | 'todos' | 'destacados';
 
 const categoryLabels: Record<Category, string> = {
   tacos: 'Tacos',
   gringas: 'Gringas',
+  todos: 'Todos',
+  destacados: 'Destacados',
   volcanes: 'Volcanes',
   harina: 'En Harina',
   queso: 'Con Queso',
@@ -45,6 +49,11 @@ interface CartItem extends Product {
 
 const INITIAL_VISIBLE = 12;
 const LOAD_MORE = 12;
+
+// Featured product IDs (shown in "Destacados" tab)
+const DESTACADOS_IDS = new Set(['t-chepe-esp', 't-ribeye', 't-aguja', 'to-campechana', 'e-pichistorra', 'p-5', 'h-chepe-esp', 'v-queso']);
+// New product IDs (badge "Nuevo")
+const NUEVOS_IDS = new Set(['t-nopal', 't-fofis', 't-bistec-trozo', 't-picana-trozo', 'v-queso', 'h-alambre', 'h-chepe-esp', 'h-aguja', 'h-ribeye', 'q-chepe-esp', 'q-aguja', 'q-ribeye', 'to-vegetariana', 'to-argentino', 'to-chistorra', 'to-alambre', 'to-bistec-entero', 'to-chepe-esp', 'to-ribeye']);
 
 export const PRODUCTS: Product[] = [
   // Tacos
@@ -220,20 +229,53 @@ const bankInfo = {
 const whatsappNumber = '525659800600';
 
 export default function TacosChepeMenu() {
-  // Cart state (local — avoids store field name mismatch)
-  const [cart, setCart] = useState<CartItem[]>([]);
+  // Cart state with localStorage persistence
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('tacoschepe_cart') || '[]');
+    } catch { return []; }
+  });
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartStep, setCartStep] = useState<'cart' | 'details' | 'success'>('cart');
+  const [cartBounce, setCartBounce] = useState(false);
+
+  // Persist cart to localStorage
+  useEffect(() => {
+    localStorage.setItem('tacoschepe_cart', JSON.stringify(cart));
+  }, [cart]);
 
   // Catalog state
-  const [activeCategory, setActiveCategory] = useState<Category | 'favoritos'>('tacos');
+  const [activeCategory, setActiveCategory] = useState<Category | 'favoritos'>('destacados');
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  const [imagesLoaded, setImagesLoaded] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate initial loading
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Back to top visibility
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const menuRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const onScroll = () => setShowBackToTop(window.scrollY > 600);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const scrollToMenu = useCallback(() => {
+    menuRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
 
   // Modal state
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalQuantity, setModalQuantity] = useState(1);
   const [modalBebida, setModalBebida] = useState<string>('');
+  const [modalSinCebolla, setModalSinCebolla] = useState(false);
 
   // Toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -280,14 +322,24 @@ export default function TacosChepeMenu() {
   }, [isCartOpen]);
 
   // --- CART LOGIC ---
-  const addToCart = (product: Product, qty = 1, varianteBebida?: string) => {
+  const addToCart = (product: Product, qty = 1, varianteBebida?: string, sinCebolla?: boolean) => {
     setCart(prev => {
-      const existing = prev.find(i => i.id === product.id && i.varianteBebida === varianteBebida);
+      const existing = prev.find(i =>
+        i.id === product.id &&
+        i.varianteBebida === varianteBebida &&
+        i.sinCebolla === sinCebolla
+      );
       if (existing) {
-        return prev.map(i => i.id === product.id && i.varianteBebida === varianteBebida ? { ...i, quantity: i.quantity + qty } : i);
+        return prev.map(i =>
+          i.id === product.id && i.varianteBebida === varianteBebida && i.sinCebolla === sinCebolla
+            ? { ...i, quantity: i.quantity + qty } : i
+        );
       }
-      return [...prev, { ...product, quantity: qty, varianteBebida }];
+      return [...prev, { ...product, quantity: qty, varianteBebida, sinCebolla }];
     });
+    // Bounce animation
+    setCartBounce(true);
+    setTimeout(() => setCartBounce(false), 300);
   };
 
   const updateQuantity = (id: string, delta: number) => {
@@ -310,6 +362,14 @@ export default function TacosChepeMenu() {
 
   const cartTotal = cart.reduce((sum, item) => sum + item.precio * item.quantity, 0);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Cart bounce animation
+  useEffect(() => {
+    if (cartCount === 0) return;
+    setCartBounce(true);
+    const timer = setTimeout(() => setCartBounce(false), 400);
+    return () => clearTimeout(timer);
+  }, [cartCount]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -388,12 +448,31 @@ export default function TacosChepeMenu() {
     if (!matchesSearch) return false;
 
     if (activeCategory === 'favoritos') return favorites.includes(p.id);
-    if (activeCategory === 'destacados') return p.badges && p.badges.length > 0;
+    if (activeCategory === 'destacados') return DESTACADOS_IDS.has(p.id) || (p.badges && p.badges.length > 0);
+    if (activeCategory === 'todos') return true;
     return p.categoria === activeCategory;
   });
 
   const displayedProducts = filteredProducts.slice(0, visibleCount);
   const hasMore = visibleCount < filteredProducts.length;
+
+  // Category scroll ref
+  const catScrollRef = useRef<HTMLDivElement>(null);
+  const [showCatLeft, setShowCatLeft] = useState(false);
+  const [showCatRight, setShowCatRight] = useState(true);
+
+  const checkCatScroll = useCallback(() => {
+    const el = catScrollRef.current;
+    if (!el) return;
+    setShowCatLeft(el.scrollLeft > 5);
+    setShowCatRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 5);
+  }, []);
+
+  const scrollCat = (dir: 'left' | 'right') => {
+    const el = catScrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir === 'left' ? -200 : 200, behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-24 selection:bg-red-500 selection:text-white">
@@ -401,12 +480,12 @@ export default function TacosChepeMenu() {
       {/* ── HEADER FIJO ── */}
       <header className="fixed top-0 inset-x-0 z-40 bg-[#FFB800] border-b-[3px] border-zinc-900 shadow-md">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <img src={logoImg} alt="Tacos Chepe Logo" className="h-20 md:h-24 w-auto object-contain drop-shadow-[2px_2px_0px_rgba(28,28,28,0.5)] transition-transform hover:scale-105" />
+          <img src={logoImg} alt="Tacos Chepe Logo" className="h-20 md:h-24 w-auto object-contain drop-shadow-[2px_2px_0px_rgba(28,28,28,0.5)] transition-transform hover:scale-105 cursor-pointer" onClick={() => { setActiveCategory('destacados'); setSearchQuery(''); }} />
           <div className="flex items-center gap-3">
             <button
               onClick={() => {
                 setActiveCategory('favoritos');
-                window.scrollTo({ top: 400, behavior: 'smooth' });
+                scrollToMenu();
               }}
               className="relative p-2.5 bg-pink-500 rounded-full shadow-md text-white transition-transform active:scale-95 border-2 border-transparent hover:border-white"
               title="Mis Favoritos"
@@ -420,7 +499,7 @@ export default function TacosChepeMenu() {
             </button>
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2.5 bg-zinc-900 rounded-full shadow-md text-white transition-transform active:scale-95 border-2 border-transparent hover:border-white"
+              className={`relative p-2.5 bg-zinc-900 rounded-full shadow-md text-white transition-all active:scale-95 border-2 border-transparent hover:border-white ${cartBounce ? 'scale-125' : 'scale-100'}`}
             >
               <ShoppingBag size={22} />
               {cartCount > 0 && (
@@ -437,7 +516,7 @@ export default function TacosChepeMenu() {
       <div className="relative pt-24 pb-16 px-4 bg-zinc-900 overflow-hidden flex items-center justify-center min-h-[380px] border-b-[4px] border-[#FFB800]">
         <img
           src="https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?q=80&w=1200&auto=format&fit=crop"
-          className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-overlay"
+          className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-overlay motion-safe:animate-[kenburns_20s_ease-in-out_infinite_alternate]"
           alt="Taquería Background"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent" />
@@ -450,7 +529,7 @@ export default function TacosChepeMenu() {
           </h1>
           <p className="text-zinc-300 font-medium mb-8 text-lg md:text-xl drop-shadow-md">Directo de la parrilla a tu paladar. Ordena ahora.</p>
 
-          <div className="relative max-w-md mx-auto group shadow-2xl">
+          <div className="relative max-w-md mx-auto group shadow-2xl mb-6">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-[#E63946] transition-colors" size={24} />
             <input
               type="search"
@@ -460,58 +539,126 @@ export default function TacosChepeMenu() {
               className="w-full bg-white pl-14 pr-4 py-4 rounded-xl font-bold text-zinc-900 shadow-xl focus:outline-none focus:ring-4 focus:ring-[#FFB800] transition-all placeholder:text-zinc-400 text-lg border-2 border-transparent focus:border-zinc-900"
             />
           </div>
+
+          <button
+            onClick={scrollToMenu}
+            className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-zinc-900 border-2 border-zinc-900 rounded-xl font-black text-lg shadow-[6px_6px_0px_rgba(255,184,0,1)] hover:shadow-[4px_4px_0px_rgba(255,184,0,1)] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all uppercase tracking-wider"
+          >
+            <span>Ver Menú</span>
+            <ChevronDown size={20} className="animate-bounce" />
+          </button>
         </div>
       </div>
 
-      <main className="container mx-auto px-4 py-8 -mt-8 relative z-20">
+      <main ref={menuRef} className="container mx-auto px-4 py-8 -mt-8 relative z-20">
 
         {/* ── CATEGORIES ── */}
-        <div className="overflow-x-auto pb-4 mb-4 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:bg-zinc-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
-          <div className="flex flex-nowrap gap-3 px-2 min-w-max">
-            {(['tacos', 'gringas', 'volcanes', 'harina', 'queso', 'tortas', 'paquetes', 'bebidas'] as Category[]).map(cat => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-6 py-3 rounded-xl text-sm font-black uppercase tracking-wider transition-all border-2 ${
-                  activeCategory === cat
-                    ? 'bg-zinc-900 text-white border-zinc-900 shadow-[4px_4px_0px_rgba(255,184,0,1)]'
-                    : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-900 hover:text-zinc-900 shadow-sm'
-                }`}
-              >
-                {categoryLabels[cat]}
-              </button>
-            ))}
+        <div className="relative mb-4">
+          {/* Scroll indicators */}
+          {showCatLeft && (
+            <button onClick={() => scrollCat('left')} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur border-2 border-zinc-200 hover:border-zinc-900 text-zinc-600 hover:text-zinc-900 p-2 rounded-full shadow-md transition-all">
+              <ChevronLeft size={20} />
+            </button>
+          )}
+          {showCatRight && (
+            <button onClick={() => scrollCat('right')} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur border-2 border-zinc-200 hover:border-zinc-900 text-zinc-600 hover:text-zinc-900 p-2 rounded-full shadow-md transition-all">
+              <ChevronRight size={20} />
+            </button>
+          )}
+          <div
+            ref={catScrollRef}
+            onScroll={checkCatScroll}
+            className="overflow-x-auto pb-4 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:bg-zinc-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent scroll-smooth"
+          >
+            <div className="flex flex-nowrap gap-3 px-2 min-w-max">
+              {(['destacados', 'todos', 'tacos', 'gringas', 'volcanes', 'harina', 'queso', 'tortas', 'paquetes', 'bebidas'] as Category[]).map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-6 py-3 rounded-xl text-sm font-black uppercase tracking-wider transition-all border-2 flex items-center gap-1.5 ${
+                    activeCategory === cat
+                      ? 'bg-zinc-900 text-white border-zinc-900 shadow-[4px_4px_0px_rgba(255,184,0,1)]'
+                      : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-900 hover:text-zinc-900 shadow-sm'
+                  }`}
+                >
+                  {cat === 'destacados' && <Sparkles size={16} />}
+                  {categoryLabels[cat]}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* ── PRODUCT GRID ── */}
-        {filteredProducts.length === 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl p-4 border-2 border-zinc-200 animate-pulse">
+                <div className="h-48 bg-zinc-200 rounded-xl mb-4" />
+                <div className="h-6 bg-zinc-200 rounded-lg w-3/4 mb-2" />
+                <div className="h-4 bg-zinc-100 rounded-lg w-1/2 mb-4" />
+                <div className="h-10 bg-zinc-200 rounded-xl" />
+              </div>
+            ))}
+          </div>
+        ) : filteredProducts.length === 0 ? (
           <div className="text-center py-20">
-            <div className="text-5xl mb-4">🌮</div>
-            <p className="text-xl text-zinc-400 font-bold mb-2">No encontramos nada con ese nombre</p>
-            <button onClick={() => setSearchQuery('')} className="text-[#E63946] font-black hover:underline uppercase tracking-wide">Limpiar búsqueda</button>
+            <div className="text-5xl mb-4">
+              {activeCategory === 'favoritos' ? '💛' : '🌮'}
+            </div>
+            <p className="text-xl text-zinc-400 font-bold mb-2">
+              {activeCategory === 'favoritos'
+                ? 'Aún no tienes favoritos'
+                : 'No encontramos nada con ese nombre'}
+            </p>
+            <p className="text-sm text-zinc-400 mb-4">
+              {activeCategory === 'favoritos'
+                ? 'Toca el corazón ❤️ en cualquier producto para guardarlo aquí'
+                : 'Prueba con otro término de búsqueda'}
+            </p>
+            {activeCategory === 'favoritos' ? (
+              <button onClick={() => setActiveCategory('destacados')} className="text-[#E63946] font-black hover:underline uppercase tracking-wide inline-flex items-center gap-2">
+                <Sparkles size={18} /> Ver Destacados
+              </button>
+            ) : (
+              <button onClick={() => setSearchQuery('')} className="text-[#E63946] font-black hover:underline uppercase tracking-wide">Limpiar búsqueda</button>
+            )}
           </div>
         ) : (
           <>
             <motion.div
               key={activeCategory + searchQuery}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.04 } }
+              }}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
             >
               {displayedProducts.map(product => {
                 const isFav = favorites.includes(product.id);
+                const isNew = NUEVOS_IDS.has(product.id);
+                const allBadges = [...(product.badges || []), ...(isNew && !product.badges?.includes('Nuevo') ? ['Nuevo'] : [])];
                 return (
-                  <div
+                  <motion.div
                     key={product.id}
+                    variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
                     className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-[8px_8px_0px_rgba(28,28,28,1)] border-2 border-zinc-200 hover:border-zinc-900 flex flex-col group cursor-pointer transition-all duration-300"
                   >
                     {/* Image */}
                     <div
-                      onClick={() => { setSelectedProduct(product); setModalQuantity(1); setModalBebida(''); }}
+                      onClick={() => { setSelectedProduct(product); setModalQuantity(1); setModalBebida(''); setModalSinCebolla(false); }}
                       className="relative h-48 rounded-xl overflow-hidden mb-4 border border-zinc-100"
                     >
-                      <img src={product.imagen} alt={product.nombre} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      <img
+                        src={product.imagen}
+                        alt={product.nombre}
+                        loading="lazy"
+                        onLoad={() => setImagesLoaded(prev => new Set(prev).add(product.id))}
+                        className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${!imagesLoaded.has(product.id) ? 'opacity-0 scale-105' : 'opacity-100'}`}
+                      />
+                      <div className="absolute inset-0 bg-zinc-100 transition-opacity duration-500" style={{ opacity: imagesLoaded.has(product.id) ? 0 : 1 }} />
                       <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
 
                       {/* Favorite heart */}
@@ -525,10 +672,12 @@ export default function TacosChepeMenu() {
                         />
                       </button>
 
-                      {/* Badge */}
-                      {product.badges && product.badges.map((badge, idx) => (
-                        <span key={idx} className="absolute top-3 left-3 bg-[#E63946] text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1.5 rounded-lg shadow-md border border-red-900">
-                          {badge}
+                      {/* Badges */}
+                      {allBadges.map((badge, idx) => (
+                        <span key={idx} className={`absolute top-3 left-3 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1.5 rounded-lg shadow-md border ${
+                          badge === 'Nuevo' ? 'bg-green-500 border-green-700' : 'bg-[#E63946] border-red-900'
+                        }`}>
+                          {badge === 'Nuevo' ? '✨ Nuevo' : badge}
                         </span>
                       ))}
 
@@ -540,7 +689,7 @@ export default function TacosChepeMenu() {
 
                     {/* Info */}
                     <div
-                      onClick={() => { setSelectedProduct(product); setModalQuantity(1); setModalBebida(''); }}
+                      onClick={() => { setSelectedProduct(product); setModalQuantity(1); setModalBebida(''); setModalSinCebolla(false); }}
                       className="flex-1 px-1 pb-2"
                     >
                       <h3 className="font-black text-xl text-zinc-900 leading-tight mb-1 group-hover:text-[#E63946] transition-colors">{product.nombre}</h3>
@@ -555,6 +704,7 @@ export default function TacosChepeMenu() {
                           setSelectedProduct(product);
                           setModalQuantity(1);
                           setModalBebida('');
+                          setModalSinCebolla(false);
                         } else {
                           addToCart(product, 1);
                           showToast(`🌮 1x ${product.nombre} agregado`);
@@ -564,7 +714,7 @@ export default function TacosChepeMenu() {
                     >
                       <Plus size={20} strokeWidth={3} /> AGREGAR
                     </button>
-                  </div>
+                  </motion.div>
                 );
               })}
             </motion.div>
@@ -609,22 +759,46 @@ export default function TacosChepeMenu() {
               <button onClick={() => setSelectedProduct(null)} className="absolute top-4 right-4 z-10 bg-white border-2 border-zinc-900 text-zinc-900 hover:bg-[#FFB800] p-2 rounded-full transition-colors shadow-[2px_2px_0px_rgba(28,28,28,1)]">
                 <X size={24} strokeWidth={3} />
               </button>
-              <div className="h-72 relative shrink-0 border-b-4 border-zinc-900 bg-zinc-100">
-                <img src={selectedProduct.imagen} className="w-full h-full object-cover" alt={selectedProduct.nombre} />
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/90 via-zinc-900/20 to-transparent" />
+              <div className="h-72 relative shrink-0 border-b-4 border-zinc-900 bg-zinc-100 overflow-hidden">
+                <img src={selectedProduct.imagen} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" alt={selectedProduct.nombre} />
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/20 to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end">
                   <h2 className="text-4xl font-black text-white leading-tight drop-shadow-lg">{selectedProduct.nombre}</h2>
                 </div>
               </div>
               <div className="p-6 md:p-8 overflow-y-auto">
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-4">
                   <span className="bg-[#FFB800] text-zinc-900 border-2 border-zinc-900 font-black px-4 py-2 rounded-xl text-2xl shadow-[4px_4px_0px_rgba(28,28,28,1)]">
                     ${selectedProduct.precio}
                   </span>
+                  {selectedProduct.badges && selectedProduct.badges.map((b, i) => (
+                    <span key={i} className="bg-[#E63946] text-white text-xs font-black px-3 py-1.5 rounded-lg border border-red-900 uppercase tracking-wider">{b}</span>
+                  ))}
                 </div>
-                <p className="text-zinc-600 mb-8 font-medium text-lg leading-relaxed">{selectedProduct.descripcion || 'El sabor auténtico de Tacos Chepe. Una delicia que no puedes dejar pasar, directo de la parrilla.'}</p>
+                <p className="text-zinc-600 mb-6 font-medium text-lg leading-relaxed">{selectedProduct.descripcion || 'El sabor auténtico de Tacos Chepe. Una delicia que no puedes dejar pasar, directo de la parrilla.'}</p>
 
-                <div className="flex items-center justify-between bg-zinc-50 p-3 rounded-2xl border-2 border-zinc-200 mb-8">
+                {/* Toppings / Customization */}
+                {!['bebidas'].includes(selectedProduct.categoria) && (
+                  <div className="mb-6 space-y-3">
+                    <span className="font-black text-zinc-900 uppercase tracking-wider text-sm block">Personalizar</span>
+                    <button
+                      onClick={() => setModalSinCebolla(!modalSinCebolla)}
+                      className={`flex items-center gap-3 w-full p-3 rounded-xl border-2 text-left font-bold transition-all ${
+                        modalSinCebolla
+                          ? 'bg-red-50 text-red-700 border-red-400'
+                          : 'bg-zinc-50 text-zinc-500 border-zinc-200 hover:border-zinc-400'
+                      }`}
+                    >
+                      <span className="text-xl">🧅</span>
+                      <span className="flex-1">Sin cebolla</span>
+                      <span className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center text-xs font-black transition-all ${modalSinCebolla ? 'bg-red-500 border-red-500 text-white' : 'border-zinc-300'}`}>
+                        {modalSinCebolla ? '✓' : ''}
+                      </span>
+                    </button>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between bg-zinc-50 p-3 rounded-2xl border-2 border-zinc-200 mb-6">
                   <span className="font-black text-zinc-900 ml-3 uppercase tracking-wider text-sm">Cantidad</span>
                   <div className="flex items-center gap-5 bg-white rounded-xl shadow-sm border-2 border-zinc-200 p-1.5">
                     <button onClick={() => setModalQuantity(Math.max(1, modalQuantity - 1))} className="p-2 text-zinc-400 hover:text-[#E63946] hover:bg-red-50 rounded-lg transition-colors"><Minus size={20} strokeWidth={3} /></button>
@@ -660,9 +834,11 @@ export default function TacosChepeMenu() {
                       showToast('Debes seleccionar un sabor de refresco');
                       return;
                     }
-                    addToCart(selectedProduct, modalQuantity, modalBebida);
-                    showToast(`🌮 ${modalQuantity}x ${selectedProduct.nombre} agregado`);
+                    addToCart(selectedProduct, modalQuantity, modalBebida, modalSinCebolla);
+                    const extras = modalSinCebolla ? ' (SIN CEBOLLA)' : '';
+                    showToast(`🌮 ${modalQuantity}x ${selectedProduct.nombre}${extras} agregado`);
                     setSelectedProduct(null);
+                    setModalSinCebolla(false);
                   }}
                   className="w-full py-4 bg-[#E63946] text-white rounded-xl font-black text-xl hover:bg-red-700 transition-colors active:scale-95 border-2 border-zinc-900 shadow-[6px_6px_0px_rgba(28,28,28,1)] uppercase tracking-wider"
                 >
@@ -968,6 +1144,29 @@ export default function TacosChepeMenu() {
           </div>
         </div>
       </footer>
+
+      {/* ── BACK TO TOP ── */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed bottom-24 right-6 z-50 bg-white text-zinc-900 p-3 rounded-full shadow-[4px_4px_0px_rgba(28,28,28,1)] border-2 border-zinc-900 hover:bg-[#FFB800] transition-colors"
+            title="Volver arriba"
+          >
+            <ArrowUp size={24} strokeWidth={3} />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* Global keyframe animations */}
+      <style>{`
+        @keyframes kenburns {
+          0% { transform: scale(1) translate(0, 0); }
+          50% { transform: scale(1.1) translate(-1%, -0.5%); }
+          100% { transform: scale(1) translate(0, 0); }
+        }
+      `}</style>
     </div>
   );
 }
