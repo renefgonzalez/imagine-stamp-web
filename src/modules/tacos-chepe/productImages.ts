@@ -1,7 +1,7 @@
 // Auto-generated image map for Tacos Chepe products
 // Uses Vite's import.meta.glob to eagerly import all WebP images
 
-const imageModules = import.meta.glob<{ default: string }>(
+const imageModules = import.meta.glob<string>(
   './assets/productos/*.webp',
   { eager: true, import: 'default' }
 );

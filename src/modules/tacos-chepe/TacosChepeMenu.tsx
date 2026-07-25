@@ -29,6 +29,7 @@ interface Product {
 interface CartItem extends Product {
   quantity: number;
   sinCebolla?: boolean;
+  varianteBebida?: string;
 }
 
 const INITIAL_VISIBLE = 12;
@@ -101,7 +102,6 @@ const bankInfo = {
   account_holder: 'Tacos Chepe',
   clabe: '012345678901234567',
   account_number: '0123456789',
-  card_number: '4152 3134 5678 9012',
 };
 
 const whatsappNumber = '525659800600';
@@ -120,6 +120,7 @@ export default function TacosChepeMenu() {
   // Modal state
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalQuantity, setModalQuantity] = useState(1);
+  const [modalBebida, setModalBebida] = useState<string>('');
 
   // Toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -166,13 +167,13 @@ export default function TacosChepeMenu() {
   }, [isCartOpen]);
 
   // --- CART LOGIC ---
-  const addToCart = (product: Product, qty = 1) => {
+  const addToCart = (product: Product, qty = 1, varianteBebida?: string) => {
     setCart(prev => {
-      const existing = prev.find(i => i.id === product.id);
+      const existing = prev.find(i => i.id === product.id && i.varianteBebida === varianteBebida);
       if (existing) {
-        return prev.map(i => i.id === product.id ? { ...i, quantity: i.quantity + qty } : i);
+        return prev.map(i => i.id === product.id && i.varianteBebida === varianteBebida ? { ...i, quantity: i.quantity + qty } : i);
       }
-      return [...prev, { ...product, quantity: qty }];
+      return [...prev, { ...product, quantity: qty, varianteBebida }];
     });
   };
 
@@ -205,7 +206,7 @@ export default function TacosChepeMenu() {
   // --- BANK INFO ---
   const [copied, setCopied] = useState(false);
   const copyBankInfo = () => {
-    const info = `Banco: ${bankInfo.bank_name}\nTitular: ${bankInfo.account_holder}\nCLABE: ${bankInfo.clabe}\nCuenta: ${bankInfo.account_number}\nTarjeta: ${bankInfo.card_number}`;
+    const info = `Banco: ${bankInfo.bank_name}\nTitular: ${bankInfo.account_holder}\nCLABE: ${bankInfo.clabe}\nCuenta: ${bankInfo.account_number}`;
     navigator.clipboard.writeText(info).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -249,7 +250,7 @@ export default function TacosChepeMenu() {
   };
 
   const generateWhatsAppMessage = () => {
-    const itemsText = cart.map(item => `• ${item.quantity}x ${item.nombre}${item.sinCebolla ? ' (SIN CEBOLLA)' : ''} - $${item.precio * item.quantity}`).join('\n');
+    const itemsText = cart.map(item => `• ${item.quantity}x ${item.nombre}${item.varianteBebida ? ` (${item.varianteBebida})` : ''}${item.sinCebolla ? ' (SIN CEBOLLA)' : ''} - $${item.precio * item.quantity}`).join('\n');
     let message = `🌮 *Nuevo Pedido - Tacos Chepe*\n\n📋 *Productos:*\n${itemsText}\n\n💵 *Total: $${cartTotal.toFixed(2)}*\n\n👤 *Cliente:* ${customerInfo.nombre}\n📱 *Teléfono:* ${customerInfo.telefono}\n`;
     message += `🚚 *Entrega:* ${customerInfo.deliveryMethod === 'domicilio' ? 'A domicilio' : 'Recoger en local'}\n`;
 
@@ -294,17 +295,29 @@ export default function TacosChepeMenu() {
       <header className="fixed top-0 inset-x-0 z-40 bg-[#FFB800] border-b-[3px] border-zinc-900 shadow-md">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <img src={logoImg} alt="Tacos Chepe Logo" className="h-14 w-auto object-contain drop-shadow-sm" />
-          <button
-            onClick={() => setIsCartOpen(true)}
-            className="relative p-2.5 bg-zinc-900 rounded-full shadow-md text-white transition-transform active:scale-95 border-2 border-transparent hover:border-white"
-          >
-            <ShoppingBag size={22} />
-            {cartCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-[#E63946] text-white text-[11px] font-black w-6 h-6 flex items-center justify-center rounded-full shadow-md border-2 border-zinc-900">
-                {cartCount}
-              </span>
-            )}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                setActiveCategory('favoritos');
+                window.scrollTo({ top: 400, behavior: 'smooth' });
+              }}
+              className="relative p-2.5 bg-pink-500 rounded-full shadow-md text-white transition-transform active:scale-95 border-2 border-transparent hover:border-white"
+              title="Mis Favoritos"
+            >
+              <Heart size={22} className="fill-white" />
+            </button>
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="relative p-2.5 bg-zinc-900 rounded-full shadow-md text-white transition-transform active:scale-95 border-2 border-transparent hover:border-white"
+            >
+              <ShoppingBag size={22} />
+              {cartCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-[#E63946] text-white text-[11px] font-black w-6 h-6 flex items-center justify-center rounded-full shadow-md border-2 border-zinc-900">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -351,17 +364,7 @@ export default function TacosChepeMenu() {
                   : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-900 hover:text-zinc-900 shadow-sm'
               }`}
             >
-              <Flame size={18} className={activeCategory === 'destacados' ? 'text-[#FFB800]' : 'text-orange-500'} /> Favoritos
-            </button>
-            <button
-              onClick={() => setActiveCategory('favoritos')}
-              className={`px-6 py-3 rounded-xl text-sm font-black uppercase tracking-wider transition-all flex items-center gap-2 border-2 ${
-                activeCategory === 'favoritos'
-                  ? 'bg-pink-500 text-white border-pink-700 shadow-[4px_4px_0px_rgba(28,28,28,1)]'
-                  : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-900 hover:text-zinc-900 shadow-sm'
-              }`}
-            >
-              <Heart size={18} className={activeCategory === 'favoritos' ? 'text-white' : 'text-pink-400'} /> Mis Favs
+              <Flame size={18} className={activeCategory === 'destacados' ? 'text-[#FFB800]' : 'text-orange-500'} /> Populares
             </button>
             {(['tacos', 'especiales', 'tortas', 'paquetes', 'bebidas'] as Category[]).map(cat => (
               <button
@@ -373,7 +376,7 @@ export default function TacosChepeMenu() {
                     : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-900 hover:text-zinc-900 shadow-sm'
                 }`}
               >
-                {cat}
+                {cat === 'bebidas' ? 'Bebidas/Extras' : cat}
               </button>
             ))}
           </div>
@@ -403,7 +406,7 @@ export default function TacosChepeMenu() {
                   >
                     {/* Image */}
                     <div
-                      onClick={() => { setSelectedProduct(product); setModalQuantity(1); }}
+                      onClick={() => { setSelectedProduct(product); setModalQuantity(1); setModalBebida(''); }}
                       className="relative h-48 rounded-xl overflow-hidden mb-4 border border-zinc-100"
                     >
                       <img src={product.imagen} alt={product.nombre} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -435,7 +438,7 @@ export default function TacosChepeMenu() {
 
                     {/* Info */}
                     <div
-                      onClick={() => { setSelectedProduct(product); setModalQuantity(1); }}
+                      onClick={() => { setSelectedProduct(product); setModalQuantity(1); setModalBebida(''); }}
                       className="flex-1 px-1 pb-2"
                     >
                       <h3 className="font-black text-xl text-zinc-900 leading-tight mb-1 group-hover:text-[#E63946] transition-colors">{product.nombre}</h3>
@@ -446,8 +449,14 @@ export default function TacosChepeMenu() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        addToCart(product, 1);
-                        showToast(`🌮 ${product.nombre} agregado`);
+                        if (product.categoria === 'paquetes' || product.id === 'b-refresco') {
+                          setSelectedProduct(product);
+                          setModalQuantity(1);
+                          setModalBebida('');
+                        } else {
+                          addToCart(product, 1);
+                          showToast(`🌮 1x ${product.nombre} agregado`);
+                        }
                       }}
                       className="mt-3 w-full py-3 bg-zinc-100 text-zinc-900 rounded-xl font-black uppercase tracking-wide flex items-center justify-center gap-2 hover:bg-[#E63946] hover:text-white transition-colors active:scale-95 border-2 border-transparent hover:border-zinc-900"
                     >
@@ -522,9 +531,34 @@ export default function TacosChepeMenu() {
                   </div>
                 </div>
 
+                {(selectedProduct.categoria === 'paquetes' || selectedProduct.id === 'b-refresco') && (
+                  <div className="mb-8">
+                    <span className="font-black text-zinc-900 ml-3 uppercase tracking-wider text-sm block mb-3">Sabor de Refresco</span>
+                    <div className="flex flex-wrap gap-2">
+                      {['Boing de Mango', 'Boing de Guayaba', 'Coca Cola', 'Coca Cola Zero'].map(sabor => (
+                        <button
+                          key={sabor}
+                          onClick={() => setModalBebida(sabor)}
+                          className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border-2 ${
+                            modalBebida === sabor
+                              ? 'bg-[#E63946] text-white border-zinc-900 shadow-[2px_2px_0px_rgba(28,28,28,1)]'
+                              : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-900 hover:text-zinc-900 shadow-sm'
+                          }`}
+                        >
+                          {sabor}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <button
                   onClick={() => {
-                    addToCart(selectedProduct, modalQuantity);
+                    if ((selectedProduct.categoria === 'paquetes' || selectedProduct.id === 'b-refresco') && !modalBebida) {
+                      showToast('Debes seleccionar un sabor de refresco');
+                      return;
+                    }
+                    addToCart(selectedProduct, modalQuantity, modalBebida);
                     showToast(`🌮 ${modalQuantity}x ${selectedProduct.nombre} agregado`);
                     setSelectedProduct(null);
                   }}
@@ -590,7 +624,10 @@ export default function TacosChepeMenu() {
                         <img src={item.imagen} alt={item.nombre} loading="lazy" className="w-24 h-24 rounded-xl object-cover border border-zinc-100" />
                         <div className="flex-1 py-1 flex flex-col justify-between">
                           <div>
-                            <h4 className="font-black text-zinc-900 text-base leading-tight pr-6">{item.nombre}</h4>
+                            <h4 className="font-black text-zinc-900 text-base leading-tight pr-6">
+                              {item.nombre}
+                              {item.varianteBebida && <span className="block text-sm text-zinc-500 font-medium mt-0.5">{item.varianteBebida}</span>}
+                            </h4>
                             <p className="text-[#E63946] font-black text-base mt-1">${item.precio * item.quantity}</p>
                           </div>
                           <div className="flex items-center justify-between mt-2">
