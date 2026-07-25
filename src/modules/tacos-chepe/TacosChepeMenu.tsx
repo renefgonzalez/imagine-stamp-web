@@ -12,7 +12,18 @@ import logoImg from './assets/logo.png';
 // Import product images
 import { getProductImage } from './productImages';
 
-type Category = 'tacos' | 'especiales' | 'tortas' | 'paquetes' | 'bebidas';
+type Category = 'tacos' | 'gringas' | 'tortas' | 'paquetes' | 'bebidas' | 'volcanes' | 'harina' | 'queso';
+
+const categoryLabels: Record<Category, string> = {
+  tacos: 'Tacos',
+  gringas: 'Gringas',
+  volcanes: 'Volcanes',
+  harina: 'En Harina',
+  queso: 'Con Queso',
+  tortas: 'Tortas',
+  paquetes: 'Paquetes',
+  bebidas: 'Bebidas/Extras'
+};
 type PaymentMethod = 'tarjeta' | 'transferencia';
 type DeliveryMethod = 'domicilio' | 'recoger';
 
@@ -44,27 +55,82 @@ export const PRODUCTS: Product[] = [
   { id: 't-chorizo', nombre: 'Chorizo Argentino', precio: 45, categoria: 'tacos', imagen: getProductImage('t-chorizo') },
   { id: 't-chistorra', nombre: 'Chistorra', precio: 45, categoria: 'tacos', imagen: getProductImage('t-chistorra') },
   { id: 't-longaniza', nombre: 'Longaniza', precio: 45, descripcion: '(Chorizo Chiltepin)', categoria: 'tacos', imagen: getProductImage('t-longaniza') },
-  { id: 't-campechano', nombre: 'Campechano', precio: 45, categoria: 'tacos', imagen: getProductImage('t-campechano') },
+  { id: 't-campechano-gen', nombre: 'Campechano', precio: 43, descripcion: '(Combinación de tu elección)', categoria: 'tacos', imagen: getProductImage('t-campechano') },
   { id: 't-pollo', nombre: 'Pollo', precio: 45, categoria: 'tacos', imagen: getProductImage('t-pollo') },
   { id: 't-vegetariano', nombre: 'Vegetariano', precio: 48, descripcion: '(Champiñón, nopal, papa, cebolla en harina y queso)', categoria: 'tacos', imagen: getProductImage('t-vegetariano') },
   { id: 't-chepekan', nombre: 'Chepekan', precio: 43, descripcion: '"Bistec con la tortilla picada" (Para la mascota)', categoria: 'tacos', imagen: getProductImage('t-chepekan') },
   { id: 't-chepe-esp', nombre: 'Chepe Especial', precio: 88, descripcion: '(Suadero en trozo)', categoria: 'tacos', imagen: getProductImage('t-chepe-esp'), badges: ['Especial'] },
-  { id: 't-aguja', nombre: 'Aguja Norteña', precio: 88, categoria: 'tacos', imagen: getProductImage('t-aguja') },
-  { id: 't-ribeye', nombre: 'Ribeye', precio: 83, categoria: 'tacos', imagen: getProductImage('t-ribeye') },
+  { id: 't-aguja', nombre: 'Aguja Norteña', precio: 85, categoria: 'tacos', imagen: getProductImage('t-aguja') },
+  { id: 't-ribeye', nombre: 'Ribeye', precio: 80, categoria: 'tacos', imagen: getProductImage('t-ribeye') },
   { id: 't-alambre', nombre: 'Alambre', precio: 38, categoria: 'tacos', imagen: getProductImage('t-alambre') },
+  { id: 't-nopal', nombre: 'Taco de Nopal', precio: 25, categoria: 'tacos', imagen: getProductImage('t-nopal') },
+  { id: 't-fofis', nombre: 'Fofis con champi', precio: 55, categoria: 'tacos', imagen: getProductImage('t-fofis') },
+  { id: 't-bistec-trozo', nombre: 'Bisteck en trozo', precio: 50, categoria: 'tacos', imagen: getProductImage('t-bistec-trozo') },
+  { id: 't-picana-trozo', nombre: 'Picaña en trozo', precio: 48, categoria: 'tacos', imagen: getProductImage('t-picana-trozo') },
 
-  // Especiales (con queso)
-  { id: 'e-quesocarne', nombre: 'Queso Carne', precio: 83, descripcion: 'Tortilla de harina con queso y la carne a elegir', categoria: 'especiales', imagen: getProductImage('e-quesocarne') },
-  { id: 'e-arraqueso', nombre: 'Arra Queso', precio: 83, descripcion: 'Con queso y arrachera', categoria: 'especiales', imagen: getProductImage('e-arraqueso') },
-  { id: 'e-suaqueso', nombre: 'Sua Queso', precio: 83, descripcion: 'Con queso y suadero', categoria: 'especiales', imagen: getProductImage('e-suaqueso') },
-  { id: 'e-argentiqueso', nombre: 'Argentiqueso', precio: 83, descripcion: 'Con queso y chorizo argentino', categoria: 'especiales', imagen: getProductImage('e-argentiqueso') },
-  { id: 'e-chistoqueso', nombre: 'Chisto Queso', precio: 83, descripcion: 'Con queso y chistorra', categoria: 'especiales', imagen: getProductImage('e-chistoqueso') },
-  { id: 'e-choriqueso', nombre: 'Chori Queso', precio: 83, descripcion: 'Con queso y chorizo', categoria: 'especiales', imagen: getProductImage('e-choriqueso') },
-  { id: 'e-campechaqueso', nombre: 'Campecha Queso', precio: 83, descripcion: 'Con queso campechano', categoria: 'especiales', imagen: getProductImage('e-campechaqueso') },
-  { id: 'e-pechuqueso', nombre: 'Pechu Queso', precio: 83, descripcion: 'Con queso y pechuga', categoria: 'especiales', imagen: getProductImage('e-pechuqueso') },
-  { id: 'e-pichistorra', nombre: 'Pichistorra', precio: 83, descripcion: '(Inventado Por Coreano Vlogs)', categoria: 'especiales', imagen: getProductImage('e-pichistorra'), badges: ['Famoso'] },
-  { id: 'e-picanaqueso', nombre: 'Picaña Queso', precio: 83, descripcion: 'Con queso y picaña', categoria: 'especiales', imagen: getProductImage('e-picanaqueso') },
-  { id: 'e-pechucarne', nombre: 'Pechucarne', precio: 83, descripcion: 'Con queso y pechucarne', categoria: 'especiales', imagen: getProductImage('e-pechucarne') },
+  // Volcanes
+  { id: 'v-suadero', nombre: 'Volcán de Suadero', precio: 62, categoria: 'volcanes', imagen: getProductImage('v-suadero') },
+  { id: 'v-bistec', nombre: 'Volcán de Bistec', precio: 62, categoria: 'volcanes', imagen: getProductImage('v-bistec') },
+  { id: 'v-arrachera', nombre: 'Volcán de Arrachera', precio: 62, categoria: 'volcanes', imagen: getProductImage('v-arrachera') },
+  { id: 'v-picana', nombre: 'Volcán de Picaña', precio: 62, categoria: 'volcanes', imagen: getProductImage('v-picana') },
+  { id: 'v-argentino', nombre: 'Volcán de Argentino', precio: 62, categoria: 'volcanes', imagen: getProductImage('v-argentino') },
+  { id: 'v-chistorra', nombre: 'Volcán de Chistorra', precio: 62, categoria: 'volcanes', imagen: getProductImage('v-chistorra') },
+  { id: 'v-longaniza', nombre: 'Volcán de Longaniza', precio: 62, categoria: 'volcanes', imagen: getProductImage('v-longaniza') },
+  { id: 'v-pechuga', nombre: 'Volcán de Pechuga', precio: 62, categoria: 'volcanes', imagen: getProductImage('v-pechuga') },
+  { id: 'v-campechano', nombre: 'Volcán Campechano', precio: 62, categoria: 'volcanes', imagen: getProductImage('v-campechano') },
+  { id: 'v-queso', nombre: 'Volcán de puro Queso', precio: 27, categoria: 'volcanes', imagen: getProductImage('v-queso') },
+
+  // Tacos en Harina
+  { id: 'h-suadero', nombre: 'Suadero en Harina', precio: 52, categoria: 'harina', imagen: getProductImage('h-suadero') },
+  { id: 'h-bistec', nombre: 'Bistec en Harina', precio: 52, categoria: 'harina', imagen: getProductImage('h-bistec') },
+  { id: 'h-arrachera', nombre: 'Arrachera en Harina', precio: 52, categoria: 'harina', imagen: getProductImage('h-arrachera') },
+  { id: 'h-picana', nombre: 'Picaña en Harina', precio: 53, categoria: 'harina', imagen: getProductImage('h-picana') },
+  { id: 'h-argentino', nombre: 'Argentino en Harina', precio: 52, categoria: 'harina', imagen: getProductImage('h-argentino') },
+  { id: 'h-chistorra', nombre: 'Chistorra en Harina', precio: 52, categoria: 'harina', imagen: getProductImage('h-chistorra') },
+  { id: 'h-longaniza', nombre: 'Longaniza en Harina', precio: 52, categoria: 'harina', imagen: getProductImage('h-longaniza') },
+  { id: 'h-pechuga', nombre: 'Pechuga en Harina', precio: 52, categoria: 'harina', imagen: getProductImage('h-pechuga') },
+  { id: 'h-alambre', nombre: 'Alambre en Harina', precio: 45, categoria: 'harina', imagen: getProductImage('h-alambre') },
+  { id: 'h-campechano', nombre: 'Campechano en Harina', precio: 52, categoria: 'harina', imagen: getProductImage('h-campechano') },
+  { id: 'h-chepe-esp', nombre: 'Chepe Especial en Harina', precio: 95, categoria: 'harina', imagen: getProductImage('h-chepe-esp') },
+  { id: 'h-aguja', nombre: 'Aguja Norteña en Harina', precio: 95, categoria: 'harina', imagen: getProductImage('h-aguja') },
+  { id: 'h-ribeye', nombre: 'Ribeye en Harina', precio: 90, categoria: 'harina', imagen: getProductImage('h-ribeye') },
+
+  // Tacos con Queso
+  { id: 'q-suadero', nombre: 'Suadero con Queso', precio: 54, categoria: 'queso', imagen: getProductImage('q-suadero') },
+  { id: 'q-bistec', nombre: 'Bistec con Queso', precio: 54, categoria: 'queso', imagen: getProductImage('q-bistec') },
+  { id: 'q-arrachera', nombre: 'Arrachera con Queso', precio: 54, categoria: 'queso', imagen: getProductImage('q-arrachera') },
+  { id: 'q-picana', nombre: 'Picaña con Queso', precio: 56, categoria: 'queso', imagen: getProductImage('q-picana') },
+  { id: 'q-argentino', nombre: 'Chorizo Argentino con Queso', precio: 54, categoria: 'queso', imagen: getProductImage('q-argentino') },
+  { id: 'q-chistorra', nombre: 'Chistorra con Queso', precio: 54, categoria: 'queso', imagen: getProductImage('q-chistorra') },
+  { id: 'q-longaniza', nombre: 'Chorizo Chiltepín con Queso', precio: 54, categoria: 'queso', imagen: getProductImage('q-longaniza') },
+  { id: 'q-pechuga', nombre: 'Pechuga con Queso', precio: 54, categoria: 'queso', imagen: getProductImage('q-pechuga') },
+  { id: 'q-campechano', nombre: 'Campechano con Queso', precio: 54, categoria: 'queso', imagen: getProductImage('q-campechano') },
+  { id: 'q-chepe-esp', nombre: 'Chepe Especial con Queso', precio: 101, categoria: 'queso', imagen: getProductImage('q-chepe-esp') },
+  { id: 'q-aguja', nombre: 'Aguja con Queso', precio: 100, categoria: 'queso', imagen: getProductImage('q-aguja') },
+  { id: 'q-ribeye', nombre: 'Ribeye con Queso', precio: 97, categoria: 'queso', imagen: getProductImage('q-ribeye') },
+
+  // Gringas
+  { id: 'g-suadero', nombre: 'Gringa de Suadero', precio: 82, categoria: 'gringas', imagen: getProductImage('e-suaqueso') },
+  { id: 'g-bistec', nombre: 'Gringa de Bistec', precio: 82, categoria: 'gringas', imagen: getProductImage('e-quesocarne') },
+  { id: 'g-arrachera', nombre: 'Gringa de Arrachera', precio: 82, categoria: 'gringas', imagen: getProductImage('e-arraqueso') },
+  { id: 'g-picana', nombre: 'Gringa de Picaña', precio: 92, categoria: 'gringas', imagen: getProductImage('e-picanaqueso') },
+  { id: 'g-argentino', nombre: 'Gringa de Argentino', precio: 82, categoria: 'gringas', imagen: getProductImage('e-argentiqueso') },
+  { id: 'g-chistorra', nombre: 'Gringa de Chistorra', precio: 82, categoria: 'gringas', imagen: getProductImage('e-chistoqueso') },
+  { id: 'g-longaniza', nombre: 'Gringa de Longaniza', precio: 82, categoria: 'gringas', imagen: getProductImage('e-choriqueso') },
+  { id: 'g-pechuga', nombre: 'Gringa de Pechuga', precio: 82, categoria: 'gringas', imagen: getProductImage('e-pechuqueso') },
+  { id: 'g-campechana', nombre: 'Gringa Campechana', precio: 82, categoria: 'gringas', imagen: getProductImage('e-campechaqueso') },
+  { id: 'g-ribeye', nombre: 'Gringa de Ribeye', precio: 120, categoria: 'gringas', imagen: getProductImage('e-quesocarne') },
+  { id: 'g-aguja', nombre: 'Gringa de Aguja', precio: 110, categoria: 'gringas', imagen: getProductImage('e-quesocarne') },
+  { id: 'g-arrachisto', nombre: 'Gringa Arrachisto', precio: 76, categoria: 'gringas', imagen: getProductImage('e-quesocarne') },
+  { id: 'g-arra-dom', nombre: 'Gringa Arrachera (dom)', precio: 80, categoria: 'gringas', imagen: getProductImage('e-arraqueso') },
+  { id: 'g-camp-arra-long-suad', nombre: 'Gringa Campechana (Arra/Long/Suad)', precio: 78, categoria: 'gringas', imagen: getProductImage('e-campechaqueso') },
+  { id: 'g-camp-arra-arg', nombre: 'Gringa Campechana (Arrachera/Argentino)', precio: 79, categoria: 'gringas', imagen: getProductImage('e-campechaqueso') },
+  { id: 'g-camp-arra-chis', nombre: 'Gringa Campechana (Arrachera/Chistorra)', precio: 79, categoria: 'gringas', imagen: getProductImage('e-campechaqueso') },
+  { id: 'g-camp-arra', nombre: 'Gringa Campechana (Arrachera)', precio: 79, categoria: 'gringas', imagen: getProductImage('e-campechaqueso') },
+  { id: 'g-chepequeso', nombre: 'Gringa Chepe Especial', precio: 100, categoria: 'gringas', imagen: getProductImage('e-quesocarne') },
+  { id: 'g-pechucarne', nombre: 'Gringa Pechucarne', precio: 76, categoria: 'gringas', imagen: getProductImage('e-quesocarne') },
+  { id: 'g-pichistorra', nombre: 'Gringa Pichistorra', precio: 76, categoria: 'gringas', imagen: getProductImage('e-quesocarne') },
+
 
   // Tortas
   { id: 'to-suadero', nombre: 'Suadero', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-suadero') },
@@ -100,7 +166,47 @@ export const PRODUCTS: Product[] = [
   { id: 'p-15', nombre: 'Paquete #15', precio: 270, descripcion: 'Orden de Alambre para 2 personas + 2 Refrescos', categoria: 'paquetes', imagen: getProductImage('p-15'), badges: ['Promo'] },
 
   // Bebidas y Extras
-  { id: 'b-refresco', nombre: 'Refresco', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-refresco') },
+  { id: 'b-agua-guayaba-12', nombre: '1/2 Agua de Guayaba', precio: 25, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-maracuya-12', nombre: '1/2 Agua de Maracuya', precio: 25, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-avena-cafe', nombre: 'Agua de Avena con Café', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-avena-nuez', nombre: 'Agua de Avena con Nuez', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-fresa', nombre: 'Agua de Fresa', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-frutos-rojos', nombre: 'Agua de Frutos Rojos', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-guanabana', nombre: 'Agua de Guanábana', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-guayaba', nombre: 'Agua de Guayaba', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-horchata', nombre: 'Agua de Horchata', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-jamaica', nombre: 'Agua de Jamaica', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-limon-chia', nombre: 'Agua de Limón con Chía', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-limon-pepino', nombre: 'Agua de Limón con Pepino', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-mango', nombre: 'Agua de Mango', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-maracuya', nombre: 'Agua de Maracuya', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-melon', nombre: 'Agua de Melón', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-pina', nombre: 'Agua de Piña', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-pina-mango', nombre: 'Agua de Piña con Mango', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-tamarindo', nombre: 'Agua de Tamarindo', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-horchata-fresa', nombre: 'Agua Horchata con Fresa', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-agua-pina-pepino', nombre: 'Agua Piña con Pepino', precio: 46, categoria: 'bebidas', imagen: getProductImage('b-agua') },
+  { id: 'b-boing-fresa', nombre: 'Boing de Fresa', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-boing') },
+  { id: 'b-boing-guayaba', nombre: 'Boing de Guayaba', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-boing') },
+  { id: 'b-boing-mango', nombre: 'Boing de Mango', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-boing') },
+  { id: 'b-boing-manzana', nombre: 'Boing de Manzana', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-boing') },
+  { id: 'b-coca-original', nombre: 'Coca Cola Original', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-coca') },
+  { id: 'b-coca-zero', nombre: 'Coca Cola Zero', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-coca') },
+  { id: 'b-coca-light', nombre: 'Coca Cola Light', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-coca') },
+  { id: 'b-jarrito-limon', nombre: 'Jarrito de Limón', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-jarrito') },
+  { id: 'b-jarrito-manzana', nombre: 'Jarrito de Manzana', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-jarrito') },
+  { id: 'b-jarrito-pina', nombre: 'Jarrito de Piña', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-jarrito') },
+  { id: 'b-jarrito-tamarindo', nombre: 'Jarrito de Tamarindo', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-jarrito') },
+  { id: 'b-jarrito-tutifruti', nombre: 'Jarrito de Tutifruti', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-jarrito') },
+  { id: 'b-jarrito-uva', nombre: 'Jarrito de Uva', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-jarrito') },
+  { id: 'b-manzana', nombre: 'Sidral Mundet / Manzana', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-manzana') },
+  { id: 'b-mirinda', nombre: 'Mirinda', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-mirinda') },
+  { id: 'b-penafiel', nombre: 'Peñafiel Naranjada', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-penafiel') },
+  { id: 'b-sangria', nombre: 'Sangría', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-sangria') },
+  { id: 'b-delawere', nombre: 'Delaware Punch', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-delawere') },
+  { id: 'b-agua-mineral', nombre: 'Agua Mineral', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-agua-mineral') },
+  { id: 'b-electrolito', nombre: 'Electrolito', precio: 35, categoria: 'bebidas', imagen: getProductImage('b-electrolito') },
+  { id: 'b-cerveza', nombre: 'Cerveza de Lata', precio: 35, categoria: 'bebidas', imagen: getProductImage('b-cerveza') },
   { id: 'b-queso-extra', nombre: 'Queso Extra por Taco', precio: 16, categoria: 'bebidas', imagen: getProductImage('b-queso-extra') },
 ];
 
@@ -295,7 +401,7 @@ export default function TacosChepeMenu() {
       {/* ── HEADER FIJO ── */}
       <header className="fixed top-0 inset-x-0 z-40 bg-[#FFB800] border-b-[3px] border-zinc-900 shadow-md">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <img src={logoImg} alt="Tacos Chepe Logo" className="h-14 w-auto object-contain drop-shadow-sm" />
+          <img src={logoImg} alt="Tacos Chepe Logo" className="h-20 md:h-24 w-auto object-contain drop-shadow-[2px_2px_0px_rgba(28,28,28,0.5)] transition-transform hover:scale-105" />
           <div className="flex items-center gap-3">
             <button
               onClick={() => {
@@ -306,6 +412,11 @@ export default function TacosChepeMenu() {
               title="Mis Favoritos"
             >
               <Heart size={22} className="fill-white" />
+              {favorites.length > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-white text-pink-600 text-[11px] font-black w-6 h-6 flex items-center justify-center rounded-full shadow-md border-2 border-pink-500">
+                  {favorites.length}
+                </span>
+              )}
             </button>
             <button
               onClick={() => setIsCartOpen(true)}
@@ -367,7 +478,7 @@ export default function TacosChepeMenu() {
             >
               <Flame size={18} className={activeCategory === 'destacados' ? 'text-[#FFB800]' : 'text-orange-500'} /> Populares
             </button>
-            {(['tacos', 'especiales', 'tortas', 'paquetes', 'bebidas'] as Category[]).map(cat => (
+            {(['tacos', 'gringas', 'volcanes', 'harina', 'queso', 'tortas', 'paquetes', 'bebidas'] as Category[]).map(cat => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
@@ -377,7 +488,7 @@ export default function TacosChepeMenu() {
                     : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-900 hover:text-zinc-900 shadow-sm'
                 }`}
               >
-                {cat === 'bebidas' ? 'Bebidas/Extras' : cat}
+                {categoryLabels[cat]}
               </button>
             ))}
           </div>
@@ -810,7 +921,7 @@ export default function TacosChepeMenu() {
 
             {/* Col 1: Logo + Descripción */}
             <div className="text-center md:text-left">
-              <img src={logoImg} alt="Tacos Chepe Logo" className="h-12 w-auto object-contain mb-4 mx-auto md:mx-0" />
+              <img src={logoImg} alt="Tacos Chepe Logo" className="h-24 w-auto object-contain mb-6 mx-auto md:mx-0 drop-shadow-[2px_2px_0px_rgba(28,28,28,0.5)]" />
               <p className="text-zinc-400 font-medium text-sm leading-relaxed">
                 Los auténticos tacos callejeros que conquistan paladares. Ingredientes de primera, sazón inigualable y el sabor que te hace volver.
               </p>
@@ -832,13 +943,13 @@ export default function TacosChepeMenu() {
               <div className="mt-6">
                 <h4 className="font-black text-[#FFB800] uppercase tracking-wider text-xs mb-3">Síguenos</h4>
                 <div className="flex items-center justify-center gap-4">
-                  <a href="#" target="_blank" rel="noopener noreferrer" className="p-2.5 bg-zinc-800 rounded-full text-zinc-400 hover:bg-[#1877F2] hover:text-white transition-colors border border-zinc-700 hover:border-[#1877F2]" title="Facebook">
+                  <a href="https://www.facebook.com/TacosChepeNarvarte" target="_blank" rel="noopener noreferrer" className="p-2.5 bg-zinc-800 rounded-full text-zinc-400 hover:bg-[#1877F2] hover:text-white transition-colors border border-zinc-700 hover:border-[#1877F2]" title="Facebook">
                     <Facebook size={18} />
                   </a>
-                  <a href="#" target="_blank" rel="noopener noreferrer" className="p-2.5 bg-zinc-800 rounded-full text-zinc-400 hover:bg-[#E4405F] hover:text-white transition-colors border border-zinc-700 hover:border-[#E4405F]" title="Instagram">
+                  <a href="https://www.instagram.com/tacoschepe.narvarte?igsh=bTR1MWdvcG84OWQ5" target="_blank" rel="noopener noreferrer" className="p-2.5 bg-zinc-800 rounded-full text-zinc-400 hover:bg-[#E4405F] hover:text-white transition-colors border border-zinc-700 hover:border-[#E4405F]" title="Instagram">
                     <Instagram size={18} />
                   </a>
-                  <a href="#" target="_blank" rel="noopener noreferrer" className="p-2.5 bg-zinc-800 rounded-full text-zinc-400 hover:bg-white hover:text-zinc-900 transition-colors border border-zinc-700 hover:border-white" title="TikTok">
+                  <a href="https://www.tiktok.com/@tacoschepe.oficial?_r=1&_t=ZS-98K2vAPwny9" target="_blank" rel="noopener noreferrer" className="p-2.5 bg-zinc-800 rounded-full text-zinc-400 hover:bg-white hover:text-zinc-900 transition-colors border border-zinc-700 hover:border-white" title="TikTok">
                     <Music2 size={18} />
                   </a>
                 </div>

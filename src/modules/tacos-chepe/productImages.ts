@@ -2,7 +2,7 @@
 // Uses Vite's import.meta.glob to eagerly import all WebP images
 
 const imageModules = import.meta.glob<string>(
-  './assets/productos/*.webp',
+  './assets/productos/*.{webp,png}',
   { eager: true, import: 'default' }
 );
 
@@ -22,6 +22,7 @@ const productImageMap: Record<string, string> = {
   't-chistorra': getImage('TACO-CHISTORRA.webp'),
   't-longaniza': getImage('TACO-CHILTEPIN.webp'),
   't-campechano': getImage('TACO-CAMPECHANO-BISTEC.webp'),
+  't-campechano-gen': getImage('TACO-CAMPECHANO-BISTEC.webp'),
   't-pollo': getImage('TACO-PECHUGA.webp'),
   't-vegetariano': getImage('TACO-ALAMBRE.webp'),
   't-chepekan': getImage('TACO-CHEPE-ESPECIAL.webp'),
@@ -29,6 +30,51 @@ const productImageMap: Record<string, string> = {
   't-aguja': getImage('TACO-ARRACHERA.webp'),
   't-ribeye': getImage('TACO-ARRACHERA.webp'),
   't-alambre': getImage('TACO-ALAMBRE.webp'),
+  't-nopal': getImage('TACO-ALAMBRE.webp'),
+  't-fofis': getImage('TACO-ALAMBRE.webp'),
+  't-bistec-trozo': getImage('TACO-BISTEC.webp'),
+  't-picana-trozo': getImage('TACO-PICAÑA.webp'),
+
+  // ── Volcanes ──
+  'v-suadero': getImage('VOLCAN-SUADERO.webp'),
+  'v-bistec': getImage('VOLCAN-BISTEC.webp'),
+  'v-arrachera': getImage('VOLCAN-ARRACHERA.webp'),
+  'v-picana': getImage('VOLCAN-ARRACHERA.webp'),
+  'v-argentino': getImage('VOLCAN-LONGANIZA.webp'),
+  'v-chistorra': getImage('VOLCAN-LONGANIZA.webp'),
+  'v-longaniza': getImage('VOLCAN-LONGANIZA.webp'),
+  'v-pechuga': getImage('VOLCAN-PECHUGA.webp'),
+  'v-campechano': getImage('VOLCAN-CAMPECHANO.webp'),
+  'v-queso': getImage('VOLCAN-SUADERO.webp'),
+
+  // ── Tacos en Harina ──
+  'h-suadero': getImage('TACO-SUADERO.webp'),
+  'h-bistec': getImage('TACO-BISTEC.webp'),
+  'h-arrachera': getImage('TACO-ARRACHERA.webp'),
+  'h-picana': getImage('TACO-PICAÑA.webp'),
+  'h-argentino': getImage('TACO-CHORIZOARGENTINO.webp'),
+  'h-chistorra': getImage('TACO-CHISTORRA.webp'),
+  'h-longaniza': getImage('TACO-CHILTEPIN.webp'),
+  'h-pechuga': getImage('TACO-PECHUGA.webp'),
+  'h-alambre': getImage('TACO-ALAMBRE.webp'),
+  'h-campechano': getImage('TACO-CAMPECHANO-BISTEC.webp'),
+  'h-chepe-esp': getImage('TACO-CHEPE-ESPECIAL.webp'),
+  'h-aguja': getImage('TACO-ARRACHERA.webp'),
+  'h-ribeye': getImage('TACO-ARRACHERA.webp'),
+
+  // ── Tacos con Queso ──
+  'q-suadero': getImage('TACO-SUADERO.webp'),
+  'q-bistec': getImage('TACO-BISTEC.webp'),
+  'q-arrachera': getImage('TACO-ARRACHERA.webp'),
+  'q-picana': getImage('TACO-PICAÑA.webp'),
+  'q-argentino': getImage('TACO-CHORIZOARGENTINO.webp'),
+  'q-chistorra': getImage('TACO-CHISTORRA.webp'),
+  'q-longaniza': getImage('TACO-CHILTEPIN.webp'),
+  'q-pechuga': getImage('TACO-PECHUGA.webp'),
+  'q-campechano': getImage('TACO-CAMPECHANO-BISTEC.webp'),
+  'q-chepe-esp': getImage('TACO-CHEPE-ESPECIAL.webp'),
+  'q-aguja': getImage('TACO-ARRACHERA.webp'),
+  'q-ribeye': getImage('TACO-ARRACHERA.webp'),
 
   // ── Especiales (con queso) ──
   'e-quesocarne': getImage('QUESOCARNE.webp'),
@@ -75,6 +121,21 @@ const productImageMap: Record<string, string> = {
   'p-13': getImage('ARRAQUESO.webp'),
   'p-14': getImage('TACO-ALAMBRE.webp'),
   'p-15': getImage('TACO-ALAMBRE.webp'),
+
+  // ── Bebidas ──
+  'b-agua': getImage('BEBIDAS.png'),
+  'b-boing': getImage('BEBIDAS.png'),
+  'b-coca': getImage('BEBIDAS.png'),
+  'b-jarrito': getImage('BEBIDAS.png'),
+  'b-manzana': getImage('BEBIDAS.png'),
+  'b-mirinda': getImage('BEBIDAS.png'),
+  'b-penafiel': getImage('BEBIDAS.png'),
+  'b-sangria': getImage('BEBIDAS.png'),
+  'b-delawere': getImage('BEBIDAS.png'),
+  'b-agua-mineral': getImage('BEBIDAS.png'),
+  'b-electrolito': getImage('BEBIDAS.png'),
+  'b-cerveza': getImage('BEBIDAS.png'),
+  'b-queso-extra': getImage('BEBIDAS.png'),
 };
 
 // Fallback image for products without a match
