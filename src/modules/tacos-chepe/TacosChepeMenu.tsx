@@ -9,6 +9,9 @@ import {
 // Import logo
 import logoImg from './assets/logo.png';
 
+// Import product images
+import { getProductImage } from './productImages';
+
 type Category = 'tacos' | 'especiales' | 'tortas' | 'paquetes' | 'bebidas';
 type PaymentMethod = 'efectivo' | 'transferencia';
 type DeliveryMethod = 'domicilio' | 'recoger';
@@ -33,64 +36,64 @@ const LOAD_MORE = 12;
 
 export const PRODUCTS: Product[] = [
   // Tacos
-  { id: 't-arrachera', nombre: 'Arrachera', precio: 42, categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1599974579688-8dbdd335c77f?q=80&w=600&auto=format&fit=crop' },
-  { id: 't-picana', nombre: 'Picaña', precio: 43, categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?q=80&w=600&auto=format&fit=crop' },
-  { id: 't-bistec', nombre: 'Bistec de res', precio: 42, categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=600&auto=format&fit=crop' },
-  { id: 't-suadero', nombre: 'Suadero', precio: 42, categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?q=80&w=600&auto=format&fit=crop' },
-  { id: 't-chorizo', nombre: 'Chorizo Argentino', precio: 42, categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1624300629298-e9f06dce6bf6?q=80&w=600&auto=format&fit=crop' },
-  { id: 't-chistorra', nombre: 'Chistorra', precio: 42, categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1582169505937-b9992bd01ed9?q=80&w=600&auto=format&fit=crop' },
-  { id: 't-longaniza', nombre: 'Longaniza', precio: 42, descripcion: '(Chorizo Chiltepin)', categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600&auto=format&fit=crop' },
-  { id: 't-campechano', nombre: 'Campechano', precio: 42, categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=600&auto=format&fit=crop' },
-  { id: 't-pollo', nombre: 'Pollo', precio: 42, categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=600&auto=format&fit=crop' },
-  { id: 't-vegetariano', nombre: 'Vegetariano', precio: 45, descripcion: '(Champiñón, nopal, papa, cebolla en harina y queso)', categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1611712142269-12b84318fb9d?q=80&w=600&auto=format&fit=crop' },
-  { id: 't-chepekan', nombre: 'Chepekan', precio: 40, descripcion: '"Bistec con la tortilla picada" (Para la mascota)', categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?q=80&w=600&auto=format&fit=crop', badges: ['Pet Friendly'] },
-  { id: 't-chepe-esp', nombre: 'Chepe Especial', precio: 85, descripcion: '(Suadero en trozo)', categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?q=80&w=600&auto=format&fit=crop', badges: ['Especial'] },
-  { id: 't-aguja', nombre: 'Aguja Norteña', precio: 85, categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1529148482759-b35b25c5f217?q=80&w=600&auto=format&fit=crop' },
-  { id: 't-ribeye', nombre: 'Ribeye', precio: 80, categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1594041680534-e8c8cdebd659?q=80&w=600&auto=format&fit=crop' },
-  { id: 't-alambre', nombre: 'Alambre', precio: 35, categoria: 'tacos', imagen: 'https://images.unsplash.com/photo-1613945417066-512c11438994?q=80&w=600&auto=format&fit=crop' },
+  { id: 't-arrachera', nombre: 'Arrachera', precio: 45, categoria: 'tacos', imagen: getProductImage('t-arrachera') },
+  { id: 't-picana', nombre: 'Picaña', precio: 46, categoria: 'tacos', imagen: getProductImage('t-picana') },
+  { id: 't-bistec', nombre: 'Bistec de res', precio: 45, categoria: 'tacos', imagen: getProductImage('t-bistec') },
+  { id: 't-suadero', nombre: 'Suadero', precio: 45, categoria: 'tacos', imagen: getProductImage('t-suadero') },
+  { id: 't-chorizo', nombre: 'Chorizo Argentino', precio: 45, categoria: 'tacos', imagen: getProductImage('t-chorizo') },
+  { id: 't-chistorra', nombre: 'Chistorra', precio: 45, categoria: 'tacos', imagen: getProductImage('t-chistorra') },
+  { id: 't-longaniza', nombre: 'Longaniza', precio: 45, descripcion: '(Chorizo Chiltepin)', categoria: 'tacos', imagen: getProductImage('t-longaniza') },
+  { id: 't-campechano', nombre: 'Campechano', precio: 45, categoria: 'tacos', imagen: getProductImage('t-campechano') },
+  { id: 't-pollo', nombre: 'Pollo', precio: 45, categoria: 'tacos', imagen: getProductImage('t-pollo') },
+  { id: 't-vegetariano', nombre: 'Vegetariano', precio: 48, descripcion: '(Champiñón, nopal, papa, cebolla en harina y queso)', categoria: 'tacos', imagen: getProductImage('t-vegetariano') },
+  { id: 't-chepekan', nombre: 'Chepekan', precio: 43, descripcion: '"Bistec con la tortilla picada" (Para la mascota)', categoria: 'tacos', imagen: getProductImage('t-chepekan') },
+  { id: 't-chepe-esp', nombre: 'Chepe Especial', precio: 88, descripcion: '(Suadero en trozo)', categoria: 'tacos', imagen: getProductImage('t-chepe-esp'), badges: ['Especial'] },
+  { id: 't-aguja', nombre: 'Aguja Norteña', precio: 88, categoria: 'tacos', imagen: getProductImage('t-aguja') },
+  { id: 't-ribeye', nombre: 'Ribeye', precio: 83, categoria: 'tacos', imagen: getProductImage('t-ribeye') },
+  { id: 't-alambre', nombre: 'Alambre', precio: 38, categoria: 'tacos', imagen: getProductImage('t-alambre') },
 
   // Especiales (con queso)
-  { id: 'e-quesocarne', nombre: 'Queso Carne', precio: 76, descripcion: 'Tortilla de harina con queso y la carne a elegir', categoria: 'especiales', imagen: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=600&auto=format&fit=crop' },
-  { id: 'e-arraqueso', nombre: 'Arra Queso', precio: 76, descripcion: 'Con queso y arrachera', categoria: 'especiales', imagen: 'https://images.unsplash.com/photo-1626078302196-037704b2a3a5?q=80&w=600&auto=format&fit=crop' },
-  { id: 'e-suaqueso', nombre: 'Sua Queso', precio: 76, descripcion: 'Con queso y suadero', categoria: 'especiales', imagen: 'https://images.unsplash.com/photo-1584947936173-03080c5ce6a8?q=80&w=600&auto=format&fit=crop' },
-  { id: 'e-argentiqueso', nombre: 'Argentiqueso', precio: 76, descripcion: 'Con queso y chorizo argentino', categoria: 'especiales', imagen: 'https://images.unsplash.com/photo-1613564834361-9436948817d1?q=80&w=600&auto=format&fit=crop' },
-  { id: 'e-chistoqueso', nombre: 'Chisto Queso', precio: 76, descripcion: 'Con queso y chistorra', categoria: 'especiales', imagen: 'https://images.unsplash.com/photo-1604908177309-883a4f8dfdb3?q=80&w=600&auto=format&fit=crop' },
-  { id: 'e-choriqueso', nombre: 'Chori Queso', precio: 76, descripcion: 'Con queso y chorizo', categoria: 'especiales', imagen: 'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?q=80&w=600&auto=format&fit=crop' },
-  { id: 'e-campechaqueso', nombre: 'Campecha Queso', precio: 76, descripcion: 'Con queso campechano', categoria: 'especiales', imagen: 'https://images.unsplash.com/photo-1603569283847-aa295f0d016a?q=80&w=600&auto=format&fit=crop' },
-  { id: 'e-pechuqueso', nombre: 'Pechu Queso', precio: 76, descripcion: 'Con queso y pechuga', categoria: 'especiales', imagen: 'https://images.unsplash.com/photo-1598514982205-f36b96d1e8d4?q=80&w=600&auto=format&fit=crop' },
-  { id: 'e-pichistorra', nombre: 'Pichistorra', precio: 76, descripcion: '(Inventado Por Coreano Vlogs)', categoria: 'especiales', imagen: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?q=80&w=600&auto=format&fit=crop', badges: ['Famoso'] },
-  { id: 'e-picanaqueso', nombre: 'Picaña Queso', precio: 76, descripcion: 'Con queso y picaña', categoria: 'especiales', imagen: 'https://images.unsplash.com/photo-1600891964599-f61ba0e24092?q=80&w=600&auto=format&fit=crop' },
-  { id: 'e-pechucarne', nombre: 'Pechucarne', precio: 76, descripcion: 'Con queso y pechucarne', categoria: 'especiales', imagen: 'https://images.unsplash.com/photo-1543339308-43e59d6b73a6?q=80&w=600&auto=format&fit=crop' },
+  { id: 'e-quesocarne', nombre: 'Queso Carne', precio: 83, descripcion: 'Tortilla de harina con queso y la carne a elegir', categoria: 'especiales', imagen: getProductImage('e-quesocarne') },
+  { id: 'e-arraqueso', nombre: 'Arra Queso', precio: 83, descripcion: 'Con queso y arrachera', categoria: 'especiales', imagen: getProductImage('e-arraqueso') },
+  { id: 'e-suaqueso', nombre: 'Sua Queso', precio: 83, descripcion: 'Con queso y suadero', categoria: 'especiales', imagen: getProductImage('e-suaqueso') },
+  { id: 'e-argentiqueso', nombre: 'Argentiqueso', precio: 83, descripcion: 'Con queso y chorizo argentino', categoria: 'especiales', imagen: getProductImage('e-argentiqueso') },
+  { id: 'e-chistoqueso', nombre: 'Chisto Queso', precio: 83, descripcion: 'Con queso y chistorra', categoria: 'especiales', imagen: getProductImage('e-chistoqueso') },
+  { id: 'e-choriqueso', nombre: 'Chori Queso', precio: 83, descripcion: 'Con queso y chorizo', categoria: 'especiales', imagen: getProductImage('e-choriqueso') },
+  { id: 'e-campechaqueso', nombre: 'Campecha Queso', precio: 83, descripcion: 'Con queso campechano', categoria: 'especiales', imagen: getProductImage('e-campechaqueso') },
+  { id: 'e-pechuqueso', nombre: 'Pechu Queso', precio: 83, descripcion: 'Con queso y pechuga', categoria: 'especiales', imagen: getProductImage('e-pechuqueso') },
+  { id: 'e-pichistorra', nombre: 'Pichistorra', precio: 83, descripcion: '(Inventado Por Coreano Vlogs)', categoria: 'especiales', imagen: getProductImage('e-pichistorra'), badges: ['Famoso'] },
+  { id: 'e-picanaqueso', nombre: 'Picaña Queso', precio: 83, descripcion: 'Con queso y picaña', categoria: 'especiales', imagen: getProductImage('e-picanaqueso') },
+  { id: 'e-pechucarne', nombre: 'Pechucarne', precio: 83, descripcion: 'Con queso y pechucarne', categoria: 'especiales', imagen: getProductImage('e-pechucarne') },
 
   // Tortas
-  { id: 'to-suadero', nombre: 'Suadero', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=600&auto=format&fit=crop' },
-  { id: 'to-bistec', nombre: 'Bistec', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: 'https://images.unsplash.com/photo-1648497678583-118858e998b2?q=80&w=600&auto=format&fit=crop' },
-  { id: 'to-longaniza', nombre: 'Longaniza', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: 'https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=600&auto=format&fit=crop' },
-  { id: 'to-pechuga', nombre: 'Pechuga', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: 'https://images.unsplash.com/photo-1619604107557-b5321217fcb3?q=80&w=600&auto=format&fit=crop' },
-  { id: 'to-arrachera', nombre: 'Arrachera', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600&auto=format&fit=crop' },
-  { id: 'to-picana', nombre: 'Picaña', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: 'https://images.unsplash.com/photo-1604908176601-518ddb3815b2?q=80&w=600&auto=format&fit=crop' },
-  { id: 'to-campechana', nombre: 'Campechana', precio: 110, descripcion: '(La combinación de tu agrado) (Llevan queso)', categoria: 'tortas', imagen: 'https://images.unsplash.com/photo-1585238342024-78d387f4a707?q=80&w=600&auto=format&fit=crop', badges: ['Más Pedida'] },
+  { id: 'to-suadero', nombre: 'Suadero', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-suadero') },
+  { id: 'to-bistec', nombre: 'Bistec', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-bistec') },
+  { id: 'to-longaniza', nombre: 'Longaniza', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-longaniza') },
+  { id: 'to-pechuga', nombre: 'Pechuga', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-pechuga') },
+  { id: 'to-arrachera', nombre: 'Arrachera', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-arrachera') },
+  { id: 'to-picana', nombre: 'Picaña', precio: 100, descripcion: '(Todas llevan queso)', categoria: 'tortas', imagen: getProductImage('to-picana') },
+  { id: 'to-campechana', nombre: 'Campechana', precio: 110, descripcion: '(La combinación de tu agrado) (Llevan queso)', categoria: 'tortas', imagen: getProductImage('to-campechana'), badges: ['Más Pedida'] },
 
   // Paquetes
-  { id: 'p-1', nombre: 'Paquete #1', precio: 145, descripcion: '3 Tacos de Arrachera + 1 Refresco', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1585238342024-78d387f4a707?q=80&w=600&auto=format&fit=crop', badges: ['Promo'] },
-  { id: 'p-2', nombre: 'Paquete #2', precio: 150, descripcion: '3 Tacos de Picaña + 1 Refresco', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?q=80&w=600&auto=format&fit=crop', badges: ['Promo'] },
-  { id: 'p-3', nombre: 'Paquete #3', precio: 142, descripcion: '3 Tacos Campechanos + 1 Refresco', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=600&auto=format&fit=crop', badges: ['Promo'] },
-  { id: 'p-4', nombre: 'Paquete #4', precio: 145, descripcion: '3 Tacos Suadero + 1 Refresco', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?q=80&w=600&auto=format&fit=crop', badges: ['Promo'] },
-  { id: 'p-5', nombre: 'Paquete #5', precio: 245, descripcion: '2 Tortas Campechanas + 2 Refresco', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=600&auto=format&fit=crop', badges: ['Familiar'] },
-  { id: 'p-6', nombre: 'Paquete #6', precio: 123, descripcion: '1 Tortas Arrachera + 1 Refresco', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1648497678583-118858e998b2?q=80&w=600&auto=format&fit=crop', badges: ['Promo'] },
-  { id: 'p-7', nombre: 'Paquete #7', precio: 123, descripcion: '1 Torta de Suadero + 1 Refresco', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=600&auto=format&fit=crop', badges: ['Promo'] },
-  { id: 'p-8', nombre: 'Paquete #8', precio: 143, descripcion: '1 Gringa Arrachera + 1 Taco de Campechano + 1 Refresco', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1582169505937-b9992bd01ed9?q=80&w=600&auto=format&fit=crop', badges: ['Promo'] },
-  { id: 'p-9', nombre: 'Paquete #9', precio: 143, descripcion: '1 Gringa Suadero + 1 Taco de Campechano + 1 Refresco', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=600&auto=format&fit=crop', badges: ['Promo'] },
-  { id: 'p-10', nombre: 'Paquete #10', precio: 143, descripcion: '1 Gringa Campechana + 1 Taco de Campechano + 1 Refresco', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1624300629298-e9f06dce6bf6?q=80&w=600&auto=format&fit=crop', badges: ['Promo'] },
-  { id: 'p-11', nombre: 'Paquete #11', precio: 168, descripcion: '2 Suaqueso + 1 Refresco', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1611712142269-12b84318fb9d?q=80&w=600&auto=format&fit=crop', badges: ['Promo'] },
-  { id: 'p-12', nombre: 'Paquete #12', precio: 168, descripcion: '2 Campechaqueso + 1 Refresco', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?q=80&w=600&auto=format&fit=crop', badges: ['Promo'] },
-  { id: 'p-13', nombre: 'Paquete #13', precio: 168, descripcion: '2 Arraqueso + 1 Refresco', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?q=80&w=600&auto=format&fit=crop', badges: ['Promo'] },
-  { id: 'p-14', nombre: 'Paquete #14', precio: 140, descripcion: '1 Orden de Alambre Personal + 1 Refresco', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1529148482759-b35b25c5f217?q=80&w=600&auto=format&fit=crop', badges: ['Promo'] },
-  { id: 'p-15', nombre: 'Paquete #15', precio: 260, descripcion: 'Orden de Alambre para 2 personas + 2 Refrescos', categoria: 'paquetes', imagen: 'https://images.unsplash.com/photo-1594041680534-e8c8cdebd659?q=80&w=600&auto=format&fit=crop', badges: ['Promo'] },
+  { id: 'p-1', nombre: 'Paquete #1', precio: 155, descripcion: '3 Tacos de Arrachera + 1 Refresco', categoria: 'paquetes', imagen: getProductImage('p-1'), badges: ['Promo'] },
+  { id: 'p-2', nombre: 'Paquete #2', precio: 160, descripcion: '3 Tacos de Picaña + 1 Refresco', categoria: 'paquetes', imagen: getProductImage('p-2'), badges: ['Promo'] },
+  { id: 'p-3', nombre: 'Paquete #3', precio: 152, descripcion: '3 Tacos Campechanos + 1 Refresco', categoria: 'paquetes', imagen: getProductImage('p-3'), badges: ['Promo'] },
+  { id: 'p-4', nombre: 'Paquete #4', precio: 155, descripcion: '3 Tacos Suadero + 1 Refresco', categoria: 'paquetes', imagen: getProductImage('p-4'), badges: ['Promo'] },
+  { id: 'p-5', nombre: 'Paquete #5', precio: 255, descripcion: '2 Tortas Campechanas + 2 Refresco', categoria: 'paquetes', imagen: getProductImage('p-5'), badges: ['Familiar'] },
+  { id: 'p-6', nombre: 'Paquete #6', precio: 133, descripcion: '1 Tortas Arrachera + 1 Refresco', categoria: 'paquetes', imagen: getProductImage('p-6'), badges: ['Promo'] },
+  { id: 'p-7', nombre: 'Paquete #7', precio: 133, descripcion: '1 Torta de Suadero + 1 Refresco', categoria: 'paquetes', imagen: getProductImage('p-7'), badges: ['Promo'] },
+  { id: 'p-8', nombre: 'Paquete #8', precio: 153, descripcion: '1 Gringa Arrachera + 1 Taco de Campechano + 1 Refresco', categoria: 'paquetes', imagen: getProductImage('p-8'), badges: ['Promo'] },
+  { id: 'p-9', nombre: 'Paquete #9', precio: 153, descripcion: '1 Gringa Suadero + 1 Taco de Campechano + 1 Refresco', categoria: 'paquetes', imagen: getProductImage('p-9'), badges: ['Promo'] },
+  { id: 'p-10', nombre: 'Paquete #10', precio: 153, descripcion: '1 Gringa Campechana + 1 Taco de Campechano + 1 Refresco', categoria: 'paquetes', imagen: getProductImage('p-10'), badges: ['Promo'] },
+  { id: 'p-11', nombre: 'Paquete #11', precio: 178, descripcion: '2 Suaqueso + 1 Refresco', categoria: 'paquetes', imagen: getProductImage('p-11'), badges: ['Promo'] },
+  { id: 'p-12', nombre: 'Paquete #12', precio: 178, descripcion: '2 Campechaqueso + 1 Refresco', categoria: 'paquetes', imagen: getProductImage('p-12'), badges: ['Promo'] },
+  { id: 'p-13', nombre: 'Paquete #13', precio: 178, descripcion: '2 Arraqueso + 1 Refresco', categoria: 'paquetes', imagen: getProductImage('p-13'), badges: ['Promo'] },
+  { id: 'p-14', nombre: 'Paquete #14', precio: 150, descripcion: '1 Orden de Alambre Personal + 1 Refresco', categoria: 'paquetes', imagen: getProductImage('p-14'), badges: ['Promo'] },
+  { id: 'p-15', nombre: 'Paquete #15', precio: 270, descripcion: 'Orden de Alambre para 2 personas + 2 Refrescos', categoria: 'paquetes', imagen: getProductImage('p-15'), badges: ['Promo'] },
 
   // Bebidas y Extras
-  { id: 'b-refresco', nombre: 'Refresco', precio: 31, categoria: 'bebidas', imagen: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=600&auto=format&fit=crop' },
-  { id: 'b-queso-extra', nombre: 'Queso Extra por Taco', precio: 16, categoria: 'bebidas', imagen: 'https://images.unsplash.com/photo-1485962398705-ef6a13ce3d5f?q=80&w=600&auto=format&fit=crop' },
+  { id: 'b-refresco', nombre: 'Refresco', precio: 31, categoria: 'bebidas', imagen: getProductImage('b-refresco') },
+  { id: 'b-queso-extra', nombre: 'Queso Extra por Taco', precio: 16, categoria: 'bebidas', imagen: getProductImage('b-queso-extra') },
 ];
 
 const bankInfo = {
