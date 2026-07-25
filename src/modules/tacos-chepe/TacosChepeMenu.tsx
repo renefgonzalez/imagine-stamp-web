@@ -25,6 +25,7 @@ interface Product {
 
 interface CartItem extends Product {
   quantity: number;
+  sinCebolla?: boolean;
 }
 
 const INITIAL_VISIBLE = 12;
@@ -186,6 +187,10 @@ export default function TacosChepeMenu() {
     setCart(prev => prev.filter(i => i.id !== id));
   };
 
+  const toggleSinCebolla = (id: string) => {
+    setCart(prev => prev.map(i => i.id === id ? { ...i, sinCebolla: !i.sinCebolla } : i));
+  };
+
   const cartTotal = cart.reduce((sum, item) => sum + item.precio * item.quantity, 0);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -241,7 +246,7 @@ export default function TacosChepeMenu() {
   };
 
   const generateWhatsAppMessage = () => {
-    const itemsText = cart.map(item => `• ${item.quantity}x ${item.nombre} - $${item.precio * item.quantity}`).join('\n');
+    const itemsText = cart.map(item => `• ${item.quantity}x ${item.nombre}${item.sinCebolla ? ' (SIN CEBOLLA)' : ''} - $${item.precio * item.quantity}`).join('\n');
     let message = `🌮 *Nuevo Pedido - Tacos Chepe*\n\n📋 *Productos:*\n${itemsText}\n\n💵 *Total: $${cartTotal.toFixed(2)}*\n\n👤 *Cliente:* ${customerInfo.nombre}\n📱 *Teléfono:* ${customerInfo.telefono}\n`;
     message += `🚚 *Entrega:* ${customerInfo.deliveryMethod === 'domicilio' ? 'A domicilio' : 'Recoger en local'}\n`;
 
@@ -586,7 +591,13 @@ export default function TacosChepeMenu() {
                             <p className="text-[#E63946] font-black text-base mt-1">${item.precio * item.quantity}</p>
                           </div>
                           <div className="flex items-center justify-between mt-2">
-                            <div className="flex items-center bg-zinc-50 rounded-lg p-0.5 border-2 border-zinc-200">
+                            <button 
+                              onClick={() => toggleSinCebolla(item.id)}
+                              className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-md border-2 transition-colors ${item.sinCebolla ? 'bg-red-50 text-red-600 border-red-200' : 'bg-zinc-50 text-zinc-400 border-zinc-200 hover:border-zinc-300'}`}
+                            >
+                              {item.sinCebolla ? '✓ Sin Cebolla' : 'Sin Cebolla'}
+                            </button>
+                            <div className="flex items-center bg-zinc-50 rounded-lg p-0.5 border-2 border-zinc-200 ml-2">
                               <button onClick={() => updateQuantity(item.id, -1)} className="p-1 text-zinc-500 hover:text-zinc-900"><Minus size={16} strokeWidth={3} /></button>
                               <span className="font-black text-sm w-8 text-center">{item.quantity}</span>
                               <button onClick={() => updateQuantity(item.id, 1)} className="p-1 text-zinc-500 hover:text-zinc-900"><Plus size={16} strokeWidth={3} /></button>
