@@ -14,7 +14,6 @@ import DemoMenu from './modules/demo-menu/pages/DemoMenu';
 import AdminPanel from './AdminPanel';
 
 const CatalogoEtiquetas = React.lazy(() => import('./modules/etiquetas-escolares/pages/CatalogoEtiquetas'));
-const LaMichoacanaMenu = React.lazy(() => import('./modules/la-michoacana/pages/LaMichoacanaMenu'));
 const GaoliPizzaMenu = React.lazy(() => import('./modules/gaoli-pizza/GaoliPizzaMenu'));
 const TacosChepeMenu = React.lazy(() => import('./modules/tacos-chepe/TacosChepeMenu'));
 import { GlobalFooter } from './components/common/GlobalFooter';
@@ -779,7 +778,6 @@ export default function App() {
 
         <Route path="/etiquetas-escolares" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" /></div>}><CatalogoEtiquetas /></Suspense></ErrorBoundary>} />
         {/* <Route path="/amelie-patisserie" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]" /></div>}><AmeliePatisserieMenu /></Suspense></ErrorBoundary>} /> */}
-        <Route path="/la-michoacana" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500" /></div>}><LaMichoacanaMenu /></Suspense></ErrorBoundary>} />
         <Route path="/gaoli-pizza" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500" /></div>}><GaoliPizzaMenu /></Suspense></ErrorBoundary>} />
         <Route path="/tacos-chepe" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#047857]" /></div>}><TacosChepeMenu /></Suspense></ErrorBoundary>} />
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
