@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save, Instagram, Facebook, Phone, Mail, Clock } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, X, ChevronRight, Star, Flame, Leaf, MessageCircle, ArrowLeft, Search, Check, Settings, Image as ImageIcon, EyeOff, Eye, DollarSign, RefreshCw, Save, Instagram, Facebook, Phone, Mail, Clock, Share2 } from 'lucide-react';
 
 import burgerClassicImg from '../assets/burger-classic.png';
 import burgerDoubleSmashImg from '../assets/burger-double-smash.png';
@@ -8,6 +8,11 @@ import burgerBbqBaconImg from '../assets/burger-bbq-bacon.png';
 import burgerMushroomSwissImg from '../assets/burger-mushroom-swiss.png';
 import chickenFingersImg from '../assets/chicken-fingers.png';
 import brownieSundaeImg from '../assets/brownie-sundae.png';
+import friesLoadedImg from '../assets/fries_loaded.webp';
+import onionRingsImg from '../assets/onion_rings.webp';
+import milkshakeChocolateImg from '../assets/milkshake_chocolate.webp';
+import milkshakeStrawberryImg from '../assets/milkshake_strawberry.webp';
+import heroCoverImg from '../assets/hero_cover.webp';
 
 const TikTokIcon = ({ size = 24, color = "currentColor" }) => (
   <svg
@@ -44,6 +49,16 @@ interface CartItem extends MenuItem {
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 const WHATSAPP_NUMBER = '525650469993'; // Your WhatsApp number
+
+// ─── BRAND COLOR THEMES ──────────────────────────────────────────────────────
+type BrandKey = 'naranja' | 'verde' | 'rojo' | 'morado';
+
+const BRAND_THEMES: Record<BrandKey, { from: string; to: string }> = {
+  naranja: { from: '#FF6A00', to: '#FF8C00' },
+  verde:   { from: '#16A34A', to: '#4ADE80' },
+  rojo:    { from: '#DC2626', to: '#F87171' },
+  morado:  { from: '#7C3AED', to: '#C084FC' },
+};
 
 const CATEGORIES = [
   { id: 'all',       label: 'Todo',        emoji: '🍔' },
@@ -105,7 +120,7 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
     name: 'Loaded Fries',
     description: 'Papas fritas crujientes bañadas en queso cheddar derretido, tocino, jalapeños y crema ácida.',
     price: 89,
-    image: './demo-menu/fries-loaded.png',
+    image: friesLoadedImg,
     category: 'sides',
     badge: 'popular',
     rating: 4.7,
@@ -116,7 +131,7 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
     name: 'Onion Rings',
     description: 'Aros de cebolla gigantes empanizados en cerveza, con salsa ranch casera para dipping.',
     price: 69,
-    image: './demo-menu/onion-rings.png',
+    image: onionRingsImg,
     category: 'sides',
     rating: 4.5,
     calories: 340,
@@ -138,7 +153,7 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
     name: 'Malteada Chocolate',
     description: 'Malteada espesa de chocolate oscuro belga con crema batida, drizzle de fudge caliente y cereza.',
     price: 99,
-    image: './demo-menu/milkshake-chocolate.png',
+    image: milkshakeChocolateImg,
     category: 'drinks',
     badge: 'popular',
     rating: 4.9,
@@ -149,7 +164,7 @@ const INITIAL_MENU_ITEMS: MenuItem[] = [
     name: 'Malteada Fresa',
     description: 'Malteada cremosa de fresas naturales, helado de vainilla y fresas frescas de temporada.',
     price: 99,
-    image: './demo-menu/milkshake-strawberry.png',
+    image: milkshakeStrawberryImg,
     category: 'drinks',
     rating: 4.7,
     calories: 480,
@@ -176,11 +191,11 @@ const STOCK_IMAGES: { url: string; label: string }[] = [
   { url: burgerDoubleSmashImg,  label: 'Double Smash' },
   { url: burgerBbqBaconImg,     label: 'BBQ Bacon' },
   { url: burgerMushroomSwissImg,label: 'Mushroom Swiss' },
-  { url: './demo-menu/fries-loaded.png',         label: 'Loaded Fries' },
-  { url: './demo-menu/onion-rings.png',          label: 'Onion Rings' },
+  { url: friesLoadedImg,         label: 'Loaded Fries' },
+  { url: onionRingsImg,          label: 'Onion Rings' },
   { url: chickenFingersImg,      label: 'Chicken Fingers' },
-  { url: './demo-menu/milkshake-chocolate.png',  label: 'Malteada Chocolate' },
-  { url: './demo-menu/milkshake-strawberry.png', label: 'Malteada Fresa' },
+  { url: milkshakeChocolateImg,  label: 'Malteada Chocolate' },
+  { url: milkshakeStrawberryImg, label: 'Malteada Fresa' },
   { url: brownieSundaeImg,       label: 'Brownie Sundae' },
 ];
 
@@ -239,6 +254,10 @@ export default function DemoMenu() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>(INITIAL_MENU_ITEMS);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [adminPickerForId, setAdminPickerForId] = useState<number | null>(null);
+  const [brandKey, setBrandKey] = useState<BrandKey>('naranja');
+  const [isLoading, setIsLoading] = useState(true);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   useEffect(() => {
     // Al montar, intenta hidratar el catálogo desde la fuente externa (Sheets).
@@ -247,6 +266,35 @@ export default function DemoMenu() {
       .then(setMenuItems)
       .catch(err => console.warn('No se pudo cargar el menú remoto:', err));
   }, []);
+
+  useEffect(() => {
+    // Simula el tiempo de carga del catálogo para mostrar skeletons.
+    const t = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(t);
+  }, []);
+
+  // ── Brand helpers ──────────────────────────────────────────────────────────
+  const brand = BRAND_THEMES[brandKey];
+
+  const handleShare = async () => {
+    const shareData = {
+      title: 'Burger & Co — Menú Digital',
+      text: 'Checa el menú digital de Burger & Co 🍔',
+      url: window.location.href,
+    };
+    try {
+      if (!navigator.share) throw new Error('Web Share API no disponible');
+      await navigator.share(shareData);
+    } catch {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        setLinkCopied(true);
+        setTimeout(() => setLinkCopied(false), 2000);
+      } catch {
+        // Clipboard no disponible; no hacer nada.
+      }
+    }
+  };
 
   // ── Helpers de edición en vivo (modo admin) ────────────────────────────────
   const updateItem = (id: number, patch: Partial<MenuItem>) => {
@@ -279,7 +327,8 @@ export default function DemoMenu() {
   const subTotal = cart.reduce((acc, i) => acc + i.price * i.quantity, 0);
   const isDelivery = deliveryMethod === 'Envío a domicilio';
   const deliveryFee = isDelivery ? 50 : 0;
-  const totalPrice = subTotal + deliveryFee;
+  const discountAmount = discountCoupon.toUpperCase() === 'DESC10' ? subTotal * 0.1 : 0;
+  const totalPrice = subTotal - discountAmount + deliveryFee;
 
   const addToCart = (item: MenuItem) => {
     if (item.soldOut) return;
@@ -347,28 +396,80 @@ export default function DemoMenu() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: '#0D0D0D', fontFamily: "'Inter', sans-serif" }}>
+    <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`} style={{ background: isDarkMode ? '#0D0D0D' : '#F9F9F9', color: isDarkMode ? '#FFF' : '#111', fontFamily: "'Inter', sans-serif" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap');
+        .font-bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; }
+        .bg-card { background: ${isDarkMode ? 'rgba(255,255,255,0.03)' : '#FFF'}; box-shadow: ${isDarkMode ? 'none' : '0 2px 8px rgba(0,0,0,0.05)'}; }
+        .text-dim { color: ${isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)'}; }
+        .text-main { color: ${isDarkMode ? '#FFF' : '#111'}; }
+        .border-line { border-color: ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}; }
+        /* Animación Skeleton */
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+      `}</style>
+      
       {/* ── SEO Meta */}
       <title>Burger & Co | Menú Digital Demo — Imagine & Stamp</title>
+      
+      {/* ── SALES DEMO BANNER ── */}
+      <div style={{
+        background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+        color: '#FFF',
+        padding: '10px',
+        textAlign: 'center',
+        fontSize: '13px',
+        fontWeight: 'bold',
+        position: 'relative',
+        zIndex: 50,
+      }}>
+        ✨ Esto es un demo — ¿Quieres un menú así para tu negocio? 
+        <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hola,%20quiero%20cotizar%20un%20menú%20digital.`} target="_blank" rel="noreferrer" style={{ textDecoration: 'underline', marginLeft: '6px', color: '#FFF' }}>Cotiza aquí</a>
+      </div>
+
+      {/* ── FLOATING ADMIN BUTTON ── */}
+      <button 
+        id="open-admin-btn"
+        onClick={() => setIsAdminOpen(true)}
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          left: '20px',
+          background: 'linear-gradient(135deg, var(--brand-from), var(--brand-to))',
+          color: '#FFF',
+          width: '54px',
+          height: '54px',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+          zIndex: 100,
+          border: 'none',
+          cursor: 'pointer'
+        }}
+      >
+        <Settings size={26} />
+      </button>
 
       {/* ── HERO HEADER */}
       <header
         className="relative overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, #1a0a00 0%, #2d1000 40%, #1a0600 100%)',
-          minHeight: '220px',
+          backgroundImage: `url(${heroCoverImg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          minHeight: '260px',
         }}
       >
-        {/* Decorative circles */}
+        {/* Overlay difuminado */}
         <div style={{
-          position: 'absolute', top: '-60px', right: '-60px',
-          width: '240px', height: '240px', borderRadius: '50%',
-          background: 'rgba(255, 100, 0, 0.12)',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: '-40px', left: '-40px',
-          width: '180px', height: '180px', borderRadius: '50%',
-          background: 'rgba(255, 140, 0, 0.08)',
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%)',
+          backdropFilter: 'blur(3px)'
         }} />
 
         <div className="relative z-10 px-5 pt-10 pb-8">
@@ -386,7 +487,7 @@ export default function DemoMenu() {
               <div className="flex items-center gap-3 mb-2">
                 <div style={{
                   width: 48, height: 48, borderRadius: '14px',
-                  background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                  background: 'linear-gradient(135deg, var(--brand-from), var(--brand-to))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '24px', flexShrink: 0,
                   boxShadow: '0 4px 20px rgba(255, 106, 0, 0.4)',
@@ -394,17 +495,17 @@ export default function DemoMenu() {
                   🍔
                 </div>
                 <div>
-                  <h1 style={{ color: '#fff', fontSize: '26px', fontWeight: 900, lineHeight: 1, letterSpacing: '-0.5px' }}>
+                  <h1 className="font-bebas" style={{ color: '#fff', fontSize: '38px', lineHeight: 1 }}>
                     Burger & Co
                   </h1>
-                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginTop: '2px' }}>
+                  <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13px', marginTop: '4px', fontWeight: 500 }}>
                     Menú Digital Interactivo
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-4 mt-3">
-                <span style={{ color: '#FF8C00', fontSize: '12px', fontWeight: 700 }}>
+                <span style={{ color: 'var(--brand-to)', fontSize: '12px', fontWeight: 700 }}>
                   ⭐ 4.8 (2.4k reseñas)
                 </span>
                 <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px' }}>•</span>
@@ -424,7 +525,7 @@ export default function DemoMenu() {
               onClick={() => { setIsCartOpen(true); setOrderStep('cart'); }}
               style={{
                 position: 'relative',
-                background: totalItems > 0 ? 'linear-gradient(135deg, #FF6A00, #FF8C00)' : 'rgba(255,255,255,0.1)',
+                background: totalItems > 0 ? 'linear-gradient(135deg, var(--brand-from), var(--brand-to))' : 'rgba(255,255,255,0.1)',
                 border: 'none',
                 borderRadius: '16px',
                 padding: '10px 14px',
@@ -456,23 +557,80 @@ export default function DemoMenu() {
             </button>
           </div>
 
-          {/* Demo badge */}
+          {/* Demo badge & Actions */}
           <div style={{
             marginTop: '16px',
-            background: 'rgba(255, 106, 0, 0.15)',
-            border: '1px solid rgba(255, 106, 0, 0.3)',
-            borderRadius: '10px',
-            padding: '8px 12px',
-            display: 'inline-flex',
+            display: 'flex',
             alignItems: 'center',
             gap: '8px',
+            flexWrap: 'wrap'
           }}>
-            <span style={{ fontSize: '11px', color: '#FF8C00', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              ✨ Demo por Imagine & Stamp — Tu menú digital conectado a WhatsApp
-            </span>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '10px',
+              padding: '8px 12px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}>
+              <span style={{ fontSize: '11px', color: '#fff', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                ✨ Demo por Imagine & Stamp
+              </span>
+            </div>
+            
+            <button onClick={handleShare} style={{
+              background: 'rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '10px',
+              padding: '8px 12px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: '#fff',
+              fontSize: '11px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em'
+            }}>
+              <Share2 size={14} />
+              {linkCopied ? '¡Copiado!' : 'Compartir (QR)'}
+            </button>
+            
+            <button onClick={() => setIsDarkMode(!isDarkMode)} style={{
+              background: 'rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '10px',
+              padding: '8px 12px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              color: '#fff',
+              cursor: 'pointer',
+            }}>
+              {isDarkMode ? '☀️' : '🌙'}
+            </button>
           </div>
         </div>
       </header>
+      
+      {/* ── PROMO BANNER ── */}
+      <div style={{
+        background: 'linear-gradient(90deg, var(--brand-from), var(--brand-to))',
+        padding: '12px 16px',
+        color: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px',
+        fontSize: '13px',
+        fontWeight: 700,
+      }}>
+        🔥 <span>¡Aprovecha 2x1 los Martes en todas nuestras Hamburguesas!</span>
+      </div>
 
       {/* ── SEARCH BAR */}
       <div style={{ background: '#111', padding: '12px 16px', position: 'sticky', top: 0, zIndex: 40, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
@@ -528,7 +686,7 @@ export default function DemoMenu() {
               fontSize: '13px',
               transition: 'all 0.2s ease',
               background: activeCategory === cat.id
-                ? 'linear-gradient(135deg, #FF6A00, #FF8C00)'
+                ? 'linear-gradient(135deg, var(--brand-from), var(--brand-to))'
                 : 'rgba(255,255,255,0.07)',
               color: activeCategory === cat.id ? '#fff' : 'rgba(255,255,255,0.5)',
               boxShadow: activeCategory === cat.id ? '0 4px 12px rgba(255, 106, 0, 0.35)' : 'none',
@@ -548,8 +706,14 @@ export default function DemoMenu() {
           </h2>
         )}
 
-        {filteredItems.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.3)' }}>
+        {isLoading ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {[1, 2, 3, 4].map(n => (
+              <div key={n} className="animate-pulse bg-card border-line" style={{ borderRadius: '20px', height: '140px', border: '1px solid' }} />
+            ))}
+          </div>
+        ) : filteredItems.length === 0 ? (
+          <div className="text-dim" style={{ textAlign: 'center', padding: '60px 20px' }}>
             <div style={{ fontSize: '48px', marginBottom: '12px' }}>🔍</div>
             <p style={{ fontWeight: 700 }}>No hay resultados para "{searchQuery}"</p>
           </div>
@@ -625,7 +789,7 @@ export default function DemoMenu() {
 
                       {/* Price + Add button */}
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '8px' }}>
-                        <span style={{ color: '#FF8C00', fontWeight: 900, fontSize: '20px' }}>
+                        <span style={{ color: 'var(--brand-to)', fontWeight: 900, fontSize: '20px' }}>
                           ${item.price}
                           <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', fontWeight: 500 }}> MXN</span>
                         </span>
@@ -660,7 +824,7 @@ export default function DemoMenu() {
                               onClick={() => updateQty(item.id, -1)}
                               style={{
                                 background: 'none', border: 'none', cursor: 'pointer',
-                                padding: '8px 12px', color: '#FF8C00', fontWeight: 900, fontSize: '16px',
+                                padding: '8px 12px', color: 'var(--brand-to)', fontWeight: 900, fontSize: '16px',
                                 display: 'flex', alignItems: 'center',
                               }}
                             >
@@ -674,7 +838,7 @@ export default function DemoMenu() {
                               onClick={() => updateQty(item.id, 1)}
                               style={{
                                 background: 'none', border: 'none', cursor: 'pointer',
-                                padding: '8px 12px', color: '#FF8C00', fontWeight: 900, fontSize: '16px',
+                                padding: '8px 12px', color: 'var(--brand-to)', fontWeight: 900, fontSize: '16px',
                                 display: 'flex', alignItems: 'center',
                               }}
                             >
@@ -682,24 +846,22 @@ export default function DemoMenu() {
                             </button>
                           </div>
                         ) : (
-                          <button
+                          <motion.button
+                            whileTap={{ scale: 0.9 }}
                             id={`add-to-cart-${item.id}`}
                             onClick={e => { e.stopPropagation(); addToCart(item); }}
                             style={{
-                              background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                              background: 'linear-gradient(135deg, var(--brand-from), var(--brand-to))',
                               border: 'none', borderRadius: '12px',
                               padding: '9px 16px', cursor: 'pointer',
                               display: 'flex', alignItems: 'center', gap: '6px',
                               color: '#fff', fontWeight: 800, fontSize: '13px',
                               boxShadow: '0 4px 12px rgba(255, 106, 0, 0.35)',
-                              transition: 'transform 0.15s ease',
                             }}
-                            onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.95)')}
-                            onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
                           >
                             <Plus size={14} />
                             Agregar
-                          </button>
+                          </motion.button>
                         )}
                       </div>
                     </div>
@@ -776,7 +938,7 @@ export default function DemoMenu() {
               onClick={() => { setIsCartOpen(true); setOrderStep('cart'); }}
               style={{
                 width: '100%',
-                background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                background: 'linear-gradient(135deg, var(--brand-from), var(--brand-to))',
                 border: 'none', borderRadius: '18px', padding: '16px 24px',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 boxShadow: '0 8px 32px rgba(255, 106, 0, 0.5)',
@@ -869,7 +1031,7 @@ export default function DemoMenu() {
                   </div>
                   <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }} />
                   <div style={{ textAlign: 'center', flex: 1 }}>
-                    <div style={{ color: '#FF8C00', fontWeight: 800, fontSize: '18px' }}>{selectedItem.calories}</div>
+                    <div style={{ color: 'var(--brand-to)', fontWeight: 800, fontSize: '18px' }}>{selectedItem.calories}</div>
                     <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>Calorías</div>
                   </div>
                   <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }} />
@@ -892,7 +1054,7 @@ export default function DemoMenu() {
                         onClick={() => updateQty(selectedItem.id, -1)}
                         style={{
                           flex: 1, background: 'none', border: 'none', cursor: 'pointer',
-                          padding: '14px', color: '#FF8C00', fontWeight: 900, fontSize: '20px',
+                          padding: '14px', color: 'var(--brand-to)', fontWeight: 900, fontSize: '20px',
                         }}
                       >
                         <Minus size={18} />
@@ -904,7 +1066,7 @@ export default function DemoMenu() {
                         onClick={() => updateQty(selectedItem.id, 1)}
                         style={{
                           flex: 1, background: 'none', border: 'none', cursor: 'pointer',
-                          padding: '14px', color: '#FF8C00', fontWeight: 900, fontSize: '20px',
+                          padding: '14px', color: 'var(--brand-to)', fontWeight: 900, fontSize: '20px',
                         }}
                       >
                         <Plus size={18} />
@@ -913,7 +1075,7 @@ export default function DemoMenu() {
                     <button
                       onClick={() => setSelectedItem(null)}
                       style={{
-                        background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                        background: 'linear-gradient(135deg, var(--brand-from), var(--brand-to))',
                         border: 'none', borderRadius: '14px',
                         padding: '14px 20px', cursor: 'pointer',
                         color: '#fff', fontWeight: 800, fontSize: '15px',
@@ -928,7 +1090,7 @@ export default function DemoMenu() {
                     onClick={() => { addToCart(selectedItem); setSelectedItem(null); }}
                     style={{
                       width: '100%',
-                      background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                      background: 'linear-gradient(135deg, var(--brand-from), var(--brand-to))',
                       border: 'none', borderRadius: '14px',
                       padding: '16px', cursor: 'pointer',
                       color: '#fff', fontWeight: 900, fontSize: '16px',
@@ -1034,7 +1196,7 @@ export default function DemoMenu() {
                                 <p style={{ color: '#fff', fontWeight: 700, fontSize: '14px', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                   {item.name}
                                 </p>
-                                <p style={{ color: '#FF8C00', fontWeight: 800, fontSize: '14px', margin: '2px 0 0' }}>
+                                <p style={{ color: 'var(--brand-to)', fontWeight: 800, fontSize: '14px', margin: '2px 0 0' }}>
                                   ${item.price * item.quantity}
                                 </p>
                               </div>
@@ -1062,7 +1224,7 @@ export default function DemoMenu() {
                                     background: 'rgba(255, 106, 0, 0.2)', border: 'none', cursor: 'pointer',
                                     width: '28px', height: '28px', borderRadius: '8px',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    color: '#FF8C00',
+                                    color: 'var(--brand-to)',
                                   }}
                                 >
                                   <Plus size={14} />
@@ -1084,7 +1246,7 @@ export default function DemoMenu() {
                         border: '1px solid rgba(255, 106, 0, 0.2)',
                         borderRadius: '16px', padding: '16px', marginBottom: '20px',
                       }}>
-                        <p style={{ color: '#FF8C00', fontWeight: 700, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 12px' }}>
+                        <p style={{ color: 'var(--brand-to)', fontWeight: 700, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 12px' }}>
                           Resumen del pedido
                         </p>
                         {cart.map(item => (
@@ -1109,7 +1271,7 @@ export default function DemoMenu() {
                         )}
                         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '12px', paddingTop: '12px', display: 'flex', justifyContent: 'space-between' }}>
                           <span style={{ color: '#fff', fontWeight: 900, fontSize: '15px' }}>Total</span>
-                          <span style={{ color: '#FF8C00', fontWeight: 900, fontSize: '18px' }}>${totalPrice} MXN</span>
+                          <span style={{ color: 'var(--brand-to)', fontWeight: 900, fontSize: '18px' }}>${totalPrice} MXN</span>
                         </div>
                       </div>
 
@@ -1175,7 +1337,7 @@ export default function DemoMenu() {
                           </select>
                           {isDelivery && (
                             <div style={{ marginTop: '8px', padding: '10px', background: 'rgba(255, 140, 0, 0.15)', borderRadius: '8px', border: '1px solid rgba(255, 140, 0, 0.3)' }}>
-                              <p style={{ color: '#FF8C00', fontSize: '12px', margin: 0, fontWeight: 600 }}>
+                              <p style={{ color: 'var(--brand-to)', fontSize: '12px', margin: 0, fontWeight: 600 }}>
                                 ℹ️ Costo por envío a domicilio: $50 pesos. (Sumado al total)
                               </p>
                             </div>
@@ -1282,7 +1444,7 @@ export default function DemoMenu() {
                         onClick={() => setOrderStep('confirm')}
                         style={{
                           width: '100%',
-                          background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                          background: 'linear-gradient(135deg, var(--brand-from), var(--brand-to))',
                           border: 'none', borderRadius: '16px',
                           padding: '16px', cursor: 'pointer',
                           color: '#fff', fontWeight: 900, fontSize: '16px',
@@ -1394,7 +1556,7 @@ export default function DemoMenu() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <div style={{
                       width: 40, height: 40, borderRadius: '12px',
-                      background: 'linear-gradient(135deg, #FF6A00, #FF8C00)',
+                      background: 'linear-gradient(135deg, var(--brand-from), var(--brand-to))',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       boxShadow: '0 4px 14px rgba(255, 106, 0, 0.4)',
                     }}>
@@ -1477,6 +1639,33 @@ export default function DemoMenu() {
                   <Save size={12} />
                   Ver menú actualizado
                 </button>
+              </div>
+
+              {/* Color Picker de Marca */}
+              <div style={{
+                padding: '12px 20px',
+                borderBottom: '1px solid rgba(255,255,255,0.06)',
+              }}>
+                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', fontWeight: 700, margin: '0 0 10px' }}>Color de la Marca</p>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  {Object.entries(BRAND_THEMES).map(([key, colors]) => (
+                    <button
+                      key={key}
+                      onClick={() => setBrandKey(key as any)}
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        background: `linear-gradient(135deg, ${colors.from}, ${colors.to})`,
+                        border: brandKey === key ? '2px solid #fff' : '2px solid transparent',
+                        cursor: 'pointer',
+                        padding: 0,
+                        boxShadow: brandKey === key ? `0 0 10px ${colors.from}` : 'none',
+                        transition: 'all 0.2s ease',
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
 
               {/* Lista de productos editables */}
