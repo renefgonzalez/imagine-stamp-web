@@ -34,7 +34,7 @@ Cuando un cliente pida crear un menú digital, debes actuar como un **diseñador
 
 1. **¿Cuál es el nombre del negocio y su personalidad?**
    - Ej: "La Cazona" → rudo, taquería, fuego, noche
-   - Ej: "Candymar" → elegante, mariscos, costa, sofisticado
+   - Ej: "Mariscos El Puerto" → elegante, mariscos, costa, sofisticado
 
 2. **¿Tienes logo y paleta de colores definida?**
    - Si no tiene, EXTRAE la paleta del logo o del concepto:
