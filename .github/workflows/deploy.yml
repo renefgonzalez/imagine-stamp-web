@@ -34,6 +34,8 @@ jobs:
         run: |
           echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}" >> .env.production
           echo "VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}" >> .env.production
+          echo "VITE_META_PIXEL_ID=${{ secrets.VITE_META_PIXEL_ID }}" >> .env.production
+          echo "VITE_SITE_URL=https://imagineandstamp.site" >> .env.production
           npm run build
 
       - name: Setup Pages
