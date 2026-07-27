@@ -11,6 +11,7 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Product } from './data/products';
 import logo from './logo.png';
 import DemoMenu from './modules/demo-menu/pages/DemoMenu';
+import ContactCard from './pages/ContactCard';
 import AdminPanel from './AdminPanel';
 
 const CatalogoEtiquetas = React.lazy(() => import('./modules/etiquetas-escolares/pages/CatalogoEtiquetas'));
@@ -773,6 +774,7 @@ export default function App() {
           </ErrorBoundary>
         } />
         <Route path="/demo-menu" element={<DemoMenu />} />
+        <Route path="/contacto" element={<ContactCard />} />
 
         <Route path="/etiquetas-escolares" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" /></div>}><CatalogoEtiquetas /></Suspense></ErrorBoundary>} />
         {/* <Route path="/amelie-patisserie" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]" /></div>}><AmeliePatisserieMenu /></Suspense></ErrorBoundary>} /> */}
