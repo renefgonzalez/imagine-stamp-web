@@ -1,5 +1,5 @@
-import React from 'react';
-import { MessageCircle, MailIcon, Instagram, Facebook, Lock } from 'lucide-react';
+import React, { useState } from 'react';
+import { MessageCircle, MailIcon, Instagram, Facebook, Lock, X } from 'lucide-react';
 import logo from '../../logo.png';
 
 interface FooterProps {
@@ -26,6 +26,7 @@ export const GlobalFooter: React.FC<FooterProps> = ({
   hours = 'Lun - Vie: 9:00 - 18:00 | Sáb: 10:00 - 14:00'
 }) => {
   const year = new Date().getFullYear();
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
   return (
     <footer className="bg-white border-t border-primary/5 pt-12 pb-32 px-6">
@@ -90,19 +91,19 @@ export const GlobalFooter: React.FC<FooterProps> = ({
       
       <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-primary/5 text-center">
         <p className="text-primary/30 text-[10px] uppercase tracking-widest">
-          © {year} {companyName}. Todos los derechos reservados.
+          © {year} MUNDO DE HALLOWEEN. TODOS LOS DERECHOS RESERVADOS.
         </p>
         
         {/* Textos Legales Permanentes */}
-        <p className="text-primary/40 font-bold text-[10px] uppercase tracking-widest mt-2">
-          Página web realizada por IMAGINE & STAMP.
+        <p className="text-primary/40 font-bold text-[10px] uppercase tracking-widest mt-2 flex items-center justify-center gap-1">
+          Página web realizada por <a href="https://imagineandstamp.site" target="_blank" rel="noreferrer" className="text-secondary hover:underline">IMAGINE & STAMP</a>.
         </p>
-        <a 
-          href="/privacidad" 
-          className="text-primary/40 hover:text-primary transition-colors text-[10px] uppercase tracking-widest mt-2 inline-block font-bold"
+        <button 
+          onClick={() => setIsPrivacyOpen(true)}
+          className="text-primary/40 hover:text-primary transition-colors text-[10px] uppercase tracking-widest mt-2 inline-block font-bold hover:underline"
         >
           Aviso de Privacidad y Términos de Servicio
-        </a>
+        </button>
 
         <button 
           onClick={() => window.location.hash = '/admin'} 
@@ -112,6 +113,24 @@ export const GlobalFooter: React.FC<FooterProps> = ({
           <Lock size={16} />
         </button>
       </div>
+
+      {/* Privacy Modal */}
+      {isPrivacyOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="relative w-full max-w-md p-8 bg-[#1f1f1f] border-2 border-[#FF7F00] rounded-[2rem] shadow-2xl">
+            <button 
+              onClick={() => setIsPrivacyOpen(false)}
+              className="absolute top-5 right-5 text-white hover:text-gray-300 transition-colors"
+            >
+              <X size={20} />
+            </button>
+            <h2 className="text-xl font-black text-white text-center mb-6 tracking-wide">AVISO DE PRIVACIDAD</h2>
+            <p className="text-white text-center leading-relaxed font-medium text-sm">
+              En Mundo de Halloween protegemos tus datos. La información recopilada mediante el carrito y la redirección de WhatsApp se utiliza estrictamente para el procesamiento interno de sus pedidos de máscaras y la atención personalizada al cliente.
+            </p>
+          </div>
+        </div>
+      )}
     </footer>
   );
 };
