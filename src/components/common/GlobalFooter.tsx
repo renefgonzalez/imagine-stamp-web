@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { MessageCircle, Mail, MapPin, Clock, Instagram, Facebook, Lock, X, ExternalLink, Sparkles, Shield } from 'lucide-react';
+import { MessageCircle, Mail, MapPin, Clock, Phone, Instagram, Facebook, Lock, X, ExternalLink, Sparkles, Shield } from 'lucide-react';
 import logo from '../../logo.png';
 
 interface FooterProps {
   companyName?: string;
   description?: string;
   whatsappNumber?: string;
+  phoneNumber?: string;
   email?: string;
   instagramUrl?: string;
   facebookUrl?: string;
@@ -19,6 +20,7 @@ export const GlobalFooter: React.FC<FooterProps> = ({
   companyName = 'Imagine & Stamp',
   description = 'Personalizamos tus momentos más especiales con diseños creativos y alta calidad.',
   whatsappNumber = '525650469993',
+  phoneNumber = '',
   email = 'imagineandstamp@gmail.com',
   instagramUrl = 'https://www.instagram.com/personalizadosimagineandstamp',
   facebookUrl = 'https://www.facebook.com/share/1CFhhieFeV/?mibextid=wwXIfr',
@@ -55,6 +57,16 @@ export const GlobalFooter: React.FC<FooterProps> = ({
             <div className="space-y-5">
               <h3 className="font-headline font-black text-primary/80 text-xs uppercase tracking-[0.2em]">Contacto</h3>
               <div className="space-y-3.5">
+                {phoneNumber && (
+                  <a href={`tel:${phoneNumber.replace(/\s/g, '')}`}
+                    className="group flex items-center gap-3 text-sm text-primary/60 hover:text-primary transition-colors"
+                  >
+                    <span className="w-9 h-9 rounded-full bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors shrink-0">
+                      <Phone size={16} />
+                    </span>
+                    <span className="font-medium">{phoneNumber}</span>
+                  </a>
+                )}
                 <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noreferrer"
                   className="group flex items-center gap-3 text-sm text-primary/60 hover:text-primary transition-colors"
                 >

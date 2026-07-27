@@ -394,6 +394,11 @@ export default function TemplateMenu() {
           <div className="space-y-3">
             <h4 className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: C.textSecondary }}>Contacto</h4>
             <div className="space-y-2.5 text-sm">
+              {clientConfig.phoneNumber && clientConfig.phoneNumber !== '55 1234 5678' && (
+                <a href={`tel:${clientConfig.phoneNumber.replace(/\s/g, '')}`} className="flex items-center gap-2.5" style={{ color: C.textSecondary }}>
+                  <span className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center shrink-0"><Phone size={14} /></span> {clientConfig.phoneNumber}
+                </a>
+              )}
               <p className="flex items-center gap-2.5" style={{ color: C.textSecondary }}>
                 <span className="w-8 h-8 rounded-full bg-[#25D366]/10 flex items-center justify-center shrink-0"><MessageCircle size={14} className="text-[#25D366]" /></span> {clientConfig.phone}
               </p>

@@ -6,6 +6,7 @@ export const clientConfig = {
   businessName: 'NOMBRE DEL NEGOCIO',
   description: 'Descripción corta para el footer (1-2 líneas).',
   phone: '521234567890',
+  phoneNumber: '55 1234 5678',
   email: 'cliente@email.com',
 
   address: 'Calle 123, Colonia Centro, 12345 Ciudad, Estado',
