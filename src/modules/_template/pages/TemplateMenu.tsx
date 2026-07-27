@@ -15,7 +15,7 @@ import {
   Search, Plus, Minus, X, ShoppingBag, Heart,
   Phone, MapPin, Mail, Clock,
   Instagram, Facebook, MessageCircle,
-  ArrowRight, ChevronDown, LayoutGrid, PartyPopper, Gift, Sparkles,
+  ArrowRight, ChevronDown, LayoutGrid, PartyPopper, Gift, Sparkles, Shield, ExternalLink,
 } from 'lucide-react';
 import { clientConfig } from '../config';
 import { useCartStore } from '../../../store/useCartStore';
@@ -83,6 +83,7 @@ export default function TemplateMenu() {
     notes: '', cashAmount: '',
   });
   const [toastMsg, setToastMsg] = useState('');
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
   useEffect(() => { setVisibleItems(10); }, [activeCategory, searchQuery]);
 
@@ -384,40 +385,90 @@ export default function TemplateMenu() {
       </AnimatePresence>
 
       {/* ── FOOTER ── */}
-      <footer className="mt-12 border-t border-black/5" style={{ backgroundColor: C.primary, color: 'white' }}>
-        <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <footer className="mt-12 border-t border-black/5 bg-white pt-12 pb-0">
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 pb-10">
           <div>
-            <h3 className="font-black text-lg uppercase tracking-tight mb-3">{BUSINESS}</h3>
-            <p className="text-sm text-white/60 leading-relaxed">{clientConfig.description}</p>
+            <h3 className="font-black text-lg uppercase tracking-tight mb-3" style={{ color: C.primary }}>{BUSINESS}</h3>
+            <p className="text-sm leading-relaxed" style={{ color: C.textSecondary }}>{clientConfig.description}</p>
           </div>
           <div className="space-y-3">
-            <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Contacto</h4>
-            <div className="space-y-2 text-sm text-white/70">
-              <p className="flex items-center gap-2"><Phone size={14} className="text-white/40 shrink-0" /> {clientConfig.phone}</p>
-              <p className="flex items-center gap-2"><Mail size={14} className="text-white/40 shrink-0" /> {clientConfig.email}</p>
-              <p className="flex items-start gap-2"><MapPin size={14} className="text-white/40 shrink-0 mt-0.5" /> {clientConfig.address}</p>
-              <p className="flex items-start gap-2"><Clock size={14} className="text-white/40 shrink-0 mt-0.5" /> {clientConfig.hours}</p>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: C.textSecondary }}>Contacto</h4>
+            <div className="space-y-2.5 text-sm">
+              <p className="flex items-center gap-2.5" style={{ color: C.textSecondary }}>
+                <span className="w-8 h-8 rounded-full bg-[#25D366]/10 flex items-center justify-center shrink-0"><MessageCircle size={14} className="text-[#25D366]" /></span> {clientConfig.phone}
+              </p>
+              <p className="flex items-center gap-2.5" style={{ color: C.textSecondary }}>
+                <span className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center shrink-0"><Mail size={14} /></span> {clientConfig.email}
+              </p>
+              <p className="flex items-start gap-2.5" style={{ color: C.textSecondary }}>
+                <span className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center shrink-0 mt-0.5"><MapPin size={14} /></span> {clientConfig.address}
+              </p>
+              <p className="flex items-start gap-2.5" style={{ color: C.textSecondary }}>
+                <span className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center shrink-0 mt-0.5"><Clock size={14} /></span> {clientConfig.hours}
+              </p>
             </div>
           </div>
           <div className="space-y-3">
-            <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Redes Sociales</h4>
-            <div className="flex gap-4">
+            <h4 className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: C.textSecondary }}>Síguenos</h4>
+            <div className="flex gap-3">
               {clientConfig.instagramUrl !== 'https://instagram.com/' && (
-                <a href={clientConfig.instagramUrl} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"><Instagram size={18} /></a>
+                <a href={clientConfig.instagramUrl} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform"><Instagram size={18} /></a>
               )}
               {clientConfig.facebookUrl !== 'https://facebook.com/' && (
-                <a href={clientConfig.facebookUrl} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"><Facebook size={18} /></a>
+                <a href={clientConfig.facebookUrl} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-[#1877F2] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform"><Facebook size={18} /></a>
               )}
-              <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center hover:bg-[#1EBE5D] transition-colors"><MessageCircle size={18} /></a>
+              <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-[#25D366] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform"><MessageCircle size={18} /></a>
             </div>
           </div>
         </div>
-        <div className="border-t border-white/10 py-4 text-center">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">
-            © {new Date().getFullYear()} {BUSINESS} · Diseñado por IMAGINE & STAMP
-          </p>
+
+        {/* Barra inferior oscura: créditos + legales */}
+        <div className="py-8" style={{ backgroundColor: C.primary }}>
+          <div className="flex flex-col items-center gap-4 text-center px-4">
+            <p className="text-white/30 text-[10px] font-bold uppercase tracking-[0.2em]">
+              © {new Date().getFullYear()} {BUSINESS.toUpperCase()}. TODOS LOS DERECHOS RESERVADOS.
+            </p>
+            <motion.a
+              href="https://imagineandstamp.site" target="_blank" rel="noreferrer"
+              whileHover={{ scale: 1.03 }}
+              className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-orange-400/40 transition-all duration-300"
+            >
+              <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/50 group-hover:text-white/70 transition-colors">Página web realizada por</span>
+              <span className="text-sm font-black tracking-tight group-hover:scale-105 transition-transform" style={{ color: C.secondary }}>IMAGINE & STAMP</span>
+              <ExternalLink size={12} className="opacity-50 group-hover:opacity-100 transition-opacity" style={{ color: C.secondary }} />
+            </motion.a>
+            <div className="w-16 h-px bg-white/10" />
+            <button onClick={() => setIsPrivacyOpen(true)} className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+              <Shield size={12} /> Aviso de Privacidad
+            </button>
+          </div>
         </div>
       </footer>
+
+      {/* ── MODAL AVISO DE PRIVACIDAD ── */}
+      <AnimatePresence>
+        {isPrivacyOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsPrivacyOpen(false)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-lg bg-[#1a1a1a] border-2 rounded-3xl shadow-2xl overflow-hidden" style={{ borderColor: C.secondary }}>
+              <div className="h-1.5 bg-gradient-to-r from-orange-400 to-orange-600" style={{ backgroundImage: `linear-gradient(to right, ${C.secondary}, ${C.accent || C.secondary})` }} />
+              <div className="p-8">
+                <button onClick={() => setIsPrivacyOpen(false)} className="absolute top-6 right-6 w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all"><X size={18} /></button>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${C.secondary}20` }}><Shield size={20} style={{ color: C.secondary }} /></div>
+                  <h2 className="text-xl font-black text-white tracking-tight uppercase">Aviso de Privacidad</h2>
+                </div>
+                <div className="space-y-4 text-sm text-white/70 leading-relaxed">
+                  <p>En <strong className="text-white">{BUSINESS}</strong> protegemos y respetamos tu privacidad. La información personal que compartes se utiliza exclusivamente para procesar tus pedidos y comunicarnos contigo.</p>
+                  <p>No almacenamos datos de tarjetas bancarias. Tus datos de contacto solo se usan para confirmar tu pedido. Nunca compartimos tu información con terceros sin tu consentimiento.</p>
+                  <p>Para ejercer tus derechos ARCO, contáctanos en <a href={`mailto:${clientConfig.email}`} className="hover:underline" style={{ color: C.secondary }}>{clientConfig.email}</a>.</p>
+                </div>
+                <button onClick={() => setIsPrivacyOpen(false)} className="mt-8 w-full py-3 rounded-xl text-white font-black text-xs uppercase tracking-widest hover:opacity-90 transition-opacity" style={{ backgroundColor: C.secondary }}>Entendido</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
