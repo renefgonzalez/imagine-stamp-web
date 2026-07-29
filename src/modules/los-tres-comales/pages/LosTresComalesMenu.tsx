@@ -7,7 +7,7 @@ import {
   ShoppingBag, User, Wallet, Landmark
 } from 'lucide-react';
 import { clientConfig } from '../config';
-import logoImg from '../assets/logo.svg';
+import logoImg from '../assets/logo.png';
 
 // ═══════════════════ TYPES ═══════════════════
 interface MenuItem {
