@@ -551,9 +551,9 @@ Las clases se usan como `bg-primary`, `text-secondary`, `bg-background`, `font-h
 > - **Incluido en el desarrollo base:** catálogo + carrito + finalización por **WhatsApp**
 >   y por **Transferencia** (datos bancarios). Esto es lo que recibe todo cliente.
 > - **Pago con tarjeta (Mercado Pago) = COMPLEMENTO OPCIONAL CON COSTO EXTRA.** Solo se
->   implementa si el cliente lo pide y contrata ese servicio adicional.
+>   implementa si el cliente lo pide y contrata ese servicio adicional (requiere su cuenta
+>   de Mercado Pago, configurar la Edge Function y el secret, y soporte de pagos).
 >   Mientras no se contrate, **no se incluye la opción "Tarjeta"** en el carrito.
->   Hay **dos formas** de implementarlo (ver abajo).
 
 ### 8.1 Transferencia (incluida — sin comisión)
 - Los datos viven en la tabla `settings` (fila `id='bank'`), editables desde
@@ -563,17 +563,10 @@ Las clases se usan como `bg-primary`, `text-secondary`, `bg-background`, `font-h
 ### 8.2 Tarjeta — Mercado Pago Checkout Pro  ⚠️ OPCIONAL (servicio extra)
 > Solo agregar si el cliente contrata el complemento de pago con tarjeta. Para dejarlo
 > fuera, basta con no mostrar la opción "Tarjeta" en el `<select>` de forma de pago del
-> carrito.
+> carrito (en `App.tsx`).
 
-Hay **dos enfoques** para integrar Mercado Pago. Elegir uno según el proyecto:
-
-#### A. Enfoque seguro — Supabase Edge Function (RECOMENDADO para producción)
-
-**Usar cuando:** el proyecto tiene Supabase, necesita guardar pedidos en BD, o requiere
-panel admin con historial de ventas.
-
-**Ventaja:** el Access Token de MP **nunca** se expone al frontend — vive como secret en
-Supabase. La Edge Function actúa de intermediario.
+**Regla de oro:** el **Access Token es secreto** → va como *secret* en Supabase, NUNCA en
+el frontend. Por eso se usa una **Edge Function** como backend.
 
 **Componentes:**
 1. **Secret** `MP_ACCESS_TOKEN` en Supabase (Edge Functions → Secrets). Prueba = `TEST-...`,
@@ -590,41 +583,8 @@ Supabase. La Edge Function actúa de intermediario.
 
 **Pruebas:** token `TEST-...` + tarjetas de prueba (titular **APRO** = aprobado).
 
-**Requiere:** Supabase activo, Edge Function desplegada, `MP_ACCESS_TOKEN` como secret.
-
-#### B. Enfoque simplificado — sin base de datos (para proyectos ligeros)
-
-**Usar cuando:** el cliente solo recibe pedidos por WhatsApp, no necesita dashboard,
-ni historial de ventas, ni panel admin. Ejemplo real: **Tacos Chepe**.
-
-**Ventaja:** no requiere Supabase, ni Edge Functions, ni tablas SQL. Solo frontend + MP.
-
-**Cómo funciona:**
-1. El Access Token se configura en un archivo local (`src/lib/mercadopago.ts`).
-2. Al elegir "Tarjeta", el frontend llama a la API de MP (`POST /checkout/preferences`)
-   vía un proxy Supabase RPC o mediante una llamada directa (según la configuración de CORS).
-3. Los datos del pedido se guardan en `localStorage` antes de redirigir a MP.
-4. Al volver (`?status=approved`), se lee `localStorage`, se arma el mensaje de WhatsApp
-   con la confirmación y se envía.
-
-**⚠️ Consideración de seguridad:** en este enfoque el Access Token viaja al navegador.
-Para un restaurante pequeño que solo usa WhatsApp como canal de venta, el riesgo es bajo
-(el token solo permite crear preferencias de pago, no retirar dinero). Para producción
-con datos sensibles, usar el **Enfoque A**.
-
-**Requiere:** solo una cuenta de Mercado Pago. Nada más.
-
-### 8.3 ¿Cuál elegir?
-
-| Criterio | Enfoque A (Edge Function) | Enfoque B (Simplificado) |
-|---|---|---|
-| Token secreto protegido | Sí | No (va al frontend) |
-| Requiere Supabase | Sí | No |
-| Historial de pedidos | Sí (tabla `orders`) | No (solo WhatsApp) |
-| Panel admin | Sí | No |
-| Webhooks (pago automático) | Sí | No |
-| Complejidad | Media | Baja |
-| Ideal para | Producción, e-commerce | Demos, restaurantes pequeños |
+**Pendiente recomendado:** webhook `mp-webhook` (Edge Function con `verify_jwt=false` +
+`service_role key`) para confirmar el pago aunque el cliente cierre la pestaña.
 
 ---
 
@@ -1428,26 +1388,3 @@ Con el análisis visual hecho:
 *Complemento opcional con costo extra: pago con tarjeta vía Mercado Pago.*
 *Módulo de Descargas Digitales (sección 13) probado y documentado de punta a punta en Sahumerio Sagrado y Mundo Halloween, incluyendo el patrón de entrega automática post-pago con tarjeta (12.10).*
 *Compresión de imágenes antes de subir + optimización retroactiva de fotos existentes (sección 14) también probado en Mundo Halloween — reducción real de ~17MB en un catálogo de 216 productos.*
-
-
-# Integración Mercado Pago (Tacos Chepe)
-
-## 1. Claves de API
-Las claves están integradas en el entorno:
-- **Public Key:** APP_USR-7ed8cb3e-4460-4c85-885b-9cc684b19512
-- **Access Token:** APP_USR-7122906161295719-072821-3bbbc947d1b4d54dda7d452c16ed250b-3575895046
-
-Estas variables se encuentran configuradas en "src/lib/mercadopago.ts".
-
-## 2. Lógica del Flujo de Pago
-El flujo de Mercado Pago se procesa 100% en el navegador (cliente) para no depender de un servidor adicional:
-1. **Selección del Método:** Cuando el cliente elige "Tarjeta", el sistema activa la conexión con Mercado Pago.
-2. **Crear Preferencia:** Al dar clic en "Pagar y Pedir", se hace una petición POST a "https://api.mercadopago.com/checkout/preferences" con el "Access Token". Esto devuelve un enlace de pago ("init_point").
-3. **Guardado en Memoria:** Antes de redireccionar, los datos del pedido y la información del cliente se guardan en el "localStorage" del navegador.
-4. **Redirección a Mercado Pago:** El cliente es enviado a la plataforma segura de cobro.
-5. **Retorno Automático (Back URL):** Una vez aprobado el pago, Mercado Pago devuelve al cliente a la página principal con el parámetro "?status=approved" en la URL.
-6. **Confirmación:** La página detecta ese estado, recupera los datos del "localStorage", genera un mensaje especial marcando el pago como "Mercado Pago Aprobado" y redirige al usuario al chat de WhatsApp.
-
-## 3. ¿Necesito base de datos (Supabase) o SQL?
-**Actualmente NO.**
-Dado que el restaurante procesa sus comandas viendo los mensajes de WhatsApp, el hecho de que el WhatsApp confirme el pago es suficiente. Si en un futuro se requiere un Dashboard automático de ventas sin pasar por WhatsApp, se deberán implementar **Webhooks** de Mercado Pago. En ese caso, sí se requeriría configurar Tablas SQL y Edge Functions en Supabase para proteger los datos y automatizar el inventario.
