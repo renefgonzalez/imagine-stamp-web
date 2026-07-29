@@ -7,7 +7,7 @@ import {
   ShoppingBag, User, Wallet, Landmark
 } from 'lucide-react';
 import { clientConfig } from '../config';
-import logoImg from '../assets/logo.png';
+import logoImg from '../assets/logo.svg';
 
 // ═══════════════════ TYPES ═══════════════════
 interface MenuItem {
@@ -144,7 +144,7 @@ export default function LosTresComalesMenu() {
       <div className="relative z-10 max-w-5xl mx-auto px-4">
         {/* ═══ HERO ═══ */}
         <div className="relative w-full rounded-[30px] overflow-hidden my-6 shadow-2xl shadow-black/50 border" style={{ borderColor: C.border }}>
-          <img src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=1920&q=80" alt="Hero" className="absolute inset-0 w-full h-full object-cover" />
+          <img src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=800&q=80" alt="Cocina mexicana tradicional" loading="eager" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/60" />
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 py-16 md:py-24 text-center px-4">
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', delay: 0.1 }} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border mb-5 text-xs font-bold uppercase tracking-[0.15em] bg-black/40 backdrop-blur-md" style={{ borderColor: `${C.gold}30`, color: C.gold }}>
@@ -183,9 +183,9 @@ export default function LosTresComalesMenu() {
                 className="group rounded-2xl border transition-all duration-300 flex flex-col hover:scale-[1.02] hover:shadow-lg hover:shadow-black/50 overflow-hidden"
                 style={{ backgroundColor: C.card, borderColor: C.border }}
               >
-                {item.image && (
-                  <div className="w-full h-40 overflow-hidden relative">
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  {item.image && (
+                    <div className="w-full h-40 overflow-hidden relative">
+                      <img src={item.image} alt={item.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                     {item.badge && (
                       <div className="absolute top-3 right-3 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md" style={{ backgroundColor: `${C.gold}90`, color: '#000' }}>
                         {item.badge}
@@ -285,7 +285,7 @@ export default function LosTresComalesMenu() {
           
           <div className="max-w-5xl mx-auto px-4 mt-8 pt-8 border-t text-center relative z-10" style={{ borderColor: C.border }}>
             <p className="text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2" style={{ color: `${C.textDim}80` }}>
-              <span>Diseñado con</span><Flame size={14} style={{ color: C.gold }} /><span>por</span>
+              <span>Página web realizada por</span>
               <a href="https://imagineandstamp.site" target="_blank" rel="noreferrer" className="hover:text-white transition-colors" style={{ color: C.gold }}>IMAGINE & STAMP</a>
             </p>
             <p className="text-[10px] mt-4" style={{ color: `${C.textDim}40` }}>Todos los derechos reservados a Los Tres Comales.</p>
@@ -337,7 +337,7 @@ export default function LosTresComalesMenu() {
                     {cart.map(item => (
                       <div key={item.id} className="flex gap-4 p-3 rounded-2xl border relative group" style={{ backgroundColor: C.card, borderColor: C.border }}>
                         {item.image && (
-                          <img src={item.image} alt={item.name} className="w-20 h-20 rounded-xl object-cover border shrink-0" style={{ borderColor: '#ffffff10' }} />
+                          <img src={item.image} alt={item.name} loading="lazy" className="w-20 h-20 rounded-xl object-cover border shrink-0" style={{ borderColor: '#ffffff10' }} />
                         )}
                         <div className="flex-1 py-1 flex flex-col justify-between">
                           <div>
@@ -473,13 +473,6 @@ export default function LosTresComalesMenu() {
           </div>
         )}
       </AnimatePresence>
-
-      {/* ── FLOATING WHATSAPP BUTTON ── */}
-      <a href={`https://wa.me/${clientConfig.phone}?text=${encodeURIComponent('¡Hola! Quisiera hacer un pedido en Los Tres Comales')}`} target="_blank" rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 p-4 rounded-full shadow-xl transition-all hover:scale-110" style={{ backgroundColor: '#25D366', color: 'white' }}
-      >
-        <MessageCircle size={28} />
-      </a>
 
       {/* ═══ TOAST ═══ */}
       <AnimatePresence>
