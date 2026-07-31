@@ -227,22 +227,78 @@ export default function CarnitasLaGueraMenu() {
         </div>
 
         {/* ═══ PAPEL PICADO ═══ */}
-        <div className="flex justify-center gap-2 -mt-3 mb-4 relative z-10">
-          {[C.accent, C.secondary, C.gold, C.primary, C.accent].map((color, i) => (
-            <motion.div
-              key={i}
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 3, delay: i * 0.3, repeat: Infinity, ease: 'easeInOut' }}
-              className="w-12 h-16"
-            >
-              <svg viewBox="0 0 40 60" className="w-full h-full drop-shadow-sm">
-                <path d="M20 2 L38 8 L38 20 L30 26 L38 32 L38 44 L20 50 L2 44 L2 32 L10 26 L2 20 L2 8 Z" fill={color} opacity="0.85" />
-                <circle cx="20" cy="22" r="2" fill="#fff" opacity="0.4" />
-                <circle cx="16" cy="28" r="1.5" fill="#fff" opacity="0.4" />
-                <circle cx="24" cy="28" r="1.5" fill="#fff" opacity="0.4" />
-              </svg>
-            </motion.div>
-          ))}
+        <div className="flex justify-center -mt-5 mb-4 relative z-10 overflow-visible">
+          <div className="relative flex items-center gap-0">
+            {/* Horizontal string */}
+            <svg className="absolute top-0 left-0 w-full h-3 z-10" preserveAspectRatio="none" viewBox="0 0 400 6">
+              <path d="M0 3 Q50 0 100 3 T200 3 T300 3 T400 3" fill="none" stroke="#8B6914" strokeWidth="1.5" opacity="0.6" />
+            </svg>
+            {/* Papel picado banners */}
+            <div className="flex gap-3 pt-3">
+              {[
+                { color: C.accent, pattern: 'flores' },
+                { color: C.secondary, pattern: 'geometrico' },
+                { color: C.gold, pattern: 'flores' },
+                { color: C.primary, pattern: 'geometrico' },
+                { color: C.accent, pattern: 'flores' },
+              ].map((banner, i) => (
+                <motion.div
+                  key={i}
+                  animate={{ y: [0, -4, 0], rotate: [0, i % 2 === 0 ? 1 : -1, 0] }}
+                  transition={{ duration: 4, delay: i * 0.4, repeat: Infinity, ease: 'easeInOut' }}
+                  className="w-16 h-24 flex-shrink-0"
+                >
+                  <svg viewBox="0 0 60 90" className="w-full h-full" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}>
+                    {/* String hole */}
+                    <circle cx="30" cy="4" r="2" fill="#8B6914" opacity="0.5" />
+                    {/* Main banner shape */}
+                    <rect x="2" y="6" width="56" height="82" rx="2" fill={banner.color} opacity="0.9" />
+                    {/* Scalloped bottom edge */}
+                    <path d="M2 86 L2 70 Q10 58 18 70 Q26 58 34 70 Q42 58 50 70 L58 70 L58 88 Z" fill={banner.color} opacity="0.9" />
+                    {/* Inner cutout border */}
+                    <rect x="6" y="10" width="48" height="64" rx="1" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.25" />
+                    {/* Cutout patterns */}
+                    {banner.pattern === 'flores' ? (
+                      <>
+                        <circle cx="22" cy="26" r="5" fill="none" stroke="#fff" strokeWidth="0.8" opacity="0.3" />
+                        <circle cx="22" cy="26" r="1.5" fill="#fff" opacity="0.2" />
+                        {[0, 45, 90, 135, 180, 225, 270, 315].map(angle => (
+                          <ellipse key={angle} cx={22 + Math.cos(angle * Math.PI / 180) * 5} cy={26 + Math.sin(angle * Math.PI / 180) * 5} rx="1.5" ry="1" fill="#fff" opacity="0.2" transform={`rotate(${angle} 22 26)`} />
+                        ))}
+                        <circle cx="38" cy="26" r="5" fill="none" stroke="#fff" strokeWidth="0.8" opacity="0.3" />
+                        <circle cx="38" cy="26" r="1.5" fill="#fff" opacity="0.2" />
+                        <circle cx="30" cy="48" r="7" fill="none" stroke="#fff" strokeWidth="0.8" opacity="0.3" />
+                        <circle cx="30" cy="48" r="2" fill="#fff" opacity="0.2" />
+                        {[0, 60, 120, 180, 240, 300].map(angle => (
+                          <circle key={angle} cx={30 + Math.cos(angle * Math.PI / 180) * 7} cy={48 + Math.sin(angle * Math.PI / 180) * 7} r="1.2" fill="#fff" opacity="0.15" />
+                        ))}
+                        <circle cx="17" cy="67" r="3.5" fill="none" stroke="#fff" strokeWidth="0.7" opacity="0.25" />
+                        <circle cx="43" cy="67" r="3.5" fill="none" stroke="#fff" strokeWidth="0.7" opacity="0.25" />
+                      </>
+                    ) : (
+                      <>
+                        {/* Diamond grid pattern */}
+                        <rect x="12" y="18" width="36" height="24" rx="2" fill="none" stroke="#fff" strokeWidth="0.7" opacity="0.3" />
+                        <line x1="30" y1="18" x2="30" y2="42" stroke="#fff" strokeWidth="0.5" opacity="0.15" />
+                        <line x1="12" y1="30" x2="48" y2="30" stroke="#fff" strokeWidth="0.5" opacity="0.15" />
+                        <rect x="16" y="22" width="6" height="6" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.2" />
+                        <rect x="26" y="22" width="6" height="6" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.2" />
+                        <rect x="36" y="22" width="6" height="6" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.2" />
+                        <rect x="16" y="32" width="6" height="6" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.2" />
+                        <rect x="26" y="32" width="6" height="6" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.2" />
+                        <rect x="36" y="32" width="6" height="6" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.2" />
+                        {/* Bottom arches */}
+                        <path d="M18 52 Q22 46 26 52 Q30 46 34 52 Q38 46 42 52" fill="none" stroke="#fff" strokeWidth="0.7" opacity="0.25" />
+                        <circle cx="18" cy="66" r="3" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.2" />
+                        <circle cx="30" cy="68" r="4" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.2" />
+                        <circle cx="42" cy="66" r="3" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.2" />
+                      </>
+                    )}
+                  </svg>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* ═══ CATEGORIES ═══ */}
