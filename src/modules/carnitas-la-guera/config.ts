@@ -12,10 +12,14 @@ export const clientConfig = {
     clabe: '012345678901234567',
   },
 
-  salsas: ['Verde', 'Roja', 'Habanero'],
+  salsas: [
+    { id: 'verde', name: 'Salsa Verde Martajada', spiciness: '🌶️ Suave' },
+    { id: 'roja', name: 'Salsa Roja de Molcajete', spiciness: '🌶️🌶️ Media' },
+    { id: 'habanero', name: 'Habanero con Cebolla', spiciness: '🌶️🌶️🌶️ Brava' },
+  ],
 
   colors: {
-    bg: '#FFF8F0',
+    bg: '#FFFBF7',
     cardBg: '#FFFFFF',
     textPrimary: '#2B1B12',
     textSecondary: '#7B6B5D',
