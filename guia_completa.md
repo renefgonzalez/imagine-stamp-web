@@ -24,6 +24,8 @@
 13. [Módulo Opcional: Descargas Digitales](#13-módulo-opcional-descargas-digitales)
 14. [Optimización de Imágenes y Ancho de Banda](#14-optimización-de-imágenes-y-ancho-de-banda-supabase)
 15. [Reglas de Aislamiento para Nuevos Clientes](#15-reglas-de-aislamiento-para-nuevos-clientes)
+16. [Proceso Creativo — Del Menú Impreso al Menú Digital](#16-proceso-creativo--del-menú-impreso-al-menú-digital)
+17. [Creación de Flyers (Flayers Promocionales)](#17-creación-de-flyers-flayers-promocionales)
 
 ---
 
@@ -474,6 +476,15 @@ categorías sin barra) y `.masonry-grid` / `.masonry-item` (catálogo tipo mosai
 
 Las clases se usan como `bg-primary`, `text-secondary`, `bg-background`, `font-headline`, etc.
 
+### 6.1. Reglas de Diseño Premium (Agent Skills)
+> 🤖 **ATENCIÓN IA:** Al generar o modificar interfaces de usuario, menús digitales o landing pages para este proyecto, **ESTÁS OBLIGADO** a invocar y aplicar las siguientes skills (todas instaladas) para garantizar un estándar Premium:
+
+1. **`ui-ux-pro-max` / `frontend-design`**: Prohibido usar diseños cuadrados o genéricos. Implementar _glassmorphism_ (fondos translúcidos con blur), bordes redondeados orgánicos, sombras dinámicas y tipografías modernas. Usar las paletas de color y _font pairings_ del catálogo de `ui-ux-pro-max` al proponer la identidad de un cliente nuevo.
+2. **`impeccable` / `high-end-visual-design` / `design-taste-frontend`**: Todo botón, tarjeta o transición debe incluir micro-animaciones fluidas (hover states, rebotes suaves al abrir modales, fade-ins con _stagger_), implementadas con la librería **Motion** ya incluida en el stack (sección 1). Antes de entregar, hacer una pasada final de pulido/auditoría con `impeccable`.
+3. **`pricing` / `marketing-psychology` / `cro`**: Estructurar los precios y llamados a la acción (CTAs) de forma persuasiva para aumentar la conversión.
+4. **`image`** (cuando el cliente no tiene fotos buenas): generar u optimizar imágenes de producto, heroes y banners.
+
+**Mandamiento de Diseño:** Ningún menú debe sentirse como un "PDF aburrido". La experiencia debe sentirse viva, responsiva y de alta gama.
 ---
 
 ## 7. Funcionalidades Clave
@@ -1380,6 +1391,41 @@ Con el análisis visual hecho:
 - [ ] Los textos del checkout dicen el nombre del negocio
 - [ ] Las redes sociales linkean correctamente
 - [ ] El título de la página es el nombre del negocio
+
+---
+
+## 17. Creación de Flyers (Flayers Promocionales)
+
+> Cuando se solicite crear un "flayer" (flyer promocional) para un cliente, se debe construir un componente o página promocional autónoma que cumpla con una estructura base predefinida, para evitar tener que pedir instrucciones detalladas cada vez.
+
+### 17.1. Estructura Obligatoria del Flyer
+
+Todo flyer debe contener, como mínimo, las siguientes secciones en orden:
+
+1. **Hero Section (Encabezado):**
+   - Imagen de fondo atractiva (`hero-bg` o relacionada al producto/servicio).
+   - Título grande con el nombre del negocio o la promoción.
+   - Subtítulo o propuesta de valor clara y directa.
+
+2. **Código QR (Obligatorio):**
+   - Siempre se debe generar y mostrar un Código QR grande y escaneable.
+   - El QR debe apuntar a la dirección (URL) del catálogo/menú del cliente que se proporcione.
+   - Acompañar el QR con un texto tipo *"Escanea para ver nuestro menú"* o *"Haz tu pedido aquí"*.
+
+3. **Llamado a la Acción (CTA):**
+   - Botón grande e interactivo (ej. "Ver Catálogo" o "Pedir por WhatsApp").
+   - Beneficios rápidos (ej. "Envío a domicilio", "Aceptamos transferencias").
+
+4. **Footer (Pie de página):**
+   - Logo del negocio.
+   - Datos de contacto: WhatsApp, dirección, y horarios.
+   - Redes sociales (iconos de Instagram, Facebook).
+   - La leyenda de "Diseñado por IMAGINE & STAMP" (si aplica).
+
+### 17.2. Reglas de Diseño para el Flyer
+- **Colores y Fuentes:** Usar estrictamente los colores de la marca (primary, secondary) definidos en el sistema de diseño del cliente.
+- **Responsividad:** El diseño debe verse perfecto en formato móvil (pantalla vertical), ya que suele compartirse por WhatsApp o redes sociales.
+- **Sin distracciones:** El flyer es una landing page de conversión de 1 sola página. No debe llevar un menú de navegación complejo.
 
 ---
 

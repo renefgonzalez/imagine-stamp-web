@@ -10,6 +10,7 @@ import { clientConfig } from '../config';
 import logoImg from '../assets/logo.png';
 import heroImg from '../assets/hero-carnitas.webp';
 import { addOrder, KitchenOrder, printKitchenTicket } from '../utils/kitchenOrders';
+import { GlobalFooter } from '../../../components/common/GlobalFooter';
 
 const C = clientConfig.colors;
 
@@ -973,20 +974,11 @@ export default function CarnitasLaGueraMenu() {
                           onClick={sendWhatsApp}
                           className="w-full py-3.5 rounded-2xl font-extrabold text-xs uppercase tracking-wider text-white shadow-lg bg-emerald-600 hover:bg-emerald-700 flex items-center justify-center gap-2"
                         >
-                          Enviar Pedido por WhatsApp 💬
+                          Enviar Pedido por WhatsApp
                         </button>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={printTicket}
-                            className="flex-1 py-3 rounded-2xl border-2 font-bold text-xs flex items-center justify-center gap-1.5"
-                            style={{ borderColor: C.primary, color: C.primary }}
-                          >
-                            🖨️ Imprimir Ticket
-                          </button>
-                          <button onClick={() => setStep('cart')} className="px-4 py-3 rounded-2xl border font-bold text-xs">
-                            Atrás
-                          </button>
-                        </div>
+                        <button onClick={() => setStep('cart')} className="w-full py-3 rounded-2xl border font-bold text-xs">
+                          Atrás
+                        </button>
                       </div>
                     )}
                   </div>
@@ -997,6 +989,18 @@ export default function CarnitasLaGueraMenu() {
         </AnimatePresence>
 
       </div>
+
+      <GlobalFooter
+        companyName="Carnitas y Gorditas La Güera"
+        description="Carnitas y gorditas hechas como en casa, con el sazón tradicional. Tacos, tortas, guisados y antojitos mexicanos."
+        whatsappNumber="524271203631"
+        phoneNumber="427 120 3631"
+        email=""
+        instagramUrl=""
+        facebookUrl=""
+        address="Consulta ubicación por WhatsApp"
+        hours="Consulta horarios por WhatsApp"
+      />
     </>
   );
 }

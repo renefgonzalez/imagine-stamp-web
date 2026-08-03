@@ -54,6 +54,9 @@ const EXTRAS: ExtraOption[] = [
   { id: 'extra-materias', label: 'Materias en etiqueta libreta', unitPrice: 30, fixedPrice: true },
 ];
 
+// ID especial: pedido de piezas sueltas SIN paquete (el cliente arma su propio pedido)
+const CUSTOM_ORDER_ID = 'piezas-sueltas';
+
 const TAB_STYLE = {
   personajes: {
     imageBg: 'bg-purple-50',
@@ -94,6 +97,7 @@ function OrderModal({ design, preSelectedPackageId, onClose, onComplete }: Order
   const [notes, setNotes] = useState('');
 
   const selectedPackage = useMemo(() => PACKAGES.find(p => p.id === selectedPackageId) || null, [selectedPackageId]);
+  const isCustomOrder = selectedPackageId === CUSTOM_ORDER_ID;
   const laminadoCost = wantsLaminado && selectedPackage?.laminadoPrice ? selectedPackage.laminadoPrice : 0;
 
   const extrasCost = useMemo(() => Object.entries(extrasQuantities).reduce((sum, [id, qty]) => {
@@ -120,12 +124,16 @@ function OrderModal({ design, preSelectedPackageId, onClose, onComplete }: Order
 
   const handleSendWhatsApp = () => {
     let text = `¡Hola Imagine & Stamp! Quiero hacer mi pedido de etiquetas escolares con el diseño de ${design}.\n\n`;
-    text += `*Paquete:* ${selectedPackage?.label} - $${basePrice}\n`;
+    if (isCustomOrder) {
+      text += `*Modalidad:* Piezas sueltas (sin paquete)\n`;
+    } else {
+      text += `*Paquete:* ${selectedPackage?.label} - $${basePrice}\n`;
+    }
     if (laminadoCost > 0) text += `*Laminado:* +$${laminadoCost}\n`;
 
     const extraEntries = Object.entries(extrasQuantities);
     if (extraEntries.length > 0) {
-      text += `*Extras:*\n`;
+      text += isCustomOrder ? `*Piezas:*\n` : `*Extras:*\n`;
       extraEntries.forEach(([id, qty]) => {
         const extra = EXTRAS.find(e => e.id === id);
         if (extra) text += `- ${extra.label} (${qty} ${extra.suffix || ''}) (+$${(extra.unitPrice * qty).toFixed(2)})\n`;
@@ -175,7 +183,7 @@ function OrderModal({ design, preSelectedPackageId, onClose, onComplete }: Order
           ))}
         </div>
         <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-6">
-          {step === 1 ? 'Elige tu paquete' : step === 2 ? 'Agrega extras' : 'Tus datos'}
+          {step === 1 ? 'Elige tu paquete' : step === 2 ? (isCustomOrder ? 'Elige tus piezas' : 'Agrega extras') : 'Tus datos'}
         </p>
 
         <div className="px-6 flex-1 overflow-y-auto">
@@ -231,6 +239,24 @@ function OrderModal({ design, preSelectedPackageId, onClose, onComplete }: Order
                   </div>
                 </div>
 
+                <div className="relative flex items-center my-5">
+                  <div className="flex-1 border-t border-gray-200" />
+                  <span className="px-3 text-xs text-gray-400 font-bold">¿No quieres paquete?</span>
+                  <div className="flex-1 border-t border-gray-200" />
+                </div>
+                <button
+                  onClick={() => { handleSelectPackage(CUSTOM_ORDER_ID); setStep(2); }}
+                  className={`w-full rounded-xl p-3 border-2 border-dashed transition-all flex items-center gap-2 ${
+                    isCustomOrder ? 'border-purple-500 bg-purple-50' : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50/50'
+                  }`}
+                >
+                  <span className="text-xl">🧩</span>
+                  <div className="text-left flex-1">
+                    <p className="text-sm font-bold text-gray-800">Armar mi pedido pieza por pieza</p>
+                    <p className="text-xs text-gray-400">Sin paquete — elige solo las etiquetas que necesitas</p>
+                  </div>
+                </button>
+
                 {selectedPackage && (
                   <div className="bg-purple-50 rounded-xl p-3 text-xs text-purple-800 mb-4">
                     <p className="font-bold mb-1">Incluye:</p>
@@ -240,8 +266,19 @@ function OrderModal({ design, preSelectedPackageId, onClose, onComplete }: Order
               </motion.div>
             )}
 
-            {step === 2 && selectedPackage && (
+            {step === 2 && (selectedPackage || isCustomOrder) && (
               <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
+                {isCustomOrder ? (
+                  <div className="flex items-center gap-3 bg-purple-50 rounded-xl p-3 mb-5">
+                    <div className="w-14 h-14 flex items-center justify-center text-3xl">🧩</div>
+                    <div>
+                      <p className="font-bold text-sm text-purple-700">Piezas sueltas (sin paquete)</p>
+                      <p className="text-xs text-gray-500">{design}</p>
+                      <p className="text-xs font-bold text-purple-400">Arma tu pedido como quieras</p>
+                    </div>
+                    <button onClick={() => setStep(1)} className="ml-auto text-xs font-bold text-purple-400 hover:text-purple-600">Cambiar</button>
+                  </div>
+                ) : selectedPackage && (
                 <div className="flex items-center gap-3 bg-purple-50 rounded-xl p-3 mb-5">
                   <img src={selectedPackage.previewImage} alt={selectedPackage.label} className="w-14 h-18 object-contain rounded-lg" />
                   <div>
@@ -251,8 +288,9 @@ function OrderModal({ design, preSelectedPackageId, onClose, onComplete }: Order
                   </div>
                   <button onClick={() => setStep(1)} className="ml-auto text-xs font-bold text-purple-400 hover:text-purple-600">Cambiar</button>
                 </div>
+                )}
 
-                {selectedPackage.laminadoPrice && (
+                {selectedPackage?.laminadoPrice && (
                   <label className="flex items-center justify-between p-3 bg-pink-50 border border-pink-200 rounded-xl cursor-pointer mb-4 hover:bg-pink-100 transition-colors">
                     <div>
                       <span className="font-bold text-sm text-gray-800">Agregar laminado</span>
@@ -270,7 +308,7 @@ function OrderModal({ design, preSelectedPackageId, onClose, onComplete }: Order
                   </label>
                 )}
 
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Extras adicionales</p>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">{isCustomOrder ? 'Elige las piezas que necesitas' : 'Extras adicionales'}</p>
                 <div className="space-y-2 mb-2">
                   {EXTRAS.map(extra => {
                     const qty = extrasQuantities[extra.id] || 0;
@@ -316,10 +354,13 @@ function OrderModal({ design, preSelectedPackageId, onClose, onComplete }: Order
                   <span className="text-sm font-bold text-blue-900">Total hasta ahora</span>
                   <span className="text-xl font-black text-blue-700">${orderTotal.toFixed(2)}</span>
                 </div>
+                {isCustomOrder && extrasCost <= 0 && (
+                  <p className="text-center text-xs text-amber-600 font-bold mt-3">Agrega al menos una pieza para continuar</p>
+                )}
               </motion.div>
             )}
 
-            {step === 3 && selectedPackage && (
+            {step === 3 && (selectedPackage || isCustomOrder) && (
               <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
                 <div className="space-y-4">
                   <div>
@@ -370,7 +411,11 @@ function OrderModal({ design, preSelectedPackageId, onClose, onComplete }: Order
                     <h3 className="font-extrabold text-sm text-purple-700 mb-3">📋 Resumen de tu pedido</h3>
                     <div className="space-y-1.5 text-sm">
                       <div className="flex justify-between"><span className="text-gray-500">Diseño</span><span className="font-bold text-gray-800">{design}</span></div>
-                      <div className="flex justify-between"><span className="text-gray-500">Paquete</span><span className="font-bold text-gray-800">{selectedPackage.tier ? `Etiquetas · ${selectedPackage.tier}` : selectedPackage.label} · ${basePrice}</span></div>
+                      {isCustomOrder ? (
+                        <div className="flex justify-between"><span className="text-gray-500">Modalidad</span><span className="font-bold text-gray-800">Piezas sueltas (sin paquete)</span></div>
+                      ) : selectedPackage && (
+                        <div className="flex justify-between"><span className="text-gray-500">Paquete</span><span className="font-bold text-gray-800">{selectedPackage.tier ? `Etiquetas · ${selectedPackage.tier}` : selectedPackage.label} · ${basePrice}</span></div>
+                      )}
                       {laminadoCost > 0 && <div className="flex justify-between"><span className="text-gray-500">Laminado</span><span className="font-bold text-gray-800">+${laminadoCost}</span></div>}
                       {Object.entries(extrasQuantities).map(([id, qty]) => {
                         const extra = EXTRAS.find(e => e.id === id);
@@ -409,7 +454,7 @@ function OrderModal({ design, preSelectedPackageId, onClose, onComplete }: Order
             </button>
           )}
           {step === 2 && (
-            <button onClick={() => setStep(3)} className="flex-1 py-3 rounded-xl font-bold text-sm bg-purple-500 hover:bg-purple-600 text-white transition-colors flex items-center justify-center gap-1">
+            <button onClick={() => setStep(3)} disabled={isCustomOrder && extrasCost <= 0} className="flex-1 py-3 rounded-xl font-bold text-sm bg-purple-500 hover:bg-purple-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white transition-colors flex items-center justify-center gap-1">
               Continuar <ChevronRight size={16} />
             </button>
           )}
