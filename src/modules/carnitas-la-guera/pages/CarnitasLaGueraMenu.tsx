@@ -10,7 +10,6 @@ import { clientConfig } from '../config';
 import logoImg from '../assets/logo.png';
 import heroImg from '../assets/hero-carnitas.webp';
 import { addOrder, KitchenOrder, printKitchenTicket } from '../utils/kitchenOrders';
-import { GlobalFooter } from '../../../components/common/GlobalFooter';
 
 const C = clientConfig.colors;
 
@@ -990,17 +989,78 @@ export default function CarnitasLaGueraMenu() {
 
       </div>
 
-      <GlobalFooter
-        companyName="Carnitas y Gorditas La Güera"
-        description="Carnitas y gorditas hechas como en casa, con el sazón tradicional. Tacos, tortas, guisados y antojitos mexicanos."
-        whatsappNumber="524271203631"
-        phoneNumber="427 120 3631"
-        email=""
-        instagramUrl=""
-        facebookUrl=""
-        address="Consulta ubicación por WhatsApp"
-        hours="Consulta horarios por WhatsApp"
-      />
+      {/* ═══ FOOTER 3 COLUMNAS — LA GÜERA ═══ */}
+      <footer className="relative border-t mt-12" style={{ backgroundColor: '#2B1B12', borderColor: '#E8A33D30' }}>
+        <div className="max-w-5xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {/* Columna 1 — Sobre el negocio */}
+            <div>
+              <h3 className="font-extrabold text-base mb-3 tracking-tight" style={{ color: '#E8A33D' }}>
+                Carnitas y Gorditas La Güera
+              </h3>
+              <p className="text-xs leading-relaxed" style={{ color: '#9B8B7D' }}>
+                Carnitas y gorditas hechas como en casa, con el sazón tradicional. Tacos, tortas, guisados y antojitos mexicanos preparados diariamente con ingredientes frescos.
+              </p>
+              <div className="flex items-center gap-3 mt-4">
+                <span className="flex items-center gap-1 text-[10px] font-bold" style={{ color: '#C1440E' }}>
+                  <Flame size={12} /> ¡Bien Doraditas!
+                </span>
+              </div>
+            </div>
+
+            {/* Columna 2 — Contacto */}
+            <div>
+              <h3 className="font-extrabold text-sm mb-3 tracking-tight" style={{ color: '#E8A33D' }}>
+                Contacto
+              </h3>
+              <div className="space-y-3">
+                <a
+                  href={`https://wa.me/${clientConfig.phone}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-xs font-semibold transition-colors hover:opacity-80"
+                  style={{ color: '#9B8B7D' }}
+                >
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#C1440E20' }}>
+                    <Phone size={13} style={{ color: '#C1440E' }} />
+                  </div>
+                  {clientConfig.phoneNumber}
+                </a>
+                <div className="flex items-center gap-2 text-xs font-semibold" style={{ color: '#9B8B7D' }}>
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#E8A33D20' }}>
+                    <ChefHat size={13} style={{ color: '#E8A33D' }} />
+                  </div>
+                  Pedidos por WhatsApp
+                </div>
+              </div>
+            </div>
+
+            {/* Columna 3 — Ubicación y Horario */}
+            <div>
+              <h3 className="font-extrabold text-sm mb-3 tracking-tight" style={{ color: '#E8A33D' }}>
+                Ubicación y Horario
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-start gap-2 text-xs font-semibold" style={{ color: '#9B8B7D' }}>
+                  <MapPin size={13} className="mt-0.5 shrink-0" style={{ color: '#C1440E' }} />
+                  <span>{clientConfig.address}</span>
+                </div>
+                <div className="flex items-start gap-2 text-xs font-semibold" style={{ color: '#9B8B7D' }}>
+                  <Clock size={13} className="mt-0.5 shrink-0" style={{ color: '#E8A33D' }} />
+                  <span>{clientConfig.hours}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Línea divisoria y crédito */}
+          <div className="mt-10 pt-6 border-t text-center" style={{ borderColor: '#E8A33D20' }}>
+            <p className="text-[10px] font-bold" style={{ color: '#6B5D52' }}>
+              Diseñado por <a href="https://imagineandstamp.site" target="_blank" rel="noopener noreferrer" className="transition-colors hover:opacity-80" style={{ color: '#E8A33D' }}>IMAGINE & STAMP</a>
+            </p>
+          </div>
+        </div>
+      </footer>
     </>
   );
 }
