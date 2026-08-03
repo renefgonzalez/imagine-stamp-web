@@ -3,7 +3,7 @@ export const clientConfig = {
   description: 'Carnitas y gorditas hechas como en casa, con el sazón tradicional. Tacos, tortas, guisados y antojitos mexicanos.',
   phone: '524271203631',
   phoneNumber: '427 120 3631',
-  address: 'Consulta ubicación por WhatsApp',
+  address: 'Nuevo Espíritu Santo, 76803 San Juan del Río, Qro.',
   hours: 'Consulta horarios por WhatsApp',
 
   bankInfo: {

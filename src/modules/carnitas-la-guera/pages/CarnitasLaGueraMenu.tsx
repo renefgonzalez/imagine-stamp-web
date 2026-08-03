@@ -1034,7 +1034,7 @@ export default function CarnitasLaGueraMenu() {
                   style={{ color: '#9B8B7D' }}
                 >
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#1877F220' }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                   </div>
                   Facebook
                 </a>
@@ -1048,14 +1048,14 @@ export default function CarnitasLaGueraMenu() {
               </h3>
               <div className="space-y-3">
                 <a
-                  href="https://maps.app.goo.gl/H3ijvTYTPmBxY3vJA?g_st=aw"
+                  href="https://maps.app.goo.gl/CFHHWD1ykZ8FwoRMA"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-start gap-2 text-xs font-semibold transition-colors hover:opacity-80"
                   style={{ color: '#9B8B7D' }}
                 >
                   <MapPin size={13} className="mt-0.5 shrink-0" style={{ color: '#C1440E' }} />
-                  <span>Ver ubicación en Google Maps <Navigation size={10} className="inline" style={{ color: '#E8A33D' }} /></span>
+                  <span>{clientConfig.address} <Navigation size={10} className="inline" style={{ color: '#E8A33D' }} /></span>
                 </a>
                 <div className="flex items-start gap-2 text-xs font-semibold" style={{ color: '#9B8B7D' }}>
                   <Clock size={13} className="mt-0.5 shrink-0" style={{ color: '#E8A33D' }} />
