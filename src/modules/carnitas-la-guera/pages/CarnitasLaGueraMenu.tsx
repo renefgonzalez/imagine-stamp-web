@@ -9,6 +9,7 @@ import {
 import { clientConfig } from '../config';
 import logoImg from '../assets/logo.png';
 import heroImg from '../assets/hero-carnitas.webp';
+import { addOrder, KitchenOrder, printKitchenTicket } from '../utils/kitchenOrders';
 
 const C = clientConfig.colors;
 
@@ -105,6 +106,7 @@ export default function CarnitasLaGueraMenu() {
   const [toastItem, setToastItem] = useState<{ name: string; price: number } | null>(null);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [copied, setCopied] = useState(false);
+  const [lastOrder, setLastOrder] = useState<KitchenOrder | null>(null);
 
   const [selectedBase, setSelectedBase] = useState<string | null>('taco-guiso');
   const [selectedGuiso, setSelectedGuiso] = useState<string | null>(null);
@@ -179,6 +181,23 @@ export default function CarnitasLaGueraMenu() {
     });
   };
 
+  const printTicket = () => {
+    if (lastOrder) {
+      printKitchenTicket(lastOrder);
+      return;
+    }
+
+    const order: KitchenOrder = {
+      id: `CG-${Date.now().toString(36).toUpperCase().slice(-6)}`,
+      items: cart.map(i => ({ ...i })),
+      customer: { ...customer },
+      total,
+      createdAt: new Date().toISOString(),
+      status: 'pending',
+    };
+    printKitchenTicket(order);
+  };
+
   const sendWhatsApp = () => {
     if (!customer.name || !customer.phone || (customer.deliveryMethod === 'domicilio' && !customer.address)) {
       setErrors({
@@ -206,9 +225,17 @@ export default function CarnitasLaGueraMenu() {
     msg += `📋 *Detalle del Pedido:*\n${items}\n\n`;
     msg += `💰 *TOTAL A PAGAR: $${total} MXN*`;
 
+    const order = addOrder({
+      items: cart.map(i => ({ ...i })),
+      customer: { ...customer },
+      total,
+      whatsappUrl: `https://wa.me/${clientConfig.phone}?text=${encodeURIComponent(msg)}`,
+    });
+    setLastOrder(order);
+
     setStep('success');
     setTimeout(() => {
-      window.location.href = `https://wa.me/${clientConfig.phone}?text=${encodeURIComponent(msg)}`;
+      window.location.href = order.whatsappUrl!;
       setCart([]);
       setCustomer({
         name: '', phone: '', deliveryMethod: 'recoger', address: '',
@@ -253,21 +280,30 @@ export default function CarnitasLaGueraMenu() {
               </div>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => { setIsOpen(true); setStep('cart'); }}
-              className="relative px-4 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-[#C1440E]/20 transition-all border border-white/20"
-              style={{ backgroundColor: C.primary, color: '#fff' }}
-            >
-              <ShoppingCart size={18} />
-              <span className="hidden sm:inline">Mi Pedido</span>
-              {itemCount > 0 && (
-                <span className="w-5 h-5 rounded-full text-[10px] font-extrabold flex items-center justify-center shadow-inner" style={{ backgroundColor: C.gold, color: '#000' }}>
-                  {itemCount}
-                </span>
-              )}
-            </motion.button>
+            <div className="flex items-center gap-2">
+              <a
+                href="/#/carnitas-la-guera/cocina"
+                className="hidden sm:flex items-center gap-1.5 px-3 py-2.5 rounded-2xl font-bold text-[10px] uppercase tracking-wider border transition-all"
+                style={{ borderColor: '#E8A33D50', color: C.textSecondary, backgroundColor: '#fff' }}
+              >
+                <ChefHat size={16} style={{ color: C.primary }} /> Cocina
+              </a>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => { setIsOpen(true); setStep('cart'); }}
+                className="relative px-4 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-[#C1440E]/20 transition-all border border-white/20"
+                style={{ backgroundColor: C.primary, color: '#fff' }}
+              >
+                <ShoppingCart size={18} />
+                <span className="hidden sm:inline">Mi Pedido</span>
+                {itemCount > 0 && (
+                  <span className="w-5 h-5 rounded-full text-[10px] font-extrabold flex items-center justify-center shadow-inner" style={{ backgroundColor: C.gold, color: '#000' }}>
+                    {itemCount}
+                  </span>
+                )}
+              </motion.button>
+            </div>
           </div>
         </header>
 
@@ -900,10 +936,17 @@ export default function CarnitasLaGueraMenu() {
                   )}
 
                   {step === 'success' && (
-                    <div className="text-center py-16">
+                    <div className="text-center py-12">
                       <span className="text-6xl block mb-4 animate-bounce">🎉</span>
                       <h4 className="font-extrabold text-lg text-emerald-600">¡Pedido Preparado!</h4>
-                      <p className="text-xs text-zinc-500 mt-2">Redirigiendo a WhatsApp para confirmar tu pedido...</p>
+                      <p className="text-xs text-zinc-500 mt-2 mb-6">Redirigiendo a WhatsApp para confirmar tu pedido...</p>
+                      <button
+                        onClick={printTicket}
+                        className="mx-auto py-3 px-6 rounded-2xl border-2 font-bold text-sm flex items-center justify-center gap-2 hover:opacity-80 transition-opacity"
+                        style={{ borderColor: C.primary, color: C.primary }}
+                      >
+                        🖨️ Imprimir Ticket para Cocina
+                      </button>
                     </div>
                   )}
                 </div>
@@ -925,16 +968,25 @@ export default function CarnitasLaGueraMenu() {
                         Continuar a Datos de Entrega <ArrowRight size={16} />
                       </button>
                     ) : (
-                      <div className="flex gap-2">
-                        <button onClick={() => setStep('cart')} className="px-4 py-3 rounded-2xl border font-bold text-xs">
-                          Atrás
-                        </button>
+                      <div className="space-y-2">
                         <button
                           onClick={sendWhatsApp}
-                          className="flex-1 py-3.5 rounded-2xl font-extrabold text-xs uppercase tracking-wider text-white shadow-lg bg-emerald-600 hover:bg-emerald-700 flex items-center justify-center gap-2"
+                          className="w-full py-3.5 rounded-2xl font-extrabold text-xs uppercase tracking-wider text-white shadow-lg bg-emerald-600 hover:bg-emerald-700 flex items-center justify-center gap-2"
                         >
                           Enviar Pedido por WhatsApp 💬
                         </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={printTicket}
+                            className="flex-1 py-3 rounded-2xl border-2 font-bold text-xs flex items-center justify-center gap-1.5"
+                            style={{ borderColor: C.primary, color: C.primary }}
+                          >
+                            🖨️ Imprimir Ticket
+                          </button>
+                          <button onClick={() => setStep('cart')} className="px-4 py-3 rounded-2xl border font-bold text-xs">
+                            Atrás
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
