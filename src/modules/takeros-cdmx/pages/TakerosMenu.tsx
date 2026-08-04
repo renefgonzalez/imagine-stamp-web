@@ -481,7 +481,7 @@ export default function TakerosMenu() {
 
                 <button
                   onClick={() => addToCart(product)}
-                  className="mt-2 w-full bg-black border border-white/5 hover:border-orange-500/40 text-orange-500 font-bold text-sm py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all group-hover:bg-white/5 active:scale-[0.98]"
+                  className="mt-2 w-full min-h-[44px] bg-black border border-white/5 hover:border-orange-500/40 text-orange-500 font-bold text-sm py-3 rounded-lg flex items-center justify-center gap-2 transition-all group-hover:bg-white/5 active:scale-[0.98]"
                 >
                   <Plus size={16} />
                   Agregar al Pedido
@@ -532,7 +532,7 @@ export default function TakerosMenu() {
             exit={{ opacity: 0, y: 40, scale: 0.8 }}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full flex items-center justify-center bg-zinc-900/90 backdrop-blur-md border border-orange-500/40 text-orange-500 shadow-2xl hover:border-orange-500 hover:bg-zinc-800 transition-colors"
-            style={{ boxShadow: '0 8px 25px rgba(0,0,0,0.5)' }}
+            style={{ boxShadow: '0 8px 25px rgba(0,0,0,0.5)', bottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}
             title="Volver arriba"
           >
             <ArrowUp size={20} />
@@ -608,16 +608,16 @@ export default function TakerosMenu() {
                               <div className="flex items-center gap-2 mt-1.5">
                                 <button
                                   onClick={() => updateQuantity(item.cartId, item.quantity - 1)}
-                                  className="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+                                  className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors active:scale-90"
                                 >
-                                  <Minus size={12} className="text-zinc-400" />
+                                  <Minus size={14} className="text-zinc-400" />
                                 </button>
                                 <span className="text-sm font-bold text-white w-5 text-center">{item.quantity}</span>
                                 <button
                                   onClick={() => updateQuantity(item.cartId, item.quantity + 1)}
-                                  className="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+                                  className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors active:scale-90"
                                 >
-                                  <Plus size={12} className="text-zinc-400" />
+                                  <Plus size={14} className="text-zinc-400" />
                                 </button>
                               </div>
                             </div>
@@ -1081,6 +1081,11 @@ export default function TakerosMenu() {
         *::-webkit-scrollbar-track { background: transparent; }
         *::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
         * { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
+
+        /* ── Optimización móvil ── */
+        button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+        input, textarea, select { font-size: 16px !important; }
+        input:focus, textarea:focus { font-size: 16px !important; }
       `}</style>
     </div>
   );
