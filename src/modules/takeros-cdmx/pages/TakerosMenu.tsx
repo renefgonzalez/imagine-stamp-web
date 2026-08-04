@@ -9,12 +9,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Search, Plus, Minus, X, ShoppingBag, Flame,
   MapPin, Clock,
-  ArrowRight, ChevronLeft, Shield, ExternalLink,
+  ArrowRight, ArrowUp, ChevronLeft, Shield, ExternalLink,
   Beef, Layers, Sandwich, CircleDot, Package,
   ChefHat, Coffee, Pizza, UtensilsCrossed, Copy, Check,
   Instagram, MessageCircle,
 } from 'lucide-react';
 import { clientConfig } from '../config';
+import takerosLogo from '../assets/takeros-logo.png';
 
 const WHATSAPP = clientConfig.phone;
 const BUSINESS = clientConfig.businessName;
@@ -158,6 +159,21 @@ export default function TakerosMenu() {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [quesoModalProduct, setQuesoModalProduct] = useState<LocalProduct | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // ── Botón "volver arriba": aparece tras hacer scroll ──
+  useEffect(() => {
+    const handleScroll = () => setShowScrollTop(window.scrollY > 600);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // ── Bloquear scroll del fondo cuando hay drawer/modal abierto ──
+  useEffect(() => {
+    const anyOpen = isOpen || quesoModalProduct !== null || isPrivacyOpen;
+    document.body.style.overflow = anyOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen, quesoModalProduct, isPrivacyOpen]);
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     name: '', phone: '', deliveryMethod: 'domicilio',
     address: '', paymentMethod: 'efectivo', cashAmount: '', notes: '', salsas: [],
@@ -340,37 +356,36 @@ export default function TakerosMenu() {
       </header>
 
       {/* ══════════ HERO (con imagen) ══════════ */}
-      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[48vh] min-h-[360px] md:h-[60vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=1920&q=80)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
         <div className="absolute inset-0 bg-black/70" />
 
         <div className="relative z-10 text-center px-4 max-w-3xl flex flex-col items-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <div className="mb-4 flex justify-center">
-              {/* Asume que el logo con fondo transparente se guarda en public/takeros-logo.png */}
-              <img 
-                src="/takeros-logo.png" 
-                alt="Takero's CDMX Logo" 
-                className="w-full max-w-sm md:max-w-md drop-shadow-[0_0_25px_rgba(255,100,0,0.6)]"
+              <img
+                src={takerosLogo}
+                alt="Takero's CDMX Logo"
+                className="w-full max-w-[260px] sm:max-w-sm md:max-w-md drop-shadow-[0_0_25px_rgba(255,100,0,0.6)]"
               />
             </div>
-            <p className="text-xl md:text-2xl font-bold text-white mb-3 tracking-wide">
+            <p className="text-base sm:text-xl md:text-2xl font-bold text-white mb-3 tracking-wide">
               {clientConfig.tagline}
             </p>
             <p className="text-sm font-medium text-orange-400 mb-8 uppercase tracking-widest">
               Antojitos chilangos y sazón real
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm font-medium text-zinc-300">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm font-medium text-zinc-300">
               <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10">
-                <Clock size={16} className="text-orange-500" />
+                <Clock size={14} className="text-orange-500" />
                 <span>{clientConfig.hours}</span>
               </div>
               <a
                 href={clientConfig.mapsUrl} target="_blank" rel="noreferrer"
                 className="flex items-center gap-2 bg-black/50 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 hover:border-orange-500/50 transition-colors"
               >
-                <MapPin size={16} className="text-orange-500" />
+                <MapPin size={14} className="text-orange-500" />
                 <span>{clientConfig.address}</span>
               </a>
             </div>
@@ -399,23 +414,25 @@ export default function TakerosMenu() {
         </div>
       </div>
 
-      {/* ══════════ CATEGORÍAS (con íconos) ══════════ */}
-      <div className="max-w-4xl mx-auto px-4 mt-8 w-full">
-        <div className="flex gap-3 overflow-x-auto hide-scrollbar scroll-smooth pb-4 pt-2">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all shrink-0 border ${
-                activeCategory === cat.id
-                  ? 'bg-red-600 text-white border-red-500 shadow-[0_0_15px_rgba(220,38,38,0.4)]'
-                  : 'bg-zinc-900 text-zinc-400 border-orange-500/20 hover:border-orange-500/50'
-              }`}
-            >
-              <cat.icon size={13} />
-              {cat.name}
-            </button>
-          ))}
+      {/* ══════════ CATEGORÍAS STICKY (con íconos) ══════════ */}
+      <div className="sticky top-16 z-40 bg-black/90 backdrop-blur-md border-b border-white/5 mt-8">
+        <div className="max-w-4xl mx-auto px-4 w-full">
+          <div className="flex gap-3 overflow-x-auto hide-scrollbar scroll-smooth pb-3 pt-3">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all shrink-0 border min-h-[44px] ${
+                  activeCategory === cat.id
+                    ? 'bg-red-600 text-white border-red-500 shadow-[0_0_15px_rgba(220,38,38,0.4)]'
+                    : 'bg-zinc-900 text-zinc-400 border-orange-500/20 hover:border-orange-500/50'
+                }`}
+              >
+                <cat.icon size={13} />
+                {cat.name}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -498,10 +515,27 @@ export default function TakerosMenu() {
             exit={{ opacity: 0, y: 80, scale: 0.8 }}
             onClick={openCartDrawer}
             className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-full shadow-2xl font-bold text-sm bg-red-600 text-white"
-            style={{ boxShadow: '0 8px 30px rgba(220,38,38,0.4)' }}
+            style={{ boxShadow: '0 8px 30px rgba(220,38,38,0.4)', bottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}
           >
             <ShoppingBag size={18} />
             <span>{cartCount} · ${cartTotal}</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* ══════════ BOTÓN VOLVER ARRIBA ══════════ */}
+      <AnimatePresence>
+        {showScrollTop && !isOpen && (
+          <motion.button
+            initial={{ opacity: 0, y: 40, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 40, scale: 0.8 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full flex items-center justify-center bg-zinc-900/90 backdrop-blur-md border border-orange-500/40 text-orange-500 shadow-2xl hover:border-orange-500 hover:bg-zinc-800 transition-colors"
+            style={{ boxShadow: '0 8px 25px rgba(0,0,0,0.5)' }}
+            title="Volver arriba"
+          >
+            <ArrowUp size={20} />
           </motion.button>
         )}
       </AnimatePresence>
