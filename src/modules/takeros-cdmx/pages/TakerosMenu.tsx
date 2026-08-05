@@ -426,8 +426,8 @@ export default function TakerosMenu() {
                 onClick={() => setActiveCategory(cat.id)}
                 className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all shrink-0 border min-h-[44px] ${
                   activeCategory === cat.id
-                    ? 'bg-red-600 text-white border-red-500 shadow-[0_0_15px_rgba(220,38,38,0.4)]'
-                    : 'bg-zinc-900 text-zinc-400 border-orange-500/20 hover:border-orange-500/50'
+                    ? 'bg-red-600 text-white border-red-500 shadow-[0_0_15px_rgba(220,38,38,0.5)]'
+                    : 'bg-orange-600/20 text-orange-500 border-orange-500/30 hover:bg-orange-600/40'
                 }`}
               >
                 <cat.icon size={13} />
