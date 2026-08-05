@@ -69,6 +69,7 @@ interface CustomerInfo {
 const CATEGORIES = [
   { id: 'all', name: 'Todos', icon: UtensilsCrossed },
   { id: 'paquetes', name: 'Paquetes Taqueros', icon: Package },
+  { id: 'combos-gorditas', name: 'Combos Gorditas', icon: Package },
   { id: 'entradas', name: 'Entradas', icon: ChefHat },
   { id: 'gringas', name: 'Gringas', icon: Pizza },
   { id: 'alambres', name: 'Alambres', icon: Beef },
@@ -94,9 +95,9 @@ const PRODUCTS: LocalProduct[] = [
   { id: 'p5', name: 'TAKE MIX TRIPA (2 Personas)', description: '1/4 KG Pastor + 1/4 KG Tripa. (28 tortillas, salsa, verdura).', price: 410, category: 'paquetes' },
   { id: 'p6', name: 'TAKE MIX SUPREMO (2 Personas)', description: '1/4 KG Suadero o Bistec + 1/4 KG Tripa. (28 tortillas, salsa, verdura).', price: 465, category: 'paquetes',
     options: [{ title: '1ra Proteína', choices: [{ name: 'Suadero', extraPrice: 0 }, { name: 'Bistec', extraPrice: 0 }] }] },
-  { id: 'p7', name: 'PKT GORDITAS DUO (2 Personas)', description: '2 Gorditas de Pastor + 2 Gorditas a elegir.', price: 199, category: 'paquetes',
+  { id: 'p7', name: 'PKT GORDITAS DUO (2 Personas)', description: '2 Gorditas de Pastor + 2 Gorditas a elegir.', price: 199, category: 'combos-gorditas',
     options: [{ title: 'Gorditas a elegir', choices: [{ name: 'Suadero', extraPrice: 0 }, { name: 'Bistec', extraPrice: 0 }, { name: 'Pastor', extraPrice: 0 }] }] },
-  { id: 'p8', name: 'PKT GORDITAS FAMILIAR (4 Personas)', description: '4 Gorditas de Pastor + 4 Gorditas a elegir.', price: 399, category: 'paquetes',
+  { id: 'p8', name: 'PKT GORDITAS FAMILIAR (4 Personas)', description: '4 Gorditas de Pastor + 4 Gorditas a elegir.', price: 399, category: 'combos-gorditas',
     options: [{ title: 'Gorditas a elegir', choices: [{ name: 'Suadero', extraPrice: 0 }, { name: 'Bistec', extraPrice: 0 }, { name: 'Pastor', extraPrice: 0 }] }] },
 
   // ── ENTRADAS Y ACOMPAÑAMIENTOS ──
