@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { clientConfig } from '../config';
 import takerosLogo from '../assets/takeros-logo.png';
+import SkylineImg from '../assets/cdmx-skyline.png';
 
 const WHATSAPP = clientConfig.phone;
 const BUSINESS = clientConfig.businessName;
@@ -1040,8 +1041,19 @@ export default function TakerosMenu() {
       </AnimatePresence>
 
       {/* ══════════ FOOTER (3 columnas: marca / contacto / redes) ══════════ */}
-      <footer className="bg-zinc-950 border-t border-orange-500/20 pt-12 mt-auto">
-        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 pb-10 text-center md:text-left">
+      <footer className="relative bg-zinc-950 border-t border-orange-500/20 pt-12 mt-auto overflow-hidden">
+        {/* Silueta de CDMX en el fondo */}
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-48 opacity-10 pointer-events-none"
+          style={{
+            backgroundImage: `url(${SkylineImg})`,
+            backgroundSize: 'contain',
+            backgroundPosition: 'bottom center',
+            backgroundRepeat: 'repeat-x',
+          }}
+        />
+        
+        <div className="relative z-10 max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 pb-10 text-center md:text-left">
 
           {/* Col 1: Marca + descripción */}
           <div>
