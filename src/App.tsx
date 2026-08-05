@@ -95,14 +95,20 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [paymentResult, setPaymentResult] = useState<{ status: string; whatsappMessage: string | null } | null>(null);
   const [favorites, setFavorites] = useState<(string | number)[]>(() => {
-    const saved = localStorage.getItem('imagine_stamp_favorites');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('imagine_stamp_favorites');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
   });
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   const [visibleItems, setVisibleItems] = useState(10);
 
   useEffect(() => {
-    localStorage.setItem('imagine_stamp_favorites', JSON.stringify(favorites));
+    try {
+      localStorage.setItem('imagine_stamp_favorites', JSON.stringify(favorites));
+    } catch (e) {}
   }, [favorites]);
 
   // Reiniciar paginación cuando cambia categoría o búsqueda
@@ -239,8 +245,11 @@ export default function App() {
         .then(() => {});
     }
 
-    let savedMessage = localStorage.getItem('imagine-pending-whatsapp');
-    localStorage.removeItem('imagine-pending-whatsapp');
+    let savedMessage = null;
+    try {
+      savedMessage = localStorage.getItem('imagine-pending-whatsapp');
+      localStorage.removeItem('imagine-pending-whatsapp');
+    } catch (e) {}
 
     // Agregar el texto de confirmación al mensaje si el pago fue exitoso
     if (savedMessage && pago === 'exito' && status === 'approved') {

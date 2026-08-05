@@ -211,19 +211,21 @@ export default function TakerosMenu() {
 
   // ── Persistencia del carrito (localStorage) ──
   useEffect(() => {
-    const saved = localStorage.getItem('takeroscdmx_cart');
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem('takeroscdmx_cart');
+      if (saved) {
         const parsed = JSON.parse(saved);
         // Migración: items viejos sin cartId se descartan (estructura cambió)
         if (Array.isArray(parsed) && parsed.every(i => i.cartId)) setCart(parsed);
         else localStorage.removeItem('takeroscdmx_cart');
-      } catch {}
-    }
+      }
+    } catch {}
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('takeroscdmx_cart', JSON.stringify(cart));
+    try {
+      localStorage.setItem('takeroscdmx_cart', JSON.stringify(cart));
+    } catch {}
   }, [cart]);
 
   // ── Filtrado ──
