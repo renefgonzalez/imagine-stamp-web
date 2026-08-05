@@ -27,6 +27,15 @@ const QUESO_CATEGORIES = ['tacos', 'gorditas'];
 
 // ═══════════════════ TYPES ═══════════════════
 
+interface OptionChoice {
+  name: string;
+  extraPrice: number;
+}
+interface ProductOption {
+  title: string;
+  choices: OptionChoice[];
+}
+
 interface LocalProduct {
   id: string;
   name: string;
@@ -34,12 +43,14 @@ interface LocalProduct {
   price: number;
   category: string;
   badge?: string;
+  options?: ProductOption[];
 }
 
 interface CartItem extends LocalProduct {
   quantity: number;
   cartId: string;        // id único en carrito: "t3" o "t3-queso"
   variant?: 'queso';     // variante: con Queso Manchego (+$13)
+  selectedOptionsText?: string;
 }
 
 interface CustomerInfo {
@@ -72,14 +83,21 @@ const CATEGORIES = [
 
 const PRODUCTS: LocalProduct[] = [
   // ── PAQUETES POR KG (incluyen tortillas, salsas y verdura) ──
-  { id: 'p1', name: 'PKT DUO (2 Personas)', description: '1/2 KG Pastor (Incluye 28 tortillas, salsa, verdura). Suadero/Bistec +$95, Tripa +$155.', price: 304, category: 'paquetes', badge: 'Más Pedido' },
-  { id: 'p2', name: 'PKT FAMILIAR (4 Personas)', description: '1 KG Pastor (Incluye 56 tortillas, salsa, verdura). Suadero/Bistec +$195, Tripa +$295.', price: 585, category: 'paquetes' },
-  { id: 'p3', name: 'PKT FIESTA (6 Personas)', description: '1.5 KG Pastor (Incluye 84 tortillas, salsa, verdura). Suadero/Bistec +$290, Tripa +$440.', price: 880, category: 'paquetes' },
-  { id: 'p4', name: 'TAKE MIX CLÁSICO (2 Personas)', description: '1/4 KG Pastor + 1/4 KG Suadero o Bistec. (28 tortillas, salsa, verdura).', price: 380, category: 'paquetes' },
+  { id: 'p1', name: 'PKT DUO (2 Personas)', description: '1/2 KG Proteína (Incluye 28 tortillas, salsa, verdura).', price: 304, category: 'paquetes', badge: 'Más Pedido',
+    options: [{ title: 'Elige tu Proteína', choices: [{ name: 'Pastor', extraPrice: 0 }, { name: 'Suadero', extraPrice: 95 }, { name: 'Bistec', extraPrice: 95 }, { name: 'Tripa', extraPrice: 155 }] }] },
+  { id: 'p2', name: 'PKT FAMILIAR (4 Personas)', description: '1 KG Proteína (Incluye 56 tortillas, salsa, verdura).', price: 585, category: 'paquetes',
+    options: [{ title: 'Elige tu Proteína', choices: [{ name: 'Pastor', extraPrice: 0 }, { name: 'Suadero', extraPrice: 195 }, { name: 'Bistec', extraPrice: 195 }, { name: 'Tripa', extraPrice: 295 }] }] },
+  { id: 'p3', name: 'PKT FIESTA (6 Personas)', description: '1.5 KG Proteína (Incluye 84 tortillas, salsa, verdura).', price: 880, category: 'paquetes',
+    options: [{ title: 'Elige tu Proteína', choices: [{ name: 'Pastor', extraPrice: 0 }, { name: 'Suadero', extraPrice: 290 }, { name: 'Bistec', extraPrice: 290 }, { name: 'Tripa', extraPrice: 440 }] }] },
+  { id: 'p4', name: 'TAKE MIX CLÁSICO (2 Personas)', description: '1/4 KG Pastor + 1/4 KG Suadero o Bistec. (28 tortillas, salsa, verdura).', price: 380, category: 'paquetes',
+    options: [{ title: '2da Proteína', choices: [{ name: 'Suadero', extraPrice: 0 }, { name: 'Bistec', extraPrice: 0 }] }] },
   { id: 'p5', name: 'TAKE MIX TRIPA (2 Personas)', description: '1/4 KG Pastor + 1/4 KG Tripa. (28 tortillas, salsa, verdura).', price: 410, category: 'paquetes' },
-  { id: 'p6', name: 'TAKE MIX SUPREMO (2 Personas)', description: '1/4 KG Suadero o Bistec + 1/4 KG Tripa. (28 tortillas, salsa, verdura).', price: 465, category: 'paquetes' },
-  { id: 'p7', name: 'PKT GORDITAS DUO (2 Personas)', description: '2 Gorditas de Pastor + 2 Gorditas a elegir (Suadero, Bistec o Pastor).', price: 199, category: 'paquetes' },
-  { id: 'p8', name: 'PKT GORDITAS FAMILIAR (4 Personas)', description: '4 Gorditas de Pastor + 4 Gorditas a elegir (Suadero, Bistec o Pastor).', price: 399, category: 'paquetes' },
+  { id: 'p6', name: 'TAKE MIX SUPREMO (2 Personas)', description: '1/4 KG Suadero o Bistec + 1/4 KG Tripa. (28 tortillas, salsa, verdura).', price: 465, category: 'paquetes',
+    options: [{ title: '1ra Proteína', choices: [{ name: 'Suadero', extraPrice: 0 }, { name: 'Bistec', extraPrice: 0 }] }] },
+  { id: 'p7', name: 'PKT GORDITAS DUO (2 Personas)', description: '2 Gorditas de Pastor + 2 Gorditas a elegir.', price: 199, category: 'paquetes',
+    options: [{ title: 'Gorditas a elegir', choices: [{ name: 'Suadero', extraPrice: 0 }, { name: 'Bistec', extraPrice: 0 }, { name: 'Pastor', extraPrice: 0 }] }] },
+  { id: 'p8', name: 'PKT GORDITAS FAMILIAR (4 Personas)', description: '4 Gorditas de Pastor + 4 Gorditas a elegir.', price: 399, category: 'paquetes',
+    options: [{ title: 'Gorditas a elegir', choices: [{ name: 'Suadero', extraPrice: 0 }, { name: 'Bistec', extraPrice: 0 }, { name: 'Pastor', extraPrice: 0 }] }] },
 
   // ── ENTRADAS Y ACOMPAÑAMIENTOS ──
   { id: 'e1', name: 'Choriqueso', description: 'Queso fundido con chorizo. 200 gr.', price: 128, category: 'entradas', badge: 'Para Compartir' },
@@ -161,6 +179,8 @@ export default function TakerosMenu() {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [quesoModalProduct, setQuesoModalProduct] = useState<LocalProduct | null>(null);
+  const [optionsModalProduct, setOptionsModalProduct] = useState<LocalProduct | null>(null);
+  const [selectedOptionIndex, setSelectedOptionIndex] = useState<number>(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   // ── Botón "volver arriba": aparece tras hacer scroll ──
@@ -172,10 +192,10 @@ export default function TakerosMenu() {
 
   // ── Bloquear scroll del fondo cuando hay drawer/modal abierto ──
   useEffect(() => {
-    const anyOpen = isOpen || quesoModalProduct !== null || isPrivacyOpen;
+    const anyOpen = isOpen || quesoModalProduct !== null || optionsModalProduct !== null || isPrivacyOpen;
     document.body.style.overflow = anyOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
-  }, [isOpen, quesoModalProduct, isPrivacyOpen]);
+  }, [isOpen, quesoModalProduct, optionsModalProduct, isPrivacyOpen]);
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     name: '', phone: '', deliveryMethod: 'domicilio',
     address: '', paymentMethod: 'efectivo', cashAmount: '', notes: '', salsas: [],
@@ -223,8 +243,13 @@ export default function TakerosMenu() {
   const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  // ── Al tocar "Agregar": tacos/gorditas preguntan por queso manchego ──
+  // ── Al tocar "Agregar": tacos/gorditas preguntan por queso, paquetes preguntan por opciones ──
   const addToCart = useCallback((product: LocalProduct) => {
+    if (product.options && product.options.length > 0) {
+      setOptionsModalProduct(product);
+      setSelectedOptionIndex(0); // Select first option by default
+      return;
+    }
     if (QUESO_CATEGORIES.includes(product.category)) {
       setQuesoModalProduct(product);
       return;
@@ -232,18 +257,33 @@ export default function TakerosMenu() {
     confirmAdd(product, false);
   }, []);
 
-  // ── Agrega al carrito con o sin variante de queso ──
-  const confirmAdd = useCallback((product: LocalProduct, withQueso: boolean) => {
-    const cartId = withQueso ? `${product.id}-queso` : product.id;
-    const finalPrice = withQueso ? product.price + QUESO_PRICE : product.price;
+  // ── Agrega al carrito con o sin variante de queso o opciones ──
+  const confirmAdd = useCallback((product: LocalProduct, withQueso: boolean, selectedOptionInfo?: { choiceName: string, extraPrice: number, optionTitle: string }) => {
+    let cartId = product.id;
+    let finalPrice = product.price;
+    let variant: 'queso' | undefined = undefined;
+    let selectedOptionsText: string | undefined = undefined;
+
+    if (withQueso) {
+      cartId += '-queso';
+      finalPrice += QUESO_PRICE;
+      variant = 'queso';
+    } else if (selectedOptionInfo) {
+      // Usar nombre de la opción en el cartId para diferenciar (ej. p1-Suadero)
+      cartId += `-${selectedOptionInfo.choiceName.replace(/\s+/g, '')}`;
+      finalPrice += selectedOptionInfo.extraPrice;
+      selectedOptionsText = `[${selectedOptionInfo.optionTitle}: ${selectedOptionInfo.choiceName}]`;
+    }
+
     setCart(prev => {
       const existing = prev.find(i => i.cartId === cartId);
       if (existing) return prev.map(i => i.cartId === cartId ? { ...i, quantity: i.quantity + 1 } : i);
-      return [...prev, { ...product, price: finalPrice, quantity: 1, cartId, variant: withQueso ? 'queso' : undefined }];
+      return [...prev, { ...product, price: finalPrice, quantity: 1, cartId, variant, selectedOptionsText }];
     });
     setToastMsg(withQueso ? `${product.name} c/ Queso` : product.name);
     setTimeout(() => setToastMsg(''), 2000);
     setQuesoModalProduct(null);
+    setOptionsModalProduct(null);
   }, []);
 
   const updateQuantity = useCallback((cartId: string, qty: number) => {
@@ -283,7 +323,7 @@ export default function TakerosMenu() {
   // ── WhatsApp Checkout (éxito → 500ms → window.location.href → limpieza) ──
   const handleSendWhatsApp = () => {
     const itemsText = cart.map((item, i) =>
-      `${i + 1}. *${item.name}${item.variant === 'queso' ? ' (c/ Queso Manchego)' : ''}* x${item.quantity} — $${item.price * item.quantity}`
+      `${i + 1}. *${item.name}${item.variant === 'queso' ? ' (c/ Queso Manchego)' : ''}*${item.selectedOptionsText ? ` ${item.selectedOptionsText}` : ''} x${item.quantity} — $${item.price * item.quantity}`
     ).join('\n');
 
     const deliveryText = customerInfo.deliveryMethod === 'recoger'
@@ -908,6 +948,74 @@ export default function TakerosMenu() {
                     </span>
                     <span className="font-black text-yellow-400">${quesoModalProduct.price + QUESO_PRICE}</span>
                   </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ══════════ MODAL: Opciones del Producto ══════════ */}
+      <AnimatePresence>
+        {optionsModalProduct && optionsModalProduct.options && (
+          <div className="fixed inset-0 z-[85] flex items-end sm:items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setOptionsModalProduct(null)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 350 }}
+              className="relative w-full sm:max-w-md bg-zinc-900 border-t sm:border border-orange-500/30 sm:rounded-3xl rounded-t-3xl overflow-hidden max-h-[90vh] flex flex-col"
+            >
+              <div className="h-1 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 shrink-0" />
+              <div className="p-6 overflow-y-auto">
+                <div className="flex items-start justify-between mb-1">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 mb-1">Elige tus Opciones</p>
+                    <h3 className="text-lg font-black text-white leading-tight">{optionsModalProduct.name}</h3>
+                  </div>
+                  <button
+                    onClick={() => setOptionsModalProduct(null)}
+                    className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors shrink-0"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+                
+                {/* Asumimos que solo hay un grupo de opciones por ahora (index 0) */}
+                <p className="text-xs text-zinc-400 mb-5">{optionsModalProduct.options[0].title}</p>
+
+                <div className="space-y-2.5">
+                  {optionsModalProduct.options[0].choices.map((choice, i) => (
+                    <motion.button
+                      key={i}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => confirmAdd(optionsModalProduct, false, {
+                        choiceName: choice.name,
+                        extraPrice: choice.extraPrice,
+                        optionTitle: optionsModalProduct.options![0].title
+                      })}
+                      className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${
+                        choice.extraPrice > 0 
+                          ? 'bg-yellow-400/10 border-yellow-400/40 hover:border-yellow-400' 
+                          : 'bg-black border-white/10 hover:border-orange-500/40'
+                      }`}
+                    >
+                      <span className="font-bold text-sm text-white flex items-center gap-2">
+                        {choice.name}
+                        {choice.extraPrice > 0 && (
+                          <span className="text-[9px] font-black uppercase tracking-wider text-yellow-400/80">
+                            +${choice.extraPrice}
+                          </span>
+                        )}
+                      </span>
+                      <span className={`font-black ${choice.extraPrice > 0 ? 'text-yellow-400' : 'text-white'}`}>
+                        ${optionsModalProduct.price + choice.extraPrice}
+                      </span>
+                    </motion.button>
+                  ))}
                 </div>
               </div>
             </motion.div>
