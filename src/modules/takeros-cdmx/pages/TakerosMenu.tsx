@@ -57,7 +57,7 @@ interface CustomerInfo {
 
 const CATEGORIES = [
   { id: 'all', name: 'Todos', icon: UtensilsCrossed },
-  { id: 'paquetes', name: 'Paquetes por KG', icon: Package },
+  { id: 'paquetes', name: 'Paquetes Taqueros', icon: Package },
   { id: 'entradas', name: 'Entradas', icon: ChefHat },
   { id: 'gringas', name: 'Gringas', icon: Pizza },
   { id: 'alambres', name: 'Alambres', icon: Beef },
@@ -72,12 +72,14 @@ const CATEGORIES = [
 
 const PRODUCTS: LocalProduct[] = [
   // ── PAQUETES POR KG (incluyen tortillas, salsas y verdura) ──
-  { id: 'p1', name: 'KG Pastor', description: 'Incluye tortillas, salsas y verdura.', price: 660, category: 'paquetes', badge: 'Más Pedido' },
-  { id: 'p2', name: 'KG Suadero', description: 'Incluye tortillas, salsas y verdura.', price: 880, category: 'paquetes' },
-  { id: 'p3', name: 'KG Bistec', description: 'Incluye tortillas, salsas y verdura.', price: 880, category: 'paquetes' },
-  { id: 'p4', name: '1/2 KG Pastor', description: 'Incluye tortillas, salsas y verdura.', price: 350, category: 'paquetes' },
-  { id: 'p5', name: '1/2 KG Suadero', description: 'Incluye tortillas, salsas y verdura.', price: 460, category: 'paquetes' },
-  { id: 'p6', name: '1/2 KG Bistec', description: 'Incluye tortillas, salsas y verdura.', price: 460, category: 'paquetes' },
+  { id: 'p1', name: 'PKT DUO (2 Personas)', description: '1/2 KG Pastor (Incluye 28 tortillas, salsa, verdura). Suadero/Bistec +$95, Tripa +$155.', price: 304, category: 'paquetes', badge: 'Más Pedido' },
+  { id: 'p2', name: 'PKT FAMILIAR (4 Personas)', description: '1 KG Pastor (Incluye 56 tortillas, salsa, verdura). Suadero/Bistec +$195, Tripa +$295.', price: 585, category: 'paquetes' },
+  { id: 'p3', name: 'PKT FIESTA (6 Personas)', description: '1.5 KG Pastor (Incluye 84 tortillas, salsa, verdura). Suadero/Bistec +$290, Tripa +$440.', price: 880, category: 'paquetes' },
+  { id: 'p4', name: 'TAKE MIX CLÁSICO (2 Personas)', description: '1/4 KG Pastor + 1/4 KG Suadero o Bistec. (28 tortillas, salsa, verdura).', price: 380, category: 'paquetes' },
+  { id: 'p5', name: 'TAKE MIX TRIPA (2 Personas)', description: '1/4 KG Pastor + 1/4 KG Tripa. (28 tortillas, salsa, verdura).', price: 410, category: 'paquetes' },
+  { id: 'p6', name: 'TAKE MIX SUPREMO (2 Personas)', description: '1/4 KG Suadero o Bistec + 1/4 KG Tripa. (28 tortillas, salsa, verdura).', price: 465, category: 'paquetes' },
+  { id: 'p7', name: 'PKT GORDITAS DUO (2 Personas)', description: '2 Gorditas de Pastor + 2 Gorditas a elegir (Suadero, Bistec o Pastor).', price: 199, category: 'paquetes' },
+  { id: 'p8', name: 'PKT GORDITAS FAMILIAR (4 Personas)', description: '4 Gorditas de Pastor + 4 Gorditas a elegir (Suadero, Bistec o Pastor).', price: 399, category: 'paquetes' },
 
   // ── ENTRADAS Y ACOMPAÑAMIENTOS ──
   { id: 'e1', name: 'Choriqueso', description: 'Queso fundido con chorizo. 200 gr.', price: 128, category: 'entradas', badge: 'Para Compartir' },
