@@ -14,7 +14,7 @@ import DemoMenu from './modules/demo-menu/pages/DemoMenu';
 import CarnitasLaGueraMenu from './modules/carnitas-la-guera/pages/CarnitasLaGueraMenu';
 import KitchenPanel from './modules/carnitas-la-guera/pages/KitchenPanel';
 import TakerosMenu from './modules/takeros-cdmx/pages/TakerosMenu';
-import ReySparTacoMenu from './modules/rey-spar-taco/ReySparTacoMenu';
+import ReySparTacoMenu from './modules/rey-spar-taco/pages/ReySparTacoMenu';
 import ContactCard from './pages/ContactCard';
 import AdminPanel from './AdminPanel';
 
