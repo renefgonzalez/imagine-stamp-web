@@ -11,8 +11,6 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Product } from './data/products';
 import logo from './logo.png';
 import DemoMenu from './modules/demo-menu/pages/DemoMenu';
-import CarnitasLaGueraMenu from './modules/carnitas-la-guera/pages/CarnitasLaGueraMenu';
-import KitchenPanel from './modules/carnitas-la-guera/pages/KitchenPanel';
 import TakerosMenu from './modules/takeros-cdmx/pages/TakerosMenu';
 import ReySparTacoMenu from './modules/rey-spar-taco/pages/ReySparTacoMenu';
 import ContactCard from './pages/ContactCard';
@@ -787,8 +785,6 @@ export default function App() {
           </ErrorBoundary>
         } />
         <Route path="/demo-menu" element={<DemoMenu />} />
-        <Route path="/carnitas-la-guera" element={<ErrorBoundary><CarnitasLaGueraMenu /></ErrorBoundary>} />
-        <Route path="/carnitas-la-guera/cocina" element={<ErrorBoundary><KitchenPanel /></ErrorBoundary>} />
         <Route path="/takeros-cdmx" element={<ErrorBoundary><TakerosMenu /></ErrorBoundary>} />
         <Route path="/rey-spar-taco" element={<ErrorBoundary><ReySparTacoMenu /></ErrorBoundary>} />
         <Route path="/contacto" element={<ContactCard />} />
