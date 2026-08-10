@@ -428,6 +428,42 @@ CREATE POLICY "Public storage insert" ON storage.objects FOR INSERT WITH CHECK (
 ```
 > Para producción seria, migrar el admin a Supabase Auth con un usuario real.
 
+### 5.6 Keepalive — Prevenir pausa del proyecto Supabase (OBLIGATORIO)
+
+> [!WARNING]
+> **Supabase free tier pausa proyectos tras 1 semana sin actividad (sin requests a la API).**
+> Cuando se pausa, la base de datos y Storage dejan de responder — la tienda se rompe.
+> Esto ya pasó en la María Rooftop (Julio 2026) y se corrigió con este mecanismo.
+
+**Solución: GitHub Actions workflow** que hace un `curl` a la REST API de Supabase cada 6 horas.
+
+Crear `.github/workflows/keepalive.yml` con las credenciales del proyecto:
+
+```yaml
+name: Keepalive Supabase
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'       # cada 6 horas
+  workflow_dispatch:              # también manual
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            "https://XXXX.supabase.co/rest/v1/products?select=id&limit=1" \
+            -H "apikey: TU_ANON_KEY" \
+            -H "Authorization: Bearer TU_ANON_KEY" \
+            || echo "(ignorado: Supabase puede estar pausado, el ping igual cuenta)"
+```
+
+> **Alternativa sin GitHub:** usar [cron-job.org](https://cron-job.org) (gratis) con la misma URL y headers.
+>
+> *Implementado en: la-maria-rooftop (Julio 2026), amelie-patisserie (Agosto 2026).*
+
 ---
 
 ## 6. Sistema de Diseño (colores y fuentes)
@@ -1159,67 +1195,31 @@ necesita para no bloquear el popup.
 > [!WARNING]
 > **El ancho de banda de Supabase Storage en el plan gratuito está limitado a 5 GB mensuales.** Si un proyecto consume todo el límite, la base de datos y los servicios del proyecto se bloquearán hasta el siguiente ciclo de facturación.
 
-Para evitar consumir excesivo ancho de banda al renderizar catálogos o menús con muchas imágenes, es **OBLIGATORIO** implementar una de las siguientes estrategias de optimización de imágenes en el frontend:
+Para evitar consumir excesivo ancho de banda al renderizar catálogos o menús con muchas imágenes, es **OBLIGATORIO** implementar las siguientes estrategias:
 
-### Estrategia 1: Atributo `loading="lazy"` (Recomendada para Menús y Catálogos)
-Agregar el atributo nativo de HTML `loading="lazy"` a **todas** las etiquetas `<img>` que
-muestren fotos de producto (catálogo, favoritos, carrito). Esto le indica al navegador que
-solo descargue esa imagen cuando esté a punto de ser visible en pantalla, en lugar de
-descargar todas de golpe al abrir la página — incluso dentro de un mismo lote de
-"10 productos" (Estrategia 2), varias de esas 10 tarjetas pueden estar fuera de la vista
-inicial (más abajo del pliegue) y no hace falta bajarlas todavía.
-```tsx
-<img 
-  src={producto.image} 
-  alt={producto.name} 
-  loading="lazy" 
-/>
-```
-> ⚠️ **No** se le pone `loading="lazy"` a: el logo del header/intro, el QR, ni la imagen
-> principal que se muestra en un modal/lightbox que el usuario acaba de abrir — esas deben
-> cargar de inmediato porque ya están (o van a estar) visibles apenas se renderizan.
-> `lazy` es solo para lo que está fuera de la pantalla en ese momento.
->
-> *Implementado en Mundo Halloween (Julio 2026): catálogo, lista de favoritos y carrito.*
+### Estrategia 1: Atributo `loading="lazy"` (OBLIGATORIO en todo producto)
+Agregar `loading="lazy"` a **todas** las etiquetas `<img>` de productos (catálogo, favoritos, carrito). No aplica a logo, hero ni QR.
 
-### Estrategia 2: Paginación / Límite de carga (Recomendada para E-commerce masivo)
-Limitar la cantidad de productos que se renderizan inicialmente usando un estado en React
-(ej. los primeros 10), con un **botón "Ver más" al final de la lista** (no es scroll
-infinito automático — carga bajo demanda, con un click).
+### Estrategia 2: Paginación "Ver más" de 10 en 10 (OBLIGATORIO)
+Limitar productos renderizados inicialmente a 10, con botón "Ver más" manual (no scroll infinito). Reiniciar a 10 al cambiar categoría/búsqueda.
+
 ```tsx
 const [visibleItems, setVisibleItems] = useState(10);
-
-// Reiniciar a 10 cada vez que cambia el filtro/categoría/búsqueda activa
 useEffect(() => { setVisibleItems(10); }, [activeCategory, searchQuery]);
 
-// En el renderizado del catálogo:
-{productosFiltrados.slice(0, visibleItems).map(producto => (
-  // Solo se renderizan y descargan las fotos de los primeros "visibleItems"
-  <CardProducto key={producto.id} producto={producto} />
-))}
+{filteredProducts.slice(0, visibleItems).map(p => ( ... ))}
 
-// Botón al final, solo si todavía quedan productos por mostrar
-{visibleItems < productosFiltrados.length && (
+{visibleItems < filteredProducts.length && (
   <button onClick={() => setVisibleItems(prev => prev + 10)}>
-    Ver más productos
+    Ver más ({filteredProducts.length - visibleItems} restantes)
   </button>
 )}
 ```
-> ⚠️ No confundir con el listener de `scroll` que muchos catálogos también tienen — ese
-> normalmente es para cambiar el estilo del header al bajar (sombra, fondo sólido), **no**
-> para cargar más productos. Son dos cosas distintas que pueden coexistir en el mismo componente.
 
-*Ejemplo implementado exitosamente en el proyecto Mundo Halloween.*
+> Implementado y probado en: amelie-patisserie (Agosto 2026), Mundo Halloween (Julio 2026).
 
-### Estrategia 3: Comprimir la imagen en el navegador ANTES de subirla (OBLIGATORIO en todo catálogo nuevo)
-
-> Esto ataca el problema de raíz: si la foto ya se sube pesando poco, **todo** lo demás
-> (Storage, ancho de banda, tiempo de carga) mejora automáticamente. No requiere
-> librerías externas — solo Canvas API, que ya viene en el navegador.
-
-Crear un helper reutilizable (ej. `src/lib/imageCompression.ts`) y llamarlo en **cada
-punto donde el admin suba una imagen** (fotos de producto, banners, imagen de intro,
-promociones, etc.) justo antes de `supabase.storage.from(...).upload(...)`:
+### Estrategia 3: Comprimir en el navegador ANTES de subir (OBLIGATORIO en todo admin)
+Helper en `src/lib/imageCompression.ts` + componente `ImageUploader.tsx` con preview, stats de compresión, y callback al padre para subir a Supabase Storage. Comprime a JPEG (~70% calidad, 800px) con Canvas API. Si comprimir empeora el tamaño, se queda con el original.
 
 ```typescript
 // Redimensiona a un ancho máximo y re-codifica a JPEG con calidad ~80-85%.
@@ -1391,46 +1391,184 @@ Con el análisis visual hecho:
 - [ ] Los textos del checkout dicen el nombre del negocio
 - [ ] Las redes sociales linkean correctamente
 - [ ] El título de la página es el nombre del negocio
+- [ ] SEO configurado en `index.html` (ver §16.6)
+
+### 16.6. Configuración SEO (obligatorio al migrar a producción)
+
+> Cuando una página demo se migra a su carpeta/proyecto real y se sube a un dominio, es **obligatorio** configurar el SEO en `index.html` ANTES de hacer `npm run build`. Esto asegura que al compartir la URL en WhatsApp, Instagram, Facebook o cualquier red social, se muestre una preview atractiva con título, descripción e imagen.
+
+#### Plantilla base para `index.html`
+
+```html
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>NOMBRE DEL NEGOCIO | Tagline o propuesta de valor</title>
+    <meta name="description" content="Descripción del negocio con keywords relevantes. Dirección y especialidades." />
+    <meta name="keywords" content="keyword1, keyword2, keyword3, ciudad, comida, negocio" />
+    <meta name="author" content="NOMBRE DEL NEGOCIO" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph (Facebook, WhatsApp, Instagram, Telegram) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NOMBRE DEL NEGOCIO" />
+    <meta property="og:title" content="NOMBRE DEL NEGOCIO | Tagline" />
+    <meta property="og:description" content="Descripción corta atractiva. Horarios, ciudad." />
+    <meta property="og:url" content="https://cliente.imagineandstamp.site/" />
+    <meta property="og:image" content="URL_IMAGEN_1200x630" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="es_MX" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="NOMBRE DEL NEGOCIO | Tagline" />
+    <meta name="twitter:description" content="Descripción corta atractiva." />
+    <meta name="twitter:image" content="URL_IMAGEN_1200x630" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+```
+
+#### Reglas obligatorias
+
+1. **`lang="es-MX"`** en el `<html>`, no `"en"`.
+2. **`<title>`** = `NOMBRE DEL NEGOCIO | Propuesta de valor` — incluir keywords de búsqueda y ciudad.
+3. **`<meta description>`** = 1-2 frases con nombre, especialidades, ciudad y horarios. Máximo ~160 caracteres.
+4. **`<meta keywords>`** = 5-10 términos separados por coma: productos, ciudad, tipo de comida.
+5. **`og:image`** = Imagen 1200x630 px. Usar la misma imagen del hero del menú o la foto más representativa. Si se usa Unsplash, usar formato `?auto=format&fit=crop&w=1200&h=630&q=80`.
+6. **`og:url`** = URL real del dominio (no `localhost` ni placeholder).
+7. **`twitter:card`** = `summary_large_image` para que muestre la imagen grande.
+8. **Logo/Favicon**: Si el logo es PNG, cambiar `<link rel="icon">` a `type="image/png" href="/logo.png"`. Si no hay PNG, mantener el SVG de Vite.
+
+#### Referencia real — Takero's CDMX
+
+```html
+<title>TAKERO'S CDMX | Sabor auténtico de la CDMX en Cancún</title>
+<meta name="description" content="TAKERO'S CDMX — Antojitos chilangos y sazón real. Tacos al pastor, suadero, tripa, gringas, alambres y más. Cancún, Quintana Roo. ¡Lleva o pide a domicilio!" />
+<meta name="keywords" content="tacos CDMX en Cancún, tacos al pastor Cancún, gringas Cancún, tacos de suadero, tacos de tripa, antojitos chilangos, Takero's CDMX, comida mexicana Cancún" />
+<meta property="og:image" content="https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=1200&h=630&q=80" />
+```
+
+#### Herramientas de verificación
+
+Después de subir a producción, validar con:
+- [Meta Tags Debugger](https://www.opengraph.xyz/) — pegar la URL y verificar preview
+- [WhatsApp Sharing Debugger](https://developers.facebook.com/tools/debug/) — fuerza refresco de cache
+- Compartir manualmente en un grupo de WhatsApp de prueba
 
 ---
 
 ## 17. Creación de Flyers (Flayers Promocionales)
 
-> Cuando se solicite crear un "flayer" (flyer promocional) para un cliente, se debe construir un componente o página promocional autónoma que cumpla con una estructura base predefinida, para evitar tener que pedir instrucciones detalladas cada vez.
+> Cuando se solicite crear un "flayer" (flyer promocional) para un cliente, se debe construir un **archivo HTML standalone** (`qr-flyer.html`) + un **script de generación PDF** (`generate-pdf.cjs`). NO es un componente React — es HTML puro con Tailwind CDN para que Puppeteer lo renderice sin build.
 
-### 17.1. Estructura Obligatoria del Flyer
+**Ejemplos de referencia:**
+- `C:\Users\RF\Documents\MisProyectosIA\tacos-chepe\qr-flyer.html` + `generate-pdf.cjs`
+- `C:\Users\RF\Documents\MisProyectosIA\takeros-cdmx\qr-flyer.html` + `generate-pdf.cjs`
 
-Todo flyer debe contener, como mínimo, las siguientes secciones en orden:
+### 17.1. Estructura del Flyer (HTML standalone)
 
-1. **Hero Section (Encabezado):**
-   - Imagen de fondo atractiva (`hero-bg` o relacionada al producto/servicio).
-   - Título grande con el nombre del negocio o la promoción.
-   - Subtítulo o propuesta de valor clara y directa.
+El HTML se escribe con Tailwind CDN + Google Fonts, sin dependencias de React ni build. Estructura fija:
 
-2. **Código QR (Obligatorio):**
-   - Siempre se debe generar y mostrar un Código QR grande y escaneable.
-   - El QR debe apuntar a la dirección (URL) del catálogo/menú del cliente que se proporcione.
-   - Acompañar el QR con un texto tipo *"Escanea para ver nuestro menú"* o *"Haz tu pedido aquí"*.
+1. **Hero Section (parte superior):**
+   - `<div>` con `min-h-[300px]`, `flex flex-col items-center justify-center`
+   - Imagen de fondo con clase `animate-kenburns` (animación Ken Burns de 20s)
+   - Overlay con `bg-gradient-to-t` del color de fondo
+   - **Badge** rotado -2° con color secundario de la marca
+   - **Título** grande con efecto gradiente (CSS `background-clip: text`)
+   - **QR Code** centrado: imagen generada por API `api.qrserver.com` con `size=350x350`, borde blanco `p-5`, sombra del color primario, `border-2`
+   - **URL** debajo del QR en color primario
 
-3. **Llamado a la Acción (CTA):**
-   - Botón grande e interactivo (ej. "Ver Catálogo" o "Pedir por WhatsApp").
-   - Beneficios rápidos (ej. "Envío a domicilio", "Aceptamos transferencias").
+2. **Footer 3 columnas (parte inferior):**
+   - `border-t-[6px]` del color primario
+   - **Col 1 (izquierda):** Nombre/logo + descripción del negocio
+   - **Col 2 (centro):** Contacto (📍 dirección, 📞 WhatsApp) + redes sociales (SVG inline de Instagram, Facebook, TikTok, WhatsApp — círculos `#27272a`)
+   - **Col 3 (derecha):** Horarios con 🕐, días y hora
+   - Las 3 columnas usan `display: flex; flex-direction: row; gap: 2.5rem` (NO grid de Tailwind, para compatibilidad con Puppeteer/Pdf)
 
-4. **Footer (Pie de página):**
-   - Logo del negocio.
-   - Datos de contacto: WhatsApp, dirección, y horarios.
-   - Redes sociales (iconos de Instagram, Facebook).
-   - La leyenda de "Diseñado por IMAGINE & STAMP" (si aplica).
+3. **Bottom bar:**
+   - `border-top: 2px solid #27272a`
+   - Texto centrado: "Diseñado con 🔥 por Imagine & Stamp"
 
-### 17.2. Reglas de Diseño para el Flyer
-- **Colores y Fuentes:** Usar estrictamente los colores de la marca (primary, secondary) definidos en el sistema de diseño del cliente.
-- **Responsividad:** El diseño debe verse perfecto en formato móvil (pantalla vertical), ya que suele compartirse por WhatsApp o redes sociales.
-- **Sin distracciones:** El flyer es una landing page de conversión de 1 sola página. No debe llevar un menú de navegación complejo.
+### 17.2. Reglas de diseño
+
+| Regla | Detalle |
+|-------|---------|
+| **Layout** | `<body class="flex flex-col justify-between h-screen">` — el hero arriba, el footer abajo, sin scroll |
+| **Colores** | Usar los hex de `config.ts`: primary en bordes/acentos, secondary en badges |
+| **Fuente** | `Inter` via Google Fonts (`wght@400;500;700;900`) |
+| **Fondo** | `bg-zinc-900` (igual que la app) o el `bg` de `config.ts` |
+| **QR Code** | `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=URL&color=18181b&bgcolor=ffffff` |
+| **Logo en footer** | Si el logo ya está deployado, usar URL absoluta con `onerror="this.style.display='none'"`. Si no, usar el nombre en texto |
+| **Estilos inline** | Para layouts flex y dimensiones fijas usar `style=""` directo, no clases Tailwind — Puppeteer renderiza mejor inline |
+| **Print** | `@media print { body { -webkit-print-color-adjust: exact; } }` |
+| **Ken Burns** | `@keyframes kenburns { 0%{scale(1)} 50%{scale(1.1)} 100%{scale(1)} }` — 20s ease-in-out infinite alternate |
+
+### 17.3. Script de generación PDF (`generate-pdf.cjs`)
+
+Archivo CommonJS en la raíz del proyecto del cliente:
+
+```js
+const puppeteer = require('puppeteer');
+const path = require('path');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+
+  const fileUrl = `file:///${path.resolve('qr-flyer.html').replace(/\\/g, '/')}`;
+
+  await page.goto(fileUrl, { waitUntil: 'networkidle0' });
+
+  await page.pdf({
+    path: 'nombre-cliente-flayer.pdf',
+    format: 'A4',
+    printBackground: true,
+    margin: { top: '0', bottom: '0', left: '0', right: '0' }
+  });
+
+  await browser.close();
+  console.log('PDF Generado exitosamente: nombre-cliente-flayer.pdf');
+})();
+```
+
+**Para ejecutar:**
+```bash
+# Si Puppeteer ya tiene Chrome integrado:
+node generate-pdf.cjs
+
+# Si no (Windows con Chrome del sistema):
+$env:PUPPETEER_EXECUTABLE_PATH = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+node generate-pdf.cjs
+```
+
+### 17.4. Checklist del flyer
+
+- [ ] `qr-flyer.html` creado en la raíz del proyecto
+- [ ] `generate-pdf.cjs` creado en la raíz del proyecto
+- [ ] Hero: imagen de fondo, badge, título, QR code, URL
+- [ ] Footer: 3 columnas con datos reales del cliente
+- [ ] Bottom bar: crédito "Diseñado por Imagine & Stamp"
+- [ ] Colores coinciden con `config.ts`
+- [ ] QR apunta a la URL real del menú
+- [ ] Redes sociales linkean correctamente
+- [ ] PDF generado como `nombre-cliente-flayer.pdf`
+- [ ] Puppeteer desinstalado después de generar (`npm uninstall puppeteer`)
 
 ---
 
-*Última actualización: Julio 2026 — Proyecto base: imagineandstamp.site*
+*Última actualización: Agosto 2026 — Proyecto base: imagineandstamp.site*
 *Base: catálogo, carrito de 2 pasos, favoritos, panel de control y datos bancarios (transferencia).*
 *Complemento opcional con costo extra: pago con tarjeta vía Mercado Pago.*
-*Módulo de Descargas Digitales (sección 13) probado y documentado de punta a punta en Sahumerio Sagrado y Mundo Halloween, incluyendo el patrón de entrega automática post-pago con tarjeta (12.10).*
-*Compresión de imágenes antes de subir + optimización retroactiva de fotos existentes (sección 14) también probado en Mundo Halloween — reducción real de ~17MB en un catálogo de 216 productos.*
+*Módulo de Descargas Digitales (sección 13) probado y documentado de punta a punta en Sahumerio Sagrado y Mundo Halloween.*
+*Keepalive Supabase (5.6) implementado en la-maria-rooftop y amelie-patisserie.*
+*Compresión de imágenes + paginación 10x10 (sección 14) probado en amelie-patisserie y Mundo Halloween.*
