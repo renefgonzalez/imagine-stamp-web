@@ -50,6 +50,14 @@ Deno.serve(async (req: Request) => {
       statement_descriptor: "IMAGINE&STAMP",
     };
 
+    // URL del webhook que confirma el pago aunque el cliente cierre la pestaña.
+    // Se lee del secret MP_WEBHOOK_URL; si no está configurado, MP no notifica
+    // (el flujo de redirección con back_urls sigue funcionando igual).
+    const webhookUrl = Deno.env.get("MP_WEBHOOK_URL");
+    if (webhookUrl) {
+      preference.notification_url = webhookUrl;
+    }
+
     // Mercado Pago rechaza auto_return con URLs locales; solo en producción
     if (!isLocal) {
       preference.auto_return = "approved";

@@ -462,7 +462,7 @@ jobs:
 
 > **Alternativa sin GitHub:** usar [cron-job.org](https://cron-job.org) (gratis) con la misma URL y headers.
 >
-> *Implementado en: la-maria-rooftop (Julio 2026), amelie-patisserie (Agosto 2026).*
+> *Implementado en: la-maria-rooftop (Julio 2026), amelie-patisserie (Agosto 2026), imagine-and-stamp (Agosto 2026, `.github/workflows/keepalive.yml` con secrets).*
 
 ---
 

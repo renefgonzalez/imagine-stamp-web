@@ -141,10 +141,11 @@ git push origin main      # ← dispara GitHub Actions → publica en gh-pages
 
 ## 7. Pendiente / mejoras
 
-- [ ] **Webhook `mp-webhook`** (Edge Function con `verify_jwt = false`) para que MP confirme
-      el pago **aunque el cliente cierre la pestaña**. Necesita:
-      - registrar `notification_url` en la preference o en el panel MP,
-      - usar la `service_role key` dentro de la función para actualizar `orders`.
+- [x] **Webhook `mp-webhook`** (Edge Function con `verify_jwt = false`) para que MP confirme
+      el pago **aunque el cliente cierre la pestaña**. Implementado en
+      `supabase/functions/mp-webhook/index.ts`; ver `supabase/mp-webhook-setup.sql`
+      para el GRANT + instrucciones de despliegue (secrets `MP_WEBHOOK_URL`,
+      `verify_jwt = false`, `GRANT service_role`).
 - [ ] Pasar token de `TEST-...` a producción `APP_USR-...` (solo cambiar el secret).
 - [ ] (Opcional) Checkout Bricks para que el formulario de tarjeta viva dentro del sitio.
 
