@@ -628,6 +628,13 @@ el frontend. Por eso se usa una **Edge Function** como backend.
    (`?pago=exito&status=approved&external_reference=...`), marca `payment_reference` y
    muestra un toast.
 
+**REGLA OBLIGATORIA (Retorno Seguro de Mercado Pago)**: Para evitar la pérdida de pedidos tras pagar:
+1. **NO vaciar el carrito** (`setCart([])`) antes de redirigir a Mercado Pago.
+2. Al volver con éxito (`pago=exito`), mostrar la pantalla de éxito, pero **NO borrar** el enlace de WhatsApp guardado en `localStorage` de inmediato.
+3. Forzar **redirección automática** a WhatsApp (`window.location.href`) tras un delay de ~1.5s.
+4. El botón manual de "Enviar WhatsApp" en la UI debe limpiar el carrito y el `localStorage` **sólo al hacerle clic**.
+5. Si el usuario intenta cerrar el modal de éxito sin enviar el WhatsApp, lanzar un `window.confirm` advirtiendo que el pedido aún no se envía. Limpiar el carrito solo si acepta.
+
 **Pruebas:** token `TEST-...` + tarjetas de prueba (titular **APRO** = aprobado).
 
 **Pendiente recomendado:** webhook `mp-webhook` (Edge Function con `verify_jwt=false` +
