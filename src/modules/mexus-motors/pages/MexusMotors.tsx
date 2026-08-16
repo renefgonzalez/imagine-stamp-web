@@ -155,9 +155,9 @@ export default function MexusMotors() {
       {/* ═══ HEADER ═══ */}
       <header className="sticky top-0 z-40 backdrop-blur-xl border-b" style={{ backgroundColor: `${C.bg}ee`, borderColor: C.border }}>
         <div className="max-w-6xl mx-auto px-4 md:px-6">
-          <div className="flex items-center justify-between h-16 md:h-20">
-            <div className="flex items-center gap-3 min-w-0">
-              <img src={logoImg} alt="Mexus Motors" className="h-10 md:h-12 w-auto object-contain shrink-0" />
+          <div className="flex items-center justify-between h-20 md:h-24">
+            <div className="flex items-center gap-4 min-w-0">
+              <img src={logoImg} alt="Mexus Motors" className="h-16 md:h-20 w-auto object-contain shrink-0" />
               <div className="leading-tight min-w-0">
                 <h1 className="mexus-display font-extrabold text-base md:text-lg tracking-tight truncate">
                   MEXUS <span style={{ color: C.silver }}>MOTORS</span>
