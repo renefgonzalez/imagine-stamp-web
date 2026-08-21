@@ -635,6 +635,11 @@ el frontend. Por eso se usa una **Edge Function** como backend.
 4. El botón manual de "Enviar WhatsApp" en la UI debe limpiar el carrito y el `localStorage` **sólo al hacerle clic**.
 5. Si el usuario intenta cerrar el modal de éxito sin enviar el WhatsApp, lanzar un `window.confirm` advirtiendo que el pedido aún no se envía. Limpiar el carrito solo si acepta.
 
+**Patrón canónico (implementado en Tacos Chepe y Takero's CDMX):**
+1. **Antes de redirigir a Mercado Pago**, armar el mensaje de WhatsApp COMPLETO y guardarlo en `localStorage` (p.ej. `tacoschepe_pending_whatsapp`), junto con los datos del cliente. NO abrirlo todavía.
+2. **Al volver** con `pago=exito&status=approved`, leer ese mensaje del `localStorage` — **no reconstruirlo desde el carrito**, así sobrevive la recarga completa —, añadirle la confirmación `✅ PAGO EN LÍNEA CONFIRMADO · Folio MP: <id>`, actualizar `orders.payment_reference` y mostrar el modal "¡Pago Aprobado!".
+3. El botón "Enviar Pedido por WhatsApp" del modal limpia el carrito y el `localStorage` **sólo en su `onClick`**.
+
 **Pruebas:** token `TEST-...` + tarjetas de prueba (titular **APRO** = aprobado).
 
 **Pendiente recomendado:** webhook `mp-webhook` (Edge Function con `verify_jwt=false` +
