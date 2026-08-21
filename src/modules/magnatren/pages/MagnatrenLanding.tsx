@@ -45,7 +45,7 @@ const GALLERY: { src: string; alt: string; tag: string }[] = [
 const MODELS_SPECS = [
   {
     id: 'infantil',
-    name: 'Tren Eléctrico Infantil "Expreso Mágico"',
+    name: 'Tren Eléctrico Infantil',
     tagline: 'Diseñado especialmente para plazas comerciales, parques infantiles y salones de eventos.',
     image: './magnatren/tren-electrico-01.jpg',
     specs: [
@@ -60,7 +60,7 @@ const MODELS_SPECS = [
   },
   {
     id: 'turistico',
-    name: 'Tren Turístico "Gran Tour Express"',
+    name: 'Tren Turístico Eléctrico',
     tagline: 'Alta capacidad y elegancia para hoteles, resorts, zoológicos, malecones y centros históricos.',
     image: './magnatren/tren-electrico-02.jpg',
     specs: [
@@ -634,7 +634,7 @@ export default function MagnatrenLanding() {
                 }`}
                 style={activeModelTab === idx ? { backgroundColor: C.amber, color: C.ink } : {}}
               >
-                {m.name.split('"')[0].trim()}
+                {m.name}
               </button>
             ))}
           </div>
@@ -700,7 +700,7 @@ export default function MagnatrenLanding() {
                           className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-bold text-white transition-transform hover:scale-[1.02]"
                           style={{ backgroundColor: C.wa }}
                         >
-                          <MessageCircle size={18} /> Cotizar {m.name.split('"')[0]}
+                          <MessageCircle size={18} /> Cotizar {m.name}
                         </button>
                       </div>
                     </div>
