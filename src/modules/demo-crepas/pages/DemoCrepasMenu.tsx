@@ -1,5 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// LA CRÊPE DORÉE — Crêpes Dulces & Saladas · Estilo Café/Patisserie Francés
+// LA MACARENA — Crepería & Café
+// Menú digital interactivo con personalización de extras, toppings y checkout WhatsApp.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useState, useEffect, useMemo } from 'react';
@@ -8,100 +9,351 @@ import {
   Search, Plus, Minus, X, ShoppingBag, Croissant, UtensilsCrossed, Coffee,
   LayoutGrid, Sparkles, Phone, MapPin, Clock, Flame,
   Instagram, Facebook, MessageCircle, ArrowUp, Shield, ExternalLink,
-  Copy, Check, Trash2, Landmark, Wallet, Store, Bike,
+  Copy, Check, Trash2, Landmark, Wallet, Store, Bike, Salad, Heart,
+  SlidersHorizontal, CheckCircle2
 } from 'lucide-react';
 import { clientConfig, bankInfo } from '../config';
 
 const C = clientConfig.colors;
 const WHATSAPP = clientConfig.phone;
-const HERO_IMG = 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?auto=format&fit=crop&w=1920&q=80';
-const FALLBACK_IMG = 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?auto=format&fit=crop&w=800&q=70';
 
-// ── Interfaz ──
-type CategoryId = 'dulces' | 'saladas' | 'bebidas';
+// ── Tipos ──
+type CategoryId = 'especiales' | 'saladas' | 'dulces' | 'cafeteria' | 'bebidas';
 
 interface Product {
-  id: string; name: string; description: string; price: number;
-  category: CategoryId; image: string; badge?: string; featured?: boolean;
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: CategoryId;
+  image: string;
+  badge?: string;
+  featured?: boolean;
+  includesSalad?: boolean;
+  canCustomize?: boolean;
 }
+
+interface CustomizationChoice {
+  name: string;
+  price: number;
+}
+
 interface CartItem {
-  lineId: string; name: string; unitPrice: number; quantity: number; image: string; category: CategoryId;
+  lineId: string;
+  productId: string;
+  name: string;
+  basePrice: number;
+  unitPrice: number;
+  quantity: number;
+  image: string;
+  category: CategoryId;
+  extras?: CustomizationChoice[];
+  toppings?: CustomizationChoice[];
+  specialNotes?: string;
 }
 
+// ── Catálogo oficial de La Macarena ──
 const PRODUCTS: Product[] = [
-  // ── DULCES ──
-  { id: 'nutella', name: 'Nutella Clásica', description: 'Nutella, fresa fresca, plátano y nuez tostada. La favorita de todos.', price: 85, category: 'dulces', image: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?auto=format&fit=crop&w=800&q=70', badge: 'Más Pedida', featured: true },
-  { id: 'frutos-rojos', name: 'Frutos Rojos', description: 'Fresas, zarzamora y arándanos con crema de vainilla y coulis de frutos rojos.', price: 95, category: 'dulces', image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=800&q=70', featured: true },
-  { id: 'dulce-leche', name: 'Dulce de Leche', description: 'Cajeta artesanal, nuez y plátano, espolvoreada con azúcar glass.', price: 80, category: 'dulces', image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=800&q=70' },
-  { id: 'azucar-limon', name: 'Azúcar & Limón', description: 'La clásica francesa: mantequilla, azúcar y un toque de limón.', price: 55, category: 'dulces', image: 'https://images.unsplash.com/photo-1519676867240-f03562e64548?auto=format&fit=crop&w=800&q=70' },
-  { id: 'suzette', name: 'Crêpe Suzette', description: 'Mantequilla, naranja flambeada y toque de Grand Marnier.', price: 110, category: 'dulces', image: 'https://images.unsplash.com/photo-1481391319762-47dff72954d9?auto=format&fit=crop&w=800&q=70', badge: 'Clásica' },
-  { id: 'choco-banana', name: 'Choco-Banana', description: 'Chocolate belga, plátano, crema batida y chispas de chocolate.', price: 90, category: 'dulces', image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=70' },
-  { id: 'pay-manzana', name: 'Pay de Manzana', description: 'Manzana caramelizada, canela, nuez y crema pastelera.', price: 95, category: 'dulces', image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=800&q=70' },
-  { id: 'fresas-crema', name: 'Fresas con Crema', description: 'Fresas frescas, crema chantilly y azúcar glass.', price: 85, category: 'dulces', image: 'https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?auto=format&fit=crop&w=800&q=70' },
+  // ── CREPAS ESPECIALES ($90) · Incluye Ensalada ──
+  {
+    id: 'esp-cielo',
+    name: 'Crepa Especial Cielo',
+    description: 'Pollo con rajas, elote tierno, crema y queso gratinado. Incluye ensalada.',
+    price: 90,
+    category: 'especiales',
+    image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=800&q=75',
+    badge: 'La Favorita',
+    featured: true,
+    includesSalad: true,
+  },
+  {
+    id: 'esp-mexicana',
+    name: 'Crepa Especial Mexicana',
+    description: 'Chorizo dorado, cebolla salteada, chile jalapeño y queso gratinado. Incluye ensalada.',
+    price: 90,
+    category: 'especiales',
+    image: 'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?auto=format&fit=crop&w=800&q=75',
+    badge: 'Con Toque Picante',
+    featured: true,
+    includesSalad: true,
+  },
+  {
+    id: 'esp-hawaiana',
+    name: 'Crepa Especial Hawaiana',
+    description: 'Jamón de pavo selecto, piña caramelizada y queso fundido. Incluye ensalada.',
+    price: 90,
+    category: 'especiales',
+    image: 'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=800&q=75',
+    featured: true,
+    includesSalad: true,
+  },
+  {
+    id: 'esp-vegetariana',
+    name: 'Crepa Especial Vegetariana',
+    description: 'Champiñones frescos, espinacas, pimiento morrón y queso fundido. Incluye ensalada.',
+    price: 90,
+    category: 'especiales',
+    image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=75',
+    badge: 'Veggie',
+    includesSalad: true,
+  },
 
-  // ── SALADAS ──
-  { id: 'jamon-queso', name: 'Jamón & Queso', description: 'Jamón de pavo, queso manchego y crema. La clásica salada.', price: 90, category: 'saladas', image: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=800&q=70', featured: true },
-  { id: 'pollo-champ', name: 'Pollo & Champiñones', description: 'Pollo a la plancha, champiñones salteados, queso y crema.', price: 105, category: 'saladas', image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=800&q=70', badge: 'Más Pedida' },
-  { id: 'hawaiana', name: 'Hawaiana', description: 'Jamón, piña asada y queso gratinado.', price: 95, category: 'saladas', image: 'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=800&q=70' },
-  { id: 'mexicana', name: 'Mexicana', description: 'Chorizo, queso, pico de gallo y aguacate.', price: 100, category: 'saladas', image: 'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?auto=format&fit=crop&w=800&q=70', badge: 'Picante' },
-  { id: 'espinaca-queso', name: 'Espinaca & Queso', description: 'Espinaca, queso panela y champiñones. Opción vegetariana.', price: 95, category: 'saladas', image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=70', badge: 'Veggie' },
-  { id: 'philly-steak', name: 'Philly Steak', description: 'Res a las brasas, pimientos, cebolla y queso fundido.', price: 120, category: 'saladas', image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=70', badge: 'Nueva' },
-  { id: 'caprese', name: 'Caprese', description: 'Tomate, albahaca, mozzarella y reducción balsámica.', price: 98, category: 'saladas', image: 'https://images.unsplash.com/photo-1505576399279-565b52d4ac71?auto=format&fit=crop&w=800&q=70', badge: 'Veggie' },
+  // ── CREPAS SALADAS ($80) · Incluye Ensalada · Ingrediente Extra $10.00 ──
+  {
+    id: 'sal-peperoni',
+    name: 'Crepa Salada de Peperoni',
+    description: 'Peperoni de primera calidad con abundante queso derretido. Incluye ensalada.',
+    price: 80,
+    category: 'saladas',
+    image: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?auto=format&fit=crop&w=800&q=75',
+    includesSalad: true,
+    canCustomize: true,
+  },
+  {
+    id: 'sal-jamon',
+    name: 'Crepa Salada de Jamón',
+    description: 'Jamón de pavo clásico y queso manchego fundido. Incluye ensalada.',
+    price: 80,
+    category: 'saladas',
+    image: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=800&q=75',
+    includesSalad: true,
+    canCustomize: true,
+  },
+  {
+    id: 'sal-champinones',
+    name: 'Crepa Salada de Champiñones',
+    description: 'Champiñones salteados al punto con queso gratinado. Incluye ensalada.',
+    price: 80,
+    category: 'saladas',
+    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=75',
+    includesSalad: true,
+    canCustomize: true,
+  },
+  {
+    id: 'sal-chorizo',
+    name: 'Crepa Salada de Chorizo',
+    description: 'Chorizo artesanal con queso derretido en masa doradita. Incluye ensalada.',
+    price: 80,
+    category: 'saladas',
+    image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=75',
+    includesSalad: true,
+    canCustomize: true,
+  },
+
+  // ── CREPAS DULCES ($70) · Ingrediente Extra $5.00 · Toppings $5.00 ──
+  {
+    id: 'dul-nutella',
+    name: 'Crepa Dulce de Nutella',
+    description: 'Abundante crema de avellanas Nutella untada al calor de la crêpe.',
+    price: 70,
+    category: 'dulces',
+    image: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?auto=format&fit=crop&w=800&q=75',
+    badge: 'Imperdible',
+    featured: true,
+    canCustomize: true,
+  },
+  {
+    id: 'dul-philadelphia',
+    name: 'Crepa Dulce de Philadelphia',
+    description: 'Suave y cremoso queso crema Philadelphia tradicional.',
+    price: 70,
+    category: 'dulces',
+    image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=800&q=75',
+    canCustomize: true,
+  },
+  {
+    id: 'dul-lechera',
+    name: 'Crepa Dulce de Lechera',
+    description: 'La clásica leche condensada dulce y consentidora.',
+    price: 70,
+    category: 'dulces',
+    image: 'https://images.unsplash.com/photo-1519676867240-f03562e64548?auto=format&fit=crop&w=800&q=75',
+    canCustomize: true,
+  },
+  {
+    id: 'dul-cajeta',
+    name: 'Crepa Dulce de Cajeta',
+    description: 'Cajeta tradicional de leche con delicioso sabor acaramelado.',
+    price: 70,
+    category: 'dulces',
+    image: 'https://images.unsplash.com/photo-1481391319762-47dff72954d9?auto=format&fit=crop&w=800&q=75',
+    canCustomize: true,
+  },
+  {
+    id: 'dul-chocolate',
+    name: 'Crepa Dulce de Chocolate',
+    description: 'Rico chocolate dulce ideal para los amantes del cacao.',
+    price: 70,
+    category: 'dulces',
+    image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=75',
+    canCustomize: true,
+  },
+  {
+    id: 'dul-mermelada',
+    name: 'Crepa Dulce Mermelada de Fresa',
+    description: 'Mermelada de fresa natural con pedacitos de fruta fresca.',
+    price: 70,
+    category: 'dulces',
+    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=800&q=75',
+    canCustomize: true,
+  },
+
+  // ── CAFETERÍA ──
+  {
+    id: 'caf-americano',
+    name: 'Café Americano',
+    description: 'Café de grano recién molido, balanceado y aromático.',
+    price: 30,
+    category: 'cafeteria',
+    image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=75',
+  },
+  {
+    id: 'caf-latte',
+    name: 'Latte',
+    description: 'Espresso con leche suavemente vaporizada y crema tersa.',
+    price: 55,
+    category: 'cafeteria',
+    image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=800&q=75',
+    featured: true,
+  },
+  {
+    id: 'caf-espresso',
+    name: 'Espresso',
+    description: 'Extracción corta e intensa de café de especialidad con crema dorada.',
+    price: 30,
+    category: 'cafeteria',
+    image: 'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?auto=format&fit=crop&w=800&q=75',
+  },
+  {
+    id: 'caf-chocolate',
+    name: 'Chocolate Caliente',
+    description: 'Chocolate tradicional espeso y cremoso con leche caliente.',
+    price: 55,
+    category: 'cafeteria',
+    image: 'https://images.unsplash.com/photo-1542990253-a781e04c0082?auto=format&fit=crop&w=800&q=75',
+  },
+  {
+    id: 'caf-refil',
+    name: 'Café Refil',
+    description: 'Café americano con refill ilimitado durante tu visita en mesa.',
+    price: 40,
+    category: 'cafeteria',
+    image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=75',
+    badge: 'Refill',
+  },
 
   // ── BEBIDAS ──
-  { id: 'cafe-olla', name: 'Café de Olla', description: 'Café con canela y piloncillo, servido caliente.', price: 45, category: 'bebidas', image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=70' },
-  { id: 'chocolate', name: 'Chocolate Caliente', description: 'Chocolate artesanal con leche cremosa.', price: 55, category: 'bebidas', image: 'https://images.unsplash.com/photo-1542990253-a781e04c0082?auto=format&fit=crop&w=800&q=70' },
-  { id: 'chai-latte', name: 'Chai Latte', description: 'Té chai especiado con leche cremosa y canela.', price: 58, category: 'bebidas', image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=800&q=70' },
-  { id: 'limonada-fresa', name: 'Limonada de Fresa', description: 'Limonada natural con fresas frescas.', price: 48, category: 'bebidas', image: 'https://images.unsplash.com/photo-1437418747212-8d9709afab22?auto=format&fit=crop&w=800&q=70' },
-  { id: 'smoothie', name: 'Smoothie de Frutos Rojos', description: 'Fresa, zarzamora y plátano, sin azúcar añadida.', price: 62, category: 'bebidas', image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=70', badge: 'Detox' },
-  { id: 'horchata', name: 'Agua de Horchata', description: 'Horchata tradicional, bien fría.', price: 38, category: 'bebidas', image: 'https://images.unsplash.com/photo-1523677011781-c91d1bbe2f9e?auto=format&fit=crop&w=800&q=70' },
+  {
+    id: 'beb-agua-dia',
+    name: 'Agua del Día',
+    description: 'Agua fresca de frutas naturales preparada fresca todos los días.',
+    price: 30,
+    category: 'bebidas',
+    image: 'https://images.unsplash.com/photo-1437418747212-8d9709afab22?auto=format&fit=crop&w=800&q=75',
+  },
+  {
+    id: 'beb-agua-coco',
+    name: 'Agua de Coco Natural',
+    description: 'Agua de coco 100% natural, fría, refrescante y revitalizante.',
+    price: 35,
+    category: 'bebidas',
+    image: 'https://images.unsplash.com/photo-1523677011781-c91d1bbe2f9e?auto=format&fit=crop&w=800&q=75',
+    badge: '100% Natural',
+  },
 ];
 
-const CATEGORIES: { id: 'all' | CategoryId; name: string; icon: any }[] = [
-  { id: 'all', name: 'Todo', icon: LayoutGrid },
-  { id: 'dulces', name: 'Dulces', icon: Croissant },
-  { id: 'saladas', name: 'Saladas', icon: UtensilsCrossed },
-  { id: 'bebidas', name: 'Bebidas', icon: Coffee },
+// Opciones de personalización según el tipo
+const EXTRAS_SALADAS: CustomizationChoice[] = [
+  { name: 'Peperoni Extra', price: 10 },
+  { name: 'Jamón Extra', price: 10 },
+  { name: 'Champiñones Extra', price: 10 },
+  { name: 'Chorizo Extra', price: 10 },
+  { name: 'Queso Manchego Extra', price: 10 },
 ];
 
-const catAccent = (cat: CategoryId): string => cat === 'dulces' ? C.sweet : cat === 'saladas' ? C.savory : C.secondary;
-const badgeColor = (b: string): string => {
-  switch (b) {
-    case 'Veggie': return C.savory;
-    case 'Picante': return '#C0392B';
-    case 'Nueva': return C.sweet;
-    case 'Detox': return '#0E9F6E';
-    default: return C.secondary;
-  }
-};
+const EXTRAS_DULCES: CustomizationChoice[] = [
+  { name: 'Nutella Extra', price: 5 },
+  { name: 'Philadelphia Extra', price: 5 },
+  { name: 'Lechera Extra', price: 5 },
+  { name: 'Cajeta Extra', price: 5 },
+  { name: 'Chocolate Extra', price: 5 },
+  { name: 'Mermelada Fresa Extra', price: 5 },
+];
+
+const TOPPINGS_DULCES: CustomizationChoice[] = [
+  { name: 'Nuez picada', price: 5 },
+  { name: 'Coco Tostado', price: 5 },
+  { name: 'Plátano fresco', price: 5 },
+  { name: 'Fresa fresca', price: 5 },
+];
+
+const CATEGORIES = [
+  { id: 'all' as const, name: 'Todo el Menú', icon: LayoutGrid },
+  { id: 'especiales' as const, name: 'Especiales $90', icon: Sparkles },
+  { id: 'saladas' as const, name: 'Saladas $80', icon: UtensilsCrossed },
+  { id: 'dulces' as const, name: 'Dulces $70', icon: Croissant },
+  { id: 'cafeteria' as const, name: 'Cafetería', icon: Coffee },
+  { id: 'bebidas' as const, name: 'Bebidas', icon: Heart },
+];
+
+const FALLBACK_IMG = 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?auto=format&fit=crop&w=800&q=70';
 const onImgError = (e: any) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_IMG; };
 
-// ═══════════════════ COMPONENTE ═══════════════════
+// ═══════════════════ COMPONENTE PRINCIPAL ═══════════════════
 export default function DemoCrepasMenu() {
   const [cart, setCart] = useState<CartItem[]>(() => {
-    try { const s = localStorage.getItem('crepes_cart'); return s ? JSON.parse(s) : []; } catch { return []; }
+    try {
+      const s = localStorage.getItem('macarena_cart');
+      return s ? JSON.parse(s) : [];
+    } catch {
+      return [];
+    }
   });
+
   const [activeCategory, setActiveCategory] = useState<'all' | CategoryId>('all');
   const [query, setQuery] = useState('');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartStep, setCartStep] = useState(1);
   const [customerInfo, setCustomerInfo] = useState({
-    name: '', phone: '', deliveryMethod: 'pickup' as 'pickup' | 'delivery',
-    address: '', paymentMethod: 'cash' as 'cash' | 'transfer', cashAmount: '', notes: '',
+    name: '',
+    phone: '',
+    deliveryMethod: 'pickup' as 'pickup' | 'delivery',
+    address: '',
+    paymentMethod: 'cash' as 'cash' | 'transfer',
+    cashAmount: '',
+    notes: '',
   });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [toastMsg, setToastMsg] = useState('');
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
+
+  // Estado del Modal de Personalización
+  const [customizingProduct, setCustomizingProduct] = useState<Product | null>(null);
+  const [selectedExtras, setSelectedExtras] = useState<CustomizationChoice[]>([]);
+  const [selectedToppings, setSelectedToppings] = useState<CustomizationChoice[]>([]);
+  const [specialNotes, setSpecialNotes] = useState('');
+
+  // Persistencia de Carrito
+  useEffect(() => {
+    try {
+      localStorage.setItem('macarena_cart', JSON.stringify(cart));
+    } catch {}
+  }, [cart]);
+
+  // Lock de scroll al abrir modales
+  useEffect(() => {
+    document.body.style.overflow = isCartOpen || isPrivacyOpen || customizingProduct !== null ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isCartOpen, isPrivacyOpen, customizingProduct]);
+
+  useEffect(() => {
+    document.title = 'La Macarena | Crepería & Café · Menú Digital';
+  }, []);
 
   const cartTotal = useMemo(() => cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0), [cart]);
   const totalItems = useMemo(() => cart.reduce((s, i) => s + i.quantity, 0), [cart]);
-
-  useEffect(() => { try { localStorage.setItem('crepes_cart', JSON.stringify(cart)); } catch {} }, [cart]);
-  useEffect(() => { document.body.style.overflow = isCartOpen ? 'hidden' : ''; return () => { document.body.style.overflow = ''; }; }, [isCartOpen]);
-  useEffect(() => { const cb = () => setScrolled(window.scrollY > 120); window.addEventListener('scroll', cb, { passive: true }); return () => window.removeEventListener('scroll', cb); }, []);
-  useEffect(() => { document.title = 'La Crêpe Dorée | Crêpes Dulces & Saladas'; }, []);
 
   const normalize = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
@@ -119,19 +371,87 @@ export default function DemoCrepasMenu() {
   const featured = useMemo(() => PRODUCTS.filter(p => p.featured), []);
   const showFeatured = activeCategory === 'all' && !query.trim();
 
-  const handleAdd = (product: Product) => {
+  // Abrir personalización o añadir directo
+  const handleProductClick = (product: Product) => {
+    if (product.category === 'saladas' || product.category === 'dulces') {
+      setCustomizingProduct(product);
+      setSelectedExtras([]);
+      setSelectedToppings([]);
+      setSpecialNotes('');
+    } else {
+      // Agregar directo
+      addItemToCart(product, [], [], '');
+    }
+  };
+
+  const addItemToCart = (
+    product: Product,
+    extras: CustomizationChoice[],
+    toppings: CustomizationChoice[],
+    notes: string
+  ) => {
+    const extrasTotal = extras.reduce((sum, e) => sum + e.price, 0);
+    const toppingsTotal = toppings.reduce((sum, t) => sum + t.price, 0);
+    const unitPrice = product.price + extrasTotal + toppingsTotal;
+
+    // Generar ID único según personalizaciones
+    const extraKey = extras.map(e => e.name).sort().join('-');
+    const topKey = toppings.map(t => t.name).sort().join('-');
+    const lineId = `${product.id}_${extraKey}_${topKey}_${notes.trim().slice(0, 10)}`;
+
     setCart(prev => {
-      const existing = prev.find(i => i.lineId === product.id);
-      if (existing) return prev.map(i => i.lineId === product.id ? { ...i, quantity: i.quantity + 1 } : i);
-      return [...prev, { lineId: product.id, name: product.name, unitPrice: product.price, quantity: 1, image: product.image, category: product.category }];
+      const existing = prev.find(i => i.lineId === lineId);
+      if (existing) {
+        return prev.map(i => i.lineId === lineId ? { ...i, quantity: i.quantity + 1 } : i);
+      }
+      return [
+        ...prev,
+        {
+          lineId,
+          productId: product.id,
+          name: product.name,
+          basePrice: product.price,
+          unitPrice,
+          quantity: 1,
+          image: product.image,
+          category: product.category,
+          extras: extras.length > 0 ? extras : undefined,
+          toppings: toppings.length > 0 ? toppings : undefined,
+          specialNotes: notes.trim() || undefined,
+        },
+      ];
     });
+
     setToastMsg(product.name);
     setTimeout(() => setToastMsg(''), 2500);
   };
 
-  const handleUpdateQty = (lineId: string, d: number) => {
-    setCart(prev => prev.map(i => i.lineId === lineId ? { ...i, quantity: Math.max(1, i.quantity + d) } : i).filter(i => i.quantity > 0));
+  const handleConfirmCustomization = () => {
+    if (!customizingProduct) return;
+    addItemToCart(customizingProduct, selectedExtras, selectedToppings, specialNotes);
+    setCustomizingProduct(null);
   };
+
+  const toggleExtra = (item: CustomizationChoice) => {
+    setSelectedExtras(prev =>
+      prev.some(e => e.name === item.name) ? prev.filter(e => e.name !== item.name) : [...prev, item]
+    );
+  };
+
+  const toggleTopping = (item: CustomizationChoice) => {
+    setSelectedToppings(prev =>
+      prev.some(t => t.name === item.name) ? prev.filter(t => t.name !== item.name) : [...prev, item]
+    );
+  };
+
+  const handleUpdateQty = (lineId: string, d: number) => {
+    setCart(prev =>
+      prev
+        .map(i => (i.lineId === lineId ? { ...i, quantity: Math.max(1, i.quantity + d) } : i))
+        .filter(i => i.quantity > 0)
+    );
+  };
+
   const handleRemove = (lineId: string) => setCart(prev => prev.filter(i => i.lineId !== lineId));
   const handleClearCart = () => setCart([]);
 
@@ -139,33 +459,76 @@ export default function DemoCrepasMenu() {
     const e: Record<string, string> = {};
     if (!customerInfo.name.trim()) e.name = 'Ingresa tu nombre';
     if (!customerInfo.phone.trim()) e.phone = 'Ingresa tu WhatsApp';
-    if (customerInfo.deliveryMethod === 'delivery' && !customerInfo.address.trim()) e.address = 'Dirección requerida';
+    if (customerInfo.deliveryMethod === 'delivery' && !customerInfo.address.trim()) {
+      e.address = 'Ingresa tu dirección de entrega';
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
-  const handleSend = () => {
+  const handleSendOrder = () => {
     if (!validate()) return;
-    const itemsText = cart.map((item, i) => `${i + 1}. ${item.quantity}\u00D7 ${item.name} \u2014 $${item.unitPrice * item.quantity}`).join('\n');
-    const deliveryText = customerInfo.deliveryMethod === 'pickup' ? '\uD83D\uDED2 Recoger en local' : `\uD83D\uDEF5 Env\u00EDo a: ${customerInfo.address}`;
-    let paymentText = customerInfo.paymentMethod === 'cash' ? '\uD83D\uDCB5 Efectivo' : '\uD83C\uDFE6 Transferencia';
-    if (customerInfo.paymentMethod === 'cash' && customerInfo.cashAmount) paymentText += ` (cambio: $${Math.max(0, Number(customerInfo.cashAmount) - cartTotal)})`;
 
-    const msg = `\uD83E\uDD5E *PEDIDO \u2014 ${clientConfig.businessName.toUpperCase()}*\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\uD83D\uDCCB *Pedido (${totalItems} items):*\n${itemsText}\n\n\uD83D\uDCB5 *Total: $${cartTotal}*\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\uD83D\uDC64 *Cliente:* ${customerInfo.name}\n\uD83D\uDCF1 *WhatsApp:* ${customerInfo.phone}\n${deliveryText}\n${paymentText}${customerInfo.notes ? `\n\uD83D\uDCDD *Notas:* ${customerInfo.notes}` : ''}`;
+    const itemsText = cart
+      .map((item, i) => {
+        let text = `${i + 1}. *${item.quantity}× ${item.name}* — $${item.unitPrice * item.quantity}`;
+        if (item.extras && item.extras.length > 0) {
+          text += `\n   ➕ Extras: ${item.extras.map(e => `${e.name} (+$${e.price})`).join(', ')}`;
+        }
+        if (item.toppings && item.toppings.length > 0) {
+          text += `\n   🍓 Toppings: ${item.toppings.map(t => `${t.name} (+$${t.price})`).join(', ')}`;
+        }
+        if (item.specialNotes) {
+          text += `\n   📝 Nota: ${item.specialNotes}`;
+        }
+        return text;
+      })
+      .join('\n\n');
+
+    const deliveryText =
+      customerInfo.deliveryMethod === 'pickup'
+        ? '🛒 *Modalidad:* Para recoger en local / Comer aquí'
+        : `🛵 *Envío a domicilio:* ${customerInfo.address}`;
+
+    let paymentText =
+      customerInfo.paymentMethod === 'cash' ? '💵 *Forma de pago:* Efectivo' : '🏦 *Forma de pago:* Transferencia BBVA';
+    if (customerInfo.paymentMethod === 'cash' && customerInfo.cashAmount) {
+      paymentText += ` (Paga con: $${customerInfo.cashAmount} · Cambio: $${Math.max(0, Number(customerInfo.cashAmount) - cartTotal)})`;
+    }
+
+    const msg =
+      `🥞 *NUEVO PEDIDO — LA MACARENA CREPERÍA & CAFÉ*\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `📋 *Detalle del Pedido (${totalItems} items):*\n\n` +
+      `${itemsText}\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `💰 *TOTAL A PAGAR: $${cartTotal} MXN*\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+      `👤 *Cliente:* ${customerInfo.name}\n` +
+      `📱 *WhatsApp:* ${customerInfo.phone}\n` +
+      `${deliveryText}\n` +
+      `${paymentText}` +
+      (customerInfo.notes ? `\n\n📝 *Notas generales:* ${customerInfo.notes}` : '') +
+      `\n\n_Enviado desde el Menú Digital Oficial_`;
 
     setCartStep(3);
     setTimeout(() => {
       window.location.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
       handleClearCart();
-      setCustomerInfo({ name: '', phone: '', deliveryMethod: 'pickup', address: '', paymentMethod: 'cash', cashAmount: '', notes: '' });
+      setCustomerInfo({
+        name: '', phone: '', deliveryMethod: 'pickup', address: '',
+        paymentMethod: 'cash', cashAmount: '', notes: ''
+      });
       setIsCartOpen(false);
     }, 500);
   };
 
-  const changeAmount = customerInfo.paymentMethod === 'cash' && customerInfo.cashAmount ? Math.max(0, Number(customerInfo.cashAmount) - cartTotal) : null;
-
   const handleCopy = async (text: string, field: string) => {
-    try { await navigator.clipboard.writeText(text); setCopied(field); setTimeout(() => setCopied(null), 2000); } catch {}
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(field);
+      setTimeout(() => setCopied(null), 2000);
+    } catch {}
   };
 
   const bankFields = [
@@ -176,35 +539,117 @@ export default function DemoCrepasMenu() {
   ];
 
   return (
-    <div className="crepes-root min-h-screen flex flex-col" style={{ backgroundColor: C.bg, fontFamily: '"Karla", system-ui, sans-serif', color: C.textPrimary }}>
+    <div
+      className="macarena-root min-h-screen flex flex-col selection:bg-amber-200 selection:text-amber-950"
+      style={{ backgroundColor: C.bg, fontFamily: '"Karla", system-ui, sans-serif', color: C.textPrimary }}
+    >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,600&family=Karla:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
-        .crepes-root button, .crepes-root a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-        @keyframes cp-kenburns { 0%{transform:scale(1)} 100%{transform:scale(1.07)} }
-        .cp-kenburns { animation: cp-kenburns 20s ease-in-out infinite alternate; }
-        @keyframes cp-float { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-10px) rotate(3deg)} }
-        .cp-float { animation: cp-float 6s ease-in-out infinite; }
-        @keyframes cp-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(198,123,61,0.5)} 50%{box-shadow:0 0 0 8px rgba(198,123,61,0)} }
-        .cp-pulse { animation: cp-pulse 2s ease-in-out infinite; }
-        .cp-display { font-family: "Playfair Display", serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,600&family=Karla:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Bebas+Neue&display=swap');
+        .macarena-root button, .macarena-root a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+        .macarena-display { font-family: "Playfair Display", serif; }
+        .macarena-sans { font-family: "Karla", sans-serif; }
+        .macarena-hide-scrollbar::-webkit-scrollbar { display: none; }
+        .macarena-hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes macarena-marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .macarena-marquee-track {
+          display: flex;
+          width: max-content;
+          animation: macarena-marquee 24s linear infinite;
+        }
+        .macarena-marquee-track:hover {
+          animation-play-state: paused;
+        }
       `}</style>
 
-      {/* ═══ HEADER ═══ */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/85 border-b border-amber-100/50" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-        <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: `conic-gradient(from 210deg, ${C.secondary}, ${C.cream}, ${C.sweet}, ${C.secondary})` }}>
-              <Croissant size={18} className="text-white drop-shadow" />
+      {/* ═══ CINTILLO SUPERIOR TIPO CARRUSEL INFINITO (PRÓXIMAMENTE DESAYUNOS) ═══ */}
+      <div className="bg-[#2E231D] text-[#F4ECE1] text-[11px] font-bold uppercase tracking-[0.22em] py-2 overflow-hidden border-b border-[#9E744F]/30 select-none relative z-50">
+        <div className="macarena-marquee-track flex items-center">
+          {/* Bloque 1 */}
+          <div className="flex items-center gap-6 shrink-0 pr-6">
+            <span className="flex items-center gap-1.5 text-[#FAF7F2]">
+              <Sparkles size={13} className="text-[#B88E67]" />
+              <span>PRÓXIMAMENTE DESAYUNOS</span>
+            </span>
+            <span className="text-[#9E744F]">✦</span>
+            <span className="flex items-center gap-1.5 text-[#F4ECE1]/90">
+              <Coffee size={13} className="text-[#B88E67]" />
+              <span>CAFÉ & CRÊPES ARTESANALES</span>
+            </span>
+            <span className="text-[#9E744F]">✦</span>
+            <span className="flex items-center gap-1.5 text-[#FAF7F2]">
+              <Croissant size={13} className="text-[#B88E67]" />
+              <span>LA MACARENA CREPERÍA</span>
+            </span>
+            <span className="text-[#9E744F]">✦</span>
+            <span className="flex items-center gap-1.5 text-[#F4ECE1]/90">
+              <Sparkles size={13} className="text-[#B88E67]" />
+              <span>NUEVOS PLATILLOS MATUTINOS</span>
+            </span>
+            <span className="text-[#9E744F]">✦</span>
+          </div>
+
+          {/* Bloque 2 (Duplicado para loop infinito fluido) */}
+          <div className="flex items-center gap-6 shrink-0 pr-6" aria-hidden="true">
+            <span className="flex items-center gap-1.5 text-[#FAF7F2]">
+              <Sparkles size={13} className="text-[#B88E67]" />
+              <span>PRÓXIMAMENTE DESAYUNOS</span>
+            </span>
+            <span className="text-[#9E744F]">✦</span>
+            <span className="flex items-center gap-1.5 text-[#F4ECE1]/90">
+              <Coffee size={13} className="text-[#B88E67]" />
+              <span>CAFÉ & CRÊPES ARTESANALES</span>
+            </span>
+            <span className="text-[#9E744F]">✦</span>
+            <span className="flex items-center gap-1.5 text-[#FAF7F2]">
+              <Croissant size={13} className="text-[#B88E67]" />
+              <span>LA MACARENA CREPERÍA</span>
+            </span>
+            <span className="text-[#9E744F]">✦</span>
+            <span className="flex items-center gap-1.5 text-[#F4ECE1]/90">
+              <Sparkles size={13} className="text-[#B88E67]" />
+              <span>NUEVOS PLATILLOS MATUTINOS</span>
+            </span>
+            <span className="text-[#9E744F]">✦</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ═══ HEADER STICKY ═══ */}
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-white/90 border-b border-[#9E744F]/15 shadow-sm" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center shadow-md"
+              style={{ background: `linear-gradient(135deg, ${C.primary}, ${C.secondary})`, color: '#FFFFFF' }}
+            >
+              <Croissant size={20} className="drop-shadow" />
             </div>
             <div className="leading-tight">
-              <h1 className="cp-display text-lg tracking-tight font-black" style={{ color: C.primary }}>La Crêpe Dorée</h1>
-              <p className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: C.secondary }}>Dulces & Saladas</p>
+              <h1 className="macarena-display text-xl font-bold tracking-tight" style={{ color: C.primary }}>
+                La Macarena
+              </h1>
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: C.secondary }}>
+                Crepería & Café
+              </p>
             </div>
           </div>
-          <button onClick={() => { setCartStep(1); setIsCartOpen(true); }} className="relative p-2.5 rounded-xl hover:bg-amber-50 transition-colors" style={{ color: C.primary }}>
-            <ShoppingBag size={20} />
+
+          <button
+            onClick={() => { setCartStep(1); setIsCartOpen(true); }}
+            className="relative flex items-center gap-2 px-3.5 py-2 rounded-full border transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm"
+            style={{ backgroundColor: C.primary, color: '#FFFFFF', borderColor: C.primary }}
+            aria-label="Ver carrito"
+          >
+            <ShoppingBag size={17} />
+            <span className="text-xs font-bold hidden sm:inline-block">Ver Pedido</span>
             {cart.length > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white px-1 shadow-md" style={{ backgroundColor: C.secondary }}>
+              <span
+                className="min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-black flex items-center justify-center shadow-md animate-pulse"
+                style={{ backgroundColor: C.secondary, color: '#FFFFFF' }}
+              >
                 {totalItems}
               </span>
             )}
@@ -212,97 +657,80 @@ export default function DemoCrepasMenu() {
         </div>
       </header>
 
-      {/* ═══ HERO ═══ */}
-      <section className="relative overflow-hidden" style={{ height: 'clamp(360px, 46vh, 500px)' }}>
-        <div className="absolute inset-0 cp-kenburns" style={{ backgroundImage: `url(${HERO_IMG})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(42,27,20,0.88), rgba(42,27,20,0.35) 50%, rgba(42,27,20,0.2))' }} />
-        <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-10 max-w-6xl mx-auto">
-          <motion.span initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="inline-block self-start px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] text-white/90 mb-3 bg-white/10 backdrop-blur border border-white/15">
-            {clientConfig.tagline}
-          </motion.span>
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="cp-display text-4xl md:text-6xl text-white leading-none font-black">
-            La Crêpe Dorée
-          </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="text-white/75 text-sm md:text-base mt-2 max-w-md font-light">
-            Crêpes artesanales preparadas al momento. Del dulce más goloso al salado más irresistible, con recetas de inspiración francesa.
-          </motion.p>
-          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="flex gap-2.5 mt-5">
-            <button onClick={() => { setActiveCategory('dulces'); setQuery(''); }} className="px-4 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider text-white shadow-lg transition-transform active:scale-95 hover:scale-105 flex items-center gap-1.5" style={{ backgroundColor: C.sweet, boxShadow: `0 10px 30px -8px ${C.sweet}90` }}>
-              <Croissant size={14} /> Dulces
-            </button>
-            <button onClick={() => { setActiveCategory('saladas'); setQuery(''); }} className="px-4 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider text-white shadow-lg transition-transform active:scale-95 hover:scale-105 flex items-center gap-1.5" style={{ backgroundColor: C.savory, boxShadow: `0 10px 30px -8px ${C.savory}90` }}>
-              <UtensilsCrossed size={14} /> Saladas
-            </button>
+      {/* ═══ HERO / IDENTIDAD DE MARCA ═══ */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#2E231D] to-[#3B2C24] text-[#FAF7F2] pt-10 pb-12 px-4 md:px-8">
+        <div className="absolute inset-0 bg-[radial-gradient(#9E744F_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
+        
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <span
+              className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] mb-3 border backdrop-blur-md"
+              style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: '#F4ECE1', borderColor: 'rgba(184,142,103,0.4)' }}
+            >
+              <Sparkles size={11} className="text-[#B88E67]" /> Especialidad en Crêpes & Café
+            </span>
+            <h2 className="macarena-display text-4xl md:text-5xl font-black tracking-tight text-white">
+              La Macarena
+            </h2>
+            <p className="text-[#B88E67] font-semibold text-sm md:text-base tracking-widest uppercase mt-1">
+              Crepería & Café
+            </p>
+            <p className="text-white/80 text-xs md:text-sm mt-3 max-w-md mx-auto leading-relaxed">
+              Crêpes preparadas al momento, dulces y saladas con ingredientes selectos, café de especialidad y bebidas refrescantes.
+            </p>
+
+            {/* Micro datos de contacto en hero */}
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mt-5 text-[11px] text-[#F4ECE1]/70">
+              <span className="flex items-center gap-1.5"><MapPin size={12} className="text-[#B88E67]" /> V. Carranza #1725</span>
+              <span className="flex items-center gap-1.5"><Clock size={12} className="text-[#B88E67]" /> Mar–Dom 9:00 AM – 9:30 PM</span>
+              <a href={`https://wa.me/${WHATSAPP}`} className="flex items-center gap-1.5 text-[#25D366] font-bold hover:underline">
+                <MessageCircle size={12} /> 312 116 55 55
+              </a>
+            </div>
           </motion.div>
         </div>
-        {/* Swirl decorativo (crêpe enrollada) */}
-        <svg viewBox="0 0 200 200" className="absolute -right-10 -bottom-16 opacity-20 cp-float pointer-events-none hidden md:block" width="220" height="220" fill="none">
-          <path d="M100 100m-8 0a8 8 0 1 1 16 0a8 8 0 1 1 -16 0" stroke={C.cream} strokeWidth="3" />
-          <path d="M100 100a24 24 0 1 0 0.1 0" stroke={C.cream} strokeWidth="3" strokeLinecap="round" />
-          <path d="M100 100a46 46 0 1 0 0.1 0" stroke={C.cream} strokeWidth="3" strokeLinecap="round" />
-          <path d="M100 100a68 68 0 1 0 0.1 0" stroke={C.cream} strokeWidth="3" strokeLinecap="round" />
-        </svg>
       </section>
 
-      {/* ═══ BÚSQUEDA ═══ */}
-      <div className="max-w-6xl mx-auto px-5 -mt-7 relative z-30">
-        <div className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3.5 shadow-lg border border-amber-100">
-          <Search size={18} style={{ color: C.secondary }} />
-          <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Busca una crêpe, un sabor..." className="bg-transparent border-none focus:outline-none w-full text-sm font-medium text-[16px]" />
-          {query && (
-            <button onClick={() => setQuery('')} className="p-1.5 rounded-full hover:bg-amber-50 transition-colors"><X size={16} style={{ color: C.textSecondary }} /></button>
-          )}
-        </div>
-      </div>
-
-      {/* ═══ FAVORITOS ═══ */}
-      {showFeatured && (
-        <section className="max-w-6xl mx-auto px-5 mt-8">
-          <div className="flex items-center gap-2.5 mb-4">
-            <span className="cp-pulse w-8 h-8 rounded-full flex items-center justify-center text-white" style={{ background: `linear-gradient(135deg, ${C.secondary}, ${C.sweet})` }}>
-              <Flame size={15} />
-            </span>
-            <h2 className="cp-display text-xl md:text-2xl font-black" style={{ color: C.primary }}>Los Favoritos</h2>
+      {/* ═══ BUSCADOR & FILTROS STICKY ═══ */}
+      <div className="sticky top-16 z-30 bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#9E744F]/10 py-3 shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 space-y-2.5">
+          {/* Input de Búsqueda */}
+          <div className="relative">
+            <Search size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#7D6D63]" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Buscar crêpe, sabor o bebida..."
+              className="w-full pl-10 pr-9 py-2.5 rounded-full bg-white border border-[#9E744F]/20 text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-[#9E744F]/40 shadow-inner"
+            />
+            {query && (
+              <button
+                onClick={() => setQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 hover:text-black"
+                aria-label="Limpiar búsqueda"
+              >
+                <X size={15} />
+              </button>
+            )}
           </div>
-          <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2 -mx-5 px-5">
-            {featured.map((p, i) => (
-              <motion.div key={p.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-                className="shrink-0 w-[240px] rounded-2xl overflow-hidden bg-white border border-amber-100 shadow-sm hover:shadow-lg transition-shadow">
-                <div className="relative aspect-[4/3] overflow-hidden" style={{ backgroundColor: C.cream }}>
-                  <img src={p.image} alt={p.name} loading="lazy" onError={onImgError} className="w-full h-full object-cover" />
-                  {p.badge && <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider text-white shadow-md" style={{ backgroundColor: badgeColor(p.badge) }}>{p.badge}</span>}
-                </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-sm leading-tight" style={{ color: C.primary }}>{p.name}</h3>
-                  <div className="flex items-center justify-between mt-2">
-                    <span className="font-extrabold text-base" style={{ color: catAccent(p.category) }}>${p.price}</span>
-                    <button onClick={() => handleAdd(p)} className="w-9 h-9 rounded-xl flex items-center justify-center text-white active:scale-90 transition-transform shadow-md" style={{ background: `linear-gradient(135deg, ${C.secondary}, ${catAccent(p.category)})` }}>
-                      <Plus size={16} />
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      )}
 
-      {/* ═══ CATEGORÍAS ═══ */}
-      <div className="sticky top-[64px] z-40 backdrop-blur-xl bg-white/90 border-b border-amber-100/50 py-3">
-        <div className="max-w-6xl mx-auto px-5">
-          <div className="flex gap-2 overflow-x-auto hide-scrollbar">
-            {CATEGORIES.map(cat => {
-              const active = activeCategory === cat.id;
-              const accent = cat.id === 'all' ? C.primary : catAccent(cat.id as CategoryId);
+          {/* Categorías deslizables */}
+          <div className="flex items-center gap-2 overflow-x-auto macarena-hide-scrollbar pb-1 pt-0.5">
+            {CATEGORIES.map((cat) => {
+              const active = activeCategory === cat.id && !query;
               return (
-                <button key={cat.id} onClick={() => { setActiveCategory(cat.id); setQuery(''); }} className="flex items-center gap-1.5 px-4 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider whitespace-nowrap transition-all shrink-0 active:scale-95"
-                  style={{
-                    backgroundColor: active ? accent : 'white',
-                    color: active ? 'white' : C.textSecondary,
-                    border: active ? '2px solid transparent' : '2px solid #e7ddd0',
-                    boxShadow: active ? `0 8px 24px -8px ${accent}90` : 'none',
-                  }}>
-                  <cat.icon size={13} /> {cat.name}
+                <button
+                  key={cat.id}
+                  onClick={() => { setActiveCategory(cat.id); setQuery(''); }}
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 border ${
+                    active
+                      ? 'bg-[#2E231D] text-white border-[#2E231D] shadow-md scale-[1.03]'
+                      : 'bg-white text-[#5B4B42] border-[#9E744F]/20 hover:border-[#9E744F]/50 hover:bg-[#F4ECE1]'
+                  }`}
+                >
+                  <cat.icon size={13} style={{ color: active ? '#B88E67' : C.secondary }} />
+                  <span>{cat.name}</span>
                 </button>
               );
             })}
@@ -310,292 +738,868 @@ export default function DemoCrepasMenu() {
         </div>
       </div>
 
-      {/* ═══ PRODUCTOS ═══ */}
-      <main className="flex-1 max-w-6xl mx-auto px-5 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence mode="popLayout">
-            {filteredProducts.map((product, idx) => {
-              const accent = catAccent(product.category);
-              return (
-                <motion.div key={product.id} layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }} transition={{ duration: 0.3, delay: idx * 0.05 }}
-                  className="rounded-2xl overflow-hidden bg-white border border-amber-100/60 transition-all duration-300 hover:-translate-y-1"
-                  style={{ boxShadow: `0 4px 24px -6px ${accent}14, 0 1px 3px rgba(0,0,0,0.04)` }}
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden" style={{ backgroundColor: C.cream }}>
-                    <img src={product.image} alt={product.name} loading="lazy" onError={onImgError} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" />
-                    {product.badge && (
-                      <span className="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider text-white shadow-md" style={{ backgroundColor: badgeColor(product.badge) }}>
-                        {product.badge}
+      {/* ═══ SECCIÓN DESTACADOS (LOS FAVORITOS) ═══ */}
+      {showFeatured && featured.length > 0 && (
+        <section className="max-w-5xl mx-auto px-4 pt-6 pb-2">
+          <div className="flex items-center justify-between mb-3.5">
+            <h3 className="macarena-display text-lg font-black tracking-tight text-[#2E231D] flex items-center gap-1.5">
+              <Sparkles size={16} className="text-[#9E744F]" /> Los Favoritos de La Macarena
+            </h3>
+            <span className="text-[11px] font-bold text-[#9E744F] uppercase tracking-wider">Más pedidos</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            {featured.map((p) => (
+              <div
+                key={`feat-${p.id}`}
+                onClick={() => handleProductClick(p)}
+                className="group cursor-pointer rounded-2xl bg-white p-3 border border-[#9E744F]/15 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="relative rounded-xl overflow-hidden aspect-[4/3] mb-2 bg-[#F4ECE1]">
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      onError={onImgError}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    {p.badge && (
+                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-[#2E231D] text-white shadow-sm">
+                        {p.badge}
                       </span>
                     )}
-                    <button onClick={() => handleAdd(product)} className="absolute bottom-3 right-3 w-10 h-10 rounded-xl flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
-                      style={{ background: `linear-gradient(135deg, ${C.secondary}, ${accent})`, boxShadow: `0 6px 20px -4px ${accent}60` }}>
-                      <Plus size={18} />
-                    </button>
+                    {p.includesSalad && (
+                      <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#FAF7F2]/90 text-[#2E231D] backdrop-blur-sm shadow-sm flex items-center gap-1">
+                        <Salad size={10} className="text-emerald-700" /> Ensalada
+                      </span>
+                    )}
                   </div>
-                  <div className="p-5">
-                    <h3 className="font-bold text-base leading-tight" style={{ color: C.primary }}>{product.name}</h3>
-                    <p className="text-xs leading-relaxed mt-1.5 line-clamp-2" style={{ color: C.textSecondary }}>{product.description}</p>
-                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-amber-100/60">
-                      <span className="font-extrabold text-lg" style={{ color: accent }}>${product.price}</span>
-                      <button onClick={() => handleAdd(product)} className="text-[11px] font-bold uppercase tracking-wider active:scale-95 transition-transform flex items-center gap-1" style={{ color: accent }}>
-                        <Plus size={14} /> Agregar
-                      </button>
+                  <h4 className="font-bold text-xs md:text-sm text-[#2E231D] leading-tight group-hover:text-[#9E744F] transition-colors">
+                    {p.name}
+                  </h4>
+                  <p className="text-[11px] text-[#7D6D63] mt-1 line-clamp-2 leading-relaxed">
+                    {p.description}
+                  </p>
+                </div>
+
+                <div className="mt-3 pt-2.5 border-t border-[#FAF7F2] flex items-center justify-between">
+                  <span className="text-sm font-black text-[#2E231D]">${p.price}</span>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleProductClick(p); }}
+                    className="w-7 h-7 rounded-full bg-[#2E231D] text-white flex items-center justify-center shadow hover:bg-[#9E744F] transition-colors"
+                    aria-label={`Agregar ${p.name}`}
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ═══ LISTADO DE PRODUCTOS / MENÚ ═══ */}
+      <main className="max-w-5xl mx-auto px-4 py-6 flex-1">
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-3xl p-8 border border-[#9E744F]/15">
+            <Croissant size={40} className="mx-auto text-[#9E744F]/40 mb-3" />
+            <p className="text-base font-bold text-[#2E231D]">No se encontraron resultados</p>
+            <p className="text-xs text-[#7D6D63] mt-1">Intenta buscando con otra palabra o selecciona una categoría.</p>
+            <button
+              onClick={() => { setQuery(''); setActiveCategory('all'); }}
+              className="mt-4 px-4 py-2 rounded-full text-xs font-bold bg-[#2E231D] text-white hover:bg-[#9E744F] transition-colors"
+            >
+              Ver todo el menú
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {/* Título de categoría actual */}
+            <div className="flex items-center justify-between pb-1 border-b border-[#9E744F]/15">
+              <h3 className="macarena-display text-xl font-bold text-[#2E231D]">
+                {query ? `Resultados para "${query}"` : CATEGORIES.find(c => c.id === activeCategory)?.name}
+              </h3>
+              <span className="text-xs font-semibold text-[#7D6D63]">
+                {filteredProducts.length} {filteredProducts.length === 1 ? 'artículo' : 'artículos'}
+              </span>
+            </div>
+
+            {/* Grid de productos */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {filteredProducts.map((product) => (
+                <motion.div
+                  layout
+                  key={product.id}
+                  onClick={() => handleProductClick(product)}
+                  className="group cursor-pointer rounded-2xl bg-white p-3.5 border border-[#9E744F]/15 shadow-sm hover:shadow-md transition-all duration-200 flex gap-3.5 items-center justify-between"
+                >
+                  <div className="flex-1 pr-1">
+                    <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                      {product.badge && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-[#2E231D] text-white">
+                          {product.badge}
+                        </span>
+                      )}
+                      {product.includesSalad && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/60 flex items-center gap-1">
+                          <Salad size={9} /> Incluye ensalada
+                        </span>
+                      )}
+                      {product.canCustomize && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 text-amber-900 border border-amber-200/60">
+                          Personalizable
+                        </span>
+                      )}
+                    </div>
+
+                    <h4 className="font-bold text-sm md:text-base text-[#2E231D] leading-tight group-hover:text-[#9E744F] transition-colors">
+                      {product.name}
+                    </h4>
+                    <p className="text-xs text-[#7D6D63] mt-1 leading-snug line-clamp-2">
+                      {product.description}
+                    </p>
+                    <div className="mt-2.5 flex items-center gap-2">
+                      <span className="text-sm md:text-base font-black text-[#2E231D]">${product.price}</span>
+                      {product.category === 'saladas' && (
+                        <span className="text-[10px] text-[#7D6D63] font-medium">+ Extra $10</span>
+                      )}
+                      {product.category === 'dulces' && (
+                        <span className="text-[10px] text-[#7D6D63] font-medium">+ Extra / Toppings $5</span>
+                      )}
                     </div>
                   </div>
+
+                  {/* Imagen y botón añadir */}
+                  <div className="relative shrink-0 w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-[#F4ECE1]">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      onError={onImgError}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleProductClick(product); }}
+                      className="absolute bottom-1.5 right-1.5 w-8 h-8 rounded-full bg-[#2E231D] text-white flex items-center justify-center shadow-lg hover:bg-[#9E744F] hover:scale-110 active:scale-95 transition-all"
+                      aria-label={`Agregar ${product.name}`}
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
                 </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </div>
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-20">
-            <Search size={32} className="mx-auto mb-3" style={{ color: `${C.secondary}40` }} />
-            <p className="font-semibold" style={{ color: C.textSecondary }}>No encontramos "{(query || activeCategory)}". Prueba con otra búsqueda.</p>
+              ))}
+            </div>
           </div>
         )}
       </main>
 
-      {/* ═══ CART DRAWER ═══ */}
-      <AnimatePresence>
-        {isCartOpen && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsCartOpen(false)} className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[70]" />
-            <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 300 }} className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[80] flex flex-col" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
-              <div className="flex items-center justify-between px-5 py-4 border-b border-amber-100 shrink-0" style={{ backgroundColor: C.primary }}>
-                <div className="flex items-center gap-2.5">
-                  <Croissant size={18} className="text-white" />
-                  <h2 className="cp-display font-bold text-sm tracking-wide text-white">
-                    {cartStep === 1 ? 'Tu Pedido' : cartStep === 2 ? 'Tus Datos' : '¡Listo!'}
-                  </h2>
-                </div>
-                <button onClick={() => setIsCartOpen(false)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"><X size={16} className="text-white" /></button>
+      {/* ═══ FOOTER 3 COLUMNAS CON DATOS REALES DE LA MACARENA ═══ */}
+      <footer className="bg-[#2E231D] text-[#FAF7F2] mt-12 border-t border-[#9E744F]/20">
+        <div className="max-w-5xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-xs md:text-sm">
+          {/* Columna 1: Marca & Descripción */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-[#9E744F] text-white flex items-center justify-center">
+                <Croissant size={16} />
               </div>
-
-              {cartStep === 1 && (<>
-                <div className="flex-1 overflow-y-auto px-5 py-4">
-                  {cart.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-center">
-                      <div className="w-16 h-16 rounded-full flex items-center justify-center mb-3" style={{ backgroundColor: C.cream }}><Croissant size={28} style={{ color: C.secondary }} /></div>
-                      <p className="font-bold text-sm" style={{ color: C.textSecondary }}>Tu pedido está vacío</p>
-                      <p className="text-xs mt-1" style={{ color: `${C.textSecondary}90` }}>Explora crêpes dulces y saladas</p>
-                    </div>
-                  ) : (
-                    cart.map(item => (
-                      <div key={item.lineId} className="flex gap-3 py-3 border-b border-amber-50">
-                        <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0" style={{ backgroundColor: C.cream }}><img src={item.image} alt="" onError={onImgError} className="w-full h-full object-cover" loading="lazy" /></div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-bold text-sm" style={{ color: C.primary }}>{item.name}</p>
-                          <p className="text-xs" style={{ color: C.textSecondary }}>${item.unitPrice} c/u</p>
-                          <div className="flex items-center gap-2 mt-1.5">
-                            <button onClick={() => handleUpdateQty(item.lineId, -1)} className="w-6 h-6 rounded-lg border border-zinc-200 flex items-center justify-center active:scale-90"><Minus size={11} className="text-zinc-400" /></button>
-                            <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
-                            <button onClick={() => handleUpdateQty(item.lineId, 1)} className="w-6 h-6 rounded-lg border border-zinc-200 flex items-center justify-center active:scale-90"><Plus size={11} className="text-zinc-400" /></button>
-                            <button onClick={() => handleRemove(item.lineId)} className="ml-auto w-6 h-6 rounded-lg flex items-center justify-center hover:bg-red-50"><Trash2 size={12} className="text-zinc-300 hover:text-red-400" /></button>
-                          </div>
-                        </div>
-                        <p className="font-bold text-sm shrink-0" style={{ color: C.primary }}>${item.unitPrice * item.quantity}</p>
-                      </div>
-                    ))
-                  )}
-                </div>
-                {cart.length > 0 && (
-                  <div className="px-5 py-4 border-t border-amber-100 bg-white shrink-0">
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="text-xs font-semibold" style={{ color: C.textSecondary }}>{totalItems} items</span>
-                      <span className="text-xl font-extrabold" style={{ color: C.secondary }}>${cartTotal}</span>
-                    </div>
-                    <button onClick={() => setCartStep(2)} className="w-full py-3.5 rounded-2xl text-white font-bold text-sm active:scale-[0.98] transition-transform shadow-lg"
-                      style={{ background: `linear-gradient(135deg, ${C.secondary}, ${C.sweet})`, boxShadow: `0 10px 30px -8px ${C.secondary}60` }}>
-                      Continuar → Datos de Entrega
-                    </button>
-                  </div>
-                )}
-              </>)}
-
-              {cartStep === 2 && (<>
-                <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3.5">
-                  <div><label className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: C.textSecondary }}>Nombre</label>
-                    <input value={customerInfo.name} onChange={e => { setCustomerInfo({ ...customerInfo, name: e.target.value }); setErrors({ ...errors, name: '' }); }} placeholder="Tu nombre" className={`w-full p-3 rounded-xl border text-sm mt-1 text-[16px] ${errors.name ? 'border-red-400 bg-red-50' : 'border-zinc-200'}`} />
-                    {errors.name && <p className="text-[11px] text-red-500 font-semibold mt-0.5">{errors.name}</p>}
-                  </div>
-                  <div><label className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: C.textSecondary }}>WhatsApp</label>
-                    <input value={customerInfo.phone} onChange={e => { setCustomerInfo({ ...customerInfo, phone: e.target.value }); setErrors({ ...errors, phone: '' }); }} placeholder="55 1234 5678" type="tel" className={`w-full p-3 rounded-xl border text-sm mt-1 text-[16px] ${errors.phone ? 'border-red-400 bg-red-50' : 'border-zinc-200'}`} />
-                    {errors.phone && <p className="text-[11px] text-red-500 font-semibold mt-0.5">{errors.phone}</p>}
-                  </div>
-                  <div><label className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: C.textSecondary }}>Entrega</label>
-                    <div className="grid grid-cols-2 gap-2 mt-1">
-                      {[{ v: 'pickup', l: 'Recoger en local', i: Store }, { v: 'delivery', l: 'Domicilio', i: Bike }].map(o => (
-                        <button key={o.v} onClick={() => setCustomerInfo({ ...customerInfo, deliveryMethod: o.v as any })} className="py-3 rounded-xl border-2 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95"
-                          style={{ borderColor: customerInfo.deliveryMethod === o.v ? C.secondary : '#e5e7eb', backgroundColor: customerInfo.deliveryMethod === o.v ? `${C.secondary}10` : 'white', color: customerInfo.deliveryMethod === o.v ? C.secondary : C.textSecondary }}>
-                          <o.i size={14} /> {o.l}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  {customerInfo.deliveryMethod === 'delivery' && (
-                    <div><label className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: C.textSecondary }}>Dirección</label>
-                      <input value={customerInfo.address} onChange={e => { setCustomerInfo({ ...customerInfo, address: e.target.value }); setErrors({ ...errors, address: '' }); }} placeholder="Calle, número, colonia, CP" className={`w-full p-3 rounded-xl border text-sm mt-1 text-[16px] ${errors.address ? 'border-red-400 bg-red-50' : 'border-zinc-200'}`} />
-                      {errors.address && <p className="text-[11px] text-red-500 font-semibold mt-0.5">{errors.address}</p>}
-                    </div>
-                  )}
-                  <div><label className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: C.textSecondary }}>Forma de Pago</label>
-                    <div className="grid grid-cols-2 gap-2 mt-1">
-                      {[{ v: 'cash', l: 'Efectivo', i: Wallet }, { v: 'transfer', l: 'Transferencia', i: Landmark }].map(o => (
-                        <button key={o.v} onClick={() => setCustomerInfo({ ...customerInfo, paymentMethod: o.v as any })} className="py-3 rounded-xl border-2 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95"
-                          style={{ borderColor: customerInfo.paymentMethod === o.v ? C.secondary : '#e5e7eb', backgroundColor: customerInfo.paymentMethod === o.v ? `${C.secondary}10` : 'white', color: customerInfo.paymentMethod === o.v ? C.secondary : C.textSecondary }}>
-                          <o.i size={14} /> {o.l}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  {customerInfo.paymentMethod === 'cash' && (
-                    <div><label className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: C.textSecondary }}>¿Con cuánto pagas?</label>
-                      <input type="number" value={customerInfo.cashAmount} onChange={e => setCustomerInfo({ ...customerInfo, cashAmount: e.target.value })} placeholder="Ej: 200" className="w-full p-3 rounded-xl border border-zinc-200 text-sm mt-1 text-[16px]" />
-                      {changeAmount !== null && changeAmount >= 0 && <p className="text-xs font-bold mt-1" style={{ color: C.secondary }}>Tu cambio: ${changeAmount}</p>}
-                    </div>
-                  )}
-                  {customerInfo.paymentMethod === 'transfer' && (
-                    <div className="rounded-2xl border-2 p-4 space-y-3" style={{ borderColor: `${C.secondary}40`, backgroundColor: `${C.secondary}05` }}>
-                      <div className="flex items-center gap-2"><Landmark size={15} style={{ color: C.secondary }} /><span className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: C.secondary }}>Datos Bancarios</span></div>
-                      {bankFields.map(f => (
-                        <div key={f.k} className="flex items-center justify-between bg-white rounded-xl p-3 border border-amber-100">
-                          <div><p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: C.textSecondary }}>{f.l}</p><p className="text-sm font-bold mt-0.5" style={{ color: C.primary }}>{f.v}</p></div>
-                          <button onClick={() => handleCopy(f.v.replace(/\s/g, ''), f.k)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-amber-50 transition-colors active:scale-90" style={{ backgroundColor: `${C.secondary}10` }}>{copied === f.k ? <Check size={13} className="text-green-500" /> : <Copy size={13} style={{ color: C.secondary }} />}</button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <div><label className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: C.textSecondary }}>Notas para la cocina</label>
-                    <textarea value={customerInfo.notes} onChange={e => setCustomerInfo({ ...customerInfo, notes: e.target.value })} placeholder="Sin cebolla, extra nutella..." rows={2} className="w-full p-3 rounded-xl border border-zinc-200 text-sm mt-1 text-[16px] resize-none" />
-                  </div>
-                </div>
-                <div className="px-5 py-4 border-t border-amber-100 bg-white shrink-0">
-                  <div className="flex justify-between items-center mb-3">
-                    <button onClick={() => setCartStep(1)} className="text-xs font-semibold transition-colors" style={{ color: C.textSecondary }}>← Volver al carrito</button>
-                    <span className="text-xl font-extrabold" style={{ color: C.secondary }}>${cartTotal}</span>
-                  </div>
-                  <button onClick={handleSend} className="w-full py-3.5 rounded-2xl text-white font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-lg"
-                    style={{ backgroundColor: '#25D366', boxShadow: '0 10px 30px -8px #25D36660' }}>
-                    <MessageCircle size={18} /> Enviar Pedido por WhatsApp
-                  </button>
-                </div>
-              </>)}
-
-              {cartStep === 3 && (
-                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-                  <motion.div initial={{ scale: 0, rotate: -30 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', damping: 12, stiffness: 200 }} className="w-24 h-24 rounded-full flex items-center justify-center mb-6" style={{ background: `linear-gradient(135deg, ${C.secondary}, ${C.sweet})` }}>
-                    <Check size={44} className="text-white" />
-                  </motion.div>
-                  <h3 className="cp-display text-2xl font-bold" style={{ color: C.primary }}>¡Pedido Enviado!</h3>
-                  <p className="text-sm mt-2 leading-relaxed max-w-xs" style={{ color: C.textSecondary }}>Te estamos redirigiendo a WhatsApp para confirmar tu pedido con {clientConfig.businessName}.</p>
-                  <button onClick={() => setIsCartOpen(false)} className="mt-8 px-6 py-2.5 rounded-2xl text-sm font-bold border-2 transition-colors active:scale-95" style={{ borderColor: C.secondary, color: C.secondary }}>Volver al menú</button>
-                </div>
-              )}
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* ═══ FOOTER ═══ */}
-      <footer className="mt-auto border-t border-amber-100 bg-white pt-10">
-        <div className="max-w-6xl mx-auto px-5 grid grid-cols-1 md:grid-cols-3 gap-8 pb-10">
-          <div>
-            <div className="flex items-center gap-2.5 mb-3">
-              <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: `conic-gradient(from 210deg, ${C.secondary}, ${C.cream}, ${C.sweet}, ${C.secondary})` }}><Croissant size={16} className="text-white" /></div>
-              <h3 className="cp-display font-extrabold text-xl tracking-tight" style={{ color: C.primary }}>La Crêpe Dorée</h3>
+              <span className="macarena-display text-xl font-bold tracking-tight text-white">
+                La Macarena
+              </span>
             </div>
-            <p className="text-sm leading-relaxed" style={{ color: C.textSecondary }}>{clientConfig.description}</p>
+            <p className="text-white/60 leading-relaxed">
+              {clientConfig.description}
+            </p>
+            <p className="text-[11px] font-bold text-[#B88E67] uppercase tracking-wider">
+              ✨ Próximamente desayunos en La Macarena
+            </p>
           </div>
-          <div className="space-y-3">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: C.textSecondary }}>Contacto</h4>
-            <div className="space-y-2.5 text-sm">
-              <p className="flex items-center gap-2.5" style={{ color: C.textSecondary }}><span className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${C.secondary}12` }}><Phone size={14} style={{ color: C.secondary }} /></span> {clientConfig.phoneNumber}</p>
-              <p className="flex items-center gap-2.5" style={{ color: C.textSecondary }}><span className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: '#25D36612' }}><MessageCircle size={14} className="text-green-500" /></span> {clientConfig.phone}</p>
-              <p className="flex items-start gap-2.5" style={{ color: C.textSecondary }}><span className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5" style={{ backgroundColor: `${C.secondary}12` }}><MapPin size={14} style={{ color: C.secondary }} /></span> {clientConfig.address}</p>
-              <p className="flex items-start gap-2.5" style={{ color: C.textSecondary }}><span className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5" style={{ backgroundColor: `${C.secondary}12` }}><Clock size={14} style={{ color: C.secondary }} /></span> {clientConfig.hours}</p>
+
+          {/* Columna 2: Contacto, Dirección y Horario */}
+          <div className="space-y-2.5">
+            <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#B88E67]">
+              Contacto & Ubicación
+            </h4>
+            <a
+              href={`https://wa.me/${WHATSAPP}`}
+              className="flex items-center gap-2 text-white/80 hover:text-[#25D366] transition-colors"
+            >
+              <MessageCircle size={15} className="text-[#25D366]" /> {clientConfig.phoneNumber}
+            </a>
+            <div className="flex items-start gap-2 text-white/80">
+              <MapPin size={15} className="text-[#B88E67] shrink-0 mt-0.5" />
+              <span>{clientConfig.address}</span>
+            </div>
+            <div className="flex items-center gap-2 text-white/80">
+              <Clock size={15} className="text-[#B88E67]" />
+              <span>{clientConfig.hours}</span>
             </div>
           </div>
+
+          {/* Columna 3: Redes Sociales */}
           <div className="space-y-3">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: C.textSecondary }}>Síguenos</h4>
-            <div className="flex gap-3">
-              <a href={clientConfig.instagramUrl} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform"><Instagram size={18} /></a>
-              <a href={clientConfig.facebookUrl} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-[#1877F2] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform"><Facebook size={18} /></a>
-              <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-[#25D366] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform"><MessageCircle size={18} /></a>
+            <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#B88E67]">
+              Síguenos en Redes
+            </h4>
+            <p className="text-white/60 text-xs">
+              Descubre promociones y nuevas creaciones siguiéndonos en nuestras cuentas oficiales:
+            </p>
+            <div className="flex flex-col gap-2">
+              <a
+                href={clientConfig.instagramUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-white/80 hover:text-[#B88E67] transition-colors"
+              >
+                <Instagram size={16} className="text-[#B88E67]" /> @{clientConfig.instagramHandle}
+              </a>
+              <span className="inline-flex items-center gap-2 text-white/80">
+                <Facebook size={16} className="text-[#B88E67]" /> {clientConfig.facebookName}
+              </span>
             </div>
           </div>
         </div>
-        <div className="py-8" style={{ backgroundColor: C.primary }}>
-          <div className="flex flex-col items-center gap-4 text-center px-5">
-            <p className="text-white/30 text-[10px] font-bold uppercase tracking-[0.2em]">© {new Date().getFullYear()} {clientConfig.businessName.toUpperCase()}. TODOS LOS DERECHOS RESERVADOS.</p>
-            <motion.a href="https://imagineandstamp.site" target="_blank" rel="noreferrer" whileHover={{ scale: 1.03 }} className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-amber-400/40 transition-all">
-              <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/50 group-hover:text-white/70 transition-colors">Página web realizada por</span>
-              <span className="text-sm font-bold tracking-tight group-hover:scale-105 transition-transform" style={{ color: C.secondary }}>IMAGINE & STAMP</span>
-              <ExternalLink size={12} className="opacity-50 group-hover:opacity-100 transition-opacity" style={{ color: C.secondary }} />
-            </motion.a>
-            <div className="w-16 h-px bg-white/10" />
-            <button onClick={() => setIsPrivacyOpen(true)} className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors"><Shield size={12} /> Aviso de Privacidad</button>
+
+        {/* Barra de Créditos & Privacidad */}
+        <div className="border-t border-white/10 py-6 px-4 text-center text-[10px] text-white/50 uppercase tracking-widest space-y-2">
+          <p>© {new Date().getFullYear()} La Macarena Crepería & Café. Todos los derechos reservados.</p>
+          <div className="flex items-center justify-center gap-4">
+            <a
+              href="https://imagineandstamp.site"
+              target="_blank"
+              rel="noreferrer"
+              className="text-[#B88E67] hover:underline font-bold"
+            >
+              Diseñado por IMAGINE & STAMP
+            </a>
+            <span>·</span>
+            <button
+              onClick={() => setIsPrivacyOpen(true)}
+              className="hover:text-white transition-colors underline"
+            >
+              Aviso de Privacidad
+            </button>
           </div>
         </div>
       </footer>
 
-      {/* ═══ PRIVACY MODAL ═══ */}
+      {/* ═══ BOTÓN FLOTANTE DEL CARRITO (MÓVIL) ═══ */}
+      {cart.length > 0 && (
+        <div className="fixed bottom-4 inset-x-4 z-40 md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+          <button
+            onClick={() => { setCartStep(1); setIsCartOpen(true); }}
+            className="w-full py-3.5 px-5 rounded-2xl bg-[#2E231D] text-white font-bold shadow-2xl flex items-center justify-between border border-[#9E744F]/40 active:scale-[0.98] transition-transform"
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="w-6 h-6 rounded-full bg-[#9E744F] text-white text-xs flex items-center justify-center font-black">
+                {totalItems}
+              </span>
+              <span className="text-sm">Ver Pedido</span>
+            </div>
+            <span className="text-sm font-black text-[#B88E67]">${cartTotal}</span>
+          </button>
+        </div>
+      )}
+
+      {/* ═══ TOAST NOTIFICACIÓN ═══ */}
       <AnimatePresence>
-        {isPrivacyOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsPrivacyOpen(false)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-lg bg-[#1a1a1a] border-2 rounded-3xl shadow-2xl overflow-hidden" style={{ borderColor: C.secondary }}>
-              <div className="h-1.5" style={{ background: `linear-gradient(to right, ${C.secondary}, ${C.sweet})` }} />
-              <div className="p-8">
-                <button onClick={() => setIsPrivacyOpen(false)} className="absolute top-6 right-6 w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all"><X size={18} /></button>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${C.secondary}20` }}><Shield size={20} style={{ color: C.secondary }} /></div>
-                  <h2 className="text-xl font-bold text-white tracking-tight">Aviso de Privacidad</h2>
+        {toastMsg && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-full bg-[#2E231D] text-white text-xs font-bold shadow-xl flex items-center gap-2 border border-[#9E744F]/30"
+          >
+            <Check size={14} className="text-[#25D366]" />
+            <span>Agregado: {toastMsg}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══ MODAL DE PERSONALIZACIÓN DE CRÊPES (EXTRAS & TOPPINGS) ═══ */}
+      <AnimatePresence>
+        {customizingProduct && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setCustomizingProduct(null)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 100 }}
+              transition={{ duration: 0.28 }}
+              className="relative w-full max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[90vh] flex flex-col overflow-hidden"
+            >
+              {/* Header Modal */}
+              <div className="p-4 border-b border-[#FAF7F2] bg-[#F4ECE1]/50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={customizingProduct.image}
+                    alt={customizingProduct.name}
+                    className="w-12 h-12 rounded-xl object-cover"
+                  />
+                  <div>
+                    <h3 className="font-bold text-sm text-[#2E231D] leading-tight">
+                      Personalizar {customizingProduct.name}
+                    </h3>
+                    <p className="text-xs text-[#9E744F] font-bold">
+                      Base: ${customizingProduct.price} MXN
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-4 text-sm text-white/70 leading-relaxed">
-                  <p>En <strong className="text-white">{clientConfig.businessName}</strong> protegemos y respetamos tu privacidad. Tu información personal se usa exclusivamente para procesar tus pedidos y comunicarnos contigo.</p>
-                  <p>No almacenamos datos de tarjetas bancarias. Tus datos de contacto solo se usan para confirmar tu pedido. Nunca compartimos tu información con terceros sin tu consentimiento.</p>
-                  <p>Para ejercer tus derechos ARCO, contáctanos en <a href={`mailto:${clientConfig.email}`} className="hover:underline" style={{ color: C.secondary }}>{clientConfig.email}</a>.</p>
+                <button
+                  onClick={() => setCustomizingProduct(null)}
+                  className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center text-black/60 hover:bg-black/10"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Contenido scrolleable de personalización */}
+              <div className="p-5 overflow-y-auto space-y-5 flex-1 text-xs md:text-sm">
+                {/* Opciones para Crepas Saladas */}
+                {customizingProduct.category === 'saladas' && (
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="font-bold text-[#2E231D] uppercase tracking-wider text-[11px]">
+                        Ingredientes Extras (+$10 c/u)
+                      </label>
+                      <span className="text-[10px] text-[#7D6D63]">Opcional</span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {EXTRAS_SALADAS.map((extra) => {
+                        const isChecked = selectedExtras.some(e => e.name === extra.name);
+                        return (
+                          <button
+                            type="button"
+                            key={extra.name}
+                            onClick={() => toggleExtra(extra)}
+                            className={`p-2.5 rounded-xl border text-left flex items-center justify-between transition-all ${
+                              isChecked
+                                ? 'bg-[#2E231D] text-white border-[#2E231D] font-bold shadow-sm'
+                                : 'bg-[#FAF7F2] text-[#2E231D] border-[#9E744F]/20 hover:border-[#9E744F]'
+                            }`}
+                          >
+                            <span>{extra.name}</span>
+                            <span className={isChecked ? 'text-[#B88E67]' : 'text-[#7D6D63]'}>+$10</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Opciones para Crepas Dulces */}
+                {customizingProduct.category === 'dulces' && (
+                  <>
+                    {/* Ingredientes Extras Dulces */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="font-bold text-[#2E231D] uppercase tracking-wider text-[11px]">
+                          Ingredientes Extras Dulces (+$5 c/u)
+                        </label>
+                        <span className="text-[10px] text-[#7D6D63]">Opcional</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {EXTRAS_DULCES.map((extra) => {
+                          const isChecked = selectedExtras.some(e => e.name === extra.name);
+                          return (
+                            <button
+                              type="button"
+                              key={extra.name}
+                              onClick={() => toggleExtra(extra)}
+                              className={`p-2.5 rounded-xl border text-left flex items-center justify-between transition-all ${
+                                isChecked
+                                  ? 'bg-[#2E231D] text-white border-[#2E231D] font-bold shadow-sm'
+                                  : 'bg-[#FAF7F2] text-[#2E231D] border-[#9E744F]/20 hover:border-[#9E744F]'
+                              }`}
+                            >
+                              <span>{extra.name}</span>
+                              <span className={isChecked ? 'text-[#B88E67]' : 'text-[#7D6D63]'}>+$5</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Toppings Dulces */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="font-bold text-[#2E231D] uppercase tracking-wider text-[11px]">
+                          Toppings (+$5 c/u)
+                        </label>
+                        <span className="text-[10px] text-[#7D6D63]">Opcional</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        {TOPPINGS_DULCES.map((topping) => {
+                          const isChecked = selectedToppings.some(t => t.name === topping.name);
+                          return (
+                            <button
+                              type="button"
+                              key={topping.name}
+                              onClick={() => toggleTopping(topping)}
+                              className={`p-2.5 rounded-xl border text-left flex items-center justify-between transition-all ${
+                                isChecked
+                                  ? 'bg-[#2E231D] text-white border-[#2E231D] font-bold shadow-sm'
+                                  : 'bg-[#FAF7F2] text-[#2E231D] border-[#9E744F]/20 hover:border-[#9E744F]'
+                              }`}
+                            >
+                              <span>{topping.name}</span>
+                              <span className={isChecked ? 'text-[#B88E67]' : 'text-[#7D6D63]'}>+$5</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Notas especiales */}
+                <div>
+                  <label className="font-bold text-[#2E231D] uppercase tracking-wider text-[11px] block mb-1.5">
+                    Instrucciones especiales (Opcional)
+                  </label>
+                  <input
+                    type="text"
+                    value={specialNotes}
+                    onChange={(e) => setSpecialNotes(e.target.value)}
+                    placeholder="Ej. Bien doradita, poca canela, etc."
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#9E744F]/20 bg-[#FAF7F2] focus:outline-none focus:ring-2 focus:ring-[#9E744F]"
+                  />
                 </div>
-                <button onClick={() => setIsPrivacyOpen(false)} className="mt-8 w-full py-3 rounded-xl text-white font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-opacity active:scale-95" style={{ background: `linear-gradient(135deg, ${C.secondary}, ${C.sweet})` }}>Entendido</button>
+              </div>
+
+              {/* Botón de Confirmación */}
+              <div className="p-4 bg-white border-t border-[#FAF7F2] flex items-center justify-between gap-3">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-[#7D6D63] block">Subtotal:</span>
+                  <span className="text-lg font-black text-[#2E231D]">
+                    $
+                    {customizingProduct.price +
+                      selectedExtras.reduce((s, e) => s + e.price, 0) +
+                      selectedToppings.reduce((s, t) => s + t.price, 0)}{' '}
+                    MXN
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleConfirmCustomization}
+                  className="px-6 py-3 rounded-full bg-[#2E231D] text-white font-bold text-xs md:text-sm hover:bg-[#9E744F] transition-all shadow-lg active:scale-95 flex items-center gap-2"
+                >
+                  <Plus size={16} /> Agregar al Pedido
+                </button>
               </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
 
-      {/* ═══ TOAST ═══ */}
+      {/* ═══ DRAWER DEL CARRITO (2 PASOS OBLIGATORIOS) ═══ */}
       <AnimatePresence>
-        {toastMsg && (
-          <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }} className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[90] px-5 py-3 rounded-2xl shadow-2xl text-white font-bold text-sm flex items-center gap-2" style={{ background: `linear-gradient(135deg, ${C.primary}, ${C.secondary})` }}>
-            <Check size={16} style={{ color: C.cream }} /> ¡Agregado! — {toastMsg}
-          </motion.div>
+        {isCartOpen && (
+          <div className="fixed inset-0 z-50 flex justify-end">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsCartOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+              className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col z-10"
+            >
+              {/* Header Carrito */}
+              <div className="p-4 bg-[#2E231D] text-white flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShoppingBag size={18} className="text-[#B88E67]" />
+                  <h3 className="font-bold text-sm">
+                    {cartStep === 1 ? `Mi Pedido (${totalItems})` : cartStep === 2 ? 'Datos de Entrega' : '¡Pedido Listo!'}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setIsCartOpen(false)}
+                  className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* PASO 1: LISTA DE ARTÍCULOS */}
+              {cartStep === 1 && (
+                <div className="flex-1 flex flex-col justify-between overflow-hidden">
+                  {cart.length === 0 ? (
+                    <div className="p-8 text-center my-auto">
+                      <ShoppingBag size={48} className="mx-auto text-[#9E744F]/30 mb-3" />
+                      <p className="font-bold text-[#2E231D]">Tu carrito está vacío</p>
+                      <p className="text-xs text-[#7D6D63] mt-1">Elige tus crêpes o cafés favoritos para comenzar.</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="p-4 overflow-y-auto space-y-3 flex-1">
+                        {cart.map((item) => (
+                          <div
+                            key={item.lineId}
+                            className="p-3 rounded-2xl bg-[#FAF7F2] border border-[#9E744F]/15 flex gap-3 items-start"
+                          >
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-14 h-14 rounded-xl object-cover shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-bold text-xs text-[#2E231D] leading-tight truncate">
+                                {item.name}
+                              </h4>
+                              <p className="text-xs font-black text-[#9E744F] mt-0.5">
+                                ${item.unitPrice * item.quantity}{' '}
+                                <span className="text-[10px] text-[#7D6D63] font-normal">
+                                  (${item.unitPrice} c/u)
+                                </span>
+                              </p>
+
+                              {/* Desglose de extras */}
+                              {item.extras && item.extras.length > 0 && (
+                                <p className="text-[10px] text-[#7D6D63] mt-1">
+                                  ➕ {item.extras.map(e => e.name).join(', ')}
+                                </p>
+                              )}
+                              {item.toppings && item.toppings.length > 0 && (
+                                <p className="text-[10px] text-[#7D6D63]">
+                                  🍓 {item.toppings.map(t => t.name).join(', ')}
+                                </p>
+                              )}
+                              {item.specialNotes && (
+                                <p className="text-[10px] text-amber-900 italic">
+                                  📝 {item.specialNotes}
+                                </p>
+                              )}
+
+                              {/* Controles de Cantidad */}
+                              <div className="flex items-center gap-2 mt-2">
+                                <button
+                                  onClick={() => handleUpdateQty(item.lineId, -1)}
+                                  className="w-6 h-6 rounded-full bg-white border border-black/10 flex items-center justify-center text-black active:scale-95"
+                                >
+                                  <Minus size={11} />
+                                </button>
+                                <span className="text-xs font-bold">{item.quantity}</span>
+                                <button
+                                  onClick={() => handleUpdateQty(item.lineId, 1)}
+                                  className="w-6 h-6 rounded-full bg-white border border-black/10 flex items-center justify-center text-black active:scale-95"
+                                >
+                                  <Plus size={11} />
+                                </button>
+                                <button
+                                  onClick={() => handleRemove(item.lineId)}
+                                  className="ml-auto text-red-500 hover:text-red-700 p-1"
+                                  aria-label="Eliminar"
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Footer Paso 1 */}
+                      <div className="p-4 bg-white border-t border-[#FAF7F2] space-y-3">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-[#7D6D63]">Total del pedido:</span>
+                          <span className="text-lg font-black text-[#2E231D]">${cartTotal} MXN</span>
+                        </div>
+                        <button
+                          onClick={() => setCartStep(2)}
+                          className="w-full py-3.5 rounded-full bg-[#2E231D] text-white font-bold text-xs md:text-sm hover:bg-[#9E744F] transition-all shadow-lg active:scale-98"
+                        >
+                          Continuar a Datos de Entrega →
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* PASO 2: DATOS DE ENTREGA & PAGO */}
+              {cartStep === 2 && (
+                <div className="flex-1 flex flex-col justify-between overflow-hidden">
+                  <div className="p-4 overflow-y-auto space-y-4 text-xs flex-1">
+                    {/* Botón Regresar */}
+                    <button
+                      onClick={() => setCartStep(1)}
+                      className="text-xs font-bold text-[#9E744F] hover:underline flex items-center gap-1"
+                    >
+                      ← Modificar artículos
+                    </button>
+
+                    {/* Datos del Cliente */}
+                    <div className="space-y-3">
+                      <div>
+                        <label className="font-bold text-[#2E231D] uppercase tracking-wider text-[10px] block mb-1">
+                          Tu Nombre *
+                        </label>
+                        <input
+                          type="text"
+                          value={customerInfo.name}
+                          onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
+                          placeholder="Ej. Sofía Mendoza"
+                          className={`w-full px-3.5 py-2.5 rounded-xl border ${
+                            errors.name ? 'border-red-500 bg-red-50/30' : 'border-[#9E744F]/20 bg-[#FAF7F2]'
+                          } focus:outline-none focus:ring-2 focus:ring-[#9E744F]`}
+                        />
+                        {errors.name && <span className="text-[10px] text-red-500 font-bold">{errors.name}</span>}
+                      </div>
+
+                      <div>
+                        <label className="font-bold text-[#2E231D] uppercase tracking-wider text-[10px] block mb-1">
+                          Teléfono / WhatsApp *
+                        </label>
+                        <input
+                          type="tel"
+                          value={customerInfo.phone}
+                          onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
+                          placeholder="Ej. 312 123 4567"
+                          className={`w-full px-3.5 py-2.5 rounded-xl border ${
+                            errors.phone ? 'border-red-500 bg-red-50/30' : 'border-[#9E744F]/20 bg-[#FAF7F2]'
+                          } focus:outline-none focus:ring-2 focus:ring-[#9E744F]`}
+                        />
+                        {errors.phone && <span className="text-[10px] text-red-500 font-bold">{errors.phone}</span>}
+                      </div>
+                    </div>
+
+                    {/* Método de Entrega */}
+                    <div>
+                      <label className="font-bold text-[#2E231D] uppercase tracking-wider text-[10px] block mb-1.5">
+                        Tipo de Entrega
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setCustomerInfo(prev => ({ ...prev, deliveryMethod: 'pickup' }))}
+                          className={`p-3 rounded-xl border text-center font-bold flex flex-col items-center gap-1 transition-all ${
+                            customerInfo.deliveryMethod === 'pickup'
+                              ? 'bg-[#2E231D] text-white border-[#2E231D] shadow-sm'
+                              : 'bg-[#FAF7F2] text-[#2E231D] border-[#9E744F]/20'
+                          }`}
+                        >
+                          <Store size={16} />
+                          <span>Comer aquí / Pickup</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCustomerInfo(prev => ({ ...prev, deliveryMethod: 'delivery' }))}
+                          className={`p-3 rounded-xl border text-center font-bold flex flex-col items-center gap-1 transition-all ${
+                            customerInfo.deliveryMethod === 'delivery'
+                              ? 'bg-[#2E231D] text-white border-[#2E231D] shadow-sm'
+                              : 'bg-[#FAF7F2] text-[#2E231D] border-[#9E744F]/20'
+                          }`}
+                        >
+                          <Bike size={16} />
+                          <span>Envío a Domicilio</span>
+                        </button>
+                      </div>
+
+                      {customerInfo.deliveryMethod === 'delivery' && (
+                        <div className="mt-2.5">
+                          <label className="font-bold text-[#2E231D] text-[10px] uppercase block mb-1">
+                            Dirección completa *
+                          </label>
+                          <textarea
+                            rows={2}
+                            value={customerInfo.address}
+                            onChange={(e) => setCustomerInfo(prev => ({ ...prev, address: e.target.value }))}
+                            placeholder="Calle, número, colonia, referencias..."
+                            className={`w-full px-3 py-2 rounded-xl border ${
+                              errors.address ? 'border-red-500 bg-red-50/30' : 'border-[#9E744F]/20 bg-[#FAF7F2]'
+                            } focus:outline-none focus:ring-2 focus:ring-[#9E744F]`}
+                          />
+                          {errors.address && <span className="text-[10px] text-red-500 font-bold">{errors.address}</span>}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Método de Pago */}
+                    <div>
+                      <label className="font-bold text-[#2E231D] uppercase tracking-wider text-[10px] block mb-1.5">
+                        Forma de Pago
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setCustomerInfo(prev => ({ ...prev, paymentMethod: 'cash' }))}
+                          className={`p-3 rounded-xl border text-center font-bold flex flex-col items-center gap-1 transition-all ${
+                            customerInfo.paymentMethod === 'cash'
+                              ? 'bg-[#2E231D] text-white border-[#2E231D] shadow-sm'
+                              : 'bg-[#FAF7F2] text-[#2E231D] border-[#9E744F]/20'
+                          }`}
+                        >
+                          <Wallet size={16} />
+                          <span>Efectivo</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCustomerInfo(prev => ({ ...prev, paymentMethod: 'transfer' }))}
+                          className={`p-3 rounded-xl border text-center font-bold flex flex-col items-center gap-1 transition-all ${
+                            customerInfo.paymentMethod === 'transfer'
+                              ? 'bg-[#2E231D] text-white border-[#2E231D] shadow-sm'
+                              : 'bg-[#FAF7F2] text-[#2E231D] border-[#9E744F]/20'
+                          }`}
+                        >
+                          <Landmark size={16} />
+                          <span>Transferencia</span>
+                        </button>
+                      </div>
+
+                      {/* Pago en Efectivo: ¿Con cuánto pagas? */}
+                      {customerInfo.paymentMethod === 'cash' && (
+                        <div className="mt-2.5 p-3 rounded-xl bg-[#FAF7F2] border border-[#9E744F]/20">
+                          <label className="font-bold text-[#2E231D] text-[10px] uppercase block mb-1">
+                            ¿Con cuánto pagas? (Para llevar cambio)
+                          </label>
+                          <input
+                            type="number"
+                            value={customerInfo.cashAmount}
+                            onChange={(e) => setCustomerInfo(prev => ({ ...prev, cashAmount: e.target.value }))}
+                            placeholder={`Ej. $${Math.ceil(cartTotal / 100) * 100}`}
+                            className="w-full px-3 py-2 rounded-lg border border-[#9E744F]/20 bg-white focus:outline-none focus:ring-2 focus:ring-[#9E744F]"
+                          />
+                          {customerInfo.cashAmount && Number(customerInfo.cashAmount) >= cartTotal && (
+                            <p className="text-[10px] text-emerald-700 font-bold mt-1">
+                              Tu cambio será de: ${Number(customerInfo.cashAmount) - cartTotal} MXN
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Pago por Transferencia: Datos bancarios */}
+                      {customerInfo.paymentMethod === 'transfer' && (
+                        <div className="mt-2.5 p-3 rounded-xl bg-[#FAF7F2] border border-[#9E744F]/20 space-y-2">
+                          <p className="font-bold text-[#2E231D] text-[11px]">Datos para Transferencia:</p>
+                          {bankFields.map((b) => (
+                            <div key={b.k} className="flex items-center justify-between text-[11px] bg-white p-2 rounded-lg border border-black/5">
+                              <div>
+                                <span className="text-[#7D6D63] block text-[9px] uppercase font-bold">{b.l}</span>
+                                <span className="font-semibold text-[#2E231D]">{b.v}</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleCopy(b.v, b.k)}
+                                className="p-1.5 rounded bg-[#FAF7F2] text-[#9E744F] hover:bg-[#F4ECE1]"
+                                aria-label={`Copiar ${b.l}`}
+                              >
+                                {copied === b.k ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                              </button>
+                            </div>
+                          ))}
+                          <p className="text-[10px] text-[#7D6D63] italic">
+                            * Enviar comprobante por WhatsApp al confirmar.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Notas adicionales */}
+                    <div>
+                      <label className="font-bold text-[#2E231D] uppercase tracking-wider text-[10px] block mb-1">
+                        Notas Generales (Opcional)
+                      </label>
+                      <input
+                        type="text"
+                        value={customerInfo.notes}
+                        onChange={(e) => setCustomerInfo(prev => ({ ...prev, notes: e.target.value }))}
+                        placeholder="Ej. Servir con servilletas extra..."
+                        className="w-full px-3 py-2 rounded-xl border border-[#9E744F]/20 bg-[#FAF7F2] focus:outline-none focus:ring-2 focus:ring-[#9E744F]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Footer Paso 2 */}
+                  <div className="p-4 bg-white border-t border-[#FAF7F2] space-y-2">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-[#7D6D63]">Total a pagar:</span>
+                      <span className="text-lg font-black text-[#2E231D]">${cartTotal} MXN</span>
+                    </div>
+                    <button
+                      onClick={handleSendOrder}
+                      className="w-full py-3.5 rounded-full bg-[#25D366] text-white font-bold text-xs md:text-sm shadow-xl hover:opacity-95 transition-all flex items-center justify-center gap-2 active:scale-98"
+                    >
+                      <MessageCircle size={17} /> Enviar Pedido por WhatsApp
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* PASO 3: ESTADO DE ÉXITO */}
+              {cartStep === 3 && (
+                <div className="p-8 text-center my-auto space-y-4">
+                  <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center">
+                    <Check size={32} />
+                  </div>
+                  <h4 className="macarena-display text-2xl font-bold text-[#2E231D]">¡Pedido Generado!</h4>
+                  <p className="text-xs text-[#7D6D63] max-w-xs mx-auto">
+                    Te estamos redirigiendo a WhatsApp para enviar los detalles de tu pedido a La Macarena...
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
-      {/* ═══ FLOATING CART ═══ */}
+      {/* ═══ MODAL DE AVISO DE PRIVACIDAD ═══ */}
       <AnimatePresence>
-        {cart.length > 0 && (
-          <motion.button initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} transition={{ type: 'spring', damping: 20 }} onClick={() => { setCartStep(1); setIsCartOpen(true); }}
-            className="fixed bottom-6 right-4 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl text-white font-bold text-sm shadow-2xl active:scale-95 transition-transform"
-            style={{ background: `linear-gradient(135deg, ${C.primary}, ${C.secondary})`, boxShadow: `0 12px 40px -6px ${C.primary}80`, marginBottom: 'env(safe-area-inset-bottom, 8px)' }}>
-            <div className="relative">
-              <ShoppingBag size={18} />
-              <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shadow-md" style={{ background: `linear-gradient(135deg, ${C.secondary}, ${C.primary})` }}>{totalItems}</span>
-            </div>
-            Ver Pedido · ${cartTotal}
-          </motion.button>
-        )}
-      </AnimatePresence>
+        {isPrivacyOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsPrivacyOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="relative w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl border border-[#9E744F]/20 text-xs space-y-4"
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-[#FAF7F2]">
+                <div className="flex items-center gap-2 text-[#2E231D]">
+                  <Shield size={18} className="text-[#9E744F]" />
+                  <h3 className="font-bold text-sm">Aviso de Privacidad</h3>
+                </div>
+                <button onClick={() => setIsPrivacyOpen(false)} className="text-black/40 hover:text-black">
+                  <X size={16} />
+                </button>
+              </div>
 
-      {/* ═══ SCROLL TO TOP ═══ */}
-      <AnimatePresence>
-        {scrolled && (
-          <motion.button initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0 }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="fixed bottom-6 left-4 z-50 w-11 h-11 rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-transform bg-white border-2 border-amber-100"
-            style={{ marginBottom: 'env(safe-area-inset-bottom, 8px)' }}>
-            <ArrowUp size={18} style={{ color: C.secondary }} />
-          </motion.button>
+              <div className="space-y-2 text-[#7D6D63] leading-relaxed">
+                <p>
+                  En <strong>La Macarena Crepería & Café</strong>, tus datos personales (nombre, teléfono y dirección) son utilizados exclusivamente para la gestión, preparación y entrega de tu pedido a través de WhatsApp.
+                </p>
+                <p>
+                  No compartimos tu información con terceros ni almacenamos datos bancarios confidenciales. Tu privacidad y confianza son fundamentales para nosotros.
+                </p>
+              </div>
+
+              <button
+                onClick={() => setIsPrivacyOpen(false)}
+                className="w-full py-2.5 rounded-full bg-[#2E231D] text-white font-bold text-xs hover:bg-[#9E744F] transition-colors"
+              >
+                Entendido
+              </button>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
