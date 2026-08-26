@@ -20,6 +20,7 @@ const VerdeRaizMenu = React.lazy(() => import('./modules/verde-raiz/pages/VerdeR
 const DemoCrepasMenu = React.lazy(() => import('./modules/demo-crepas/pages/DemoCrepasMenu'));
 const MexusMotors = React.lazy(() => import('./modules/mexus-motors/pages/MexusMotors'));
 const TarjetaBarberia = React.lazy(() => import('./modules/tarjeta-digital/pages/TarjetaBarberia'));
+const DonCloroLanding = React.lazy(() => import('./modules/don-cloro/pages/DonCloroLanding'));
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
 import { CartButton } from './components/common/CartButton';
@@ -797,6 +798,7 @@ export default function App() {
         <Route path="/demo-crepas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#C67B3D' }} /></div>}><DemoCrepasMenu /></Suspense></ErrorBoundary>} />
         <Route path="/mexus-motors" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#30a46c' }} /></div>}><MexusMotors /></Suspense></ErrorBoundary>} />
         <Route path="/tarjeta-barberia" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#f59e0b' }} /></div>}><TarjetaBarberia /></Suspense></ErrorBoundary>} />
+        <Route path="/don-cloro" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#BE185D' }} /></div>}><DonCloroLanding /></Suspense></ErrorBoundary>} />
         {/* <Route path="/amelie-patisserie" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]" /></div>}><AmeliePatisserieMenu /></Suspense></ErrorBoundary>} /> */}
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
