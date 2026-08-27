@@ -15,10 +15,7 @@ import ContactCard from './pages/ContactCard';
 import AdminPanel from './AdminPanel';
 
 const CatalogoEtiquetas = React.lazy(() => import('./modules/etiquetas-escolares/pages/CatalogoEtiquetas'));
-const AlitasYMasMenu = React.lazy(() => import('./modules/alitas-y-mas/pages/AlitasYMasMenu'));
-const VerdeRaizMenu = React.lazy(() => import('./modules/verde-raiz/pages/VerdeRaizMenu'));
 const DemoCrepasMenu = React.lazy(() => import('./modules/demo-crepas/pages/DemoCrepasMenu'));
-const MexusMotors = React.lazy(() => import('./modules/mexus-motors/pages/MexusMotors'));
 const TarjetaBarberia = React.lazy(() => import('./modules/tarjeta-digital/pages/TarjetaBarberia'));
 const DonCloroLanding = React.lazy(() => import('./modules/don-cloro/pages/DonCloroLanding'));
 import { GlobalFooter } from './components/common/GlobalFooter';
@@ -793,10 +790,7 @@ export default function App() {
         <Route path="/tarjeta" element={<ContactCard />} />
 
         <Route path="/etiquetas-escolares" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" /></div>}><CatalogoEtiquetas /></Suspense></ErrorBoundary>} />
-        <Route path="/alitasymas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#DC2626' }} /></div>}><AlitasYMasMenu /></Suspense></ErrorBoundary>} />
-        <Route path="/verde-raiz" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#059669' }} /></div>}><VerdeRaizMenu /></Suspense></ErrorBoundary>} />
         <Route path="/demo-crepas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#C67B3D' }} /></div>}><DemoCrepasMenu /></Suspense></ErrorBoundary>} />
-        <Route path="/mexus-motors" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#30a46c' }} /></div>}><MexusMotors /></Suspense></ErrorBoundary>} />
         <Route path="/tarjeta-barberia" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#f59e0b' }} /></div>}><TarjetaBarberia /></Suspense></ErrorBoundary>} />
         <Route path="/don-cloro" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#BE185D' }} /></div>}><DonCloroLanding /></Suspense></ErrorBoundary>} />
         {/* <Route path="/amelie-patisserie" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]" /></div>}><AmeliePatisserieMenu /></Suspense></ErrorBoundary>} /> */}
