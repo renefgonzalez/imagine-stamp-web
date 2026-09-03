@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anuncio principal Meta Ads — Takero's CDMX</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 20px 80px; }
+  .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #f97316; }
+  h1 { font-size: 28px; font-weight: 900; letter-spacing: -.03em; margin: 8px 0 6px; }
+  .sub { color: #a1a1aa; margin-bottom: 28px; }
+  .grid { display: grid; grid-template-columns: 380px 1fr; gap: 28px; align-items: start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Phone mock */
+  .phone {
+    background: #111;
+    border: 1px solid #27272a;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(249,115,22,.12);
+  }
+  .phone-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; font-size: 11px; font-weight: 700; color: #a1a1aa;
+    border-bottom: 1px solid #27272a;
+  }
+  .ad-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
+  .ad-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: #000 url('src/modules/takeros-cdmx/assets/takeros-logo.webp') center/cover;
+    border: 1px solid #f97316;
+    overflow: hidden;
+  }
+  .ad-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .ad-meta b { display: block; font-size: 13px; }
+  .ad-meta span { font-size: 11px; color: #a1a1aa; }
+  .sponsored { font-size: 11px; color: #71717a; }
+  .primary { padding: 0 14px 12px; font-size: 14px; white-space: pre-wrap; }
+  .primary .more { color: #71717a; }
+  .ad-img {
+    width: 100%; aspect-ratio: 1/1;
+    background: #18181b center/cover no-repeat;
+    position: relative;
+  }
+  .ad-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ad-img .overlay {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 48px 16px 16px;
+    background: linear-gradient(transparent, rgba(0,0,0,.85));
+  }
+  .ad-img .overlay .price { font-size: 13px; font-weight: 800; color: #facc15; }
+  .ad-img .overlay .hook { font-size: 22px; font-weight: 900; line-height: 1.15; }
+  .cta-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; background: #18181b; border-top: 1px solid #27272a;
+  }
+  .cta-bar .url { font-size: 11px; color: #a1a1aa; text-transform: uppercase; letter-spacing: .04em; }
+  .cta-bar .hl { font-size: 14px; font-weight: 800; }
+  .cta-bar .desc { font-size: 12px; color: #a1a1aa; }
+  .btn {
+    background: #f97316; color: #000; font-weight: 800; font-size: 12px;
+    padding: 8px 12px; border-radius: 6px; white-space: nowrap;
+  }
+  .actions { display: flex; border-top: 1px solid #27272a; }
+  .actions div { flex: 1; text-align: center; padding: 10px; font-size: 12px; color: #a1a1aa; font-weight: 600; }
+
+  .card {
+    background: #18181b; border: 1px solid #27272a; border-radius: 16px;
+    padding: 20px; margin-bottom: 16px;
+  }
+  .card h2 { font-size: 15px; font-weight: 800; margin-bottom: 12px; color: #facc15; }
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    color: #a1a1aa; margin-bottom: 6px;
+  }
+  .field label .ok { color: #22c55e; }
+  .box {
+    background: #000; border: 1px solid #3f3f46; border-radius: 10px;
+    padding: 12px 14px; white-space: pre-wrap; font-size: 13.5px;
+    user-select: all;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: #71717a; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; padding: 8px 0; border-bottom: 1px solid #27272a; }
+  td { padding: 8px 0; border-bottom: 1px solid #27272a; vertical-align: top; }
+  td:first-child { color: #a1a1aa; width: 42%; }
+  .tag { display: inline-block; background: #f97316; color: #000; font-weight: 800; font-size: 10px; padding: 3px 8px; border-radius: 999px; letter-spacing: .04em; }
+  .note { font-size: 12px; color: #a1a1aa; }
+  .steps { display: grid; gap: 8px; }
+  .step { display: flex; gap: 10px; align-items: flex-start; }
+  .n { width: 22px; height: 22px; border-radius: 50%; background: #f97316; color: #000; font-weight: 900; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .alts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 640px) { .alts { grid-template-columns: 1fr; } }
+  .alt { background: #000; border: 1px solid #3f3f46; border-radius: 10px; padding: 12px; font-size: 12px; }
+  .alt b { display: block; color: #f97316; margin-bottom: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Imagine & Stamp · Para presentar al cliente</div>
+  <h1>Anuncio principal — Takero's CDMX</h1>
+  <p class="sub">Listo para pegar en Administrador de anuncios (Facebook + Instagram). Destino: menú digital. Presupuesto: $50 MXN/día.</p>
+
+  <div class="grid">
+    <!-- MOCKUP -->
+    <div>
+      <div class="phone">
+        <div class="phone-bar"><span>Facebook</span><span>Patrocinado</span></div>
+        <div class="ad-head">
+          <div class="ad-avatar"><img src="src/modules/takeros-cdmx/assets/takeros-logo.webp" alt="Takero's"></div>
+          <div class="ad-meta">
+            <b>Takero's CDMX</b>
+            <span class="sponsored">Patrocinado · Cancún</span>
+          </div>
+        </div>
+        <div class="primary">¿Extrañas el taco al pastor de la CDMX? Takero's ya está en Cancún.
+
+Pastor, suadero, tripa y gringas. Para llevar o a domicilio.
+
+Pide en el menú → te llega.
+Lun–Dom · 4:30 pm–12:00 am</div>
+        <div class="ad-img" style="background-image:url('https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=1080&q=80');">
+          <div class="overlay">
+            <div class="price">TACO AL PASTOR $29</div>
+            <div class="hook">El sabor de la CDMX,<br>ahora en Cancún</div>
+          </div>
+        </div>
+        <div class="cta-bar">
+          <div>
+            <div class="url">takeros-cdmx.imagineandstamp.site</div>
+            <div class="hl">Tacos chilangos en Cancún</div>
+            <div class="desc">Menú digital · 4:30 pm–12 am</div>
+          </div>
+          <div class="btn">Pedir ahora</div>
+        </div>
+        <div class="actions">
+          <div>Me gusta</div>
+          <div>Comentar</div>
+          <div>Compartir</div>
+        </div>
+      </div>
+      <p class="note" style="margin-top:12px;">Mockup de feed. La foto de tacos es placeholder hasta que el cliente dé fotos reales del trompo / empaque.</p>
+    </div>
+
+    <!-- SPECS -->
+    <div>
+      <div class="card">
+        <h2>1. Copy para pegar (anuncio principal)</h2>
+
+        <div class="field">
+          <label>Texto principal <span class="ok">67 c. 1ª línea · visible sin “ver más”</span></label>
+          <div class="box">¿Extrañas el taco al pastor de la CDMX? Takero's ya está en Cancún.
+
+Pastor, suadero, tripa y gringas. Para llevar o a domicilio.
+
+Pide en el menú → te llega.
+Lun–Dom · 4:30 pm–12:00 am</div>
+        </div>
+
+        <div class="field">
+          <label>Título / Headline <span class="ok">25 / 40 rec.</span></label>
+          <div class="box">Tacos chilangos en Cancún</div>
+        </div>
+
+        <div class="field">
+          <label>Descripción <span class="ok">27 / 30 rec.</span></label>
+          <div class="box">Menú digital · 4:30 pm–12 am</div>
+        </div>
+
+        <div class="field">
+          <label>URL de destino</label>
+          <div class="box">https://takeros-cdmx.imagineandstamp.site/</div>
+        </div>
+
+        <div class="field">
+          <label>Botón (CTA)</label>
+          <div class="box">Pedir ahora  →  ORDER_NOW</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>2. Cómo armarlo en Ads Manager</h2>
+        <table>
+          <tr><th>Campo</th><th>Valor</th></tr>
+          <tr><td>Campaña</td><td>META_Trafico_Cancun_Menu_TemporadaBaja</td></tr>
+          <tr><td>Objetivo</td><td>Tráfico (clics al menú)</td></tr>
+          <tr><td>Presupuesto</td><td>$50 MXN / día · CBO</td></tr>
+          <tr><td>Ubicación</td><td>Cancún, Q. Roo · radio 10 km</td></tr>
+          <tr><td>Edad</td><td>22–50 · todos los géneros</td></tr>
+          <tr><td>Idioma</td><td>Español</td></tr>
+          <tr><td>Plataformas</td><td>Facebook + Instagram (Feed, Stories, Reels)</td></tr>
+          <tr><td>Programación</td><td>Todos los días · 15:00–23:30 (hora Cancún)</td></tr>
+          <tr><td>Optimización</td><td>Clics en el enlace</td></tr>
+          <tr><td>Estado al crear</td><td>Pausado hasta que el cliente apruebe</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>3. Variantes de título (si quiere cambiar)</h2>
+        <div class="alts">
+          <div class="alt"><b>Principal</b>Tacos chilangos en Cancún</div>
+          <div class="alt"><b>Precio</b>Pastor $29 · pide a domicilio</div>
+          <div class="alt"><b>Pedido</b>A domicilio en Cancún</div>
+          <div class="alt"><b>Identidad</b>El sabor de tu barrio, aquí</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>4. Qué pedirle al cliente para publicar</h2>
+        <div class="steps">
+          <div class="step"><div class="n">1</div><div>Acceso de <b>administrador</b> a la Página de Facebook y a Instagram @takeroscdmx (rol editor o admin).</div></div>
+          <div class="step"><div class="n">2</div><div>Acceso a la cuenta publicitaria de Meta (o permiso para crear anuncios desde Imagine & Stamp).</div></div>
+          <div class="step"><div class="n">3</div><div>3–5 fotos reales: trompo de pastor, taco servido, gringa, empaque para llevar. (Sin esto usamos placeholder y rinde menos.)</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
