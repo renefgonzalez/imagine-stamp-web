@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Menu, X, MessageCircle, ArrowRight, ArrowUpRight,
@@ -15,6 +15,7 @@ import celosiaDivisiones from './assets/celosia-divisiones.webp';
 import celosiaBarandal from './assets/celosia-barandal.webp';
 import celosiaMuros from './assets/celosia-muros-decorativos.webp';
 import videoFondo from './assets/video-fondo.mp4';
+import videoPoster from './assets/video-poster.webp';
 
 /* ================================================================
    VICMA LASER — Landing Page industrial (Single-File Application)
@@ -525,6 +526,21 @@ export default function VicmaLaser() {
   const [privacidadOpen, setPrivacidadOpen] = useState(false);
   const [filtroPortafolio, setFiltroPortafolio] = useState('Todas');
   const [lightbox, setLightbox] = useState(null);
+  const videoRef = useRef(null);
+
+  // Garantizar autoplay silenciado en todos los navegadores (soluciona bug de muted en React/WebKit)
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.defaultMuted = true;
+      videoRef.current.muted = true;
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Si el navegador bloquea autoplay (ej. Modo Ahorro de Batería en móvil), el poster permanece visible
+        });
+      }
+    }
+  }, []);
 
   // Scroll suave a sección SIN tocar el hash (evita romper el HashRouter)
   const goTo = (id) => (e) => {
@@ -708,14 +724,18 @@ export default function VicmaLaser() {
       <section id="inicio" className="relative flex min-h-[92vh] items-center overflow-hidden bg-slate-900">
         {/* Video de fondo */}
         <video
-          src={videoFondo}
+          ref={videoRef}
           autoPlay
           loop
           muted
           playsInline
+          preload="auto"
+          poster={videoPoster}
           aria-hidden="true"
           className="absolute inset-0 h-full w-full object-cover z-0"
-        ></video>
+        >
+          <source src={videoFondo} type="video/mp4" />
+        </video>
         {/* Overlay oscuro */}
         <div className="absolute inset-0 z-10 bg-black/60" />
         {/* Vignette sutil para enfocar el centro */}
