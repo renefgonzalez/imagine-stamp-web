@@ -763,7 +763,7 @@ export default function VicmaLaser() {
 
       {/* ===================== HERO ===================== */}
       <section id="inicio" className="relative flex min-h-[92vh] items-center overflow-hidden bg-slate-900">
-        {/* Video de fondo */}
+        {/* Video de fondo con contraste y brillo optimizado para móviles */}
         <video
           ref={videoRef}
           src={videoFondo}
@@ -776,41 +776,41 @@ export default function VicmaLaser() {
           preload="auto"
           poster={videoPoster}
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover z-0"
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[50%_75%] z-0 brightness-135 contrast-120 saturate-130 sm:object-center sm:brightness-100 sm:contrast-100 sm:saturate-100"
         >
           <source src={videoFondo} type="video/mp4" />
         </video>
-        {/* Overlay oscuro */}
-        <div className="pointer-events-none absolute inset-0 z-10 bg-black/60" />
-        {/* Vignette sutil para enfocar el centro */}
-        <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-slate-950/70 via-transparent to-slate-950/40" />
+        {/* Overlay oscuro: sutil en móvil (30%) para máxima claridad del video, 60% en desktop */}
+        <div className="pointer-events-none absolute inset-0 z-10 bg-black/30 sm:bg-black/60" />
+        {/* Vignette sutil para enfocar el centro sin oscurecer */}
+        <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-slate-950/75 via-transparent to-slate-950/20 sm:from-slate-950/70 sm:to-slate-950/40" />
 
         {/* Badges de confianza superior */}
         <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-wrap items-center gap-4 px-4">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/90 backdrop-blur-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/90 backdrop-blur-sm shadow-lg shadow-black/30">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
             ENVÍOS A TODO MÉXICO
           </span>
         </div>
 
-        <div className="relative z-20 mx-auto w-full max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+        <div className="relative z-20 mx-auto w-full max-w-7xl px-4 py-16 sm:py-24 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-3xl"
           >
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-orange-300 backdrop-blur-sm">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-orange-300 backdrop-blur-sm shadow-md">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-orange-500" />
               Maquila de corte láser industrial
             </span>
 
-            <h1 className="font-display mt-6 text-6xl font-extrabold uppercase leading-[0.95] tracking-tight text-white sm:text-7xl lg:text-8xl">
+            <h1 className="font-display mt-5 text-5xl font-extrabold uppercase leading-[0.95] tracking-tight text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)] sm:mt-6 sm:text-7xl lg:text-8xl">
               Precisión Absoluta en{' '}
               <span className="text-orange-500">Corte Láser</span>.
             </h1>
 
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-200 sm:text-xl">
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] sm:mt-6 sm:text-xl">
               Maquila de corte láser de metales en México. Cortes precisos, entregas rápidas y
               sin rebabas. Especialistas en celosías y maquila industrial.
             </p>
