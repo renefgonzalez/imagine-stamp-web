@@ -706,13 +706,15 @@ export default function VicmaLaser() {
 
       {/* ===================== HERO ===================== */}
       <section id="inicio" className="relative flex min-h-[92vh] items-center overflow-hidden bg-slate-900">
-        {/* Video de fondo (reemplaza video-fondo.mp4 por tu archivo real) */}
+        {/* Video de fondo */}
         <video
           src={videoFondo}
           autoPlay
           loop
           muted
           playsInline
+          preload="metadata"
+          poster={celosiaFachadas}
           className="absolute inset-0 h-full w-full object-cover z-0"
         ></video>
         {/* Overlay oscuro */}
