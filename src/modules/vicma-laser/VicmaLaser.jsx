@@ -528,18 +528,47 @@ export default function VicmaLaser() {
   const [lightbox, setLightbox] = useState(null);
   const videoRef = useRef(null);
 
-  // Garantizar autoplay silenciado en todos los navegadores (soluciona bug de muted en React/WebKit)
+  // Garantizar autoplay silenciado y continuo en todos los navegadores y móviles
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.defaultMuted = true;
-      videoRef.current.muted = true;
-      const playPromise = videoRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Si el navegador bloquea autoplay (ej. Modo Ahorro de Batería en móvil), el poster permanece visible
-        });
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.defaultMuted = true;
+    video.muted = true;
+
+    const attemptPlay = () => {
+      if (video && video.paused) {
+        video.muted = true;
+        video.play().catch(() => {});
       }
-    }
+    };
+
+    attemptPlay();
+
+    video.addEventListener('loadeddata', attemptPlay);
+    video.addEventListener('canplay', attemptPlay);
+    video.addEventListener('loadedmetadata', attemptPlay);
+
+    // Desbloquear en el primer gesto de usuario si el navegador requiere interacción previa
+    const unlockOnGesture = () => {
+      attemptPlay();
+      window.removeEventListener('touchstart', unlockOnGesture);
+      window.removeEventListener('click', unlockOnGesture);
+      window.removeEventListener('scroll', unlockOnGesture);
+    };
+
+    window.addEventListener('touchstart', unlockOnGesture, { passive: true, once: true });
+    window.addEventListener('click', unlockOnGesture, { once: true });
+    window.addEventListener('scroll', unlockOnGesture, { passive: true, once: true });
+
+    return () => {
+      video.removeEventListener('loadeddata', attemptPlay);
+      video.removeEventListener('canplay', attemptPlay);
+      video.removeEventListener('loadedmetadata', attemptPlay);
+      window.removeEventListener('touchstart', unlockOnGesture);
+      window.removeEventListener('click', unlockOnGesture);
+      window.removeEventListener('scroll', unlockOnGesture);
+    };
   }, []);
 
   // Scroll suave a sección SIN tocar el hash (evita romper el HashRouter)
@@ -567,6 +596,18 @@ export default function VicmaLaser() {
         .font-display { font-family: 'Barlow Condensed', sans-serif; }
         .font-body { font-family: 'Barlow', sans-serif; }
         html { scroll-behavior: smooth; }
+        /* Ocultar botones nativos de reproducción de WebKit/Safari/Android en video de fondo */
+        video::-webkit-media-controls,
+        video::-webkit-media-controls-start-playback-button,
+        video::-webkit-media-controls-play-button,
+        video::-webkit-media-controls-panel,
+        video::-webkit-media-controls-overlay-play-button {
+          display: none !important;
+          -webkit-appearance: none !important;
+          opacity: 0 !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
         /* Textura técnica sutil para fondos industriales */
         .metal-grid {
           background-image:
@@ -725,19 +766,22 @@ export default function VicmaLaser() {
         {/* Video de fondo */}
         <video
           ref={videoRef}
+          src={videoFondo}
           autoPlay
           loop
           muted
           playsInline
+          webkit-playsinline="true"
+          x5-playsinline="true"
           preload="auto"
           poster={videoPoster}
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover z-0"
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover z-0"
         >
           <source src={videoFondo} type="video/mp4" />
         </video>
         {/* Overlay oscuro */}
-        <div className="absolute inset-0 z-10 bg-black/60" />
+        <div className="pointer-events-none absolute inset-0 z-10 bg-black/60" />
         {/* Vignette sutil para enfocar el centro */}
         <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-slate-950/70 via-transparent to-slate-950/40" />
 
