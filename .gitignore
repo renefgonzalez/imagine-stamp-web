@@ -8,3 +8,7 @@ coverage/
 !.env.example
 graphify-out/
 
+
+# Agent memories (hardlinked to root)
+AGENTS.md
+CLAUDE.md
