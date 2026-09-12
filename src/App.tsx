@@ -17,6 +17,7 @@ import AdminPanel from './AdminPanel';
 const CatalogoEtiquetas = React.lazy(() => import('./modules/etiquetas-escolares/pages/CatalogoEtiquetas'));
 const DemoCrepasMenu = React.lazy(() => import('./modules/demo-crepas/pages/DemoCrepasMenu'));
 const TarjetaBarberia = React.lazy(() => import('./modules/tarjeta-digital/pages/TarjetaBarberia'));
+const TarjetaVeterinaria = React.lazy(() => import('./modules/tarjeta-veterinaria/pages/TarjetaVeterinaria'));
 const LabalMenu = React.lazy(() => import('./modules/labal/pages/LabalMenu'));
 const VicmaLaser = React.lazy(() => import('./modules/vicma-laser/VicmaLaser'));
 import { GlobalFooter } from './components/common/GlobalFooter';
@@ -794,6 +795,8 @@ export default function App() {
         <Route path="/demo-crepas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#C67B3D' }} /></div>}><DemoCrepasMenu /></Suspense></ErrorBoundary>} />
         <Route path="/tarjeta-barberia" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#f59e0b' }} /></div>}><TarjetaBarberia /></Suspense></ErrorBoundary>} />
         <Route path="/tarjeta-digital" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#f59e0b' }} /></div>}><TarjetaBarberia /></Suspense></ErrorBoundary>} />
+        <Route path="/tarjeta-veterinaria" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#14b8a6' }} /></div>}><TarjetaVeterinaria /></Suspense></ErrorBoundary>} />
+        <Route path="/tarjeta-vet" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#14b8a6' }} /></div>}><TarjetaVeterinaria /></Suspense></ErrorBoundary>} />
         <Route path="/labal" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#000000' }} /></div>}><LabalMenu /></Suspense></ErrorBoundary>} />
         <Route path="/vicma-laser" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#f97316' }} /></div>}><VicmaLaser /></Suspense></ErrorBoundary>} />
         <Route path="/vicmalser" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#f97316' }} /></div>}><VicmaLaser /></Suspense></ErrorBoundary>} />
