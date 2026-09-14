@@ -1055,29 +1055,31 @@ export default function BurgaslocasMenu() {
             <div className="md:col-span-5">
               <div className="relative rounded-3xl p-1 bg-gradient-to-br from-amber-500/40 via-red-500/30 to-pink-500/20 shadow-2xl shadow-orange-950/50">
                 <div className="bg-[#181412] rounded-[22px] p-5 relative overflow-hidden">
-                  <div className="absolute top-3 right-3 bg-gradient-to-r from-red-600 to-orange-500 text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
-                    <Sparkles size={11} /> COMBO RECOMENDADO
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className="bg-gradient-to-r from-red-600 to-orange-500 text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
+                      <Sparkles size={11} /> COMBO RECOMENDADO
+                    </span>
+                    <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                      Ahorra $22
+                    </span>
                   </div>
 
                   <div className="flex items-center gap-4 mb-4">
                     <img
                       src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=400&q=80"
                       alt="Combo Burga"
-                      className="w-20 h-20 rounded-2xl object-cover border border-amber-500/30 shadow-md"
+                      className="w-20 h-20 rounded-2xl object-cover border border-amber-500/30 shadow-md shrink-0"
                     />
-                    <div>
+                    <div className="min-w-0">
                       <h2 className="text-base font-black text-white uppercase leading-tight">
                         Paquete Burga + Papas + Pepsi
                       </h2>
                       <p className="text-xs text-stone-400 line-clamp-2 mt-0.5">
                         Burga queso manchego y tocino crujiente, papas doradas y refresco frío.
                       </p>
-                      <div className="mt-1 flex items-baseline gap-2">
+                      <div className="mt-1.5 flex items-baseline gap-2">
                         <span className="text-2xl font-black text-[#FFB800]">$118</span>
                         <span className="text-xs text-stone-500 line-through">$140</span>
-                        <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                          Ahorra $22
-                        </span>
                       </div>
                     </div>
                   </div>
