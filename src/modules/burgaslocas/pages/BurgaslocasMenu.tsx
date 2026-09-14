@@ -11,7 +11,7 @@ import {
   Phone, MapPin, Clock, MessageCircle, ArrowUp, Shield,
   Copy, Check, Trash2, Landmark, Wallet, Store, Bike,
   Heart, CheckCircle2, ChevronRight, Award, Utensils,
-  Share2, AlertCircle, Info, Star
+  Share2, AlertCircle, Info, Star, Edit3
 } from 'lucide-react';
 import { clientConfig, bankInfo } from '../config';
 
@@ -643,6 +643,7 @@ export default function BurgaslocasMenu() {
   });
 
   // ── Personalización de Producto Modal ──
+  const [editingLineId, setEditingLineId] = useState<string | null>(null);
   const [modalSauce, setModalSauce] = useState(SAUCES_BURGER[0]);
   const [modalWingsSauce, setModalWingsSauce] = useState(SAUCES_WINGS[0]);
   const [modalFlavor, setModalFlavor] = useState(FLAVORS_SODA[0]);
@@ -704,8 +705,9 @@ export default function BurgaslocasMenu() {
     );
   };
 
-  // ── Abrir Modal de Producto ──
+  // ── Abrir Modal de Producto (Nuevo) ──
   const handleOpenProduct = (product: Product) => {
+    setEditingLineId(null);
     setSelectedProduct(product);
     setModalSauce(SAUCES_BURGER[0]);
     setModalWingsSauce(SAUCES_WINGS[0]);
@@ -715,12 +717,56 @@ export default function BurgaslocasMenu() {
     setModalQuantity(1);
   };
 
-  // ── Agregar al Carrito desde el Modal ──
+  // ── Abrir Modal para Editar Item del Carrito ──
+  const handleEditCartItem = (item: CartItem) => {
+    const product = PRODUCTS.find((p) => p.id === item.productId);
+    if (!product) return;
+
+    setEditingLineId(item.lineId);
+    setSelectedProduct(product);
+    setModalSauce(item.selectedSauce || SAUCES_BURGER[0]);
+    setModalWingsSauce(item.selectedSauce || SAUCES_WINGS[0]);
+    setModalFlavor(item.selectedFlavor || FLAVORS_SODA[0]);
+    setModalExtras(item.extras ? [...item.extras] : []);
+    setModalNotes(item.specialNotes || '');
+    setModalQuantity(item.quantity);
+  };
+
+  // ── Guardar / Agregar al Carrito desde el Modal ──
   const handleAddToCartFromModal = () => {
     if (!selectedProduct) return;
 
     const extrasTotal = modalExtras.reduce((acc, curr) => acc + curr.price, 0);
     const unitPrice = selectedProduct.price + extrasTotal;
+
+    // Si estamos editando un producto existente del carrito
+    if (editingLineId) {
+      setCart((prev) =>
+        prev.map((item) => {
+          if (item.lineId === editingLineId) {
+            return {
+              ...item,
+              unitPrice,
+              quantity: modalQuantity,
+              selectedSauce:
+                selectedProduct.category === 'hamburguesas' || selectedProduct.category === 'paquetes'
+                  ? modalSauce
+                  : selectedProduct.category === 'alitas'
+                  ? modalWingsSauce
+                  : undefined,
+              selectedFlavor: selectedProduct.category === 'bebidas' ? modalFlavor : undefined,
+              extras: modalExtras.length > 0 ? modalExtras : undefined,
+              specialNotes: modalNotes.trim() || undefined,
+            };
+          }
+          return item;
+        })
+      );
+      setEditingLineId(null);
+      setSelectedProduct(null);
+      showToast(`¡${selectedProduct.name} actualizado en tu pedido! ✨`);
+      return;
+    }
 
     const lineId = `${selectedProduct.id}-${modalSauce}-${modalWingsSauce}-${modalFlavor}-${modalExtras.map(e => e.name).sort().join(',')}-${Date.now()}`;
 
@@ -801,7 +847,7 @@ export default function BurgaslocasMenu() {
     [cart]
   );
 
-  const deliveryCost = customerInfo.deliveryMethod === 'delivery' ? 25 : 0;
+  const deliveryCost = customerInfo.deliveryMethod === 'delivery' ? 12 : 0;
   const cartTotal = cartSubtotal + deliveryCost;
 
   // Cálculo del cambio en efectivo
@@ -1266,7 +1312,7 @@ export default function BurgaslocasMenu() {
       {/* ── MODAL DE PERSONALIZACIÓN DEL PRODUCTO (Bottom Sheet Móvil / Centrado Desktop) ── */}
       <AnimatePresence>
         {selectedProduct && (
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-0 sm:p-4">
+          <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-0 sm:p-4">
             <motion.div
               initial={{ opacity: 0, y: 60 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1283,18 +1329,25 @@ export default function BurgaslocasMenu() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#181513] via-black/40 to-transparent" />
                 <button
-                  onClick={() => setSelectedProduct(null)}
-                  className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-black transition-colors"
+                  onClick={() => {
+                    setSelectedProduct(null);
+                    setEditingLineId(null);
+                  }}
+                  className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-black transition-colors cursor-pointer"
                 >
                   <X size={18} />
                 </button>
 
                 <div className="absolute bottom-3 left-4 right-4">
-                  {selectedProduct.badge && (
+                  {editingLineId ? (
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500 text-black inline-flex items-center gap-1 mb-1 shadow-md">
+                      <Edit3 size={11} /> Editando Producto del Carrito
+                    </span>
+                  ) : selectedProduct.badge ? (
                     <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FF381E] text-white inline-block mb-1">
                       {selectedProduct.badge}
                     </span>
-                  )}
+                  ) : null}
                   <h3 className="text-xl font-black text-white leading-tight">
                     {selectedProduct.name}
                   </h3>
@@ -1470,12 +1523,12 @@ export default function BurgaslocasMenu() {
                   </button>
                 </div>
 
-                {/* Botón Agregar */}
+                {/* Botón Agregar / Guardar Cambios */}
                 <button
                   onClick={handleAddToCartFromModal}
                   className="flex-1 py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#FF381E] to-[#FF7A00] text-white font-black text-sm uppercase tracking-wide flex items-center justify-between shadow-lg shadow-orange-950/50 hover:brightness-110 cursor-pointer"
                 >
-                  <span>Agregar al Pedido</span>
+                  <span>{editingLineId ? 'Guardar Cambios' : 'Agregar al Pedido'}</span>
                   <span className="font-mono">
                     $
                     {(selectedProduct.price +
@@ -1594,12 +1647,21 @@ export default function BurgaslocasMenu() {
                                   <Plus size={12} />
                                 </button>
                               </div>
-                              <button
-                                onClick={() => removeFromCart(item.lineId)}
-                                className="text-stone-500 hover:text-red-400 text-[10px] flex items-center gap-1 cursor-pointer"
-                              >
-                                <Trash2 size={11} /> Quitar
-                              </button>
+                              <div className="flex items-center gap-1.5 pt-0.5">
+                                <button
+                                  onClick={() => handleEditCartItem(item)}
+                                  className="text-amber-400 hover:text-amber-300 text-[10px] font-bold flex items-center gap-1 cursor-pointer bg-amber-500/10 hover:bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30 transition-colors"
+                                  title="Editar salsas, extras y notas"
+                                >
+                                  <Edit3 size={10} /> Editar
+                                </button>
+                                <button
+                                  onClick={() => removeFromCart(item.lineId)}
+                                  className="text-stone-500 hover:text-red-400 text-[10px] flex items-center gap-0.5 cursor-pointer"
+                                >
+                                  <Trash2 size={10} /> Quitar
+                                </button>
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -1742,7 +1804,7 @@ export default function BurgaslocasMenu() {
                         >
                           <Bike size={18} className="text-orange-400" />
                           <span>A Domicilio</span>
-                          <span className="text-[10px] text-stone-400">+$25 aprox</span>
+                          <span className="text-[10px] text-amber-400 font-bold">+$12</span>
                         </button>
 
                         <button
