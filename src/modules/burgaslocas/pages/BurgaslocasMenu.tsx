@@ -4,13 +4,13 @@
 // costillas BBQ, boneless y snacks crujientes con salsa de habanero casera.
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Search, Plus, Minus, X, ShoppingBag, Flame, Sparkles,
   Phone, MapPin, Clock, MessageCircle, ArrowUp, Shield,
   Copy, Check, Trash2, Landmark, Wallet, Store, Bike,
-  Heart, CheckCircle2, ChevronRight, Award, Utensils,
+  Heart, CheckCircle2, ChevronRight, ChevronLeft, Award, Utensils,
   Share2, AlertCircle, Info, Star, Edit3
 } from 'lucide-react';
 import { clientConfig, bankInfo } from '../config';
@@ -20,6 +20,7 @@ const C = clientConfig.colors;
 // ── Tipos ──
 type CategoryId =
   | 'todos'
+  | 'favoritos'
   | 'paquetes'
   | 'hamburguesas'
   | 'hotdogs'
@@ -62,6 +63,10 @@ interface CartItem {
   selectedFlavor?: string;
   extras?: CustomOption[];
   specialNotes?: string;
+  burgerCustom?: {
+    ingredients: Record<string, boolean>;
+    spicy: string;
+  };
 }
 
 // ── Opciones de personalización ──
@@ -73,13 +78,58 @@ const EXTRAS_LIST: CustomOption[] = [
   { name: 'Doritos Nachos Crujientes', price: 8 },
 ];
 
-const SAUCES_BURGER = [
-  'Con todo (Catsup, Mayo, Mostaza, Jalapeño)',
-  'Con Salsa de Habanero Casera 🌶️ (¡Recomendada!)',
-  'Con Jalapeños en vinagre',
-  'Sin picante (Solo aderezos dulces)',
-  'Solo verduras y aderezos',
+// Ingredientes base oficiales de las hamburguesas (del menú impreso)
+interface BurgerIngredientOption {
+  id: string;
+  name: string;
+  icon: string;
+}
+
+const BURGER_BASE_INGREDIENTS: BurgerIngredientOption[] = [
+  { id: 'lechuga', name: 'Lechuga', icon: '🥬' },
+  { id: 'jitomate', name: 'Jitomate', icon: '🍅' },
+  { id: 'cebolla', name: 'Cebolla', icon: '🧅' },
+  { id: 'catsup', name: 'Catsup', icon: '🥫' },
+  { id: 'mayonesa', name: 'Mayonesa', icon: '🥄' },
+  { id: 'mostaza', name: 'Mostaza', icon: '🟡' },
 ];
+
+const BURGER_SPICY_OPTIONS = [
+  { id: 'habanero', name: 'Salsa Habanero Casera', icon: '🌶️', tag: '¡Especialidad de la Casa!' },
+  { id: 'jalapenos', name: 'Chiles Jalapeños', icon: '🫑', tag: 'En Vinagre Tradicional' },
+  { id: 'sin_picante', name: 'Sin Picante', icon: '🚫', tag: 'Solo aderezos dulces' },
+];
+
+const getBurgerPreparationSummary = (
+  ingredients: Record<string, boolean>,
+  spicyId: string
+): string => {
+  const allIncluded = BURGER_BASE_INGREDIENTS.every((i) => ingredients[i.id]);
+  const allExcluded = BURGER_BASE_INGREDIENTS.every((i) => !ingredients[i.id]);
+
+  let spicyLabel = '';
+  if (spicyId === 'habanero') spicyLabel = 'Con Salsa Habanero Casera 🌶️';
+  else if (spicyId === 'jalapenos') spicyLabel = 'Con Jalapeños 🫑';
+  else spicyLabel = 'Sin picante 🚫';
+
+  if (allIncluded) {
+    return `Con todo tradicional (Lechuga, Jitomate, Cebolla, Catsup, Mayo, Mostaza) | ${spicyLabel}`;
+  }
+  if (allExcluded) {
+    return `Solo carne (Sin verduras ni aderezos) | ${spicyLabel}`;
+  }
+
+  const excluded = BURGER_BASE_INGREDIENTS.filter((i) => !ingredients[i.id]).map(
+    (i) => `Sin ${i.name.toLowerCase()}`
+  );
+  const included = BURGER_BASE_INGREDIENTS.filter((i) => ingredients[i.id]).map((i) => i.name);
+
+  if (excluded.length <= 3) {
+    return `${excluded.join(', ')} | ${spicyLabel}`;
+  } else {
+    return `Solo con: ${included.join(', ')} | ${spicyLabel}`;
+  }
+};
 
 const SAUCES_WINGS = [
   'Salsa Picosita de la Casa 🔥 (BBQ, Inglesa, Maggy, Tajín y Picante)',
@@ -604,21 +654,9 @@ const PRODUCTS: Product[] = [
   },
 ];
 
-// ── Categorías con iconos y badges ──
-const CATEGORIES: { id: CategoryId; name: string; icon: string; count: number }[] = [
-  { id: 'todos', name: 'Todo el Menú', icon: '🍔', count: PRODUCTS.length },
-  { id: 'paquetes', name: 'Paquetes y Combos', icon: '👑', count: 4 },
-  { id: 'hamburguesas', name: 'Burgas al Carbón', icon: '🔥', count: 10 },
-  { id: 'hotdogs', name: 'Hotdogs', icon: '🌭', count: 4 },
-  { id: 'jocholocos', name: 'Jocholocos Doritos', icon: '🧀', count: 4 },
-  { id: 'alitas', name: 'Alitas de la Casa', icon: '🍗', count: 3 },
-  { id: 'banderillas', name: 'Banderillas Gouda', icon: '✨', count: 7 },
-  { id: 'snacks', name: 'Papas y Snacks', icon: '🍟', count: 13 },
-  { id: 'costillas', name: 'Costillas BBQ', icon: '🥩', count: 1 },
-  { id: 'bebidas', name: 'Refrescos', icon: '🥤', count: 1 },
-];
-
 export default function BurgaslocasMenu() {
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
+
   // ── Estados Principales ──
   const [activeCategory, setActiveCategory] = useState<CategoryId>('todos');
   const [searchQuery, setSearchQuery] = useState('');
@@ -642,15 +680,55 @@ export default function BurgaslocasMenu() {
     }
   });
 
+  // ── Lista de Categorías ──
+  const categoriesList = useMemo(() => [
+    { id: 'todos' as CategoryId, name: 'Todo el Menú', icon: '🍔', count: PRODUCTS.length },
+    { id: 'paquetes' as CategoryId, name: 'Paquetes y Combos', icon: '👑', count: 4 },
+    { id: 'hamburguesas' as CategoryId, name: 'Burgas al Carbón', icon: '🔥', count: 10 },
+    { id: 'hotdogs' as CategoryId, name: 'Hotdogs', icon: '🌭', count: 4 },
+    { id: 'jocholocos' as CategoryId, name: 'Jocholocos Doritos', icon: '🧀', count: 4 },
+    { id: 'alitas' as CategoryId, name: 'Alitas de la Casa', icon: '🍗', count: 3 },
+    { id: 'banderillas' as CategoryId, name: 'Banderillas Gouda', icon: '✨', count: 7 },
+    { id: 'snacks' as CategoryId, name: 'Papas y Snacks', icon: '🍟', count: 13 },
+    { id: 'costillas' as CategoryId, name: 'Costillas BBQ', icon: '🥩', count: 1 },
+    { id: 'bebidas' as CategoryId, name: 'Refrescos', icon: '🥤', count: 1 },
+  ], []);
+
   // ── Personalización de Producto Modal ──
   const [editingLineId, setEditingLineId] = useState<string | null>(null);
-  const [modalSauce, setModalSauce] = useState(SAUCES_BURGER[0]);
+  const [burgerIngredients, setBurgerIngredients] = useState<Record<string, boolean>>({
+    lechuga: true,
+    jitomate: true,
+    cebolla: true,
+    catsup: true,
+    mayonesa: true,
+    mostaza: true,
+  });
+  const [burgerSpicy, setBurgerSpicy] = useState<string>('habanero');
   const [modalWingsSauce, setModalWingsSauce] = useState(SAUCES_WINGS[0]);
   const [modalFlavor, setModalFlavor] = useState(FLAVORS_SODA[0]);
   const [modalExtras, setModalExtras] = useState<CustomOption[]>([]);
   const [modalNotes, setModalNotes] = useState('');
   const [modalQuantity, setModalQuantity] = useState(1);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const toggleBurgerIngredient = (id: string) => {
+    setBurgerIngredients((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const setAllBurgerIngredients = (val: boolean) => {
+    setBurgerIngredients({
+      lechuga: val,
+      jitomate: val,
+      cebolla: val,
+      catsup: val,
+      mayonesa: val,
+      mostaza: val,
+    });
+  };
 
   // ── Datos de Pedido (Checkout Paso 2) ──
   const [customerInfo, setCustomerInfo] = useState({
@@ -669,6 +747,7 @@ export default function BurgaslocasMenu() {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [copiedClabe, setCopiedClabe] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   // ── Persistencia Local ──
   useEffect(() => {
@@ -700,16 +779,31 @@ export default function BurgaslocasMenu() {
   // ── Manejo de Favoritos ──
   const toggleFavorite = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    const willBeFav = !favorites.includes(id);
     setFavorites((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
+    const prod = PRODUCTS.find((p) => p.id === id);
+    if (willBeFav) {
+      showToast(`❤️ ¡${prod?.name || 'Platillo'} guardado en Favoritos!`);
+    } else {
+      showToast(`Quitado de tus Favoritos`);
+    }
   };
 
   // ── Abrir Modal de Producto (Nuevo) ──
   const handleOpenProduct = (product: Product) => {
     setEditingLineId(null);
     setSelectedProduct(product);
-    setModalSauce(SAUCES_BURGER[0]);
+    setBurgerIngredients({
+      lechuga: true,
+      jitomate: true,
+      cebolla: true,
+      catsup: true,
+      mayonesa: true,
+      mostaza: true,
+    });
+    setBurgerSpicy('habanero');
     setModalWingsSauce(SAUCES_WINGS[0]);
     setModalFlavor(FLAVORS_SODA[0]);
     setModalExtras([]);
@@ -724,7 +818,22 @@ export default function BurgaslocasMenu() {
 
     setEditingLineId(item.lineId);
     setSelectedProduct(product);
-    setModalSauce(item.selectedSauce || SAUCES_BURGER[0]);
+
+    if (item.burgerCustom) {
+      setBurgerIngredients({ ...item.burgerCustom.ingredients });
+      setBurgerSpicy(item.burgerCustom.spicy || 'habanero');
+    } else {
+      setBurgerIngredients({
+        lechuga: true,
+        jitomate: true,
+        cebolla: true,
+        catsup: true,
+        mayonesa: true,
+        mostaza: true,
+      });
+      setBurgerSpicy('habanero');
+    }
+
     setModalWingsSauce(item.selectedSauce || SAUCES_WINGS[0]);
     setModalFlavor(item.selectedFlavor || FLAVORS_SODA[0]);
     setModalExtras(item.extras ? [...item.extras] : []);
@@ -739,6 +848,24 @@ export default function BurgaslocasMenu() {
     const extrasTotal = modalExtras.reduce((acc, curr) => acc + curr.price, 0);
     const unitPrice = selectedProduct.price + extrasTotal;
 
+    const isBurgerType =
+      selectedProduct.category === 'hamburguesas' ||
+      (selectedProduct.category === 'paquetes' && selectedProduct.customType === 'burger');
+
+    const burgerPreparation = isBurgerType
+      ? getBurgerPreparationSummary(burgerIngredients, burgerSpicy)
+      : undefined;
+
+    const selectedSauce = isBurgerType
+      ? burgerPreparation
+      : selectedProduct.category === 'alitas'
+      ? modalWingsSauce
+      : undefined;
+
+    const burgerCustomData = isBurgerType
+      ? { ingredients: { ...burgerIngredients }, spicy: burgerSpicy }
+      : undefined;
+
     // Si estamos editando un producto existente del carrito
     if (editingLineId) {
       setCart((prev) =>
@@ -748,12 +875,8 @@ export default function BurgaslocasMenu() {
               ...item,
               unitPrice,
               quantity: modalQuantity,
-              selectedSauce:
-                selectedProduct.category === 'hamburguesas' || selectedProduct.category === 'paquetes'
-                  ? modalSauce
-                  : selectedProduct.category === 'alitas'
-                  ? modalWingsSauce
-                  : undefined,
+              selectedSauce,
+              burgerCustom: burgerCustomData,
               selectedFlavor: selectedProduct.category === 'bebidas' ? modalFlavor : undefined,
               extras: modalExtras.length > 0 ? modalExtras : undefined,
               specialNotes: modalNotes.trim() || undefined,
@@ -768,7 +891,7 @@ export default function BurgaslocasMenu() {
       return;
     }
 
-    const lineId = `${selectedProduct.id}-${modalSauce}-${modalWingsSauce}-${modalFlavor}-${modalExtras.map(e => e.name).sort().join(',')}-${Date.now()}`;
+    const lineId = `${selectedProduct.id}-${selectedSauce || ''}-${modalWingsSauce}-${modalFlavor}-${modalExtras.map((e) => e.name).sort().join(',')}-${Date.now()}`;
 
     const newItem: CartItem = {
       lineId,
@@ -779,12 +902,8 @@ export default function BurgaslocasMenu() {
       quantity: modalQuantity,
       image: selectedProduct.image,
       category: selectedProduct.category,
-      selectedSauce:
-        selectedProduct.category === 'hamburguesas' || selectedProduct.category === 'paquetes'
-          ? modalSauce
-          : selectedProduct.category === 'alitas'
-          ? modalWingsSauce
-          : undefined,
+      selectedSauce,
+      burgerCustom: burgerCustomData,
       selectedFlavor: selectedProduct.category === 'bebidas' ? modalFlavor : undefined,
       extras: modalExtras.length > 0 ? modalExtras : undefined,
       specialNotes: modalNotes.trim() || undefined,
@@ -857,14 +976,19 @@ export default function BurgaslocasMenu() {
   // ── Filtro de Productos ──
   const filteredProducts = useMemo(() => {
     return PRODUCTS.filter((p) => {
-      const matchCat = activeCategory === 'todos' || p.category === activeCategory;
+      const matchCat =
+        activeCategory === 'todos'
+          ? true
+          : activeCategory === 'favoritos'
+          ? favorites.includes(p.id)
+          : p.category === activeCategory;
       const matchSearch =
         searchQuery.trim() === '' ||
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.description.toLowerCase().includes(searchQuery.toLowerCase());
       return matchCat && matchSearch;
     });
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, favorites]);
 
   // ── Validación de Formulario (Paso 2) ──
   const validateForm = () => {
@@ -973,7 +1097,7 @@ export default function BurgaslocasMenu() {
   return (
     <div className="min-h-screen bg-[#0E0D0C] text-[#F3F1EF] font-sans selection:bg-[#FF381E] selection:text-white relative pb-28">
       {/* ── HEADER / TOP BAR DECORATIVA CON FLAMAS ── */}
-      <div className="sticky top-0 z-40 bg-[#161311]/90 backdrop-blur-md border-b border-orange-500/20 shadow-xl shadow-black/60">
+      <div className="sticky top-0 z-40 bg-[#0F0E0D]/92 backdrop-blur-xl border-b border-orange-500/25 shadow-xl shadow-black/70">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           {/* Logo & Branding */}
           <div className="flex items-center gap-3">
@@ -1010,6 +1134,32 @@ export default function BurgaslocasMenu() {
               <span>{clientConfig.phonePrimaryFormatted}</span>
             </a>
 
+            {/* Botón Favoritos Header */}
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                setActiveCategory('favoritos');
+                document.getElementById('menu-section')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className={`relative flex items-center gap-1.5 px-3 py-2 rounded-2xl font-bold text-xs transition-all cursor-pointer ${
+                activeCategory === 'favoritos'
+                  ? 'bg-red-500/20 text-red-400 border border-red-500/40 shadow-md shadow-red-950/40'
+                  : 'bg-[#181513] text-stone-300 hover:text-white border border-stone-800 hover:border-stone-700'
+              }`}
+              title="Ver mis platillos favoritos"
+            >
+              <Heart
+                size={16}
+                className={favorites.length > 0 ? 'text-red-500 fill-red-500' : 'text-stone-400'}
+              />
+              <span className="hidden sm:inline">Favoritos</span>
+              {favorites.length > 0 && (
+                <span className="w-4 h-4 rounded-full bg-red-600 text-white text-[10px] font-black flex items-center justify-center shadow">
+                  {favorites.length}
+                </span>
+              )}
+            </motion.button>
+
             {/* Carrito Header */}
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -1031,113 +1181,110 @@ export default function BurgaslocasMenu() {
         </div>
       </div>
 
-      {/* ── HERO BANNER: HAMBURGUESAS AL CARBÓN & OFERTAS ── */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-[#1C1613] via-[#14110F] to-[#0E0D0C] border-b border-orange-500/15 py-8 md:py-12">
-        {/* Glows de fuego de fondo */}
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-orange-600/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/2 -left-20 w-64 h-64 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
+      {/* ── HERO BANNER: GRILL MASTER (Despejado, Elegante y sin saturación) ── */}
+      <div className="relative overflow-hidden bg-gradient-to-b from-[#181310] via-[#120F0D] to-[#0A0908] border-b border-orange-500/20 py-6 md:py-10">
+        {/* Atmósfera de Brasas & Resplandor Fuego Cálido */}
+        <div className="absolute -top-28 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-b from-[#FF381E]/20 via-[#FF7A00]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+
+        {/* Chispas y Brasas Flotantes Sutiles */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <span className="absolute top-1/4 left-1/6 w-1.5 h-1.5 rounded-full bg-amber-400 blur-[0.5px] animate-pulse opacity-50" />
+          <span className="absolute top-1/2 right-1/4 w-2 h-2 rounded-full bg-orange-500 blur-[1px] animate-ping opacity-25 duration-1000" />
+          <span className="absolute bottom-1/3 left-1/3 w-1 h-1 rounded-full bg-red-400 blur-[0.5px] animate-pulse opacity-60" />
+        </div>
 
         <div className="max-w-6xl mx-auto px-4 relative z-10">
-          <div className="grid md:grid-cols-12 gap-6 items-center">
-            {/* Columna Texto */}
-            <div className="md:col-span-7 text-center md:text-left space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-orange-500/40 text-orange-300 text-xs font-bold tracking-wide">
-                <Flame size={14} className="text-[#FF381E] animate-pulse" />
-                <span>¡AL CARBÓN SABEN MÁS RICAS!</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
-                <span>100% RES ARTESANAL</span>
+          <div className="grid md:grid-cols-12 gap-5 items-center">
+            {/* Columna Texto: Limpio, Directo y Aireado */}
+            <div className="md:col-span-7 text-center md:text-left space-y-3">
+              {/* Badge de Estatus en Vivo */}
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold shadow-sm">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                </span>
+                <span>ABIERTO HOY</span>
+                <span className="text-stone-600">•</span>
+                <span className="text-stone-300 font-semibold">{clientConfig.hours.split('·')[0]}</span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl md:text-5xl font-black tracking-tight text-white uppercase leading-[1.1]">
-                Sabor Callejero <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF7A00] via-[#FFB800] to-[#FF1493]">
-                  a la Brasa & Snacks
+              {/* Título Principal */}
+              <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white uppercase leading-none">
+                Burgaslocas <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF381E] via-[#FF7A00] to-[#FFB800]">
+                  al Carbón y Snacks
                 </span>
               </h1>
 
-              <p className="text-sm sm:text-base text-[#D4CDC7] max-w-xl mx-auto md:mx-0 font-medium">
-                Hamburguesas artesanales preparadas al carbón, jocholocos con Doritos Nachos, alitas picositas, banderillas de queso gouda y costillas BBQ.
+              {/* Subtítulo de 1 sola frase */}
+              <p className="text-sm sm:text-base text-stone-300 font-medium">
+                Carne 100% res artesanal a las brasas · Envío a domicilio $12
               </p>
 
-              {/* Badges de confianza */}
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-1 text-xs">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/5 border border-white/10 text-white/90">
-                  <Award size={14} className="text-amber-400" /> Carne 100% Res
+              {/* Badges de Confianza Rápidos (Social Proof Visual) */}
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-0.5">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-stone-300 text-[11px] font-semibold">
+                  <span>🥩</span> 100% Res
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/5 border border-white/10 text-white/90">
-                  <Flame size={14} className="text-red-400" /> Fuego al Carbón
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-stone-300 text-[11px] font-semibold">
+                  <span>🔥</span> Al Carbón
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/5 border border-white/10 text-white/90">
-                  <Bike size={14} className="text-emerald-400" /> Envío a Domicilio
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-stone-300 text-[11px] font-semibold">
+                  <span>🌶️</span> Salsa Habanero
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-red-950/40 border border-red-500/30 text-red-300">
-                  🌶️ Salsa Habanero Casera
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-stone-300 text-[11px] font-semibold">
+                  <span>🛵</span> Envío $12
                 </span>
               </div>
 
-              {/* Teléfonos para pedidos */}
-              <div className="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-3">
-                <span className="text-xs text-stone-400 font-bold uppercase tracking-wider">
-                  Pedidos WhatsApp:
-                </span>
-                <div className="flex items-center gap-2">
-                  <a
-                    href={`https://wa.me/${clientConfig.phonePrimary}?text=Hola%20Burgaslocas!%20Quiero%20hacer%20un%20pedido`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#25D366]/20 border border-[#25D366]/40 text-[#25D366] text-xs font-black hover:bg-[#25D366]/30 transition-colors"
-                  >
-                    <MessageCircle size={14} /> {clientConfig.phonePrimaryFormatted}
-                  </a>
-                  <a
-                    href={`https://wa.me/${clientConfig.phoneSecondary}?text=Hola%20Burgaslocas!%20Quiero%20hacer%20un%20pedido`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#25D366]/20 border border-[#25D366]/40 text-[#25D366] text-xs font-black hover:bg-[#25D366]/30 transition-colors"
-                  >
-                    <MessageCircle size={14} /> {clientConfig.phoneSecondaryFormatted}
-                  </a>
-                </div>
+              {/* Botón único hacia el menú */}
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    document.getElementById('menu-section')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#FF381E] to-[#FF7A00] hover:from-[#FF4E36] hover:to-[#FF8C1A] text-white font-black text-xs uppercase tracking-wider inline-flex items-center gap-2 shadow-lg shadow-orange-950/60 hover:brightness-110 active:scale-98 transition-all cursor-pointer"
+                >
+                  <span>🍔</span> Ver Menú y Precios
+                </button>
               </div>
             </div>
 
-            {/* Columna Tarjeta Promo Hero (CRO Combo Estrella) */}
+            {/* Columna Tarjeta Promo Compacta (Fila horizontal elegante) */}
             <div className="md:col-span-5">
-              <div className="relative rounded-3xl p-1 bg-gradient-to-br from-amber-500/40 via-red-500/30 to-pink-500/20 shadow-2xl shadow-orange-950/50">
-                <div className="bg-[#181412] rounded-[22px] p-5 relative overflow-hidden">
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="bg-gradient-to-r from-red-600 to-orange-500 text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
-                      <Sparkles size={11} /> COMBO RECOMENDADO
-                    </span>
-                    <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                      Ahorra $22
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-4 mb-4">
-                    <img
-                      src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=400&q=80"
-                      alt="Combo Burga"
-                      className="w-20 h-20 rounded-2xl object-cover border border-amber-500/30 shadow-md shrink-0"
-                    />
-                    <div className="min-w-0">
-                      <h2 className="text-base font-black text-white uppercase leading-tight">
-                        Paquete Burga + Papas + Pepsi
-                      </h2>
-                      <p className="text-xs text-stone-400 line-clamp-2 mt-0.5">
-                        Burga queso manchego y tocino crujiente, papas doradas y refresco frío.
-                      </p>
-                      <div className="mt-1.5 flex items-baseline gap-2">
-                        <span className="text-2xl font-black text-[#FFB800]">$118</span>
-                        <span className="text-xs text-stone-500 line-through">$140</span>
-                      </div>
+              <div className="relative rounded-2xl p-0.5 bg-gradient-to-br from-amber-500/30 via-red-500/20 to-transparent shadow-xl shadow-black/50">
+                <div className="bg-[#181412] rounded-[15px] p-3.5 flex items-center justify-between gap-3">
+                  <img
+                    src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=240&q=80"
+                    alt="Combo Burga"
+                    className="w-16 h-16 rounded-xl object-cover border border-amber-500/30 shadow-md shrink-0"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <span className="bg-red-600/90 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-full">
+                        Combo Estrella
+                      </span>
+                      <span className="text-[10px] font-bold text-emerald-400">
+                        Ahorra $22
+                      </span>
+                    </div>
+                    <h3 className="text-xs font-black text-white uppercase leading-tight truncate">
+                      Burga Manchego + Papas + Pepsi
+                    </h3>
+                    <div className="mt-1 flex items-baseline gap-2">
+                      <span className="text-lg font-black text-[#FFB800]">$118</span>
+                      <span className="text-xs text-stone-500 line-through">$140</span>
                     </div>
                   </div>
-
                   <button
                     onClick={() => {
                       const p = PRODUCTS.find((x) => x.id === 'paq-burga');
                       if (p) handleOpenProduct(p);
                     }}
-                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#FF381E] to-[#FF7A00] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:brightness-110 shadow-lg shadow-orange-900/40 cursor-pointer"
+                    className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#FF381E] to-[#FF7A00] text-white font-black text-xs uppercase tracking-wider hover:brightness-110 shadow-md shadow-orange-950/40 cursor-pointer shrink-0"
                   >
-                    <Plus size={16} /> Pedir este paquete ahora
+                    Pedir
                   </button>
                 </div>
               </div>
@@ -1146,21 +1293,8 @@ export default function BurgaslocasMenu() {
         </div>
       </div>
 
-      {/* ── BANNER DESTACADO DE CREPAS & SALSAS ── */}
-      <div className="bg-gradient-to-r from-[#1B1714] via-[#2A1F1A] to-[#1B1714] border-b border-white/5 py-2.5 px-4 text-center text-xs font-semibold text-stone-300">
-        <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-x-6 gap-y-1">
-          <span className="flex items-center gap-1.5 text-amber-300 font-bold">
-            🌶️ <span>¡Pide gratis nuestra salsa de habanero casera con tu pedido!</span>
-          </span>
-          <span className="hidden sm:inline text-stone-600">•</span>
-          <span className="flex items-center gap-1.5 text-pink-300">
-            🥞 <span>¿Antojo dulce? Pregunta por nuestras crepas dulces y saladas</span>
-          </span>
-        </div>
-      </div>
-
       {/* ── BUSCADOR Y SELECTOR DE CATEGORÍAS ── */}
-      <div className="max-w-6xl mx-auto px-4 mt-6">
+      <div id="menu-section" className="max-w-6xl mx-auto px-4 mt-6">
         {/* Barra de Búsqueda */}
         <div className="relative mb-5">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
@@ -1181,65 +1315,136 @@ export default function BurgaslocasMenu() {
           )}
         </div>
 
-        {/* Scroll Horizontal de Categorías */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
-          {CATEGORIES.map((cat) => {
-            const isActive = activeCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-black uppercase whitespace-nowrap transition-all shrink-0 cursor-pointer ${
-                  isActive
-                    ? 'bg-gradient-to-r from-[#FF381E] to-[#FF7A00] text-white shadow-lg shadow-orange-700/30 scale-105'
-                    : 'bg-[#181513] text-stone-400 hover:text-white border border-stone-800/80 hover:border-stone-700'
-                }`}
-              >
-                <span>{cat.icon}</span>
-                <span>{cat.name}</span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                    isActive ? 'bg-black/30 text-white' : 'bg-stone-800 text-stone-500'
+        {/* Encabezado de categorías con indicador de deslizamiento */}
+        <div className="flex items-center justify-between px-1 mb-2.5">
+          <span className="text-[11px] font-black uppercase tracking-wider text-stone-400 flex items-center gap-1.5">
+            <span>🔥</span> Categorías
+          </span>
+          <span className="text-[11px] font-medium text-stone-400 flex items-center gap-1 bg-[#181412] px-2.5 py-1 rounded-full border border-stone-800 shadow-sm">
+            <span>Desliza para ver todas</span>
+            <ChevronRight size={12} className="text-orange-400 animate-pulse" />
+          </span>
+        </div>
+
+        {/* Scroll Horizontal de Categorías con botones de navegación lateral y gradientes */}
+        <div className="relative group/cats">
+          {/* Botón Flecha Izquierda (Desktop/Tablet) */}
+          <button
+            onClick={() => categoryScrollRef.current?.scrollBy({ left: -220, behavior: 'smooth' })}
+            className="hidden sm:flex absolute -left-3.5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-[#181513] border border-stone-700 text-stone-300 hover:text-white hover:border-orange-500 items-center justify-center shadow-xl backdrop-blur-sm cursor-pointer transition-all active:scale-95"
+            aria-label="Desplazar categorías hacia la izquierda"
+          >
+            <ChevronLeft size={16} />
+          </button>
+
+          <div
+            ref={categoryScrollRef}
+            className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none scroll-smooth snap-x snap-mandatory"
+          >
+            {categoriesList.map((cat) => {
+              const isActive = activeCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-black uppercase whitespace-nowrap transition-all shrink-0 cursor-pointer snap-start ${
+                    isActive
+                      ? 'bg-gradient-to-r from-[#FF381E] to-[#FF7A00] text-white shadow-lg shadow-orange-700/30 scale-105'
+                      : 'bg-[#181513] text-stone-400 hover:text-white border border-stone-800/80 hover:border-stone-700'
                   }`}
                 >
-                  {cat.count}
-                </span>
-              </button>
-            );
-          })}
+                  <span>{cat.icon}</span>
+                  <span>{cat.name}</span>
+                  <span
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      isActive
+                        ? 'bg-black/30 text-white'
+                        : 'bg-stone-800 text-stone-500'
+                    }`}
+                  >
+                    {cat.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Botón Flecha Derecha (Desktop/Tablet) */}
+          <button
+            onClick={() => categoryScrollRef.current?.scrollBy({ left: 220, behavior: 'smooth' })}
+            className="hidden sm:flex absolute -right-3.5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-[#181513] border border-stone-700 text-stone-300 hover:text-white hover:border-orange-500 items-center justify-center shadow-xl backdrop-blur-sm cursor-pointer transition-all active:scale-95"
+            aria-label="Desplazar categorías hacia la derecha"
+          >
+            <ChevronRight size={16} />
+          </button>
         </div>
       </div>
 
       {/* ── GRID DE PRODUCTOS ── */}
       <div className="max-w-6xl mx-auto px-4 mt-6">
         {filteredProducts.length === 0 ? (
-          <div className="text-center py-16 bg-[#161311] rounded-3xl border border-stone-800 p-6">
-            <span className="text-4xl mb-3 block">🔍</span>
-            <h3 className="text-lg font-bold text-white mb-1">No encontramos ese antojo</h3>
-            <p className="text-xs text-stone-400 mb-4">
-              Prueba buscando por "burga", "jocholoco", "alitas" o borra el filtro.
-            </p>
-            <button
-              onClick={() => {
-                setSearchQuery('');
-                setActiveCategory('todos');
-              }}
-              className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-white rounded-xl text-xs font-bold"
-            >
-              Ver todo el menú
-            </button>
-          </div>
+          activeCategory === 'favoritos' ? (
+            <div className="text-center py-16 bg-[#161311] rounded-3xl border border-rose-900/40 p-8 max-w-md mx-auto shadow-2xl">
+              <span className="text-5xl mb-3 block animate-pulse">❤️</span>
+              <h3 className="text-lg font-black text-white mb-2">Aún no tienes favoritos</h3>
+              <p className="text-xs text-stone-400 mb-5 leading-relaxed">
+                Toca el corazón <Heart size={13} className="inline text-red-500 fill-red-500 mx-0.5" /> en cualquiera de nuestras hamburguesas, hotdogs o snacks para guardarlos aquí y pedirlos con 1 toque.
+              </p>
+              <button
+                onClick={() => setActiveCategory('todos')}
+                className="px-5 py-2.5 bg-gradient-to-r from-[#FF381E] to-[#FF7A00] text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-lg shadow-orange-950/50 hover:brightness-110 cursor-pointer"
+              >
+                🍔 Explorar todo el menú
+              </button>
+            </div>
+          ) : (
+            <div className="text-center py-16 bg-[#161311] rounded-3xl border border-stone-800 p-6">
+              <span className="text-4xl mb-3 block">🔍</span>
+              <h3 className="text-lg font-bold text-white mb-1">No encontramos ese antojo</h3>
+              <p className="text-xs text-stone-400 mb-4">
+                Prueba buscando por "burga", "jocholoco", "alitas" o borra el filtro.
+              </p>
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setActiveCategory('todos');
+                }}
+                className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-white rounded-xl text-xs font-bold cursor-pointer"
+              >
+                Ver todo el menú
+              </button>
+            </div>
+          )
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+          <motion.div
+            key={`${activeCategory}-${searchQuery}`}
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.04,
+                },
+              },
+            }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5"
+          >
             {filteredProducts.map((product) => {
               const isFav = favorites.includes(product.id);
               return (
                 <motion.div
                   key={product.id}
                   layout
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25 }}
+                  variants={{
+                    hidden: { opacity: 0, y: 18 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      transition: { duration: 0.28, ease: 'easeOut' },
+                    },
+                  }}
                   onClick={() => handleOpenProduct(product)}
                   className="group bg-[#161311] hover:bg-[#1C1815] border border-stone-800/80 hover:border-orange-500/40 rounded-3xl overflow-hidden flex flex-col justify-between transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-orange-950/30 cursor-pointer relative"
                 >
@@ -1260,17 +1465,19 @@ export default function BurgaslocasMenu() {
                       </div>
                     )}
 
-                    {/* Botón Favorito */}
-                    <button
+                    {/* Botón Favorito con Micro-glow y Bounce */}
+                    <motion.button
+                      whileTap={{ scale: 1.35 }}
                       onClick={(e) => toggleFavorite(product.id, e)}
-                      className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md transition-colors ${
+                      className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md transition-all cursor-pointer ${
                         isFav
-                          ? 'bg-red-500/90 text-white'
-                          : 'bg-black/50 text-stone-300 hover:text-white'
+                          ? 'bg-red-500 text-white shadow-lg shadow-red-500/50 ring-2 ring-red-400/50'
+                          : 'bg-black/50 text-stone-300 hover:text-white hover:bg-black/70'
                       }`}
+                      aria-label={isFav ? 'Quitar de favoritos' : 'Agregar a favoritos'}
                     >
                       <Heart size={15} fill={isFav ? 'currentColor' : 'none'} />
-                    </button>
+                    </motion.button>
 
                     {/* Precio flotante en la imagen */}
                     <div className="absolute bottom-3 right-3 bg-black/80 backdrop-blur-md px-3 py-1 rounded-2xl border border-amber-500/30 text-[#FFB800] font-black text-lg shadow-md">
@@ -1305,7 +1512,7 @@ export default function BurgaslocasMenu() {
                 </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         )}
       </div>
 
@@ -1358,37 +1565,120 @@ export default function BurgaslocasMenu() {
               </div>
 
               {/* Cuerpo del Modal con Scroll */}
-              <div className="p-5 overflow-y-auto space-y-5 text-sm">
+              <div className="p-5 flex-1 min-h-0 overflow-y-auto space-y-5 text-sm">
                 <p className="text-stone-300 text-xs leading-relaxed bg-stone-900/60 p-3 rounded-xl border border-stone-800">
                   {selectedProduct.description}
                 </p>
 
-                {/* 1. Selector de Salsa para Hamburguesas y Paquetes */}
-                {(selectedProduct.category === 'hamburguesas' || selectedProduct.category === 'paquetes') && (
-                  <div>
-                    <label className="block text-xs font-black uppercase text-orange-400 tracking-wider mb-2 flex items-center gap-1.5">
-                      <Flame size={14} /> Elige tu salsa y aderezos:
-                    </label>
-                    <div className="space-y-2">
-                      {SAUCES_BURGER.map((sauce) => (
-                        <label
-                          key={sauce}
-                          className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${
-                            modalSauce === sauce
-                              ? 'bg-orange-500/15 border-orange-500 text-white'
-                              : 'bg-stone-900/40 border-stone-800 text-stone-400 hover:border-stone-700'
-                          }`}
+                {/* 1. Selector de Verduras, Aderezos y Salsa Casera para Hamburguesas y Paquete Burga */}
+                {(selectedProduct.category === 'hamburguesas' ||
+                  (selectedProduct.category === 'paquetes' && selectedProduct.customType === 'burger')) && (
+                  <div className="space-y-3.5 bg-stone-900/40 p-4 rounded-2xl border border-stone-800">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-black uppercase text-orange-400 tracking-wider flex items-center gap-1.5">
+                        <Flame size={14} className="text-[#FF381E]" /> Verduras y Aderezos base:
+                      </label>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setAllBurgerIngredients(true)}
+                          className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-orange-500/20 text-orange-300 border border-orange-500/30 hover:bg-orange-500/30 transition-colors cursor-pointer"
                         >
-                          <span className="text-xs font-medium">{sauce}</span>
-                          <input
-                            type="radio"
-                            name="burgerSauce"
-                            checked={modalSauce === sauce}
-                            onChange={() => setModalSauce(sauce)}
-                            className="text-orange-500 focus:ring-0"
-                          />
-                        </label>
-                      ))}
+                          Con todo
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setAllBurgerIngredients(false)}
+                          className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-stone-800 text-stone-400 hover:text-white transition-colors cursor-pointer"
+                        >
+                          Solo carne
+                        </button>
+                      </div>
+                    </div>
+
+                    <p className="text-[11px] text-stone-400">
+                      Toca cualquier ingrediente para quitarlo o agregarlo a tu gusto:
+                    </p>
+
+                    {/* Chips de Verduras & Aderezos */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {BURGER_BASE_INGREDIENTS.map((ing) => {
+                        const active = burgerIngredients[ing.id];
+                        return (
+                          <button
+                            key={ing.id}
+                            type="button"
+                            onClick={() => toggleBurgerIngredient(ing.id)}
+                            className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-between transition-all cursor-pointer select-none ${
+                              active
+                                ? 'bg-gradient-to-r from-orange-500/20 to-amber-500/15 border-orange-500/70 text-white shadow-sm shadow-orange-950/40'
+                                : 'bg-stone-900/60 border-stone-800 text-stone-500 hover:border-stone-700'
+                            }`}
+                          >
+                            <span className="flex items-center gap-1.5 min-w-0 truncate">
+                              <span className="text-sm shrink-0">{ing.icon}</span>
+                              <span className={active ? 'text-white' : 'line-through text-stone-500'}>
+                                {ing.name}
+                              </span>
+                            </span>
+                            <span
+                              className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ml-1 ${
+                                active ? 'bg-emerald-500 text-black' : 'bg-stone-800 text-stone-500'
+                              }`}
+                            >
+                              {active ? '✓' : '✕'}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Selector de Picante / Salsa Casera */}
+                    <div className="pt-2 border-t border-stone-800">
+                      <label className="block text-xs font-black uppercase text-amber-400 tracking-wider mb-2 flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                          <span>🌶️</span> Toque de picante o salsa:
+                        </span>
+                        <span className="text-[10px] font-normal text-stone-400">Elige 1 opción</span>
+                      </label>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        {BURGER_SPICY_OPTIONS.map((opt) => {
+                          const active = burgerSpicy === opt.id;
+                          return (
+                            <button
+                              key={opt.id}
+                              type="button"
+                              onClick={() => setBurgerSpicy(opt.id)}
+                              className={`p-2.5 rounded-xl border text-xs font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
+                                active
+                                  ? 'bg-gradient-to-b from-[#FF381E]/30 to-[#FF7A00]/25 border-[#FF381E] text-white shadow-md shadow-red-950/40'
+                                  : 'bg-stone-900/40 border-stone-800 text-stone-400 hover:border-stone-700'
+                              }`}
+                            >
+                              <div className="flex items-center gap-1.5">
+                                <span>{opt.icon}</span>
+                                <span className="font-extrabold">{opt.name}</span>
+                              </div>
+                              <span
+                                className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                                  active ? 'bg-orange-500/30 text-orange-200' : 'text-stone-500'
+                                }`}
+                              >
+                                {opt.tag}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Resumen en tiempo real para cocina */}
+                    <div className="p-2.5 rounded-xl bg-orange-950/40 border border-orange-500/30 text-[11px] text-orange-200 flex items-start gap-2">
+                      <span className="shrink-0 text-sm">📋</span>
+                      <div>
+                        <span className="font-bold text-orange-400">Preparación a enviar: </span>
+                        <span>{getBurgerPreparationSummary(burgerIngredients, burgerSpicy)}</span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1502,8 +1792,8 @@ export default function BurgaslocasMenu() {
                 </div>
               </div>
 
-              {/* Footer Modal: Cantidad y Agregar */}
-              <div className="p-4 bg-[#14110F] border-t border-stone-800 flex items-center justify-between gap-4 shrink-0">
+              {/* Footer Modal Sticky: Cantidad y Agregar */}
+              <div className="p-4 bg-[#14110F] border-t border-stone-800 shadow-[0_-4px_25px_rgba(0,0,0,0.6)] flex items-center justify-between gap-4 shrink-0 z-10">
                 {/* Selector Cantidad */}
                 <div className="flex items-center gap-2 bg-stone-900 border border-stone-800 rounded-2xl p-1">
                   <button
@@ -2124,7 +2414,7 @@ export default function BurgaslocasMenu() {
                   <span className="text-amber-400">🧀</span> Jocholocos con Doritos Nachos
                 </li>
                 <li className="flex items-center gap-1.5">
-                  <span className="text-pink-400">🥞</span> Crepas dulces y saladas
+                  <span className="text-orange-500">🔥</span> Costillas BBQ y Alitas al carbón
                 </li>
                 <li className="flex items-center gap-1.5">
                   <span className="text-emerald-400">💵</span> Aceptamos Efectivo y Transferencia BBVA
@@ -2137,6 +2427,14 @@ export default function BurgaslocasMenu() {
           <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
             <p>© {new Date().getFullYear()} Burgaslocas al carbón y Snacks. Todos los derechos reservados.</p>
             <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => setShowPrivacyModal(true)}
+                className="text-stone-400 hover:text-orange-400 underline underline-offset-4 transition-colors cursor-pointer"
+              >
+                Aviso de Privacidad
+              </button>
+              <span>•</span>
               <span>Carne 100% Res Artesanal</span>
               <span>•</span>
               <a
@@ -2147,14 +2445,66 @@ export default function BurgaslocasMenu() {
               >
                 Diseñado por IMAGINE & STAMP
               </a>
-              <span>•</span>
-              <a href="#/admin" className="text-stone-600 hover:text-stone-400 flex items-center gap-1">
-                🔒
-              </a>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* ── MODAL AVISO DE PRIVACIDAD (LFPDPPP) ── */}
+      <AnimatePresence>
+        {showPrivacyModal && (
+          <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-[#181513] border border-stone-800 w-full max-w-lg rounded-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden"
+            >
+              <div className="p-4 border-b border-stone-800 flex items-center justify-between bg-[#14110F]">
+                <div className="flex items-center gap-2">
+                  <Shield className="text-orange-500" size={18} />
+                  <h3 className="font-black text-sm uppercase text-white tracking-wide">
+                    Aviso de Privacidad
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowPrivacyModal(false)}
+                  className="w-8 h-8 rounded-full bg-stone-800 text-stone-300 hover:text-white flex items-center justify-center cursor-pointer"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="p-5 overflow-y-auto space-y-4 text-xs text-stone-300 leading-relaxed">
+                <p className="font-bold text-white text-sm">
+                  Burgaslocas al carbón y Snacks
+                </p>
+                <p>
+                  En cumplimiento con la <strong>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)</strong>, Burgaslocas al carbón y Snacks informa que los datos personales recabados en este menú digital (nombre, teléfono de contacto y dirección de entrega) son utilizados exclusivamente para:
+                </p>
+                <ul className="list-disc pl-5 space-y-1.5 text-stone-400">
+                  <li>Procesar, preparar y coordinar la entrega a domicilio o recolección de sus pedidos.</li>
+                  <li>Comunicarnos vía WhatsApp o llamada telefónica para confirmaciones sobre su orden.</li>
+                  <li>Calcular montos de cambio en efectivo o facilitar datos para transferencia bancaria.</li>
+                </ul>
+                <p>
+                  Sus datos personales <strong>no son transferidos, vendidos ni compartidos</strong> con terceros bajo ninguna circunstancia. Los datos de entrega se conservan únicamente en su propio navegador para su comodidad en futuros pedidos y se transmiten directamente al canal oficial de WhatsApp del negocio al momento de confirmar.
+                </p>
+                <p className="text-[11px] text-stone-500 pt-2 border-t border-stone-800">
+                  Para cualquier duda, aclaración o solicitud sobre el manejo de sus datos personales, puede contactarnos directamente a los teléfonos: {clientConfig.phonePrimaryFormatted} y {clientConfig.phoneSecondaryFormatted}.
+                </p>
+              </div>
+              <div className="p-4 border-t border-stone-800 bg-[#14110F] flex justify-end">
+                <button
+                  onClick={() => setShowPrivacyModal(false)}
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#FF381E] to-[#FF7A00] text-white font-bold text-xs uppercase tracking-wider transition-all hover:brightness-110 cursor-pointer shadow-md shadow-orange-950/40"
+                >
+                  Entendido
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* ── BOTÓN FLOTANTE INFERIOR DEL CARRITO (Móvil) ── */}
       {totalItemsCount > 0 && !isCartOpen && (
