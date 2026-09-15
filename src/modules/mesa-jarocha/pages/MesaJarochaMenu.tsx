@@ -375,6 +375,19 @@ const CATEGORY_EMOJIS: Record<CategoryId, string> = {
   postres: '🍨',
 };
 
+// ── Ondas decorativas amarillas fieles a la carta física ──
+const YellowWaves = ({ className = "w-28 h-3 text-[#F5A623]" }: { className?: string }) => (
+  <svg viewBox="0 0 120 14" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <path
+      d="M2 7 Q 12 1, 22 7 T 42 7 T 62 7 T 82 7 T 102 7 T 118 7"
+      stroke="currentColor"
+      strokeWidth="3.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export default function MesaJarochaMenu() {
   // ── Estados de navegación y catálogo ──
   const [activeCategory, setActiveCategory] = useState<CategoryId>('todos');
@@ -692,24 +705,24 @@ export default function MesaJarochaMenu() {
   };
 
   return (
-    <div className="min-h-screen bg-[#07111E] text-[#F1F7FF] font-sans selection:bg-[#0084C7] selection:text-white pb-24 md:pb-12">
+    <div className="min-h-screen bg-[#FAF8F5] text-[#2D3A4B] font-sans selection:bg-[#F5A623] selection:text-white pb-24 md:pb-12">
       
       {/* ── BARRA SUPERIOR / HEADER ── */}
-      <header className="sticky top-0 z-40 bg-[#07111E]/92 backdrop-blur-xl border-b border-[#00A8E8]/15 shadow-xl transition-all">
+      <header className="sticky top-0 z-40 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#E8E2D8] shadow-sm transition-all">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           
           {/* Logo y Nombre */}
           <div className="flex items-center gap-3">
-            <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-[#FFC043]/80 shadow-md shadow-[#0084C7]/20 flex-shrink-0 bg-[#0D1B2D]">
+            <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-[#F5A623] shadow-sm flex-shrink-0 bg-white">
               <img src={logoImg} alt="Mesa Jarocha" className="w-full h-full object-cover" />
             </div>
             <div>
-              <h1 className="font-bold text-base md:text-lg leading-tight tracking-tight text-white flex items-center gap-1.5 font-serif">
+              <h1 className="font-bold text-base md:text-lg leading-tight tracking-tight text-[#4A6076] flex items-center gap-1.5 font-serif">
                 Mesa Jarocha
-                <span className="inline-block w-2 h-2 rounded-full bg-[#25D366] animate-pulse" title="Abierto Ahora" />
+                <span className="inline-block w-2 h-2 rounded-full bg-[#10B981] animate-pulse" title="Abierto Ahora" />
               </h1>
-              <p className="text-[11px] text-[#8EA5C2] flex items-center gap-1 font-medium">
-                <span className="text-[#FF5942]">🦞</span> Mariscos & Sabor Costero
+              <p className="text-[11px] text-[#60869B] flex items-center gap-1 font-medium">
+                <span className="text-[#F5A623]">🌊</span> Menú Mar y Tierra · Desde la 1 pm
               </p>
             </div>
           </div>
@@ -725,14 +738,14 @@ export default function MesaJarochaMenu() {
               }}
               className={`p-2.5 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-semibold ${
                 showOnlyFavs
-                  ? 'bg-[#FF5942] border-[#FF5942] text-white shadow-lg shadow-[#FF5942]/30'
-                  : 'bg-[#0D1B2D] border-[#00A8E8]/20 text-[#8EA5C2] hover:text-white hover:border-[#00A8E8]/50'
+                  ? 'bg-[#F5A623] border-[#F5A623] text-white shadow-md shadow-[#F5A623]/30'
+                  : 'bg-white border-[#E8E2D8] text-[#4A6076] hover:text-[#2D3A4B] hover:border-[#F5A623]'
               }`}
               title="Mis Favoritos"
             >
               <Heart size={16} className={showOnlyFavs ? 'fill-white' : ''} />
               {favorites.length > 0 && (
-                <span className="bg-white/20 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">
+                <span className="bg-[#4A6076] text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">
                   {favorites.length}
                 </span>
               )}
@@ -741,7 +754,7 @@ export default function MesaJarochaMenu() {
             {/* Botón Compartir */}
             <button
               onClick={handleShare}
-              className="p-2.5 rounded-xl bg-[#0D1B2D] border border-[#00A8E8]/20 text-[#8EA5C2] hover:text-white transition-all hover:border-[#00A8E8]/50 hidden sm:flex items-center"
+              className="p-2.5 rounded-xl bg-white border border-[#E8E2D8] text-[#4A6076] hover:text-[#2D3A4B] transition-all hover:border-[#F5A623] hidden sm:flex items-center"
               title="Compartir Menú"
             >
               <Share2 size={16} />
@@ -753,12 +766,12 @@ export default function MesaJarochaMenu() {
                 setIsCartOpen(true);
                 setCartStep(1);
               }}
-              className="relative p-2.5 px-3.5 rounded-xl bg-gradient-to-r from-[#0084C7] to-[#00A8E8] text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-[#0084C7]/30 hover:brightness-110 active:scale-95 transition-all"
+              className="relative p-2.5 px-4 rounded-xl bg-gradient-to-r from-[#F5A623] to-[#E59819] text-white font-bold text-xs flex items-center gap-2 shadow-md shadow-[#F5A623]/25 hover:brightness-105 active:scale-95 transition-all"
             >
               <ShoppingBag size={17} />
-              <span className="hidden sm:inline font-medium">Mi Pedido</span>
+              <span className="hidden sm:inline font-bold">Mi Pedido</span>
               {totalCartCount > 0 && (
-                <span className="bg-[#FF5942] text-white text-[11px] font-black px-1.5 py-0.5 rounded-full shadow-md animate-bounce">
+                <span className="bg-[#4A6076] text-white text-[11px] font-black px-1.5 py-0.5 rounded-full shadow-sm animate-bounce">
                   {totalCartCount}
                 </span>
               )}
@@ -767,55 +780,54 @@ export default function MesaJarochaMenu() {
         </div>
       </header>
 
-      {/* ── HERO BANNER "GRAN MARISCADA JAROCHA" ── */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#07111E] via-[#0D1B2D] to-[#07111E] border-b border-[#00A8E8]/15">
-        
-        {/* Efecto de oleaje y resplandor de fondo */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(0,168,232,0.12),transparent_70%)] pointer-events-none" />
-        
+      {/* ── HERO BANNER FIEL AL MEMBRETE DE LA CARTA FÍSICA ── */}
+      <section className="relative overflow-hidden bg-[#FAF8F5] border-b border-[#E8E2D8]">
         <div className="max-w-6xl mx-auto px-4 py-8 md:py-12 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
-            {/* Texto y presentación */}
+            {/* Texto y presentación con Olas Amarillas y Tipografía Exacta */}
             <div className="lg:col-span-7 space-y-4 text-center lg:text-left">
               
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0D1B2D]/90 border border-[#FFC043]/40 text-[#FFC043] text-xs font-bold tracking-wide shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-[#FFC043] animate-ping" />
-                MENÚ MAR Y TIERRA · SERVIDO DESDE LA 1:00 PM 🦞🥩
+              <div className="space-y-2">
+                <div className="flex justify-center lg:justify-start">
+                  <YellowWaves className="w-36 h-4 text-[#F5A623]" />
+                </div>
+                <h2 className="text-3xl md:text-5xl font-black text-[#4A6076] tracking-widest uppercase font-serif">
+                  MENÚ MAR Y TIERRA
+                </h2>
+                <div className="flex justify-center lg:justify-start">
+                  <YellowWaves className="w-36 h-4 text-[#F5A623]" />
+                </div>
+                <p className="text-sm md:text-base font-bold text-[#60869B] tracking-wide pt-1">
+                  Servido desde la 1 pm
+                </p>
               </div>
 
-              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight font-serif tracking-tight">
-                Menú Mar y Tierra <br className="hidden md:inline" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00A8E8] via-[#2DD4BF] to-[#FFC043]">
-                  Tradición, Caldos & Cortes
-                </span>
-              </h2>
-
-              <p className="text-sm md:text-base text-[#8EA5C2] leading-relaxed max-w-xl mx-auto lg:mx-0 font-normal">
+              <p className="text-sm md:text-base text-[#60869B] leading-relaxed max-w-xl mx-auto lg:mx-0 font-normal">
                 {clientConfig.description}
               </p>
 
               {/* 4 Badges de Confianza */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
-                <div className="bg-[#13243B]/80 border border-[#00A8E8]/15 rounded-xl p-2.5 text-center backdrop-blur-sm">
+                <div className="bg-white border border-[#E8E2D8] rounded-xl p-2.5 text-center shadow-xs">
                   <span className="text-lg block mb-0.5">🍲</span>
-                  <span className="text-[11px] font-bold text-[#F1F7FF] block">Caldos y Sopas</span>
-                  <span className="text-[9px] text-[#8EA5C2]">Chilpachole & Camarón</span>
+                  <span className="text-[11px] font-bold text-[#4A6076] block">Caldos y Sopas</span>
+                  <span className="text-[9px] text-[#60869B]">Chilpachole & Camarón</span>
                 </div>
-                <div className="bg-[#13243B]/80 border border-[#00A8E8]/15 rounded-xl p-2.5 text-center backdrop-blur-sm">
+                <div className="bg-white border border-[#E8E2D8] rounded-xl p-2.5 text-center shadow-xs">
                   <span className="text-lg block mb-0.5">🌊</span>
-                  <span className="text-[11px] font-bold text-[#F1F7FF] block">Del Mar a Tu Mesa</span>
-                  <span className="text-[9px] text-[#8EA5C2]">Cocteles y Ajillo</span>
+                  <span className="text-[11px] font-bold text-[#4A6076] block">Del Mar a Tu Mesa</span>
+                  <span className="text-[9px] text-[#60869B]">Cocteles & Ajillo</span>
                 </div>
-                <div className="bg-[#13243B]/80 border border-[#00A8E8]/15 rounded-xl p-2.5 text-center backdrop-blur-sm">
+                <div className="bg-white border border-[#E8E2D8] rounded-xl p-2.5 text-center shadow-xs">
                   <span className="text-lg block mb-0.5">🥩</span>
-                  <span className="text-[11px] font-bold text-[#F1F7FF] block">Proteína Selecta</span>
-                  <span className="text-[9px] text-[#8EA5C2]">Arrachera a la plancha</span>
+                  <span className="text-[11px] font-bold text-[#4A6076] block">Proteína</span>
+                  <span className="text-[9px] text-[#60869B]">Arrachera & Picaña</span>
                 </div>
-                <div className="bg-[#13243B]/80 border border-[#00A8E8]/15 rounded-xl p-2.5 text-center backdrop-blur-sm">
+                <div className="bg-white border border-[#E8E2D8] rounded-xl p-2.5 text-center shadow-xs">
                   <span className="text-lg block mb-0.5">🌽</span>
-                  <span className="text-[11px] font-bold text-[#F1F7FF] block">Maíz Casero</span>
-                  <span className="text-[9px] text-[#8EA5C2]">Memelas & Enmoladas</span>
+                  <span className="text-[11px] font-bold text-[#4A6076] block">Maíz</span>
+                  <span className="text-[9px] text-[#60869B]">Memelas & Enchiladas</span>
                 </div>
               </div>
 
@@ -826,37 +838,39 @@ export default function MesaJarochaMenu() {
                     const heroProd = PRODUCTS.find(p => p.id === 'cal-04');
                     if (heroProd) handleQuickAdd(heroProd);
                   }}
-                  className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#FF5942] to-[#FF8C00] text-white font-black text-xs md:text-sm tracking-wide uppercase shadow-xl shadow-[#FF5942]/30 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
+                  className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#F5A623] to-[#E59819] text-white font-black text-xs md:text-sm tracking-wide uppercase shadow-md shadow-[#F5A623]/25 hover:brightness-105 active:scale-95 transition-all flex items-center gap-2"
                 >
                   <Sparkles size={18} /> Probar Chilpachole de Jaiba · $240
                 </button>
-                <div className="text-xs text-[#8EA5C2] flex items-center gap-1.5">
-                  <Clock size={14} className="text-[#25D366]" />
+                <div className="text-xs text-[#60869B] flex items-center gap-1.5 font-medium">
+                  <Clock size={14} className="text-[#10B981]" />
                   <span>{clientConfig.hours}</span>
                 </div>
               </div>
 
             </div>
 
-            {/* Imagen del Hero con Marco Estilizado */}
+            {/* Imagen del Hero con Marco Estilizado en Light Mode */}
             <div className="lg:col-span-5 relative">
-              <div className="relative rounded-3xl overflow-hidden border-2 border-[#00A8E8]/30 shadow-2xl shadow-[#0084C7]/30 group">
-                <img
-                  src={heroImg}
-                  alt="Menú Mar y Tierra Mesa Jarocha"
-                  className="w-full h-[260px] sm:h-[340px] object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#07111E] via-transparent to-transparent opacity-80" />
-                
-                {/* Badge flotante en la foto */}
-                <div className="absolute bottom-3 left-3 right-3 bg-[#0D1B2D]/90 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl border border-[#FFC043]/30 flex items-center justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <span className="text-[10px] font-bold text-[#FFC043] uppercase tracking-wider block truncate">Especialidad de la Casa</span>
-                    <span className="text-xs font-black text-white block truncate">Chilpachole de Jaiba Tradicional</span>
+              <div className="relative rounded-3xl overflow-hidden border border-[#E8E2D8] shadow-xl bg-white p-2 group">
+                <div className="rounded-2xl overflow-hidden relative">
+                  <img
+                    src={heroImg}
+                    alt="Menú Mar y Tierra Mesa Jarocha"
+                    className="w-full h-[260px] sm:h-[340px] object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
+                  
+                  {/* Badge flotante en la foto */}
+                  <div className="absolute bottom-3 left-3 right-3 bg-white/95 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl border border-[#E8E2D8] flex items-center justify-between gap-2 shadow-md">
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[10px] font-bold text-[#F5A623] uppercase tracking-wider block truncate">Especialidad de la Casa</span>
+                      <span className="text-xs font-black text-[#2D3A4B] block truncate">Chilpachole de Jaiba Tradicional</span>
+                    </div>
+                    <span className="text-xs sm:text-sm font-black text-[#4A6076] bg-[#FAF8F5] px-2.5 py-1 rounded-xl border border-[#E8E2D8] flex-shrink-0 whitespace-nowrap">
+                      $240 MXN
+                    </span>
                   </div>
-                  <span className="text-xs sm:text-sm font-black text-[#2DD4BF] bg-[#07111E]/80 px-2.5 py-1 rounded-xl border border-[#2DD4BF]/30 flex-shrink-0 whitespace-nowrap">
-                    $240 MXN
-                  </span>
                 </div>
               </div>
             </div>
@@ -864,25 +878,25 @@ export default function MesaJarochaMenu() {
           </div>
         </div>
       </section>
-
+                
       {/* ── BARRA DE BÚSQUEDA Y CATEGORÍAS ── */}
-      <section className="sticky top-[61px] z-30 bg-[#07111E]/95 backdrop-blur-xl border-b border-[#00A8E8]/15 py-3 shadow-md">
+      <section className="sticky top-[61px] z-30 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#E8E2D8] py-3 shadow-xs">
         <div className="max-w-6xl mx-auto px-4 space-y-2.5">
           
           {/* Buscador */}
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8EA5C2]" size={17} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#60869B]" size={17} />
             <input
               type="text"
-              placeholder="Buscar camarones, ceviche, pulpo, mojarra, bebidas..."
+              placeholder="Buscar chilpachole, coctel, arrachera, enchiladas, postres..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-[#0D1B2D] border border-[#00A8E8]/20 text-white placeholder-[#8EA5C2]/60 text-xs md:text-sm focus:outline-none focus:border-[#00A8E8] focus:ring-1 focus:ring-[#00A8E8] transition-all"
+              className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-white border border-[#E8E2D8] text-[#2D3A4B] placeholder-[#8C9AA8] text-xs md:text-sm focus:outline-none focus:border-[#F5A623] focus:ring-2 focus:ring-[#F5A623]/20 shadow-xs transition-all"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8EA5C2] hover:text-white p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#60869B] hover:text-[#2D3A4B] p-1"
               >
                 <X size={15} />
               </button>
@@ -892,12 +906,12 @@ export default function MesaJarochaMenu() {
           {/* Selector de Categorías Horizontal */}
           <div className="relative flex items-center">
             {/* Gradiente izquierdo para indicar scroll */}
-            <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#07111E] to-transparent z-10 pointer-events-none md:hidden" />
+            <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#FAF8F5] to-transparent z-10 pointer-events-none md:hidden" />
 
             {/* Flecha Izquierda */}
             <button
               onClick={() => scrollCategories('left')}
-              className="hidden md:flex p-1.5 rounded-full bg-[#0D1B2D] border border-[#00A8E8]/20 text-[#8EA5C2] hover:text-white transition-all mr-1.5 flex-shrink-0"
+              className="hidden md:flex p-1.5 rounded-full bg-white border border-[#E8E2D8] text-[#4A6076] hover:text-[#2D3A4B] hover:border-[#F5A623] transition-all mr-1.5 flex-shrink-0 shadow-xs"
               title="Anterior"
             >
               <ChevronLeft size={16} />
@@ -920,8 +934,8 @@ export default function MesaJarochaMenu() {
                     }}
                     className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex-shrink-0 snap-start border ${
                       isActive
-                        ? 'bg-gradient-to-r from-[#0084C7] to-[#00A8E8] text-white border-[#00A8E8] shadow-lg shadow-[#0084C7]/25 scale-[1.02]'
-                        : 'bg-[#0D1B2D] text-[#8EA5C2] border-[#00A8E8]/15 hover:text-white hover:border-[#00A8E8]/40'
+                        ? 'bg-[#4A6076] text-white border-[#4A6076] shadow-sm scale-[1.02]'
+                        : 'bg-white text-[#4A6076] border-[#E8E2D8] hover:text-[#2D3A4B] hover:border-[#F5A623] shadow-2xs'
                     }`}
                   >
                     <span>{cat.icon}</span>
@@ -934,14 +948,14 @@ export default function MesaJarochaMenu() {
             {/* Flecha Derecha */}
             <button
               onClick={() => scrollCategories('right')}
-              className="hidden md:flex p-1.5 rounded-full bg-[#0D1B2D] border border-[#00A8E8]/20 text-[#8EA5C2] hover:text-white transition-all ml-1.5 flex-shrink-0"
+              className="hidden md:flex p-1.5 rounded-full bg-white border border-[#E8E2D8] text-[#4A6076] hover:text-[#2D3A4B] hover:border-[#F5A623] transition-all ml-1.5 flex-shrink-0 shadow-xs"
               title="Siguiente"
             >
               <ChevronRight size={16} />
             </button>
 
             {/* Gradiente derecho para indicar scroll */}
-            <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#07111E] to-transparent z-10 pointer-events-none md:hidden" />
+            <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#FAF8F5] to-transparent z-10 pointer-events-none md:hidden" />
           </div>
 
         </div>
@@ -953,15 +967,15 @@ export default function MesaJarochaMenu() {
         {/* Cabecera del Grid */}
         <div className="flex items-center justify-between mb-6 min-h-[48px]">
           <div>
-            <h3 className="text-xl md:text-2xl font-black text-white font-serif flex items-center gap-2">
+            <h3 className="text-xl md:text-2xl font-black text-[#4A6076] font-serif flex items-center gap-2">
               {showOnlyFavs ? '❤️ Mis Platillos Favoritos' : CATEGORIES.find(c => c.id === activeCategory)?.name || 'Catálogo'}
-              <span className="text-xs font-bold text-[#8EA5C2] font-sans bg-[#0D1B2D] px-2 py-0.5 rounded-lg border border-[#00A8E8]/20">
+              <span className="text-xs font-bold text-[#60869B] font-sans bg-white px-2.5 py-0.5 rounded-lg border border-[#E8E2D8] shadow-2xs">
                 {filteredProducts.length} {filteredProducts.length === 1 ? 'platillo' : 'platillos'}
               </span>
             </h3>
             {searchQuery && (
-              <p className="text-xs text-[#8EA5C2] mt-0.5">
-                Resultados para: <span className="text-[#00A8E8] font-bold">"{searchQuery}"</span>
+              <p className="text-xs text-[#60869B] mt-0.5">
+                Resultados para: <span className="text-[#F5A623] font-bold">"{searchQuery}"</span>
               </p>
             )}
           </div>
@@ -969,7 +983,7 @@ export default function MesaJarochaMenu() {
           {showOnlyFavs && (
             <button
               onClick={() => setShowOnlyFavs(false)}
-              className="text-xs text-[#00A8E8] hover:underline font-bold"
+              className="text-xs text-[#4A6076] hover:text-[#F5A623] hover:underline font-bold"
             >
               Ver todo el menú
             </button>
@@ -978,10 +992,10 @@ export default function MesaJarochaMenu() {
 
         {/* Sin resultados */}
         {filteredProducts.length === 0 ? (
-          <div className="text-center py-16 px-4 bg-[#0D1B2D]/50 rounded-3xl border border-[#00A8E8]/15">
-            <Fish size={48} className="mx-auto text-[#8EA5C2] mb-3 opacity-60" />
-            <h4 className="text-lg font-bold text-white mb-1">No encontramos platillos</h4>
-            <p className="text-xs text-[#8EA5C2] max-w-sm mx-auto mb-4">
+          <div className="text-center py-16 px-4 bg-white rounded-3xl border border-[#E8E2D8] shadow-xs">
+            <Fish size={48} className="mx-auto text-[#60869B] mb-3 opacity-60" />
+            <h4 className="text-lg font-bold text-[#2D3A4B] mb-1">No encontramos platillos</h4>
+            <p className="text-xs text-[#60869B] max-w-sm mx-auto mb-4">
               {showOnlyFavs
                 ? 'Aún no has agregado platillos a tus favoritos. ¡Toca el corazón en cualquier platillo!'
                 : 'Intenta con otra palabra clave o selecciona otra categoría.'}
@@ -992,7 +1006,7 @@ export default function MesaJarochaMenu() {
                 setShowOnlyFavs(false);
                 setActiveCategory('todos');
               }}
-              className="px-4 py-2 rounded-xl bg-[#0084C7] text-white text-xs font-bold shadow-md hover:brightness-110"
+              className="px-4 py-2 rounded-xl bg-[#F5A623] text-white text-xs font-bold shadow-xs hover:brightness-105"
             >
               Restablecer Filtros
             </button>
@@ -1008,15 +1022,15 @@ export default function MesaJarochaMenu() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="bg-[#13243B]/80 hover:bg-[#13243B] border border-[#00A8E8]/15 hover:border-[#00A8E8]/40 rounded-3xl p-4 md:p-5 flex flex-col justify-between shadow-lg hover:shadow-xl hover:shadow-[#0084C7]/10 transition-all group backdrop-blur-sm relative"
+                  className="bg-white border border-[#E8E2D8] hover:border-[#F5A623]/80 rounded-3xl p-4 md:p-5 flex flex-col justify-between shadow-xs hover:shadow-md transition-all group relative"
                 >
                     {/* Botón Favorito */}
                     <button
                       onClick={e => toggleFavorite(product.id, e)}
                       className={`absolute top-4 right-4 p-2 rounded-full backdrop-blur-md transition-all z-10 ${
                         isFav
-                          ? 'bg-[#FF5942] text-white shadow-md shadow-[#FF5942]/40'
-                          : 'bg-[#07111E]/70 text-[#8EA5C2] hover:text-white hover:bg-[#07111E]'
+                          ? 'bg-[#F5A623] text-white shadow-xs'
+                          : 'bg-[#FAF8F5] text-[#8C9AA8] hover:text-[#F5A623] hover:bg-white border border-[#E8E2D8]'
                       }`}
                       title={isFav ? 'Quitar de favoritos' : 'Guardar en favoritos'}
                     >
@@ -1026,7 +1040,7 @@ export default function MesaJarochaMenu() {
                     <div>
                       {/* Imagen si el platillo la tiene */}
                       {product.image && (
-                        <div className="w-full h-36 mb-3 rounded-2xl overflow-hidden relative border border-[#00A8E8]/20 bg-[#07111E]">
+                        <div className="w-full h-36 mb-3 rounded-2xl overflow-hidden relative border border-[#E8E2D8] bg-[#FAF8F5]">
                           <img
                             src={product.image}
                             alt={product.name}
@@ -1039,11 +1053,11 @@ export default function MesaJarochaMenu() {
                       {/* Badge si tiene, o chip con emoji de categoría como fallback */}
                       <div className="mb-2">
                         {product.badge ? (
-                          <span className="inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-[#FFC043]/15 text-[#FFC043] border border-[#FFC043]/30">
+                          <span className="inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-[#F5A623]/10 text-[#B45309] border border-[#F5A623]/30">
                             {product.badge}
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#00A8E8]/10 text-[#00A8E8] border border-[#00A8E8]/20">
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#4A6076]/10 text-[#4A6076] border border-[#4A6076]/20">
                             <span>{CATEGORY_EMOJIS[product.category] || '🌊'}</span>
                             <span>{CATEGORIES.find(c => c.id === product.category)?.name || 'Mesa Jarocha'}</span>
                           </span>
@@ -1051,24 +1065,24 @@ export default function MesaJarochaMenu() {
                       </div>
 
                       {/* Título */}
-                      <h4 className="font-bold text-base text-white group-hover:text-[#00A8E8] transition-colors leading-snug font-serif pr-8">
+                      <h4 className="font-bold text-base text-[#2D3A4B] group-hover:text-[#4A6076] transition-colors leading-snug font-serif pr-8 uppercase tracking-wide">
                         {product.name}
                       </h4>
 
                       {/* Descripción */}
-                      <p className="text-xs text-[#8EA5C2] mt-2 leading-relaxed line-clamp-3">
+                      <p className="text-xs text-[#60869B] mt-2 leading-relaxed line-clamp-3 font-normal">
                         {product.description}
                       </p>
                     </div>
 
                     {/* Precios y Botones de Acción */}
-                    <div className="mt-4 pt-3 border-t border-[#00A8E8]/10 flex items-center justify-between gap-3">
+                    <div className="mt-4 pt-3 border-t border-[#E8E2D8] flex items-center justify-between gap-3">
                       <div>
-                        <span className="text-[10px] text-[#8EA5C2] uppercase tracking-wider block font-semibold">
+                        <span className="text-[10px] text-[#8C9AA8] uppercase tracking-wider block font-semibold">
                           {product.sizes ? 'Desde' : 'Precio'}
                         </span>
-                        <span className="text-lg font-black text-[#2DD4BF]">
-                          ${product.price} <span className="text-[10px] text-[#8EA5C2] font-normal">MXN</span>
+                        <span className="text-lg font-black text-[#4A6076]">
+                          ${product.price} <span className="text-[10px] text-[#8C9AA8] font-normal">MXN</span>
                         </span>
                       </div>
 
@@ -1076,7 +1090,7 @@ export default function MesaJarochaMenu() {
                         {product.canCustomize ? (
                           <button
                             onClick={e => openCustomModal(product, e)}
-                            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#0084C7] to-[#00A8E8] text-white text-xs font-bold shadow-md shadow-[#0084C7]/20 hover:brightness-110 active:scale-95 transition-all flex items-center gap-1.5"
+                            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#F5A623] to-[#E59819] text-white text-xs font-bold shadow-xs hover:brightness-105 active:scale-95 transition-all flex items-center gap-1.5"
                           >
                             <Edit3 size={13} />
                             <span>Personalizar</span>
@@ -1084,7 +1098,7 @@ export default function MesaJarochaMenu() {
                         ) : (
                           <button
                             onClick={e => handleQuickAdd(product, e)}
-                            className="p-2.5 rounded-xl bg-[#0084C7] hover:bg-[#00A8E8] text-white shadow-md shadow-[#0084C7]/20 active:scale-95 transition-all flex items-center justify-center"
+                            className="p-2.5 rounded-xl bg-[#F5A623] hover:bg-[#E59819] text-white shadow-xs active:scale-95 transition-all flex items-center justify-center"
                             title="Agregar al pedido"
                           >
                             <Plus size={16} />
@@ -1104,37 +1118,37 @@ export default function MesaJarochaMenu() {
       {/* ── MODAL DE PERSONALIZACIÓN DE PRODUCTO ── */}
       <AnimatePresence>
         {customizingProduct && (
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 50 }}
-              className="bg-[#0D1B2D] border border-[#00A8E8]/25 rounded-t-3xl sm:rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl"
+              className="bg-white border border-[#E8E2D8] rounded-t-3xl sm:rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl"
             >
               {/* Header Modal */}
-              <div className="p-4 border-b border-[#00A8E8]/15 flex items-start justify-between bg-[#13243B]">
+              <div className="p-4 border-b border-[#E8E2D8] flex items-start justify-between bg-[#FAF8F5]">
                 <div>
-                  <span className="text-[10px] font-bold text-[#FFC043] uppercase tracking-wider">A Tu Gusto</span>
-                  <h3 className="font-bold text-lg text-white font-serif">{customizingProduct.name}</h3>
-                  <p className="text-xs text-[#2DD4BF] font-black mt-0.5">
+                  <span className="text-[10px] font-bold text-[#F5A623] uppercase tracking-wider">A Tu Gusto</span>
+                  <h3 className="font-bold text-lg text-[#2D3A4B] font-serif uppercase tracking-wide">{customizingProduct.name}</h3>
+                  <p className="text-xs text-[#4A6076] font-bold mt-0.5">
                     Precio base: ${customizingProduct.price} MXN
                   </p>
                 </div>
                 <button
                   onClick={() => setCustomizingProduct(null)}
-                  className="p-1.5 rounded-full bg-[#07111E] text-[#8EA5C2] hover:text-white transition-colors"
+                  className="p-1.5 rounded-full bg-white text-[#60869B] hover:text-[#2D3A4B] border border-[#E8E2D8] transition-colors"
                 >
                   <X size={18} />
                 </button>
               </div>
 
               {/* Contenido scrolleable */}
-              <div className="p-5 overflow-y-auto space-y-5 text-xs text-[#8EA5C2]">
+              <div className="p-5 overflow-y-auto space-y-5 text-xs text-[#60869B]">
                 
                 {/* 1. Selector de Carne para Memela de la Casa */}
                 {customizingProduct.customType === 'memela' && (
                   <div>
-                    <label className="block text-white font-bold mb-2 uppercase text-[11px] tracking-wide">
+                    <label className="block text-[#4A6076] font-bold mb-2 uppercase text-[11px] tracking-wide">
                       🥩 Elige la carne de tu Memela:
                     </label>
                     <div className="grid grid-cols-3 gap-2">
@@ -1144,8 +1158,8 @@ export default function MesaJarochaMenu() {
                           onClick={() => setSelectedProtein(protein)}
                           className={`p-2.5 rounded-xl border text-center font-bold transition-all ${
                             selectedProtein === protein
-                              ? 'bg-[#0084C7] border-[#00A8E8] text-white shadow-md'
-                              : 'bg-[#13243B] border-[#00A8E8]/15 text-[#8EA5C2] hover:text-white'
+                              ? 'bg-[#F5A623]/15 border-[#F5A623] text-[#B45309] shadow-xs'
+                              : 'bg-[#FAF8F5] border-[#E8E2D8] text-[#4A6076] hover:border-[#F5A623]'
                           }`}
                         >
                           <span className="block text-xs">{protein}</span>
@@ -1158,7 +1172,7 @@ export default function MesaJarochaMenu() {
                 {/* 2. Selector de Salsa para Enchiladas (3) */}
                 {customizingProduct.customType === 'enchiladas' && (
                   <div>
-                    <label className="block text-white font-bold mb-2 uppercase text-[11px] tracking-wide">
+                    <label className="block text-[#4A6076] font-bold mb-2 uppercase text-[11px] tracking-wide">
                       🌶️ Elige tu salsa para las Enchiladas:
                     </label>
                     <div className="grid grid-cols-3 gap-2">
@@ -1168,8 +1182,8 @@ export default function MesaJarochaMenu() {
                           onClick={() => setSelectedSauce(sauce)}
                           className={`p-2.5 rounded-xl border text-center font-bold transition-all ${
                             selectedSauce === sauce
-                              ? 'bg-[#0084C7] border-[#00A8E8] text-white shadow-md'
-                              : 'bg-[#13243B] border-[#00A8E8]/15 text-[#8EA5C2] hover:text-white'
+                              ? 'bg-[#F5A623]/15 border-[#F5A623] text-[#B45309] shadow-xs'
+                              : 'bg-[#FAF8F5] border-[#E8E2D8] text-[#4A6076] hover:border-[#F5A623]'
                           }`}
                         >
                           <span className="block text-xs">{sauce}</span>
@@ -1182,7 +1196,7 @@ export default function MesaJarochaMenu() {
                 {/* 3. Selector de Corte para Tacos de Arrachera o Picaña */}
                 {customizingProduct.customType === 'carne' && (
                   <div>
-                    <label className="block text-white font-bold mb-2 uppercase text-[11px] tracking-wide">
+                    <label className="block text-[#4A6076] font-bold mb-2 uppercase text-[11px] tracking-wide">
                       🥩 Elige tu corte para los tacos:
                     </label>
                     <div className="grid grid-cols-2 gap-2">
@@ -1192,8 +1206,8 @@ export default function MesaJarochaMenu() {
                           onClick={() => setSelectedProtein(corte)}
                           className={`p-2.5 rounded-xl border text-center font-bold transition-all ${
                             selectedProtein === corte
-                              ? 'bg-[#0084C7] border-[#00A8E8] text-white shadow-md'
-                              : 'bg-[#13243B] border-[#00A8E8]/15 text-[#8EA5C2] hover:text-white'
+                              ? 'bg-[#F5A623]/15 border-[#F5A623] text-[#B45309] shadow-xs'
+                              : 'bg-[#FAF8F5] border-[#E8E2D8] text-[#4A6076] hover:border-[#F5A623]'
                           }`}
                         >
                           <span className="block text-xs">{corte}</span>
@@ -1206,7 +1220,7 @@ export default function MesaJarochaMenu() {
                 {/* 4. Selector de Preparación para Cocteles y Del Mar */}
                 {customizingProduct.customType === 'coctel' && (
                   <div>
-                    <label className="block text-white font-bold mb-2 uppercase text-[11px] tracking-wide">
+                    <label className="block text-[#4A6076] font-bold mb-2 uppercase text-[11px] tracking-wide">
                       🥗 Preparación de Verduras & Sazón:
                     </label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -1222,8 +1236,8 @@ export default function MesaJarochaMenu() {
                           onClick={() => setSelectedPrep(prep)}
                           className={`p-2 rounded-xl border text-left font-medium transition-all ${
                             selectedPrep === prep
-                              ? 'bg-[#0084C7]/25 border-[#00A8E8] text-white'
-                              : 'bg-[#13243B] border-[#00A8E8]/15 text-[#8EA5C2] hover:text-white'
+                              ? 'bg-[#F5A623]/15 border-[#F5A623] text-[#B45309] font-bold'
+                              : 'bg-[#FAF8F5] border-[#E8E2D8] text-[#4A6076] hover:border-[#F5A623]'
                           }`}
                         >
                           {prep}
@@ -1235,7 +1249,7 @@ export default function MesaJarochaMenu() {
 
                 {/* Extras Añadibles */}
                 <div>
-                  <label className="block text-white font-bold mb-2 uppercase text-[11px] tracking-wide">
+                  <label className="block text-[#4A6076] font-bold mb-2 uppercase text-[11px] tracking-wide">
                     ➕ Extras para acompañar tu platillo:
                   </label>
                   <div className="space-y-1.5">
@@ -1251,12 +1265,12 @@ export default function MesaJarochaMenu() {
                           }}
                           className={`w-full p-2.5 rounded-xl border flex items-center justify-between text-left transition-all ${
                             isSelected
-                              ? 'bg-[#0084C7]/20 border-[#00A8E8] text-white font-bold'
-                              : 'bg-[#13243B] border-[#00A8E8]/15 text-[#8EA5C2] hover:text-white'
+                              ? 'bg-[#F5A623]/15 border-[#F5A623] text-[#B45309] font-bold'
+                              : 'bg-[#FAF8F5] border-[#E8E2D8] text-[#4A6076] hover:border-[#F5A623]'
                           }`}
                         >
                           <span>{extra.name}</span>
-                          <span className="text-[#2DD4BF] font-black">+${extra.price} MXN</span>
+                          <span className="text-[#4A6076] font-black">+${extra.price} MXN</span>
                         </button>
                       );
                     })}
@@ -1265,7 +1279,7 @@ export default function MesaJarochaMenu() {
 
                 {/* Nota especial */}
                 <div>
-                  <label className="block text-white font-bold mb-1 uppercase text-[11px] tracking-wide">
+                  <label className="block text-[#4A6076] font-bold mb-1 uppercase text-[11px] tracking-wide">
                     📝 Indicación Especial o Alergia:
                   </label>
                   <input
@@ -1273,24 +1287,24 @@ export default function MesaJarochaMenu() {
                     placeholder="Ej. Salsa aparte, término de la carne, limón extra..."
                     value={specialNoteInput}
                     onChange={e => setSpecialNoteInput(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-[#13243B] border border-[#00A8E8]/20 text-white placeholder-[#8EA5C2]/50 text-xs focus:outline-none focus:border-[#00A8E8]"
+                    className="w-full p-2.5 rounded-xl bg-white border border-[#E8E2D8] text-[#2D3A4B] placeholder-[#8C9AA8] text-xs focus:outline-none focus:border-[#F5A623]"
                   />
                 </div>
 
               </div>
 
               {/* Botón Sticky al Pie */}
-              <div className="p-4 bg-[#13243B] border-t border-[#00A8E8]/20 flex items-center justify-between gap-3 shadow-lg">
+              <div className="p-4 bg-[#FAF8F5] border-t border-[#E8E2D8] flex items-center justify-between gap-3 shadow-lg">
                 <div>
-                  <span className="text-[10px] text-[#8EA5C2] uppercase font-bold block">Total Platillo</span>
-                  <span className="text-xl font-black text-[#2DD4BF]">
-                    ${customizingProduct.price + selectedExtras.reduce((sum, e) => sum + e.price, 0)} <span className="text-[10px] text-[#8EA5C2] font-normal">MXN</span>
+                  <span className="text-[10px] text-[#60869B] uppercase font-bold block">Total Platillo</span>
+                  <span className="text-xl font-black text-[#4A6076]">
+                    ${customizingProduct.price + selectedExtras.reduce((sum, e) => sum + e.price, 0)} <span className="text-[10px] text-[#8C9AA8] font-normal">MXN</span>
                   </span>
                 </div>
 
                 <button
                   onClick={confirmCustomAdd}
-                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#FF5942] to-[#FF8C00] text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-[#FF5942]/30 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
+                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#F5A623] to-[#E59819] text-white font-black text-xs uppercase tracking-wider shadow-md shadow-[#F5A623]/25 hover:brightness-105 active:scale-95 transition-all flex items-center gap-2"
                 >
                   <Check size={16} /> Confirmar & Agregar
                 </button>
@@ -1304,26 +1318,26 @@ export default function MesaJarochaMenu() {
       {/* ── CARRITO LATERAL DE 2 PASOS (DRAWER) ── */}
       <AnimatePresence>
         {isCartOpen && (
-          <div className="fixed inset-0 z-50 flex justify-end bg-black/80 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm">
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="bg-[#0D1B2D] border-l border-[#00A8E8]/20 w-full max-w-md h-full flex flex-col shadow-2xl"
+              className="bg-[#FAF8F5] border-l border-[#E8E2D8] w-full max-w-md h-full flex flex-col shadow-2xl"
             >
               
               {/* Header Carrito */}
-              <div className="p-4 border-b border-[#00A8E8]/15 bg-[#13243B] flex items-center justify-between">
+              <div className="p-4 border-b border-[#E8E2D8] bg-[#FAF8F5] flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <ShoppingBag size={18} className="text-[#00A8E8]" />
-                  <h3 className="font-bold text-base text-white font-serif">
+                  <ShoppingBag size={18} className="text-[#F5A623]" />
+                  <h3 className="font-bold text-base text-[#2D3A4B] font-serif">
                     {cartStep === 1 ? 'Tu Pedido' : cartStep === 2 ? 'Datos de Entrega y Pago' : '¡Pedido Listo!'}
                   </h3>
                 </div>
                 <button
                   onClick={() => setIsCartOpen(false)}
-                  className="p-1.5 rounded-full bg-[#07111E] text-[#8EA5C2] hover:text-white"
+                  className="p-1.5 rounded-full bg-white text-[#60869B] hover:text-[#2D3A4B] border border-[#E8E2D8]"
                 >
                   <X size={18} />
                 </button>
@@ -1331,13 +1345,13 @@ export default function MesaJarochaMenu() {
 
               {/* Indicador de 2 Pasos */}
               {cartStep !== 3 && (
-                <div className="grid grid-cols-2 text-center text-[11px] font-bold border-b border-[#00A8E8]/15 bg-[#07111E]/80">
+                <div className="grid grid-cols-2 text-center text-[11px] font-bold border-b border-[#E8E2D8] bg-white">
                   <div
                     onClick={() => setCartStep(1)}
                     className={`py-2.5 cursor-pointer border-b-2 transition-all ${
                       cartStep === 1
-                        ? 'border-[#00A8E8] text-[#00A8E8]'
-                        : 'border-transparent text-[#8EA5C2]'
+                        ? 'border-[#F5A623] text-[#F5A623]'
+                        : 'border-transparent text-[#8C9AA8]'
                     }`}
                   >
                     1. Platillos ({totalCartCount})
@@ -1348,8 +1362,8 @@ export default function MesaJarochaMenu() {
                     }}
                     className={`py-2.5 cursor-pointer border-b-2 transition-all ${
                       cartStep === 2
-                        ? 'border-[#00A8E8] text-[#00A8E8]'
-                        : 'border-transparent text-[#8EA5C2]'
+                        ? 'border-[#F5A623] text-[#F5A623]'
+                        : 'border-transparent text-[#8C9AA8]'
                     }`}
                   >
                     2. Entrega y Pago
@@ -1365,14 +1379,14 @@ export default function MesaJarochaMenu() {
                   <>
                     {cart.length === 0 ? (
                       <div className="text-center py-20">
-                        <ShoppingBag size={48} className="mx-auto text-[#8EA5C2] mb-3 opacity-40" />
-                        <p className="text-sm font-bold text-white mb-1">Tu canasta está vacía</p>
-                        <p className="text-xs text-[#8EA5C2] max-w-xs mx-auto mb-4">
+                        <ShoppingBag size={48} className="mx-auto text-[#8C9AA8] mb-3 opacity-40" />
+                        <p className="text-sm font-bold text-[#2D3A4B] mb-1">Tu canasta está vacía</p>
+                        <p className="text-xs text-[#60869B] max-w-xs mx-auto mb-4">
                           Explora nuestras especialidades y agrega tus platillos favoritos.
                         </p>
                         <button
                           onClick={() => setIsCartOpen(false)}
-                          className="px-5 py-2.5 rounded-xl bg-[#0084C7] text-white text-xs font-bold shadow-md hover:brightness-110"
+                          className="px-5 py-2.5 rounded-xl bg-[#F5A623] text-white text-xs font-bold shadow-xs hover:brightness-105"
                         >
                           Ver Menú
                         </button>
@@ -1382,50 +1396,50 @@ export default function MesaJarochaMenu() {
                         {cart.map(item => (
                           <div
                             key={item.lineId}
-                            className="bg-[#13243B] border border-[#00A8E8]/15 rounded-2xl p-3.5 flex flex-col justify-between gap-2"
+                            className="bg-white border border-[#E8E2D8] rounded-2xl p-3.5 flex flex-col justify-between gap-2 shadow-2xs"
                           >
                             <div className="flex items-start justify-between gap-2">
                               <div>
-                                <h4 className="font-bold text-sm text-white font-serif">{item.name}</h4>
-                                <div className="text-[11px] text-[#8EA5C2] space-y-0.5 mt-1">
-                                  {item.selectedProtein && <div>• Carne / Corte: <span className="text-white font-semibold">{item.selectedProtein}</span></div>}
-                                  {item.selectedSauce && <div>• Salsa: <span className="text-white font-semibold">{item.selectedSauce}</span></div>}
+                                <h4 className="font-bold text-sm text-[#2D3A4B] font-serif">{item.name}</h4>
+                                <div className="text-[11px] text-[#60869B] space-y-0.5 mt-1">
+                                  {item.selectedProtein && <div>• Carne / Corte: <span className="text-[#2D3A4B] font-semibold">{item.selectedProtein}</span></div>}
+                                  {item.selectedSauce && <div>• Salsa: <span className="text-[#2D3A4B] font-semibold">{item.selectedSauce}</span></div>}
                                   {item.selectedPrep && <div>• {item.selectedPrep}</div>}
                                   {item.extras?.map(e => (
-                                    <div key={e.name} className="text-[#2DD4BF]">
+                                    <div key={e.name} className="text-[#4A6076] font-semibold">
                                       + {e.name} (${e.price})
                                     </div>
                                   ))}
                                   {item.specialNotes && (
-                                    <div className="italic text-[#FFC043]">
+                                    <div className="italic text-[#F5A623]">
                                       "{item.specialNotes}"
                                     </div>
                                   )}
                                 </div>
                               </div>
-                              <span className="font-black text-sm text-[#2DD4BF] whitespace-nowrap">
+                              <span className="font-black text-sm text-[#4A6076] whitespace-nowrap">
                                 ${item.unitPrice * item.quantity}
                               </span>
                             </div>
 
                             {/* Controles de cantidad */}
-                            <div className="flex items-center justify-between pt-2 border-t border-[#00A8E8]/10 mt-1">
-                              <span className="text-[10px] text-[#8EA5C2] font-semibold">
+                            <div className="flex items-center justify-between pt-2 border-t border-[#E8E2D8] mt-1">
+                              <span className="text-[10px] text-[#8C9AA8] font-semibold">
                                 ${item.unitPrice} c/u
                               </span>
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => updateQuantity(item.lineId, -1)}
-                                  className="w-7 h-7 rounded-lg bg-[#07111E] border border-[#00A8E8]/20 flex items-center justify-center text-[#8EA5C2] hover:text-white"
+                                  className="w-7 h-7 rounded-lg bg-[#FAF8F5] border border-[#E8E2D8] flex items-center justify-center text-[#60869B] hover:text-[#2D3A4B]"
                                 >
-                                  {item.quantity === 1 ? <Trash2 size={13} className="text-[#FF5942]" /> : <Minus size={13} />}
+                                  {item.quantity === 1 ? <Trash2 size={13} className="text-[#EF4444]" /> : <Minus size={13} />}
                                 </button>
-                                <span className="text-xs font-bold text-white w-5 text-center">
+                                <span className="text-xs font-bold text-[#2D3A4B] w-5 text-center">
                                   {item.quantity}
                                 </span>
                                 <button
                                   onClick={() => updateQuantity(item.lineId, 1)}
-                                  className="w-7 h-7 rounded-lg bg-[#07111E] border border-[#00A8E8]/20 flex items-center justify-center text-[#8EA5C2] hover:text-white"
+                                  className="w-7 h-7 rounded-lg bg-[#FAF8F5] border border-[#E8E2D8] flex items-center justify-center text-[#60869B] hover:text-[#2D3A4B]"
                                 >
                                   <Plus size={13} />
                                 </button>
@@ -1443,12 +1457,12 @@ export default function MesaJarochaMenu() {
                   <div className="space-y-4 text-xs">
                     
                     {/* Datos del Cliente */}
-                    <div className="bg-[#13243B] border border-[#00A8E8]/15 rounded-2xl p-4 space-y-3">
-                      <h4 className="font-bold text-sm text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                        <Utensils size={14} className="text-[#00A8E8]" /> Tus Datos de Contacto
+                    <div className="bg-white border border-[#E8E2D8] rounded-2xl p-4 space-y-3 shadow-2xs">
+                      <h4 className="font-bold text-sm text-[#4A6076] uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                        <Utensils size={14} className="text-[#F5A623]" /> Tus Datos de Contacto
                       </h4>
                       <div>
-                        <label className="block text-[#8EA5C2] mb-1 font-semibold">Nombre Completo *</label>
+                        <label className="block text-[#60869B] mb-1 font-semibold">Nombre Completo *</label>
                         <input
                           type="text"
                           placeholder="Ej. Juan Carlos López"
@@ -1457,18 +1471,18 @@ export default function MesaJarochaMenu() {
                             setCustomerName(e.target.value);
                             if (formErrors.name) setFormErrors(prev => ({ ...prev, name: undefined }));
                           }}
-                          className={`w-full p-2.5 rounded-xl bg-[#07111E] border text-white placeholder-[#8EA5C2]/40 focus:outline-none transition-all ${
-                            formErrors.name ? 'border-[#FF5942] ring-1 ring-[#FF5942]' : 'border-[#00A8E8]/20 focus:border-[#00A8E8]'
+                          className={`w-full p-2.5 rounded-xl bg-white border text-[#2D3A4B] placeholder-[#8C9AA8] focus:outline-none transition-all ${
+                            formErrors.name ? 'border-[#EF4444] ring-1 ring-[#EF4444]' : 'border-[#E8E2D8] focus:border-[#F5A623]'
                           }`}
                         />
                         {formErrors.name && (
-                          <p className="text-[#FF5942] text-[11px] font-semibold mt-1 flex items-center gap-1">
+                          <p className="text-[#EF4444] text-[11px] font-semibold mt-1 flex items-center gap-1">
                             <AlertCircle size={12} /> {formErrors.name}
                           </p>
                         )}
                       </div>
                       <div>
-                        <label className="block text-[#8EA5C2] mb-1 font-semibold">Número de WhatsApp (10 dígitos) *</label>
+                        <label className="block text-[#60869B] mb-1 font-semibold">Número de WhatsApp (10 dígitos) *</label>
                         <input
                           type="tel"
                           placeholder="Ej. 55 1234 5678"
@@ -1477,12 +1491,12 @@ export default function MesaJarochaMenu() {
                             setCustomerPhone(e.target.value);
                             if (formErrors.phone) setFormErrors(prev => ({ ...prev, phone: undefined }));
                           }}
-                          className={`w-full p-2.5 rounded-xl bg-[#07111E] border text-white placeholder-[#8EA5C2]/40 focus:outline-none transition-all ${
-                            formErrors.phone ? 'border-[#FF5942] ring-1 ring-[#FF5942]' : 'border-[#00A8E8]/20 focus:border-[#00A8E8]'
+                          className={`w-full p-2.5 rounded-xl bg-white border text-[#2D3A4B] placeholder-[#8C9AA8] focus:outline-none transition-all ${
+                            formErrors.phone ? 'border-[#EF4444] ring-1 ring-[#EF4444]' : 'border-[#E8E2D8] focus:border-[#F5A623]'
                           }`}
                         />
                         {formErrors.phone && (
-                          <p className="text-[#FF5942] text-[11px] font-semibold mt-1 flex items-center gap-1">
+                          <p className="text-[#EF4444] text-[11px] font-semibold mt-1 flex items-center gap-1">
                             <AlertCircle size={12} /> {formErrors.phone}
                           </p>
                         )}
@@ -1490,9 +1504,9 @@ export default function MesaJarochaMenu() {
                     </div>
 
                     {/* Método de Entrega */}
-                    <div className="bg-[#13243B] border border-[#00A8E8]/15 rounded-2xl p-4 space-y-3">
-                      <h4 className="font-bold text-sm text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                        <Bike size={14} className="text-[#00A8E8]" /> Método de Entrega
+                    <div className="bg-white border border-[#E8E2D8] rounded-2xl p-4 space-y-3 shadow-2xs">
+                      <h4 className="font-bold text-sm text-[#4A6076] uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                        <Bike size={14} className="text-[#F5A623]" /> Método de Entrega
                       </h4>
                       <div className="grid grid-cols-2 gap-2">
                         <button
@@ -1500,33 +1514,33 @@ export default function MesaJarochaMenu() {
                           onClick={() => setDeliveryMethod('domicilio')}
                           className={`p-3 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold transition-all ${
                             deliveryMethod === 'domicilio'
-                              ? 'bg-[#0084C7]/20 border-[#00A8E8] text-white shadow-md'
-                              : 'bg-[#07111E] border-[#00A8E8]/15 text-[#8EA5C2]'
+                              ? 'bg-[#F5A623]/15 border-[#F5A623] text-[#B45309] shadow-xs'
+                              : 'bg-[#FAF8F5] border-[#E8E2D8] text-[#60869B]'
                           }`}
                         >
-                          <Bike size={18} className="text-[#00A8E8]" />
+                          <Bike size={18} className="text-[#F5A623]" />
                           <span>A Domicilio</span>
-                          <span className="text-[10px] text-[#2DD4BF]">+$25 MXN</span>
+                          <span className="text-[10px] text-[#4A6076]">+$25 MXN</span>
                         </button>
                         <button
                           type="button"
                           onClick={() => setDeliveryMethod('recoger')}
                           className={`p-3 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold transition-all ${
                             deliveryMethod === 'recoger'
-                              ? 'bg-[#0084C7]/20 border-[#00A8E8] text-white shadow-md'
-                              : 'bg-[#07111E] border-[#00A8E8]/15 text-[#8EA5C2]'
+                              ? 'bg-[#F5A623]/15 border-[#F5A623] text-[#B45309] shadow-xs'
+                              : 'bg-[#FAF8F5] border-[#E8E2D8] text-[#60869B]'
                           }`}
                         >
-                          <Store size={18} className="text-[#FFC043]" />
+                          <Store size={18} className="text-[#F5A623]" />
                           <span>Pickup Local</span>
-                          <span className="text-[10px] text-[#2DD4BF]">Sin Costo</span>
+                          <span className="text-[10px] text-[#10B981]">Sin Costo</span>
                         </button>
                       </div>
 
                       {/* Dirección obligatoria si es a domicilio */}
                       {deliveryMethod === 'domicilio' && (
                         <div className="pt-2">
-                          <label className="block text-[#8EA5C2] mb-1 font-semibold">
+                          <label className="block text-[#60869B] mb-1 font-semibold">
                             Dirección de Entrega Completa (Calle, #, Colonia, Referencias) *
                           </label>
                           <textarea
@@ -1537,12 +1551,12 @@ export default function MesaJarochaMenu() {
                               setCustomerAddress(e.target.value);
                               if (formErrors.address) setFormErrors(prev => ({ ...prev, address: undefined }));
                             }}
-                            className={`w-full p-2.5 rounded-xl bg-[#07111E] border text-white placeholder-[#8EA5C2]/40 focus:outline-none transition-all ${
-                              formErrors.address ? 'border-[#FF5942] ring-1 ring-[#FF5942]' : 'border-[#00A8E8]/20 focus:border-[#00A8E8]'
+                            className={`w-full p-2.5 rounded-xl bg-white border text-[#2D3A4B] placeholder-[#8C9AA8] focus:outline-none transition-all ${
+                              formErrors.address ? 'border-[#EF4444] ring-1 ring-[#EF4444]' : 'border-[#E8E2D8] focus:border-[#F5A623]'
                             }`}
                           />
                           {formErrors.address && (
-                            <p className="text-[#FF5942] text-[11px] font-semibold mt-1 flex items-center gap-1">
+                            <p className="text-[#EF4444] text-[11px] font-semibold mt-1 flex items-center gap-1">
                               <AlertCircle size={12} /> {formErrors.address}
                             </p>
                           )}
@@ -1551,9 +1565,9 @@ export default function MesaJarochaMenu() {
                     </div>
 
                     {/* Forma de Pago */}
-                    <div className="bg-[#13243B] border border-[#00A8E8]/15 rounded-2xl p-4 space-y-3">
-                      <h4 className="font-bold text-sm text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                        <Wallet size={14} className="text-[#00A8E8]" /> Forma de Pago
+                    <div className="bg-white border border-[#E8E2D8] rounded-2xl p-4 space-y-3 shadow-2xs">
+                      <h4 className="font-bold text-sm text-[#4A6076] uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                        <Wallet size={14} className="text-[#F5A623]" /> Forma de Pago
                       </h4>
                       <div className="grid grid-cols-2 gap-2">
                         <button
@@ -1561,47 +1575,47 @@ export default function MesaJarochaMenu() {
                           onClick={() => setPaymentMethod('efectivo')}
                           className={`p-3 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold transition-all ${
                             paymentMethod === 'efectivo'
-                              ? 'bg-[#0084C7]/20 border-[#00A8E8] text-white shadow-md'
-                              : 'bg-[#07111E] border-[#00A8E8]/15 text-[#8EA5C2]'
+                              ? 'bg-[#F5A623]/15 border-[#F5A623] text-[#B45309] shadow-xs'
+                              : 'bg-[#FAF8F5] border-[#E8E2D8] text-[#60869B]'
                           }`}
                         >
-                          <Wallet size={18} className="text-[#25D366]" />
+                          <Wallet size={18} className="text-[#10B981]" />
                           <span>Efectivo</span>
-                          <span className="text-[10px] text-[#8EA5C2]">Al recibir</span>
+                          <span className="text-[10px] text-[#8C9AA8]">Al recibir</span>
                         </button>
                         <button
                           type="button"
                           onClick={() => setPaymentMethod('transferencia')}
                           className={`p-3 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold transition-all ${
                             paymentMethod === 'transferencia'
-                              ? 'bg-[#0084C7]/20 border-[#00A8E8] text-white shadow-md'
-                              : 'bg-[#07111E] border-[#00A8E8]/15 text-[#8EA5C2]'
+                              ? 'bg-[#F5A623]/15 border-[#F5A623] text-[#B45309] shadow-xs'
+                              : 'bg-[#FAF8F5] border-[#E8E2D8] text-[#60869B]'
                           }`}
                         >
-                          <Landmark size={18} className="text-[#00A8E8]" />
+                          <Landmark size={18} className="text-[#4A6076]" />
                           <span>Transferencia</span>
-                          <span className="text-[10px] text-[#8EA5C2]">SPEI / BBVA</span>
+                          <span className="text-[10px] text-[#8C9AA8]">SPEI / BBVA</span>
                         </button>
                       </div>
 
                       {/* Campo cambio en efectivo */}
                       {paymentMethod === 'efectivo' && (
-                        <div className="pt-2 bg-[#07111E] p-3 rounded-xl border border-[#00A8E8]/15">
-                          <label className="block text-[#8EA5C2] mb-1 font-semibold">
+                        <div className="pt-2 bg-[#FAF8F5] p-3 rounded-xl border border-[#E8E2D8]">
+                          <label className="block text-[#60869B] mb-1 font-semibold">
                             ¿Con cuánto vas a pagar? (Para llevarte cambio exacto)
                           </label>
                           <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8EA5C2] font-bold">$</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8C9AA8] font-bold">$</span>
                             <input
                               type="number"
                               placeholder={cartTotal.toString()}
                               value={cashAmount}
                               onChange={e => setCashAmount(e.target.value)}
-                              className="w-full pl-7 pr-3 py-2 rounded-lg bg-[#13243B] border border-[#00A8E8]/20 text-white focus:outline-none focus:border-[#00A8E8]"
+                              className="w-full pl-7 pr-3 py-2 rounded-lg bg-white border border-[#E8E2D8] text-[#2D3A4B] focus:outline-none focus:border-[#F5A623]"
                             />
                           </div>
                           {changeDue > 0 && (
-                            <p className="text-[11px] text-[#2DD4BF] font-bold mt-1.5 flex items-center gap-1">
+                            <p className="text-[11px] text-[#10B981] font-bold mt-1.5 flex items-center gap-1">
                               <CheckCircle2 size={13} /> Tu cambio será de: ${changeDue} MXN
                             </p>
                           )}
@@ -1610,23 +1624,23 @@ export default function MesaJarochaMenu() {
 
                       {/* Recuadro datos de transferencia */}
                       {paymentMethod === 'transferencia' && (
-                        <div className="pt-2 bg-[#07111E] p-3.5 rounded-xl border border-[#00A8E8]/20 space-y-2">
+                        <div className="pt-2 bg-[#FAF8F5] p-3.5 rounded-xl border border-[#E8E2D8] space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-white text-xs">Datos Bancarios SPEI:</span>
+                            <span className="font-bold text-[#2D3A4B] text-xs">Datos Bancarios SPEI:</span>
                             <button
                               onClick={handleCopyBank}
-                              className="text-[10px] text-[#00A8E8] hover:text-white flex items-center gap-1 font-bold bg-[#13243B] px-2 py-1 rounded-md border border-[#00A8E8]/30"
+                              className="text-[10px] text-[#4A6076] hover:text-[#2D3A4B] flex items-center gap-1 font-bold bg-white px-2 py-1 rounded-md border border-[#E8E2D8]"
                             >
-                              {copiedBank ? <Check size={12} className="text-[#25D366]" /> : <Copy size={12} />}
+                              {copiedBank ? <Check size={12} className="text-[#10B981]" /> : <Copy size={12} />}
                               {copiedBank ? 'Copiado' : 'Copiar Todo'}
                             </button>
                           </div>
-                          <div className="text-[11px] space-y-1 text-[#8EA5C2]">
-                            <p>• <strong className="text-white">Banco:</strong> {bankInfo.bankName}</p>
-                            <p>• <strong className="text-white">Titular:</strong> {bankInfo.accountHolder}</p>
-                            <p>• <strong className="text-white">CLABE:</strong> <span className="font-mono text-white select-all">{bankInfo.clabe}</span></p>
+                          <div className="text-[11px] space-y-1 text-[#60869B]">
+                            <p>• <strong className="text-[#2D3A4B]">Banco:</strong> {bankInfo.bankName}</p>
+                            <p>• <strong className="text-[#2D3A4B]">Titular:</strong> {bankInfo.accountHolder}</p>
+                            <p>• <strong className="text-[#2D3A4B]">CLABE:</strong> <span className="font-mono text-[#2D3A4B] select-all font-bold">{bankInfo.clabe}</span></p>
                           </div>
-                          <p className="text-[10px] text-[#FFC043] italic pt-1">
+                          <p className="text-[10px] text-[#D97706] italic pt-1">
                             * Al enviar el WhatsApp podrás adjuntar tu comprobante de pago.
                           </p>
                         </div>
@@ -1635,7 +1649,7 @@ export default function MesaJarochaMenu() {
 
                     {/* Notas adicionales */}
                     <div>
-                      <label className="block text-[#8EA5C2] mb-1 font-semibold">
+                      <label className="block text-[#60869B] mb-1 font-semibold">
                         Observaciones adicionales para cocina
                       </label>
                       <input
@@ -1643,7 +1657,7 @@ export default function MesaJarochaMenu() {
                         placeholder="Ej. Tostadas extra, limón partido, salsa aparte..."
                         value={orderNotes}
                         onChange={e => setOrderNotes(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-[#13243B] border border-[#00A8E8]/20 text-white placeholder-[#8EA5C2]/40 focus:outline-none focus:border-[#00A8E8]"
+                        className="w-full p-2.5 rounded-xl bg-white border border-[#E8E2D8] text-[#2D3A4B] placeholder-[#8C9AA8] focus:outline-none focus:border-[#F5A623]"
                       />
                     </div>
 
@@ -1653,14 +1667,14 @@ export default function MesaJarochaMenu() {
                 {/* ── PASO 3: PANTALLA DE ÉXITO ── */}
                 {cartStep === 3 && (
                   <div className="text-center py-16 px-4 space-y-4">
-                    <div className="w-16 h-16 rounded-full bg-[#25D366]/20 border border-[#25D366] text-[#25D366] flex items-center justify-center mx-auto animate-pulse">
+                    <div className="w-16 h-16 rounded-full bg-[#10B981]/15 border border-[#10B981] text-[#10B981] flex items-center justify-center mx-auto animate-pulse">
                       <Check size={32} />
                     </div>
-                    <h4 className="text-xl font-black text-white font-serif">¡Pedido Registrado con Éxito!</h4>
-                    <p className="text-xs text-[#8EA5C2] leading-relaxed max-w-xs mx-auto">
+                    <h4 className="text-xl font-black text-[#2D3A4B] font-serif">¡Pedido Registrado con Éxito!</h4>
+                    <p className="text-xs text-[#60869B] leading-relaxed max-w-xs mx-auto">
                       Estamos abriendo WhatsApp automáticamente para que confirmes tu orden con nuestro equipo de cocina...
                     </p>
-                    <div className="p-3.5 bg-[#13243B] rounded-2xl border border-[#00A8E8]/20 text-[11px] text-[#FFC043] font-bold">
+                    <div className="p-3.5 bg-white rounded-2xl border border-[#E8E2D8] text-[11px] text-[#B45309] font-bold shadow-2xs">
                       🌊 Si no se abrió la aplicación, toca el botón verde de abajo.
                     </div>
                     <button
@@ -1671,7 +1685,7 @@ export default function MesaJarochaMenu() {
                           handleFinalizeWhatsAppOrder();
                         }
                       }}
-                      className="w-full py-3.5 rounded-xl bg-[#25D366] text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-[#25D366]/30 hover:brightness-110 flex items-center justify-center gap-2"
+                      className="w-full py-3.5 rounded-xl bg-[#25D366] text-white font-black text-xs uppercase tracking-wider shadow-md shadow-[#25D366]/30 hover:brightness-105 flex items-center justify-center gap-2"
                     >
                       <MessageCircle size={18} /> Abrir WhatsApp Manualmente
                     </button>
@@ -1682,22 +1696,22 @@ export default function MesaJarochaMenu() {
 
               {/* Footer Sticky del Carrito */}
               {cartStep !== 3 && cart.length > 0 && (
-                <div className="p-4 bg-[#13243B] border-t border-[#00A8E8]/20 space-y-3">
+                <div className="p-4 bg-white border-t border-[#E8E2D8] space-y-3 shadow-lg">
                   {/* Desglose de totales */}
-                  <div className="space-y-1 text-xs text-[#8EA5C2]">
+                  <div className="space-y-1 text-xs text-[#60869B]">
                     <div className="flex justify-between">
                       <span>Subtotal de platillos</span>
-                      <span className="text-white font-semibold">${cartSubtotal} MXN</span>
+                      <span className="text-[#2D3A4B] font-semibold">${cartSubtotal} MXN</span>
                     </div>
                     {deliveryMethod === 'domicilio' && (
-                      <div className="flex justify-between text-[#2DD4BF]">
+                      <div className="flex justify-between text-[#4A6076]">
                         <span>Envío local</span>
                         <span className="font-semibold">+${deliveryCost} MXN</span>
                       </div>
                     )}
-                    <div className="flex justify-between text-base font-black text-white pt-1 border-t border-[#00A8E8]/10">
+                    <div className="flex justify-between text-base font-black text-[#2D3A4B] pt-1 border-t border-[#E8E2D8]">
                       <span>Total</span>
-                      <span className="text-[#2DD4BF]">${cartTotal} MXN</span>
+                      <span className="text-[#4A6076]">${cartTotal} MXN</span>
                     </div>
                   </div>
 
@@ -1705,14 +1719,14 @@ export default function MesaJarochaMenu() {
                   {cartStep === 1 ? (
                     <button
                       onClick={() => setCartStep(2)}
-                      className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#0084C7] to-[#00A8E8] text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-[#0084C7]/30 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3.5 rounded-xl bg-[#4A6076] hover:bg-[#3B4D61] text-white font-black text-xs uppercase tracking-wider shadow-md active:scale-95 transition-all flex items-center justify-center gap-2"
                     >
                       Continuar a Entrega & Pago <ChevronRight size={16} />
                     </button>
                   ) : (
                     <button
                       onClick={handleFinalizeWhatsAppOrder}
-                      className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#25D366] to-[#1EBE5D] text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-[#25D366]/30 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white font-black text-xs uppercase tracking-wider shadow-md shadow-[#25D366]/30 active:scale-95 transition-all flex items-center justify-center gap-2"
                     >
                       <MessageCircle size={18} /> Enviar Pedido por WhatsApp · ${cartTotal}
                     </button>
@@ -1726,26 +1740,26 @@ export default function MesaJarochaMenu() {
       </AnimatePresence>
 
       {/* ── FOOTER DE 3 COLUMNAS OBLIGATORIO (CON DATOS REALES DEL CLIENTE) ── */}
-      <footer className="mt-16 bg-[#040B14] border-t border-[#00A8E8]/15 text-[#8EA5C2] text-xs">
+      <footer className="mt-16 bg-[#2D3A4B] border-t-4 border-[#F5A623] text-[#CBD5E1] text-xs">
         <div className="max-w-6xl mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-10 border-b border-[#00A8E8]/10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-10 border-b border-white/10">
             
             {/* Columna 1: Logo y Presentación del Negocio */}
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#FFC043] bg-[#07111E]">
+                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#F5A623] bg-white">
                   <img src={logoImg} alt="Mesa Jarocha Logo" className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <h4 className="font-bold text-white text-base font-serif">Mesa Jarocha</h4>
-                  <span className="text-[10px] text-[#00A8E8] font-bold">Marisquería & Tradición</span>
+                  <span className="text-[10px] text-[#F5A623] font-bold tracking-wide">Menú Mar y Tierra</span>
                 </div>
               </div>
-              <p className="text-xs text-[#8EA5C2] leading-relaxed">
-                El auténtico sabor del Golfo y la tradición Jarocha en tu mesa. Especialistas en mariscadas, pescados a las brasas y coctelería fresca.
+              <p className="text-xs text-[#94A3B8] leading-relaxed">
+                El auténtico sabor tradicional en tu mesa. Especialistas en caldos y sopas, del mar a tu mesa, cortes selectos, antojitos de maíz caseros y servicio al cuarto.
               </p>
               <div className="pt-1">
-                <span className="text-[10px] font-bold text-[#FFC043] block uppercase tracking-wider">Horario de Servicio</span>
+                <span className="text-[10px] font-bold text-[#F5A623] block uppercase tracking-wider">Horario de Servicio</span>
                 <span className="text-white text-xs">{clientConfig.hours}</span>
               </div>
             </div>
@@ -1757,15 +1771,15 @@ export default function MesaJarochaMenu() {
               </h4>
               <div className="space-y-2 text-xs">
                 <p className="flex items-start gap-2">
-                  <MapPin size={15} className="text-[#FF5942] flex-shrink-0 mt-0.5" />
+                  <MapPin size={15} className="text-[#F5A623] flex-shrink-0 mt-0.5" />
                   <span>{clientConfig.address}</span>
                 </p>
                 <p className="flex items-center gap-2">
-                  <Phone size={15} className="text-[#25D366] flex-shrink-0" />
+                  <Phone size={15} className="text-[#10B981] flex-shrink-0" />
                   <span>WhatsApp: <strong className="text-white">{clientConfig.phonePrimaryFormatted}</strong></span>
                 </p>
                 <p className="flex items-center gap-2">
-                  <Wallet size={15} className="text-[#00A8E8] flex-shrink-0" />
+                  <Wallet size={15} className="text-[#F5A623] flex-shrink-0" />
                   <span>Aceptamos: Efectivo & Transferencia SPEI</span>
                 </p>
               </div>
@@ -1776,7 +1790,7 @@ export default function MesaJarochaMenu() {
               <h4 className="font-bold text-white text-sm uppercase tracking-wider font-serif">
                 Síguenos & Comparte
               </h4>
-              <p className="text-xs text-[#8EA5C2]">
+              <p className="text-xs text-[#94A3B8]">
                 Conoce nuestras promociones de temporada, platillos del día y eventos especiales.
               </p>
               <div className="flex items-center gap-2 pt-1 flex-wrap">
@@ -1784,7 +1798,7 @@ export default function MesaJarochaMenu() {
                   href={clientConfig.facebookUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="group px-3 py-2 rounded-xl bg-[#0D1B2D] border border-[#00A8E8]/20 text-[#8EA5C2] hover:text-white hover:border-[#1877F2]/50 hover:bg-[#1877F2]/10 transition-all text-xs font-semibold flex items-center gap-2"
+                  className="group px-3 py-2 rounded-xl bg-white/10 border border-white/15 text-white hover:border-[#1877F2] hover:bg-[#1877F2]/20 transition-all text-xs font-semibold flex items-center gap-2"
                 >
                   <svg className="w-3.5 h-3.5 text-[#1877F2] fill-current flex-shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -1795,7 +1809,7 @@ export default function MesaJarochaMenu() {
                   href={clientConfig.instagramUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="group px-3 py-2 rounded-xl bg-[#0D1B2D] border border-[#00A8E8]/20 text-[#8EA5C2] hover:text-white hover:border-[#E1306C]/50 hover:bg-[#E1306C]/10 transition-all text-xs font-semibold flex items-center gap-2"
+                  className="group px-3 py-2 rounded-xl bg-white/10 border border-white/15 text-white hover:border-[#E1306C] hover:bg-[#E1306C]/20 transition-all text-xs font-semibold flex items-center gap-2"
                 >
                   <svg className="w-3.5 h-3.5 text-[#E1306C] fill-current flex-shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
@@ -1806,7 +1820,7 @@ export default function MesaJarochaMenu() {
                   href={clientConfig.tiktokUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="group px-3 py-2 rounded-xl bg-[#0D1B2D] border border-[#00A8E8]/20 text-[#8EA5C2] hover:text-white hover:border-[#25F4EE]/50 hover:bg-[#25F4EE]/10 transition-all text-xs font-semibold flex items-center gap-2"
+                  className="group px-3 py-2 rounded-xl bg-white/10 border border-white/15 text-white hover:border-[#25F4EE] hover:bg-[#25F4EE]/20 transition-all text-xs font-semibold flex items-center gap-2"
                 >
                   <svg className="w-3.5 h-3.5 text-[#25F4EE] fill-current flex-shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
                     <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 2.89 3.5 2.75 1.25-.05 2.37-.77 2.92-1.87.28-.53.37-1.13.37-1.73.03-4.7.01-9.4.02-14.1z" />
@@ -1819,7 +1833,7 @@ export default function MesaJarochaMenu() {
           </div>
 
           {/* Pie de Crédito y Privacidad */}
-          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#8EA5C2]">
+          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#94A3B8]">
             <p>© {new Date().getFullYear()} Mesa Jarocha. Todos los derechos reservados.</p>
             <div className="flex items-center gap-4">
               <button
@@ -1829,7 +1843,7 @@ export default function MesaJarochaMenu() {
                 Aviso de Privacidad
               </button>
               <span>•</span>
-              <span className="text-[#8EA5C2]">
+              <span className="text-[#94A3B8]">
                 Diseñado por <strong className="text-white">IMAGINE & STAMP</strong>
               </span>
             </div>
@@ -1856,7 +1870,7 @@ export default function MesaJarochaMenu() {
               setIsCartOpen(true);
               setCartStep(1);
             }}
-            className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-[#FF5942] via-[#FF8C00] to-[#0084C7] text-white font-black text-xs uppercase tracking-wider shadow-2xl shadow-[#FF5942]/40 border border-white/20 flex items-center justify-between active:scale-[0.98] transition-all"
+            className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-[#F5A623] to-[#E59819] text-white font-black text-xs uppercase tracking-wider shadow-2xl shadow-[#F5A623]/40 border border-white/20 flex items-center justify-between active:scale-[0.98] transition-all"
           >
             <div className="flex items-center gap-2">
               <ShoppingBag size={18} />
@@ -1870,25 +1884,25 @@ export default function MesaJarochaMenu() {
       {/* ── MODAL AVISO DE PRIVACIDAD (LFPDPPP) ── */}
       <AnimatePresence>
         {showPrivacyModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-[#0D1B2D] border border-[#00A8E8]/30 rounded-3xl max-w-lg w-full max-h-[80vh] flex flex-col overflow-hidden shadow-2xl"
+              className="bg-white border border-[#E8E2D8] rounded-3xl max-w-lg w-full max-h-[80vh] flex flex-col overflow-hidden shadow-2xl"
             >
-              <div className="p-4 border-b border-[#00A8E8]/15 flex items-center justify-between bg-[#13243B]">
-                <h3 className="font-bold text-sm text-white uppercase tracking-wider flex items-center gap-2">
-                  <Shield size={16} className="text-[#0084C7]" /> Aviso de Privacidad
+              <div className="p-4 border-b border-[#E8E2D8] flex items-center justify-between bg-[#FAF8F5]">
+                <h3 className="font-bold text-sm text-[#4A6076] uppercase tracking-wider flex items-center gap-2">
+                  <Shield size={16} className="text-[#F5A623]" /> Aviso de Privacidad
                 </h3>
                 <button
                   onClick={() => setShowPrivacyModal(false)}
-                  className="p-1 rounded-full bg-[#07111E] text-[#8EA5C2] hover:text-white"
+                  className="p-1 rounded-full bg-white text-[#60869B] hover:text-[#2D3A4B] border border-[#E8E2D8]"
                 >
                   <X size={16} />
                 </button>
               </div>
-              <div className="p-5 overflow-y-auto text-xs text-[#8EA5C2] space-y-3 leading-relaxed">
+              <div className="p-5 overflow-y-auto text-xs text-[#60869B] space-y-3 leading-relaxed">
                 <p>
                   En cumplimiento con la <strong>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)</strong> de México, <strong>{clientConfig.businessName}</strong>, con domicilio comercial en {clientConfig.address}, informa que los datos personales recabados (nombre, teléfono y dirección) son utilizados exclusivamente para la gestión, preparación y entrega de sus pedidos de alimentos y bebidas.
                 </p>
@@ -1899,10 +1913,10 @@ export default function MesaJarochaMenu() {
                   Usted tiene derecho a ejercer sus derechos ARCO (Acceso, Rectificación, Cancelación y Oposición) comunicándose a nuestro WhatsApp oficial: <strong>{clientConfig.phonePrimaryFormatted}</strong>.
                 </p>
               </div>
-              <div className="p-4 bg-[#13243B] border-t border-[#00A8E8]/15 flex justify-end">
+              <div className="p-4 bg-[#FAF8F5] border-t border-[#E8E2D8] flex justify-end">
                 <button
                   onClick={() => setShowPrivacyModal(false)}
-                  className="px-5 py-2 rounded-xl bg-[#0084C7] text-white text-xs font-bold hover:brightness-110"
+                  className="px-5 py-2 rounded-xl bg-[#4A6076] text-white text-xs font-bold hover:bg-[#3B4D61]"
                 >
                   Entendido
                 </button>
