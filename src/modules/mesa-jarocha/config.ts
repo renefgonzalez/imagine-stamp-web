@@ -9,9 +9,9 @@ export const clientConfig = {
   description:
     'Mariscadas gourmet, camarones al mojo de ajo, pulpo a las brasas, aguachiles sinaloenses y jarochos, cocteles preparados al momento y pescados frescos con sazón tradicional de Veracruz.',
 
-  // Teléfonos de contacto y pedidos WhatsApp
-  phonePrimary: '525565046999',
-  phonePrimaryFormatted: '55 6504 6999',
+  // ⚠️ IMPORTANTE: Reemplazar con el WhatsApp real del cliente al entregar la demo/producción
+  phonePrimary: '5215500000000', // TODO: Reemplazar con el WhatsApp oficial de Mesa Jarocha
+  phonePrimaryFormatted: '55 0000 0000',
   phoneSecondary: '',
   phoneSecondaryFormatted: '',
   email: 'contacto@mesajarocha.mx',
@@ -44,9 +44,10 @@ export const clientConfig = {
   },
 };
 
+// ⚠️ TODO: Reemplazar con los datos bancarios oficiales de Mesa Jarocha para recibir transferencias
 export const bankInfo = {
   bankName: 'BBVA México',
   accountHolder: 'Mesa Jarocha Marisquería',
-  clabe: '012 180 01556504699 4',
-  cardNumber: '4152 3138 6504 6999',
+  clabe: '012 180 00000000000 0',
+  cardNumber: '4152 3100 0000 0000',
 };

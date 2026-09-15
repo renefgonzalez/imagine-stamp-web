@@ -454,6 +454,19 @@ const CATEGORIES: { id: CategoryId; name: string; icon: string; countBadge?: num
   { id: 'guarniciones', name: 'Guarniciones', icon: '🍽️' },
 ];
 
+// ── Emojis representativos por categoría ──
+const CATEGORY_EMOJIS: Record<CategoryId, string> = {
+  todos: '🌊',
+  favoritos: '❤️',
+  especialidades: '🦞',
+  'camarones-pulpo': '🦐',
+  pescados: '🐟',
+  'cocteles-tostadas': '🦀',
+  'aguachiles-botanas': '🍤',
+  bebidas: '🥤',
+  guarniciones: '🍽️',
+};
+
 export default function MesaJarochaMenu() {
   // ── Estados de navegación y catálogo ──
   const [activeCategory, setActiveCategory] = useState<CategoryId>('todos');
@@ -489,6 +502,14 @@ export default function MesaJarochaMenu() {
   const [cashAmount, setCashAmount] = useState('');
   const [orderNotes, setOrderNotes] = useState('');
   const [copiedBank, setCopiedBank] = useState(false);
+  const [lastWaUrl, setLastWaUrl] = useState('');
+
+  // ── Errores de validación inline ──
+  const [formErrors, setFormErrors] = useState<{
+    name?: string;
+    phone?: string;
+    address?: string;
+  }>({});
 
   // ── Modal de personalización de producto ──
   const [customizingProduct, setCustomizingProduct] = useState<Product | null>(null);
@@ -659,18 +680,24 @@ export default function MesaJarochaMenu() {
 
   // Checkout WhatsApp seguro con window.location.href (Regla del proyecto)
   const handleFinalizeWhatsAppOrder = () => {
+    const errors: { name?: string; phone?: string; address?: string } = {};
+
     if (!customerName.trim()) {
-      alert('Por favor escribe tu nombre completo para el pedido.');
-      return;
+      errors.name = 'Por favor escribe tu nombre completo para el pedido.';
     }
-    if (!customerPhone.trim() || customerPhone.trim().length < 8) {
-      alert('Por favor ingresa un número de teléfono o WhatsApp válido.');
-      return;
+    const cleanPhone = customerPhone.replace(/\D/g, '');
+    if (!cleanPhone || cleanPhone.length < 8) {
+      errors.phone = 'Ingresa un número de WhatsApp válido (mínimo 8 dígitos).';
     }
     if (deliveryMethod === 'domicilio' && !customerAddress.trim()) {
-      alert('Por favor ingresa la dirección completa de entrega.');
+      errors.address = 'Ingresa la dirección completa para la entrega a domicilio.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
       return;
     }
+    setFormErrors({});
 
     // Armar mensaje WhatsApp estructurado
     let text = `🦞 *NUEVO PEDIDO — ${clientConfig.businessName.toUpperCase()}*\n`;
@@ -713,13 +740,16 @@ export default function MesaJarochaMenu() {
     const encoded = encodeURIComponent(text);
     const waUrl = `https://wa.me/${clientConfig.phonePrimary}?text=${encoded}`;
 
+    // Guardar URL persistente para evitar fallos si se pulsa el botón manual en paso 3
+    setLastWaUrl(waUrl);
+
     // Paso 1: Mostrar pantalla de éxito
     setCartStep(3);
 
     // Paso 2: Redirección obligatoria con window.location.href (Regla Crítica: no window.open)
     setTimeout(() => {
       window.location.href = waUrl;
-      // Paso 3: Limpiar carrito tras disparo
+      // Paso 3: Limpiar carrito tras disparo exitoso
       setCart([]);
       localStorage.removeItem('mesajarocha_cart');
     }, 600);
@@ -913,12 +943,12 @@ export default function MesaJarochaMenu() {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#07111E] via-transparent to-transparent opacity-80" />
                 
                 {/* Badge flotante en la foto */}
-                <div className="absolute bottom-3 left-3 right-3 bg-[#0D1B2D]/90 backdrop-blur-md p-3 rounded-2xl border border-[#FFC043]/30 flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] font-bold text-[#FFC043] uppercase tracking-wider block">Recomendación del Chef</span>
-                    <span className="text-xs font-black text-white">Gran Mariscada Veracruzana</span>
+                <div className="absolute bottom-3 left-3 right-3 bg-[#0D1B2D]/90 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl border border-[#FFC043]/30 flex items-center justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <span className="text-[10px] font-bold text-[#FFC043] uppercase tracking-wider block truncate">Recomendación del Chef</span>
+                    <span className="text-xs font-black text-white block truncate">Gran Mariscada Veracruzana</span>
                   </div>
-                  <span className="text-sm font-black text-[#2DD4BF] bg-[#07111E]/80 px-2.5 py-1 rounded-xl border border-[#2DD4BF]/30">
+                  <span className="text-xs sm:text-sm font-black text-[#2DD4BF] bg-[#07111E]/80 px-2.5 py-1 rounded-xl border border-[#2DD4BF]/30 flex-shrink-0 whitespace-nowrap">
                     $395 MXN
                   </span>
                 </div>
@@ -955,6 +985,9 @@ export default function MesaJarochaMenu() {
 
           {/* Selector de Categorías Horizontal */}
           <div className="relative flex items-center">
+            {/* Gradiente izquierdo para indicar scroll */}
+            <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#07111E] to-transparent z-10 pointer-events-none md:hidden" />
+
             {/* Flecha Izquierda */}
             <button
               onClick={() => scrollCategories('left')}
@@ -967,7 +1000,7 @@ export default function MesaJarochaMenu() {
             {/* Contenedor Scroll */}
             <div
               ref={categoryScrollRef}
-              className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 w-full snap-x snap-mandatory"
+              className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 w-full snap-x snap-mandatory px-1"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {CATEGORIES.map(cat => {
@@ -1000,6 +1033,9 @@ export default function MesaJarochaMenu() {
             >
               <ChevronRight size={16} />
             </button>
+
+            {/* Gradiente derecho para indicar scroll */}
+            <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#07111E] to-transparent z-10 pointer-events-none md:hidden" />
           </div>
 
         </div>
@@ -1062,7 +1098,7 @@ export default function MesaJarochaMenu() {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5"
           >
             <AnimatePresence mode="popLayout">
-              {filteredProducts.map(product => {
+              {filteredProducts.map((product, idx) => {
                 const isFav = favorites.includes(product.id);
                 return (
                   <motion.div
@@ -1071,7 +1107,7 @@ export default function MesaJarochaMenu() {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.25 }}
+                    transition={{ duration: 0.25, delay: Math.min(idx * 0.035, 0.35) }}
                     className="bg-[#13243B]/80 hover:bg-[#13243B] border border-[#00A8E8]/15 hover:border-[#00A8E8]/40 rounded-3xl p-4 md:p-5 flex flex-col justify-between shadow-lg hover:shadow-xl hover:shadow-[#0084C7]/10 transition-all group backdrop-blur-sm relative"
                   >
                     {/* Botón Favorito */}
@@ -1088,14 +1124,19 @@ export default function MesaJarochaMenu() {
                     </button>
 
                     <div>
-                      {/* Badge si tiene */}
-                      {product.badge && (
-                        <div className="mb-2">
+                      {/* Badge si tiene, o chip con emoji de categoría como fallback */}
+                      <div className="mb-2">
+                        {product.badge ? (
                           <span className="inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-[#FFC043]/15 text-[#FFC043] border border-[#FFC043]/30">
                             {product.badge}
                           </span>
-                        </div>
-                      )}
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#00A8E8]/10 text-[#00A8E8] border border-[#00A8E8]/20">
+                            <span>{CATEGORY_EMOJIS[product.category] || '🌊'}</span>
+                            <span>{CATEGORIES.find(c => c.id === product.category)?.name || 'Mesa Jarocha'}</span>
+                          </span>
+                        )}
+                      </div>
 
                       {/* Título */}
                       <h4 className="font-bold text-base text-white group-hover:text-[#00A8E8] transition-colors leading-snug font-serif pr-8">
@@ -1509,9 +1550,19 @@ export default function MesaJarochaMenu() {
                           type="text"
                           placeholder="Ej. Juan Carlos López"
                           value={customerName}
-                          onChange={e => setCustomerName(e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-[#07111E] border border-[#00A8E8]/20 text-white placeholder-[#8EA5C2]/40 focus:outline-none focus:border-[#00A8E8]"
+                          onChange={e => {
+                            setCustomerName(e.target.value);
+                            if (formErrors.name) setFormErrors(prev => ({ ...prev, name: undefined }));
+                          }}
+                          className={`w-full p-2.5 rounded-xl bg-[#07111E] border text-white placeholder-[#8EA5C2]/40 focus:outline-none transition-all ${
+                            formErrors.name ? 'border-[#FF5942] ring-1 ring-[#FF5942]' : 'border-[#00A8E8]/20 focus:border-[#00A8E8]'
+                          }`}
                         />
+                        {formErrors.name && (
+                          <p className="text-[#FF5942] text-[11px] font-semibold mt-1 flex items-center gap-1">
+                            <AlertCircle size={12} /> {formErrors.name}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-[#8EA5C2] mb-1 font-semibold">Número de WhatsApp (10 dígitos) *</label>
@@ -1519,9 +1570,19 @@ export default function MesaJarochaMenu() {
                           type="tel"
                           placeholder="Ej. 55 1234 5678"
                           value={customerPhone}
-                          onChange={e => setCustomerPhone(e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-[#07111E] border border-[#00A8E8]/20 text-white placeholder-[#8EA5C2]/40 focus:outline-none focus:border-[#00A8E8]"
+                          onChange={e => {
+                            setCustomerPhone(e.target.value);
+                            if (formErrors.phone) setFormErrors(prev => ({ ...prev, phone: undefined }));
+                          }}
+                          className={`w-full p-2.5 rounded-xl bg-[#07111E] border text-white placeholder-[#8EA5C2]/40 focus:outline-none transition-all ${
+                            formErrors.phone ? 'border-[#FF5942] ring-1 ring-[#FF5942]' : 'border-[#00A8E8]/20 focus:border-[#00A8E8]'
+                          }`}
                         />
+                        {formErrors.phone && (
+                          <p className="text-[#FF5942] text-[11px] font-semibold mt-1 flex items-center gap-1">
+                            <AlertCircle size={12} /> {formErrors.phone}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -1569,9 +1630,19 @@ export default function MesaJarochaMenu() {
                             rows={2}
                             placeholder="Ej. Calle Miramar #104, Col. Centro. Portón blanco frente a la tienda."
                             value={customerAddress}
-                            onChange={e => setCustomerAddress(e.target.value)}
-                            className="w-full p-2.5 rounded-xl bg-[#07111E] border border-[#00A8E8]/20 text-white placeholder-[#8EA5C2]/40 focus:outline-none focus:border-[#00A8E8]"
+                            onChange={e => {
+                              setCustomerAddress(e.target.value);
+                              if (formErrors.address) setFormErrors(prev => ({ ...prev, address: undefined }));
+                            }}
+                            className={`w-full p-2.5 rounded-xl bg-[#07111E] border text-white placeholder-[#8EA5C2]/40 focus:outline-none transition-all ${
+                              formErrors.address ? 'border-[#FF5942] ring-1 ring-[#FF5942]' : 'border-[#00A8E8]/20 focus:border-[#00A8E8]'
+                            }`}
                           />
+                          {formErrors.address && (
+                            <p className="text-[#FF5942] text-[11px] font-semibold mt-1 flex items-center gap-1">
+                              <AlertCircle size={12} /> {formErrors.address}
+                            </p>
+                          )}
                         </div>
                       )}
                     </div>
@@ -1690,7 +1761,13 @@ export default function MesaJarochaMenu() {
                       🌊 Si no se abrió la aplicación, toca el botón verde de abajo.
                     </div>
                     <button
-                      onClick={handleFinalizeWhatsAppOrder}
+                      onClick={() => {
+                        if (lastWaUrl) {
+                          window.location.href = lastWaUrl;
+                        } else {
+                          handleFinalizeWhatsAppOrder();
+                        }
+                      }}
                       className="w-full py-3.5 rounded-xl bg-[#25D366] text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-[#25D366]/30 hover:brightness-110 flex items-center justify-center gap-2"
                     >
                       <MessageCircle size={18} /> Abrir WhatsApp Manualmente
@@ -1799,30 +1876,30 @@ export default function MesaJarochaMenu() {
               <p className="text-xs text-[#8EA5C2]">
                 Conoce nuestras promociones de temporada, platillos del día y eventos especiales.
               </p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-2 pt-1 flex-wrap">
                 <a
                   href={clientConfig.facebookUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="p-2.5 rounded-xl bg-[#0D1B2D] border border-[#00A8E8]/20 text-[#8EA5C2] hover:text-white hover:border-[#00A8E8]/50 transition-all"
+                  className="px-3 py-2 rounded-xl bg-[#0D1B2D] border border-[#00A8E8]/20 text-[#8EA5C2] hover:text-white hover:border-[#00A8E8]/50 transition-all text-xs font-semibold flex items-center gap-1.5"
                 >
-                  Facebook
+                  <span>📘</span> Facebook
                 </a>
                 <a
                   href={clientConfig.instagramUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="p-2.5 rounded-xl bg-[#0D1B2D] border border-[#00A8E8]/20 text-[#8EA5C2] hover:text-white hover:border-[#00A8E8]/50 transition-all"
+                  className="px-3 py-2 rounded-xl bg-[#0D1B2D] border border-[#00A8E8]/20 text-[#8EA5C2] hover:text-white hover:border-[#00A8E8]/50 transition-all text-xs font-semibold flex items-center gap-1.5"
                 >
-                  Instagram
+                  <span>📸</span> Instagram
                 </a>
                 <a
                   href={clientConfig.tiktokUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="p-2.5 rounded-xl bg-[#0D1B2D] border border-[#00A8E8]/20 text-[#8EA5C2] hover:text-white hover:border-[#00A8E8]/50 transition-all"
+                  className="px-3 py-2 rounded-xl bg-[#0D1B2D] border border-[#00A8E8]/20 text-[#8EA5C2] hover:text-white hover:border-[#00A8E8]/50 transition-all text-xs font-semibold flex items-center gap-1.5"
                 >
-                  TikTok
+                  <span>🎵</span> TikTok
                 </a>
               </div>
             </div>
@@ -1851,7 +1928,9 @@ export default function MesaJarochaMenu() {
       {/* ── BOTÓN FLOTANTE WHATSAPP ── */}
       <a
         href={`https://wa.me/${clientConfig.phonePrimary}?text=${encodeURIComponent('¡Hola Mesa Jarocha! Quiero consultar el menú y hacer un pedido.')}`}
-        className="fixed bottom-5 right-5 z-40 p-3.5 rounded-full bg-[#25D366] text-white shadow-2xl shadow-[#25D366]/40 hover:scale-110 active:scale-95 transition-all flex items-center justify-center"
+        className={`fixed z-40 p-3.5 rounded-full bg-[#25D366] text-white shadow-2xl shadow-[#25D366]/40 hover:scale-110 active:scale-95 transition-all flex items-center justify-center right-5 ${
+          totalCartCount > 0 && !isCartOpen ? 'bottom-24 sm:bottom-5' : 'bottom-5'
+        }`}
         title="Preguntar por WhatsApp"
       >
         <MessageCircle size={24} />
@@ -1865,13 +1944,13 @@ export default function MesaJarochaMenu() {
               setIsCartOpen(true);
               setCartStep(1);
             }}
-            className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-[#FF5942] via-[#FF8C00] to-[#0084C7] text-white font-black text-xs uppercase tracking-wider shadow-2xl shadow-[#FF5942]/40 flex items-center justify-between animate-pulse"
+            className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-[#FF5942] via-[#FF8C00] to-[#0084C7] text-white font-black text-xs uppercase tracking-wider shadow-2xl shadow-[#FF5942]/40 border border-white/20 flex items-center justify-between active:scale-[0.98] transition-all"
           >
             <div className="flex items-center gap-2">
               <ShoppingBag size={18} />
               <span>Ver mi pedido ({totalCartCount})</span>
             </div>
-            <span className="font-black text-sm">${cartTotal} MXN</span>
+            <span className="font-black text-sm bg-black/20 px-2.5 py-1 rounded-xl border border-white/20">${cartTotal} MXN</span>
           </button>
         </div>
       )}
