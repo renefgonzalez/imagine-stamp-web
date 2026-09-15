@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Menu, X, MessageCircle, ArrowRight, ArrowUpRight,
@@ -6,7 +7,7 @@ import {
   FileUp, PenTool, Layers, ShieldCheck, Check, ChevronRight,
   Handshake, CircleDollarSign, Ruler, Timer, Instagram, Facebook, Send,
   Award, Users, Headset, Factory, Sparkles, Truck, Building2, Cog, Car, Home, Sprout,
-  ChevronDown,
+  ChevronDown, HelpCircle, FileText, Image as ImageIcon,
 } from 'lucide-react';
 import celosiaFachadas from './assets/celosia-fachadas.webp';
 import celosiaPortones from './assets/celosia-portones.webp';
@@ -18,32 +19,25 @@ import videoFondo from './assets/video-fondo.mp4';
 import videoPoster from './assets/video-poster.webp';
 
 /* ================================================================
-   VICMA LASER — Landing Page industrial (Single-File Application)
+   VICMA LASER — Landing Page Industrial Multi-Página
    Corte láser · Celosías metálicas · Maquila industrial
    ================================================================ */
 
-/* ---------- Datos configurables (edita aquí) ---------- */
-const WHATSAPP = '5215512345678'; // TODO: número real de WhatsApp (sin +)
+/* ---------- Datos configurables ---------- */
+const WHATSAPP = '5215512345678'; // TODO: número real de WhatsApp
 const PHONE = '+52 55 1234 5678';
 const EMAIL = 'contacto@vicmalaser.com';
 const ADDRESS = 'Calle Industrial #123, Col. Centro, Ciudad de México';
 const wa = (msg) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
 
-/* ---------- Navegación ---------- */
-const NAV_LINKS = [
-  { label: 'Inicio', id: 'inicio' },
-  { label: 'Corte Láser', id: 'corte-laser', children: [
-    { label: 'Corte láser de fibra óptica', id: 'corte-fibra' },
-    { label: 'Corte láser de Acero al Carbón', id: 'corte-acero-carbon' },
-    { label: 'Corte láser de Acero Galvanizado', id: 'corte-galvanizado' },
-    { label: 'Corte láser de Acero Inoxidable', id: 'corte-inoxidable' },
-    { label: 'Corte láser de Aluminio', id: 'corte-aluminio' },
-    { label: 'Corte láser de Cobre', id: 'corte-cobre' },
-    { label: 'Corte láser de Hierro', id: 'corte-hierro' },
-    { label: 'Corte láser de Latón', id: 'corte-laton' },
-  ]},
-  { label: 'Celosías Metálicas', id: 'celosias' },
-  { label: 'Materiales', id: 'materiales' },
+/* ---------- Subpáginas / Pestañas principales ---------- */
+const NAV_PAGES = [
+  { id: 'inicio', label: 'Inicio' },
+  { id: 'corte-laser', label: 'Corte Láser' },
+  { id: 'celosias', label: 'Celosías Metálicas' },
+  { id: 'materiales', label: 'Materiales' },
+  { id: 'galeria', label: 'Galería' },
+  { id: 'cotizar', label: 'Cotizar y FAQ' },
 ];
 
 /* ---------- Corte Láser: 3 pilares ---------- */
@@ -86,7 +80,7 @@ const POR_QUE_ELEGIR = [
   { icon: Factory, title: 'Maquila Integral', desc: 'Corte + doblez + soldadura + acabado bajo un mismo techo. Una sola orden de compra, cero dolores de cabeza.' },
 ];
 
-/* ---------- Corte Láser por material (subpáginas expandibles) ---------- */
+/* ---------- Corte Láser por material ---------- */
 const CORTE_MATERIALES = [
   {
     id: 'corte-fibra', name: 'Fibra Óptica', tag: 'CNC de alta precisión',
@@ -161,7 +155,7 @@ const FAQ = [
   { q: '¿Qué formatos de archivo aceptan para cotizar?', a: 'Aceptamos archivos DXF, DWG y PDF. También trabajamos con bocetos hechos a mano o fotografías con medidas de referencia.' },
   { q: '¿Cuál es el tiempo de entrega?', a: 'La mayoría de los pedidos se entregan en 24 a 72 horas, dependiendo del volumen y complejidad del proyecto.' },
   { q: '¿Hacen envíos a todo México?', a: 'Sí, enviamos a toda la República Mexicana con embalaje industrial que protege tus piezas puerta a puerta.' },
-  { q: '¿Cuál es el espesor máximo que pueden cortar?', a: 'Cortamos lámina desde 0.5 mm hasta placa de 25 mm, dependiendo del material. Consulta la ficha de cada material para conocer su rango exacto.' },
+  { q: '¿Cuál es el espesor máximo que pueden cortar?', a: 'Cortamos lámina desde 0.5 mm hasta placa de 25 mm, dependiendo del material. Consulta la sección de Materiales para conocer su rango exacto.' },
   { q: '¿Cobran por el diseño?', a: 'No. Si no tienes tu diseño, nuestro equipo te ayuda a crearlo desde cero con tus medidas sin costo adicional.' },
   { q: '¿Hacen trabajos de una sola pieza?', a: 'Sí, trabajamos desde una sola pieza hasta producción en serie. No hay pedido demasiado pequeño ni demasiado grande.' },
   { q: '¿Tienen servicio de doblez y soldadura?', a: 'Sí, ofrecemos maquila integral: corte, doblez, soldadura y acabado bajo un mismo techo.' },
@@ -206,29 +200,19 @@ const PORTFOLIO = [
 /* ---------- 4 pilares de confianza ---------- */
 const CONFIANZA = [
   { icon: Handshake, title: 'Servicio inigualable', desc: 'Dedicación excepcional que forja relaciones sólidas y duraderas.' },
-  { icon: CircleDollarSign, title: 'Precios transparentes', desc: 'Sabemos lo que cuesta un proyecto: tarifas honestas que cuidan tu presupuesto.' },
-  { icon: Ruler, title: 'Exactitud', desc: 'Cada milímetro cuenta. Cada pieza es el reflejo de nuestro compromiso.' },
-  { icon: Timer, title: 'Puntualidad', desc: 'Un retraso frena tu plan. Entregar a tiempo es parte de nuestra disciplina.' },
+  { icon: CircleDollarSign, title: 'Precios transparentes', desc: 'Tarifas honestas y competitivas que cuidan tu presupuesto.' },
+  { icon: Ruler, title: 'Exactitud milimétrica', desc: 'Cada milímetro cuenta. Piezas con tolerancia de ±0.1 mm.' },
+  { icon: Timer, title: 'Puntualidad de entrega', desc: 'Entregas de 24 a 72 horas para que tu producción nunca se detenga.' },
 ];
 
-/* ---------- Materiales ---------- */
-const MATERIALES = [
-  { icon: Layers, name: 'Acero al Carbón', desc: 'El caballo de batalla para estructura y maquila general.' },
-  { icon: ShieldCheck, name: 'Acero Inoxidable', desc: 'Resistente a la corrosión, ideal para exteriores y cocina.' },
-  { icon: Zap, name: 'Aluminio', desc: 'Ligero y versátil para acabados y aplicaciones premium.' },
-  { icon: Check, name: 'Acero Galvanizado', desc: 'Protección contra óxido para ambientes exigentes.' },
-  { icon: CircleDollarSign, name: 'Cobre', desc: 'Conductividad y acabado premium para piezas especiales.' },
-  { icon: Layers, name: 'Latón', desc: 'Estética dorada para herrajes, decoración y detallado fino.' },
-];
-
-/* ---------- Utilidades de animación ---------- */
+/* ---------- Componentes de UI reutilizables ---------- */
 function Reveal({ children, delay = 0, className = '' }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 28 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] }}
       className={className}
     >
       {children}
@@ -238,14 +222,47 @@ function Reveal({ children, delay = 0, className = '' }) {
 
 function Eyebrow({ children }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-orange-600">
-      <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+    <span className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-orange-600 shadow-sm">
+      <span className="h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse" />
       {children}
     </span>
   );
 }
 
-/* ---------- Formulario de cotización (arma mensaje de WhatsApp) ---------- */
+/* Banner de cabecera para subpáginas */
+function SubpageHeader({ badge, title, highlight, desc }) {
+  return (
+    <div className="relative overflow-hidden bg-slate-900 py-16 sm:py-24">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-from)_0%,_transparent_70%)] from-orange-500/15 via-transparent to-transparent" />
+      <div className="absolute inset-0 metal-grid opacity-30" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="max-w-3xl"
+        >
+          {badge && (
+            <span className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-orange-400 backdrop-blur-sm shadow-md">
+              <span className="h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse" />
+              {badge}
+            </span>
+          )}
+          <h1 className="font-display mt-4 text-4xl font-extrabold uppercase tracking-tight text-white sm:text-6xl lg:text-7xl">
+            {title} <span className="text-orange-500">{highlight}</span>
+          </h1>
+          {desc && (
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-xl">
+              {desc}
+            </p>
+          )}
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Formulario de cotización ---------- */
 function QuoteForm() {
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
@@ -305,10 +322,11 @@ function QuoteForm() {
         />
         <input
           className={inputCls}
-          placeholder="Teléfono"
+          placeholder="Teléfono (requerido)"
           type="tel"
           value={telefono}
           onChange={(e) => setTelefono(e.target.value)}
+          required
         />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -321,7 +339,7 @@ function QuoteForm() {
         />
         <input
           className={inputCls}
-          placeholder="Empresa"
+          placeholder="Empresa o Taller"
           value={empresa}
           onChange={(e) => setEmpresa(e.target.value)}
         />
@@ -331,22 +349,25 @@ function QuoteForm() {
         value={material}
         onChange={(e) => setMaterial(e.target.value)}
       >
-        <option value="">Material (opcional)</option>
+        <option value="">Material requerido (opcional)</option>
         <option>Acero al Carbón</option>
         <option>Acero Inoxidable</option>
         <option>Aluminio</option>
         <option>Acero Galvanizado</option>
         <option>Cobre</option>
         <option>Latón</option>
+        <option>Hierro</option>
+        <option>Celosía Arquitectónica</option>
+        <option>Aún no sé / Asesoría requerida</option>
       </select>
       <textarea
         className={`${inputCls} min-h-[120px] resize-none`}
-        placeholder="Describe tu proyecto: medidas, grosor, cantidades, dibujos de referencia…"
+        placeholder="Describe tu proyecto: medidas, espesor/calibre, número de piezas, observaciones…"
         value={mensaje}
         onChange={(e) => setMensaje(e.target.value)}
       />
 
-      {/* Drag & drop de archivos */}
+      {/* Drag & drop */}
       <div
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
@@ -360,7 +381,7 @@ function QuoteForm() {
           Arrastra y suelta tus archivos aquí
         </p>
         <p className="mt-1 text-xs text-slate-500">
-          DXF, DWG, PDF o imágenes (máx. 5 archivos)
+          DXF, DWG, PDF, planos o fotos (máx. 5 archivos)
         </p>
         <label className="mt-3 inline-block cursor-pointer rounded-full bg-slate-900 px-5 py-2 text-xs font-semibold text-white transition-colors hover:bg-orange-500">
           Seleccionar archivos
@@ -375,7 +396,7 @@ function QuoteForm() {
         {files.length > 0 && (
           <ul className="mt-4 space-y-1 text-left">
             {files.map((f, i) => (
-              <li key={i} className="flex items-center justify-between rounded-lg bg-white px-3 py-1.5 text-xs text-slate-600">
+              <li key={i} className="flex items-center justify-between rounded-lg bg-white px-3 py-1.5 text-xs text-slate-600 shadow-sm">
                 <span className="truncate">{f.name}</span>
                 <button
                   type="button"
@@ -392,30 +413,28 @@ function QuoteForm() {
 
       <button
         type="submit"
-        className="group inline-flex items-center justify-center gap-2 rounded-full bg-orange-500 px-7 py-3.5 text-base font-bold text-white transition-all hover:bg-orange-600 active:scale-[0.98]"
+        className="group inline-flex items-center justify-center gap-2 rounded-full bg-orange-500 px-7 py-4 text-base font-bold text-white shadow-lg shadow-orange-500/20 transition-all hover:bg-orange-600 active:scale-[0.98]"
       >
         <Send size={18} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         Enviar cotización por WhatsApp
       </button>
       <p className="text-center text-xs text-slate-400">
-        Te responderemos con una cotización sin compromiso.
+        Respuesta rápida sin compromiso. Horario de atención: Lun – Sáb 9:00 a 18:00.
       </p>
     </form>
   );
 }
 
-/* ---------- Acordeón de material (Fase 2: ventajas + aplicaciones + espesor) ---------- */
-function MaterialCard({ material, index }) {
+/* ---------- Acordeón de material ---------- */
+function MaterialCard({ material, onCotizar }) {
   const [open, setOpen] = useState(false);
 
   return (
     <div
-      id={material.id}
-      className={`group scroll-mt-24 overflow-hidden rounded-2xl border transition-all ${
-        open ? 'border-orange-300 shadow-lg shadow-orange-500/5' : 'border-slate-200 hover:border-orange-300'
+      className={`group overflow-hidden rounded-2xl border transition-all ${
+        open ? 'border-orange-300 shadow-lg shadow-orange-500/10' : 'border-slate-200 hover:border-orange-300'
       } bg-white`}
     >
-      {/* Encabezado clickeable */}
       <button
         onClick={() => setOpen(!open)}
         className="flex w-full items-start justify-between gap-4 p-6 text-left"
@@ -426,10 +445,10 @@ function MaterialCard({ material, index }) {
             <Layers size={22} strokeWidth={1.75} />
           </div>
           <div>
-            <h3 className="font-display text-xl font-bold uppercase tracking-tight text-slate-900">
+            <h3 className="font-display text-2xl font-bold uppercase tracking-tight text-slate-900">
               {material.name}
             </h3>
-            <span className="mt-1 inline-block text-xs font-semibold uppercase tracking-wider text-orange-600">
+            <span className="mt-0.5 inline-block text-xs font-semibold uppercase tracking-wider text-orange-600">
               {material.tag}
             </span>
           </div>
@@ -439,23 +458,20 @@ function MaterialCard({ material, index }) {
         </div>
       </button>
 
-      {/* Contenido expandible */}
       <div className={`grid transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
         <div className="overflow-hidden">
-          <div className="px-6 pb-6">
+          <div className="px-6 pb-6 pt-1">
             <p className="text-sm leading-relaxed text-slate-600">{material.desc}</p>
 
-            {/* Espesor */}
-            <div className="mt-5 flex items-center gap-3 rounded-xl bg-slate-50 p-4">
+            <div className="mt-4 flex items-center gap-3 rounded-xl bg-slate-50 p-4 border border-slate-100">
               <Ruler size={18} className="shrink-0 text-orange-500" />
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Rango de espesor</p>
-                <p className="text-sm font-semibold text-slate-800">{material.espesor}</p>
+                <p className="text-sm font-bold text-slate-800">{material.espesor}</p>
               </div>
             </div>
 
-            {/* Ventajas */}
-            <p className="mt-5 text-[11px] font-bold uppercase tracking-wider text-slate-400">Ventajas</p>
+            <p className="mt-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">Ventajas clave</p>
             <ul className="mt-2 space-y-1.5">
               {material.ventajas.map((v) => (
                 <li key={v} className="flex items-start gap-2 text-sm text-slate-600">
@@ -465,8 +481,7 @@ function MaterialCard({ material, index }) {
               ))}
             </ul>
 
-            {/* Aplicaciones */}
-            <p className="mt-5 text-[11px] font-bold uppercase tracking-wider text-slate-400">Aplicaciones</p>
+            <p className="mt-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">Aplicaciones frecuentes</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {material.aplicaciones.map((a) => (
                 <span key={a} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
@@ -475,16 +490,17 @@ function MaterialCard({ material, index }) {
               ))}
             </div>
 
-            {/* CTA */}
-            <a
-              href={wa(`Hola VICMA LASER, quiero cotizar corte láser de ${material.name}.`)}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-orange-500"
-            >
-              Cotizar {material.name}
-              <ArrowRight size={16} />
-            </a>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href={wa(`Hola VICMA LASER, quiero cotizar corte láser de ${material.name}.`)}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-orange-500"
+              >
+                Cotizar {material.name} por WhatsApp
+                <ArrowRight size={14} />
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -496,7 +512,7 @@ function MaterialCard({ material, index }) {
 function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className={`rounded-2xl border transition-all ${open ? 'border-orange-300 bg-white' : 'border-slate-200 bg-white/60'}`}>
+    <div className={`rounded-2xl border transition-all ${open ? 'border-orange-300 bg-white shadow-sm' : 'border-slate-200 bg-white/70'}`}>
       <button
         onClick={() => setOpen(!open)}
         className="flex w-full items-center justify-between gap-4 p-5 text-left"
@@ -517,18 +533,28 @@ function FaqItem({ q, a }) {
 }
 
 /* ================================================================
-   COMPONENTE PRINCIPAL
+   COMPONENTE PRINCIPAL VICMA LASER
    ================================================================ */
 export default function VicmaLaser() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const rawTab = searchParams.get('tab') || 'inicio';
+  const validTabs = ['inicio', 'corte-laser', 'celosias', 'materiales', 'galeria', 'cotizar'];
+  const activeTab = validTabs.includes(rawTab) ? rawTab : 'inicio';
+
   const [menuOpen, setMenuOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState(null);
   const [showTopBtn, setShowTopBtn] = useState(false);
   const [privacidadOpen, setPrivacidadOpen] = useState(false);
   const [filtroPortafolio, setFiltroPortafolio] = useState('Todas');
   const [lightbox, setLightbox] = useState(null);
   const videoRef = useRef(null);
 
-  // Garantizar autoplay silenciado y continuo en todos los navegadores y móviles
+  const setPage = (pageId) => {
+    setSearchParams({ tab: pageId });
+    setMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Video autoplay en background
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -544,45 +570,29 @@ export default function VicmaLaser() {
     };
 
     attemptPlay();
-
     video.addEventListener('loadeddata', attemptPlay);
     video.addEventListener('canplay', attemptPlay);
-    video.addEventListener('loadedmetadata', attemptPlay);
 
-    // Desbloquear en el primer gesto de usuario si el navegador requiere interacción previa
     const unlockOnGesture = () => {
       attemptPlay();
       window.removeEventListener('touchstart', unlockOnGesture);
       window.removeEventListener('click', unlockOnGesture);
-      window.removeEventListener('scroll', unlockOnGesture);
     };
 
     window.addEventListener('touchstart', unlockOnGesture, { passive: true, once: true });
     window.addEventListener('click', unlockOnGesture, { once: true });
-    window.addEventListener('scroll', unlockOnGesture, { passive: true, once: true });
 
     return () => {
       video.removeEventListener('loadeddata', attemptPlay);
       video.removeEventListener('canplay', attemptPlay);
-      video.removeEventListener('loadedmetadata', attemptPlay);
       window.removeEventListener('touchstart', unlockOnGesture);
       window.removeEventListener('click', unlockOnGesture);
-      window.removeEventListener('scroll', unlockOnGesture);
     };
-  }, []);
+  }, [activeTab]);
 
-  // Scroll suave a sección SIN tocar el hash (evita romper el HashRouter)
-  const goTo = (id) => (e) => {
-    if (e) e.preventDefault();
-    setMenuOpen(false);
-    setOpenDropdown(null);
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
-  // Detectar scroll para mostrar botón "volver arriba"
+  // Botón volver arriba
   useEffect(() => {
-    const onScroll = () => setShowTopBtn(window.scrollY > 500);
+    const onScroll = () => setShowTopBtn(window.scrollY > 400);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -590,13 +600,12 @@ export default function VicmaLaser() {
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   return (
-    <div className="font-body bg-gray-50 text-slate-800 antialiased">
+    <div className="font-body min-h-screen bg-gray-50 text-slate-800 antialiased flex flex-col justify-between">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap');
         .font-display { font-family: 'Barlow Condensed', sans-serif; }
         .font-body { font-family: 'Barlow', sans-serif; }
         html { scroll-behavior: smooth; }
-        /* Ocultar botones nativos de reproducción de WebKit/Safari/Android en video de fondo */
         video::-webkit-media-controls,
         video::-webkit-media-controls-start-playback-button,
         video::-webkit-media-controls-play-button,
@@ -608,7 +617,13 @@ export default function VicmaLaser() {
           visibility: hidden !important;
           pointer-events: none !important;
         }
-        /* Textura técnica sutil para fondos industriales */
+        .scrollbar-none {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-none::-webkit-scrollbar {
+          display: none;
+        }
         .metal-grid {
           background-image:
             linear-gradient(rgba(148,163,184,0.08) 1px, transparent 1px),
@@ -618,878 +633,1136 @@ export default function VicmaLaser() {
       `}</style>
 
       {/* ===================== HEADER ===================== */}
-      <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-white/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-xl shadow-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between gap-4">
+          <div className="flex h-18 items-center justify-between gap-4">
             {/* Logo */}
-            <a href="#/vicma-laser" onClick={goTo('inicio')} className="font-display text-2xl font-bold tracking-tight">
+            <button
+              onClick={() => setPage('inicio')}
+              className="flex items-center gap-1 font-display text-2xl font-bold tracking-tight text-left cursor-pointer"
+            >
               <span className="text-slate-900">VICMA</span>
               <span className="text-orange-500">LASER</span>
-            </a>
+              <span className="ml-1 hidden text-[10px] font-semibold uppercase tracking-widest text-slate-400 sm:inline-block">
+                · Maquila Industrial
+              </span>
+            </button>
 
-            {/* Navegación desktop */}
-            <nav className="hidden items-center gap-1 lg:flex">
-              {NAV_LINKS.map((l) =>
-                l.children ? (
-                  <div
-                    key={l.id}
-                    className="relative"
-                    onMouseEnter={() => setOpenDropdown(l.id)}
-                    onMouseLeave={() => setOpenDropdown(null)}
+            {/* Navegación desktop organizada en subpáginas */}
+            <nav className="hidden items-center gap-1 xl:gap-1.5 lg:flex">
+              {NAV_PAGES.map((p) => {
+                const isActive = activeTab === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => setPage(p.id)}
+                    className={`relative rounded-full px-3.5 py-2 text-sm font-semibold transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-orange-500 text-white shadow-md shadow-orange-500/25'
+                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                    }`}
                   >
-                    <button
-                      onClick={goTo(l.id)}
-                      className="flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
-                    >
-                      {l.label}
-                      <ChevronRight size={14} className="rotate-90 text-slate-400" />
-                    </button>
-                    {openDropdown === l.id && (
-                      <div className="absolute left-0 top-full w-72 pt-2">
-                        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-xl shadow-slate-900/5">
-                          {l.children.map((c) => (
-                            <a
-                              key={c.id}
-                              href="#/vicma-laser"
-                              onClick={goTo(c.id)}
-                              className="flex items-center justify-between rounded-xl px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-orange-50 hover:text-orange-600"
-                            >
-                              {c.label}
-                              <ChevronRight size={14} className="text-slate-300" />
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <a
-                    key={l.id}
-                    href="#/vicma-laser"
-                    onClick={goTo(l.id)}
-                    className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
-                  >
-                    {l.label}
-                  </a>
-                )
-              )}
+                    {p.label}
+                  </button>
+                );
+              })}
             </nav>
 
-            {/* CTA WhatsApp */}
-            <a
-              href={wa('Hola VICMA LASER, quiero cotizar un proyecto.')}
-              target="_blank"
-              rel="noreferrer"
-              className="hidden items-center gap-2 rounded-full bg-green-500 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-green-600 active:scale-[0.98] sm:inline-flex"
-            >
-              <MessageCircle size={16} />
-              Cotizar por WhatsApp
-            </a>
+            {/* CTA WhatsApp rápido */}
+            <div className="flex items-center gap-3">
+              <a
+                href={wa('Hola VICMA LASER, quiero cotizar un proyecto.')}
+                target="_blank"
+                rel="noreferrer"
+                className="hidden items-center gap-2 rounded-full bg-[#25D366] px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-[#25D366]/20 transition-all hover:bg-[#1ebe5d] active:scale-[0.98] sm:inline-flex"
+              >
+                <MessageCircle size={15} />
+                WhatsApp Directo
+              </a>
 
-            {/* Botón menú móvil */}
-            <button
-              onClick={() => setMenuOpen((v) => !v)}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition-colors hover:bg-slate-100 lg:hidden"
-              aria-label="Abrir menú"
-            >
-              {menuOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
+              {/* Botón menú móvil */}
+              <button
+                onClick={() => setMenuOpen((v) => !v)}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition-colors hover:bg-slate-100 lg:hidden"
+                aria-label="Abrir menú"
+              >
+                {menuOpen ? <X size={22} /> : <Menu size={22} />}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Menú móvil */}
+        {/* Menú móvil desplegable */}
         <AnimatePresence>
           {menuOpen && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="overflow-hidden border-t border-slate-200 bg-white lg:hidden"
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden border-t border-slate-200 bg-white lg:hidden shadow-xl"
             >
-              <div className="max-h-[80vh] overflow-y-auto">
-                <nav className="mx-auto max-w-7xl space-y-1 px-4 py-4 sm:px-6">
-                  {NAV_LINKS.map((l) =>
-                    l.children ? (
-                      <div key={l.id}>
-                        <a
-                          href="#/vicma-laser"
-                          onClick={goTo(l.id)}
-                          className="flex items-center justify-between rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-50"
-                        >
-                          {l.label}
-                          <ChevronRight size={18} className="text-slate-400" />
-                        </a>
-                        <div className="ml-4 border-l border-slate-200 pl-3">
-                          {l.children.map((c) => (
-                            <a
-                              key={c.id}
-                              href="#/vicma-laser"
-                              onClick={goTo(c.id)}
-                              className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-slate-500 transition-colors hover:text-orange-600"
-                            >
-                              {c.label}
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
-                      <a
-                        key={l.id}
-                        href="#/vicma-laser"
-                        onClick={goTo(l.id)}
-                        className="flex items-center justify-between rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-50"
-                      >
-                        {l.label}
-                        <ChevronRight size={18} className="text-slate-400" />
-                      </a>
-                    )
-                  )}
+              <nav className="mx-auto max-w-7xl space-y-1.5 px-4 py-4 sm:px-6">
+                <p className="px-3 pb-1 text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                  Secciones de la página
+                </p>
+                {NAV_PAGES.map((p) => {
+                  const isActive = activeTab === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => setPage(p.id)}
+                      className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-base font-semibold transition-colors ${
+                        isActive
+                          ? 'bg-orange-500 text-white font-bold'
+                          : 'text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      <span>{p.label}</span>
+                      <ChevronRight size={18} className={isActive ? 'text-white' : 'text-slate-400'} />
+                    </button>
+                  );
+                })}
+                <div className="pt-2">
                   <a
                     href={wa('Hola VICMA LASER, quiero cotizar un proyecto.')}
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-green-500 px-4 py-3 text-base font-semibold text-white"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-base font-bold text-white shadow-md shadow-[#25D366]/20"
                   >
                     <MessageCircle size={18} />
                     Cotizar por WhatsApp
                   </a>
-                </nav>
-              </div>
+                </div>
+              </nav>
             </motion.div>
           )}
         </AnimatePresence>
       </header>
 
-      {/* ===================== HERO ===================== */}
-      <section id="inicio" className="relative flex min-h-[92vh] items-center overflow-hidden bg-slate-900">
-        {/* Video de fondo con contraste y brillo optimizado para móviles */}
-        <video
-          ref={videoRef}
-          src={videoFondo}
-          autoPlay
-          loop
-          muted
-          playsInline
-          webkit-playsinline="true"
-          x5-playsinline="true"
-          preload="auto"
-          poster={videoPoster}
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[50%_75%] z-0 brightness-135 contrast-120 saturate-130 sm:object-center sm:brightness-100 sm:contrast-100 sm:saturate-100"
-        >
-          <source src={videoFondo} type="video/mp4" />
-        </video>
-        {/* Overlay oscuro: sutil en móvil (30%) para máxima claridad del video, 60% en desktop */}
-        <div className="pointer-events-none absolute inset-0 z-10 bg-black/30 sm:bg-black/60" />
-        {/* Vignette sutil para enfocar el centro sin oscurecer */}
-        <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-slate-950/75 via-transparent to-slate-950/20 sm:from-slate-950/70 sm:to-slate-950/40" />
-
-        {/* Badges de confianza superior */}
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-wrap items-center gap-4 px-4">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/90 backdrop-blur-sm shadow-lg shadow-black/30">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-            ENVÍOS A TODO MÉXICO
-          </span>
-        </div>
-
-        <div className="relative z-20 mx-auto w-full max-w-7xl px-4 py-16 sm:py-24 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 32 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="max-w-3xl"
-          >
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-orange-300 backdrop-blur-sm shadow-md">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-orange-500" />
-              Maquila de corte láser industrial
-            </span>
-
-            <h1 className="font-display mt-5 text-5xl font-extrabold uppercase leading-[0.95] tracking-tight text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)] sm:mt-6 sm:text-7xl lg:text-8xl">
-              Precisión Absoluta en{' '}
-              <span className="text-orange-500">Corte Láser</span>.
-            </h1>
-
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] sm:mt-6 sm:text-xl">
-              Maquila de corte láser de metales en México. Cortes precisos, entregas rápidas y
-              sin rebabas. Especialistas en celosías y maquila industrial.
-            </p>
-
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <a
-                href="#/vicma-laser"
-                onClick={goTo('cotizar')}
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-orange-500 px-8 py-4 text-base font-bold text-white transition-all hover:bg-orange-600 active:scale-[0.98]"
+      {/* ===================== CONTENIDO PRINCIPAL SEGÚN SUBPÁGINA ===================== */}
+      <main className="flex-1">
+        {/* ================================================================
+            1. SUBPÁGINA: INICIO (DATOS BÁSICOS, ACCESOS RÁPIDOS Y RESUMEN)
+            ================================================================ */}
+        {activeTab === 'inicio' && (
+          <div>
+            {/* HERO PRINCIPAL CON VIDEO */}
+            <section className="relative flex min-h-[85vh] items-center overflow-hidden bg-slate-900">
+              <video
+                ref={videoRef}
+                src={videoFondo}
+                autoPlay
+                loop
+                muted
+                playsInline
+                webkit-playsinline="true"
+                x5-playsinline="true"
+                preload="auto"
+                poster={videoPoster}
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[50%_75%] z-0 brightness-135 contrast-120 saturate-130 sm:object-center sm:brightness-100 sm:contrast-100 sm:saturate-100"
               >
-                <span className="text-[10px] font-bold uppercase tracking-widest">COTIZAR AHORA</span>
-                <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
-              </a>
-              <a
-                href="#/vicma-laser"
-                onClick={goTo('cotizar')}
-                className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/10"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                Subir archivo (DWG/DXF/PDF)
-              </a>
-            </div>
+                <source src={videoFondo} type="video/mp4" />
+              </video>
+              <div className="pointer-events-none absolute inset-0 z-10 bg-black/40 sm:bg-black/60" />
+              <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-slate-950/85 via-transparent to-slate-950/30" />
 
-            {/* Trust badges */}
-            <div className="mt-12 flex flex-wrap items-center gap-6 text-sm text-slate-300">
-              <div className="flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                <span>Servicio inigualable</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
-                <span>Entregas 24-72 h</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                <span>Envíos a todo México</span>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ===================== 4 PILARES DE CONFIANZA ===================== */}
-      <section className="border-b border-slate-200 bg-white py-16 lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {CONFIANZA.map((c, i) => (
-              <Reveal key={c.title} delay={i * 0.07}>
-                <div className="group flex flex-col items-center text-center p-4">
-                  <div className="group relative flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-600 transition-all group-hover:bg-orange-500 group-hover:text-white">
-                    <c.icon size={28} strokeWidth={1.75} />
-                    <span className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                  <h3 className="font-display mt-5 text-xl font-bold uppercase tracking-tight text-slate-900">
-                    {c.title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-slate-500 max-w-xs">{c.desc}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== VENTAJAS DEL CORTE LÁSER ===================== */}
-      <section className="bg-slate-50/50 py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal className="text-center max-w-3xl mx-auto">
-            <Eyebrow>Ventajas competitivas</Eyebrow>
-            <h2 className="font-display mt-5 text-5xl font-bold uppercase leading-[1] tracking-tight text-slate-900 sm:text-6xl">
-              Ventajas del Corte Láser <span className="text-orange-500">Industrial</span>
-            </h2>
-            <p className="mt-5 max-w-2xl mx-auto text-lg leading-relaxed text-slate-600">
-              La tecnología de fibra óptica transforma la forma en que fabricas: precisión quirúrgica,
-              velocidad industrial y versatilidad total en un solo proceso.
-            </p>
-          </Reveal>
-
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {VENTAJAS_LASER.map((v, i) => (
-              <Reveal key={v.title} delay={i * 0.06}>
-                <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 lg:p-8 transition-all hover:border-orange-300 hover:shadow-xl hover:shadow-orange-500/10">
-                  <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative flex h-14 w-14 items-center justify-center rounded-xl bg-slate-900 text-white transition-all group-hover:bg-orange-500 group-hover:scale-105">
-                    <v.icon size={28} strokeWidth={1.75} />
-                  </div>
-                  <h3 className="font-display mt-6 text-2xl font-bold uppercase tracking-tight text-slate-900">
-                    {v.title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-slate-600">{v.desc}</p>
-                  <div className="mt-4 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-orange-600 group-hover:translate-x-1 transition-transform">
-                    <ArrowRight size={14} /> Ver detalle
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== POR QUÉ ELEGIR VICMA LASER ===================== */}
-      <section className="bg-slate-900/95 py-20 lg:py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-from)_0%,_transparent_70%)] from-orange-500/10 via-transparent to-transparent" />
-        <div className="absolute inset-0 metal-grid opacity-30" />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal className="text-center max-w-3xl mx-auto">
-            <Eyebrow>Por qué elegirnos</Eyebrow>
-            <h2 className="font-display mt-5 text-5xl font-bold uppercase leading-[1] tracking-tight text-white sm:text-6xl">
-              ¿Por qué elegir <span className="text-orange-500">Vicma Laser</span>?
-            </h2>
-            <p className="mt-5 max-w-2xl mx-auto text-lg leading-relaxed text-slate-300">
-              No solo cortamos metal. Entregamos certeza para que tu proyecto avance sin contratiempos.
-            </p>
-          </Reveal>
-
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {POR_QUE_ELEGIR.map((p, i) => (
-              <Reveal key={p.title} delay={i * 0.05}>
-                <div className="group flex flex-col items-center text-center p-4">
-                  <div className="group relative flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 border border-white/10 transition-all group-hover:bg-orange-500/10 group-hover:border-orange-500/30">
-                    <p.icon size={28} strokeWidth={1.75} className="text-white group-hover:text-orange-400 transition-colors" />
-                    <span className="absolute inset-0 rounded-2xl bg-gradient-to-br from-orange-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                  <h3 className="font-display mt-5 text-xl font-bold uppercase tracking-tight text-white">
-                    {p.title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-slate-400 max-w-xs">{p.desc}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== CORTE LÁSER ===================== */}
-      <section id="corte-laser" className="relative py-24 lg:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal>
-            <h2 className="font-display max-w-3xl text-5xl font-bold uppercase leading-[1] tracking-tight text-slate-900 sm:text-6xl">
-              Tecnología de corte <span className="text-orange-500">láser</span> de precisión
-            </h2>
-            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-600">
-              Nuestro proceso combina maquinaria de última generación con técnicos especializados
-              para entregar cortes rápidos, limpios y sin rebabas en cualquier geometría.
-            </p>
-          </Reveal>
-
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {CORTE_FEATURES.map((f, i) => (
-              <Reveal key={f.title} delay={i * 0.08}>
-                <div className="group h-full rounded-2xl bg-slate-100 p-2 ring-1 ring-slate-200/60 transition-all hover:ring-orange-200">
-                  <div className="h-full rounded-xl bg-white p-8">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600 transition-colors group-hover:bg-orange-500 group-hover:text-white">
-                      <f.icon size={26} strokeWidth={1.75} />
-                    </div>
-                    <h3 className="font-display mt-6 text-2xl font-bold uppercase tracking-tight text-slate-900">
-                      {f.title}
-                    </h3>
-                    <p className="mt-3 leading-relaxed text-slate-600">{f.desc}</p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== CORTE LÁSER POR MATERIAL ===================== */}
-      <section id="corte-materiales" className="bg-white py-24 lg:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal>
-            <Eyebrow>Corte láser por material</Eyebrow>
-            <h2 className="font-display mt-5 max-w-3xl text-5xl font-bold uppercase leading-[1] tracking-tight text-slate-900 sm:text-6xl">
-              ¿Qué material <span className="text-orange-500">necesitas cortar</span>?
-            </h2>
-            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-600">
-              Trabajamos lámina y placa en una amplia gama de metales. Da clic en cada material
-              para conocer espesores, ventajas y aplicaciones.
-            </p>
-          </Reveal>
-
-          <div className="mt-14 grid gap-5 sm:grid-cols-2">
-            {CORTE_MATERIALES.map((m, i) => (
-              <Reveal key={m.id} delay={(i % 2) * 0.06} className="h-full">
-                <MaterialCard material={m} index={i} />
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== APLICACIONES INDUSTRIALES ===================== */}
-      <section id="industrias" className="bg-slate-50 py-24 lg:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal className="text-center max-w-3xl mx-auto">
-            <Eyebrow>Industrias que servimos</Eyebrow>
-            <h2 className="font-display mt-5 text-5xl font-bold uppercase leading-[1] tracking-tight text-slate-900 sm:text-6xl">
-              Aplicaciones <span className="text-orange-500">Industriales</span>
-            </h2>
-            <p className="mt-5 max-w-2xl mx-auto text-lg leading-relaxed text-slate-600">
-              Nuestro corte láser impulsa proyectos en los sectores más exigentes de México.
-            </p>
-          </Reveal>
-
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {INDUSTRIAS.map((ind, i) => (
-              <Reveal key={ind.name} delay={i * 0.06}>
-                <div className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-8 transition-all hover:border-orange-300 hover:shadow-xl hover:shadow-orange-500/5">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600 transition-colors group-hover:bg-orange-500 group-hover:text-white">
-                    <ind.icon size={26} strokeWidth={1.75} />
-                  </div>
-                  <h3 className="font-display mt-6 text-2xl font-bold uppercase tracking-tight text-slate-900">
-                    {ind.name}
-                  </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-slate-600">{ind.desc}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== CELOSÍAS METÁLICAS ===================== */}
-      <section id="celosias" className="metal-grid relative bg-slate-900 py-24 lg:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal>
-            <Eyebrow>Arquitectura y diseño</Eyebrow>
-            <h2 className="font-display mt-5 max-w-3xl text-5xl font-bold uppercase leading-[1] tracking-tight text-white sm:text-6xl">
-              Celosías Metálicas para <span className="text-orange-500">Arquitectura</span> y Diseño
-            </h2>
-            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-300">
-              Ideales para fachadas, portones, pérgolas y divisiones de espacios. Diseños
-              personalizados que combinan estética, funcionalidad y resistencia.
-            </p>
-          </Reveal>
-
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {CELOSIAS.map((c, i) => (
-              <Reveal key={c.title} delay={i * 0.06} className="h-full">
-                <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition-all hover:border-orange-500/40">
-                  <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-slate-800">
-                    <img
-                      src={c.img}
-                      alt={`Celosía metálica ${c.title} — Vicma Laser`}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <span className="absolute bottom-3 left-4 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
-                      Celosía · {c.title}
-                    </span>
-                  </div>
-                  <div className="flex flex-1 flex-col p-6">
-                    <h3 className="font-display text-2xl font-bold uppercase tracking-tight text-white">
-                      {c.title}
-                    </h3>
-                    <p className="mt-2 leading-relaxed text-slate-400">{c.use}</p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== PORTAFOLIO / GALERÍA ===================== */}
-      <section id="portafolio" className="bg-white py-24 lg:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal className="text-center max-w-3xl mx-auto">
-            <Eyebrow>Portafolio</Eyebrow>
-            <h2 className="font-display mt-5 text-5xl font-bold uppercase leading-[1] tracking-tight text-slate-900 sm:text-6xl">
-              Galería de <span className="text-orange-500">trabajos</span>
-            </h2>
-            <p className="mt-5 max-w-2xl mx-auto text-lg leading-relaxed text-slate-600">
-              Una muestra de nuestros proyectos de corte láser y celosías metálicas.
-            </p>
-          </Reveal>
-
-          {/* Filtros */}
-          <div className="mt-10 flex flex-wrap justify-center gap-2">
-            {PORTFOLIO_CATEGORIAS.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setFiltroPortafolio(cat)}
-                className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${
-                  filtroPortafolio === cat
-                    ? 'bg-orange-500 text-white shadow-md shadow-orange-500/30'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          {/* Grid de galería */}
-          <motion.div layout className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            <AnimatePresence mode="popLayout">
-              {PORTFOLIO.filter((p) => filtroPortafolio === 'Todas' || p.categoria === filtroPortafolio).map((p) => (
-                <motion.button
-                  key={p.title}
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  onClick={() => setLightbox(p)}
-                  className="group relative aspect-square overflow-hidden rounded-2xl bg-slate-800 text-left"
+              <div className="relative z-20 mx-auto w-full max-w-7xl px-4 py-12 sm:py-24 sm:px-6 lg:px-8">
+                <motion.div
+                  initial={{ opacity: 0, y: 32 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  className="max-w-3xl"
                 >
-                  <img
-                    src={p.img}
-                    alt={`${p.title} — Vicma Laser`}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                  <div className="absolute inset-x-0 bottom-0 translate-y-4 p-5 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                    <span className="inline-block rounded-full bg-orange-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-                      {p.categoria}
-                    </span>
-                    <h3 className="font-display mt-2 text-xl font-bold uppercase tracking-tight text-white">
-                      {p.title}
-                    </h3>
-                  </div>
-                </motion.button>
-              ))}
-            </AnimatePresence>
-          </motion.div>
-        </div>
-      </section>
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3.5 py-1 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.2em] text-orange-300 backdrop-blur-sm shadow-md">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-orange-500" />
+                    Maquila de corte láser industrial
+                  </span>
 
-      {/* ===================== MATERIALES ===================== */}
-      <section id="materiales" className="py-24 lg:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal>
-            <Eyebrow>Materiales</Eyebrow>
-            <h2 className="font-display mt-5 text-5xl font-bold uppercase leading-[1] tracking-tight text-slate-900 sm:text-6xl">
-              Materiales que <span className="text-orange-500">trabajamos</span>
-            </h2>
-          </Reveal>
+                  <h1 className="font-display mt-3 sm:mt-5 text-4xl sm:text-7xl lg:text-8xl font-extrabold uppercase leading-[0.96] tracking-tight text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
+                    Precisión Absoluta en{' '}
+                    <span className="text-orange-500">Corte Láser</span>.
+                  </h1>
 
-          <div className="mt-12 grid gap-4 sm:grid-cols-2">
-            {MATERIALES.map((m, i) => (
-              <Reveal key={m.name} delay={i * 0.06}>
-                <div className="group flex items-start gap-5 rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:border-orange-300 hover:shadow-sm">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition-colors group-hover:bg-orange-500/10 group-hover:text-orange-600">
-                    <m.icon size={22} strokeWidth={1.75} />
-                  </div>
-                  <div>
-                    <h3 className="font-display text-xl font-bold uppercase tracking-tight text-slate-900">
-                      {m.name}
-                    </h3>
-                    <p className="mt-1 leading-relaxed text-slate-600">{m.desc}</p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== FAQ ===================== */}
-      <section id="faq" className="bg-white py-24 lg:py-32">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <Reveal className="text-center">
-            <Eyebrow>Preguntas frecuentes</Eyebrow>
-            <h2 className="font-display mt-5 text-5xl font-bold uppercase leading-[1] tracking-tight text-slate-900 sm:text-6xl">
-              Resolvemos tus <span className="text-orange-500">dudas</span>
-            </h2>
-          </Reveal>
-
-          <div className="mt-12 space-y-4">
-            {FAQ.map((f, i) => (
-              <Reveal key={f.q} delay={i * 0.04}>
-                <FaqItem q={f.q} a={f.a} />
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== CONTADORES ===================== */}
-      <section className="bg-slate-900 py-16 lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {STATS.map((s, i) => (
-              <Reveal key={s.label} delay={i * 0.07}>
-                <div className="text-center">
-                  <div className="font-display text-5xl font-extrabold tracking-tight text-orange-500 sm:text-6xl">
-                    {s.value}
-                  </div>
-                  <p className="mt-2 text-sm font-semibold uppercase tracking-wider text-slate-300">
-                    {s.label}
+                  <p className="mt-3 sm:mt-5 max-w-xl text-sm sm:text-xl leading-relaxed text-slate-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+                    Maquila de corte láser de fibra óptica y celosías arquitectónicas en México.
+                    Tolerancias de ±0.1 mm, entregas en 24-72 h y cortes limpios sin rebabas.
                   </p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* ===================== TESTIMONIOS ===================== */}
-      <section className="bg-slate-50 py-24 lg:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal className="text-center max-w-3xl mx-auto">
-            <Eyebrow>Testimonios</Eyebrow>
-            <h2 className="font-display mt-5 text-5xl font-bold uppercase leading-[1] tracking-tight text-slate-900 sm:text-6xl">
-              Lo que dicen <span className="text-orange-500">nuestros clientes</span>
-            </h2>
-          </Reveal>
-
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {TESTIMONIOS.map((t, i) => (
-              <Reveal key={t.nombre} delay={i * 0.08} className="h-full">
-                <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-8 transition-all hover:border-orange-300 hover:shadow-lg hover:shadow-orange-500/5">
-                  <div className="flex gap-1 text-orange-500">
-                    {[...Array(5)].map((_, j) => (
-                      <svg key={j} width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.26 6.6.64-5 4.36 1.5 6.74L12 16.9 5.99 20l1.5-6.74-5-4.36 6.6-.64z"/></svg>
-                    ))}
-                  </div>
-                  <p className="mt-5 flex-1 leading-relaxed text-slate-600">"{t.quote}"</p>
-                  <div className="mt-6 border-t border-slate-100 pt-5">
-                    <p className="font-display text-lg font-bold uppercase tracking-tight text-slate-900">
-                      {t.nombre}
-                    </p>
-                    <p className="mt-0.5 text-sm text-slate-500">{t.rol}</p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== COTICEMOS ===================== */}
-      <section id="cotizar" className="bg-gray-100 py-24 lg:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal className="text-center">
-            <h2 className="font-display mx-auto max-w-3xl text-5xl font-bold uppercase leading-[1] tracking-tight text-slate-900 sm:text-6xl">
-              ¿Tienes un proyecto en mente?{' '}
-              <span className="text-orange-500">Lo hacemos realidad.</span>
-            </h2>
-            <p className="mx-auto mt-5 max-w-xl text-lg text-slate-600">
-              No importa si es una pieza o miles: entre más clara tu información, más rápido te cotizamos.
-            </p>
-          </Reveal>
-
-          {/* Estrategia dual */}
-          <div className="mt-14 grid gap-6 lg:grid-cols-2">
-            {/* Opción 1: Ya tengo mi diseño */}
-            <Reveal className="h-full">
-              <div className="flex h-full flex-col rounded-3xl bg-slate-100 p-2 ring-1 ring-slate-200">
-                <div className="flex h-full flex-col rounded-2xl bg-white p-8 lg:p-10">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-orange-500 text-white">
-                    <FileUp size={26} />
-                  </div>
-                  <h3 className="font-display mt-6 text-3xl font-bold uppercase tracking-tight text-slate-900">
-                    Ya tengo mi diseño
-                  </h3>
-                  <p className="mt-3 leading-relaxed text-slate-600">
-                    Envíanos tu archivo y lo cortamos tal cual lo necesitas.
-                  </p>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {['DXF', 'DWG', 'PDF'].map((f) => (
-                      <span
-                        key={f}
-                        className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600"
-                      >
-                        {f}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="mt-auto pt-8">
-                    <a
-                      href={wa('Hola VICMA LASER, ya tengo mi diseño (DXF/DWG/PDF) y quiero cotizar.')}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="group flex w-full items-center justify-center gap-2 rounded-full bg-slate-900 px-7 py-3.5 text-base font-semibold text-white transition-all hover:bg-slate-800 active:scale-[0.98]"
+                  <div className="mt-6 sm:mt-10 flex flex-col gap-3 sm:flex-row">
+                    <button
+                      onClick={() => setPage('cotizar')}
+                      className="group inline-flex items-center justify-center gap-2 rounded-full bg-orange-500 px-7 py-3.5 sm:px-8 sm:py-4 text-sm sm:text-base font-bold text-white shadow-xl shadow-orange-500/30 transition-all hover:bg-orange-600 active:scale-[0.98] cursor-pointer"
                     >
-                      Enviar archivo
-                      <ArrowUpRight size={18} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-
-            {/* Opción 2: No tengo el diseño */}
-            <Reveal delay={0.1} className="h-full">
-              <div className="flex h-full flex-col rounded-3xl bg-slate-100 p-2 ring-1 ring-slate-200">
-                <div className="flex h-full flex-col rounded-2xl bg-white p-8 lg:p-10">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-slate-900 text-white">
-                    <PenTool size={26} />
-                  </div>
-                  <h3 className="font-display mt-6 text-3xl font-bold uppercase tracking-tight text-slate-900">
-                    No tengo el diseño
-                  </h3>
-                  <p className="mt-3 leading-relaxed text-slate-600">
-                    Nuestro equipo te ayuda a crearlo desde cero con tus medidas y tu idea.
-                  </p>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {['Medidas', 'Boceto', 'Idea'].map((f) => (
-                      <span
-                        key={f}
-                        className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600"
-                      >
-                        {f}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="mt-auto pt-8">
-                    <a
-                      href={wa('Hola VICMA LASER, necesito asesoría para diseñar mi proyecto desde cero.')}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="group flex w-full items-center justify-center gap-2 rounded-full bg-orange-500 px-7 py-3.5 text-base font-bold text-white transition-all hover:bg-orange-600 active:scale-[0.98]"
-                    >
-                      Necesito asesoría
+                      <span className="text-xs font-bold uppercase tracking-widest">COTIZAR PROYECTO</span>
                       <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
-                    </a>
+                    </button>
+                    <button
+                      onClick={() => setPage('corte-laser')}
+                      className="inline-flex items-center justify-center gap-2 rounded-full border border-white/25 bg-white/10 px-7 py-3.5 sm:px-8 sm:py-4 text-sm sm:text-base font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/20 cursor-pointer"
+                    >
+                      <span>Explorar Servicios</span>
+                      <ChevronRight size={18} />
+                    </button>
                   </div>
+
+                  <div className="mt-8 sm:mt-12 flex flex-wrap items-center gap-4 sm:gap-6 text-xs sm:text-sm text-slate-300 font-medium">
+                    <div className="flex items-center gap-1.5">
+                      <ShieldCheck size={16} className="text-orange-400" />
+                      <span>Tolerancia ±0.1 mm</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Timer size={16} className="text-orange-400" />
+                      <span>Entregas 24-72 h</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Truck size={16} className="text-orange-400" />
+                      <span>Envíos a todo México</span>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </section>
+
+            {/* 4 PILARES DE CONFIANZA - 2x2 en móvil para ahorrar scroll */}
+            <section className="border-b border-slate-200 bg-white py-8 sm:py-12 lg:py-16">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+                  {CONFIANZA.map((c, i) => (
+                    <Reveal key={c.title} delay={i * 0.04}>
+                      <div className="flex h-full flex-col items-center text-center p-3 sm:p-4 rounded-2xl bg-slate-50/70 sm:bg-transparent border border-slate-100 sm:border-0">
+                        <div className="flex h-11 w-11 sm:h-14 sm:w-14 items-center justify-center rounded-xl sm:rounded-2xl bg-orange-500/10 text-orange-600">
+                          <c.icon size={22} className="sm:w-6 sm:h-6" strokeWidth={1.75} />
+                        </div>
+                        <h3 className="font-display mt-2 sm:mt-4 text-sm sm:text-xl font-bold uppercase tracking-tight text-slate-900">
+                          {c.title}
+                        </h3>
+                        <p className="mt-1 sm:mt-2 text-xs sm:text-sm leading-relaxed text-slate-500 max-w-xs">{c.desc}</p>
+                      </div>
+                    </Reveal>
+                  ))}
                 </div>
               </div>
-            </Reveal>
-          </div>
+            </section>
 
-          {/* Proceso de 3 pasos + formulario */}
-          <div className="mt-16 grid gap-10 lg:grid-cols-2 lg:items-start">
-            {/* Pasos */}
-            <Reveal>
-              <h3 className="font-display text-3xl font-bold uppercase tracking-tight text-slate-900">
-                ¿Cómo cotizar?
-              </h3>
-              <div className="mt-6 space-y-4">
-                {[
-                  {
-                    n: '1',
-                    t: 'Sube tu archivo',
-                    d: 'De preferencia en .DWG o .DXF. También aceptamos PDF o bocetos hechos a mano.',
-                  },
-                  {
-                    n: '2',
-                    t: 'Incluye los detalles clave',
-                    d: 'Material, grosor y cantidades requeridas para una cotización precisa.',
-                  },
-                  {
-                    n: '3',
-                    t: 'Revisa y envía',
-                    d: 'Asegúrate de que todo esté completo. Mientras más claro, más rápido te respondemos.',
-                  },
-                ].map((s) => (
-                  <div key={s.n} className="flex gap-5">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-500 font-display text-xl font-bold text-white">
-                      {s.n}
+            {/* RESUMEN DE SOLUCIONES (ACCESOS RÁPIDOS DIRECTOS) */}
+            <section className="bg-slate-50 py-10 sm:py-16 lg:py-20">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <Reveal className="text-center max-w-3xl mx-auto">
+                  <Eyebrow>Nuestras Soluciones</Eyebrow>
+                  <h2 className="font-display mt-3 sm:mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold uppercase leading-tight text-slate-900">
+                    Todo lo que necesitas en <span className="text-orange-500">corte y metales</span>
+                  </h2>
+                  <p className="mt-2 sm:mt-3 text-xs sm:text-base text-slate-600">
+                    Elige el área de tu interés para consultar fichas técnicas, capacidades y fotos de proyectos.
+                  </p>
+                </Reveal>
+
+                <div className="mt-8 sm:mt-12 grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {/* Card 1: Corte Láser */}
+                  <Reveal delay={0.05} className="h-full">
+                    <div className="flex h-full flex-col justify-between rounded-2xl sm:rounded-3xl border border-slate-200 bg-white p-5 sm:p-7 shadow-sm transition-all hover:border-orange-300 hover:shadow-xl hover:shadow-orange-500/5">
+                      <div>
+                        <div className="flex h-11 w-11 sm:h-13 sm:w-13 items-center justify-center rounded-xl sm:rounded-2xl bg-slate-900 text-white">
+                          <Zap size={22} className="sm:w-6 sm:h-6 text-orange-400" />
+                        </div>
+                        <h3 className="font-display mt-4 sm:mt-5 text-xl sm:text-2xl font-bold uppercase tracking-tight text-slate-900">
+                          Corte Láser CNC
+                        </h3>
+                        <p className="mt-2 text-xs sm:text-sm leading-relaxed text-slate-600">
+                          Fibra óptica de alta velocidad y tolerancias milimétricas (±0.1 mm). Desde prototipos hasta maquila industrial de alto volumen.
+                        </p>
+                        <div className="mt-3 sm:mt-4 flex flex-wrap gap-1.5">
+                          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-slate-600">Sin rebabas</span>
+                          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-slate-600">Entregas 24-72h</span>
+                          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-slate-600">ZAC Mínima</span>
+                        </div>
+                      </div>
+                      <div className="mt-5 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-100">
+                        <button
+                          onClick={() => setPage('corte-laser')}
+                          className="flex items-center gap-1.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-orange-600 transition-colors hover:text-orange-700 cursor-pointer"
+                        >
+                          Ver ventajas y sectores
+                          <ArrowRight size={15} />
+                        </button>
+                      </div>
                     </div>
+                  </Reveal>
+
+                  {/* Card 2: Celosías Metálicas */}
+                  <Reveal delay={0.1} className="h-full">
+                    <div className="flex h-full flex-col justify-between rounded-2xl sm:rounded-3xl border border-slate-200 bg-white p-5 sm:p-7 shadow-sm transition-all hover:border-orange-300 hover:shadow-xl hover:shadow-orange-500/5">
+                      <div>
+                        <div className="flex h-11 w-11 sm:h-13 sm:w-13 items-center justify-center rounded-xl sm:rounded-2xl bg-orange-500 text-white">
+                          <Building2 size={22} className="sm:w-6 sm:h-6" />
+                        </div>
+                        <h3 className="font-display mt-4 sm:mt-5 text-xl sm:text-2xl font-bold uppercase tracking-tight text-slate-900">
+                          Celosías Arquitectónicas
+                        </h3>
+                        <p className="mt-2 text-xs sm:text-sm leading-relaxed text-slate-600">
+                          Diseños de celosías para fachadas, portones residenciales, pérgolas, barandales y muros decorativos con acabados de alta gama.
+                        </p>
+                        <div className="mt-3 sm:mt-4 flex flex-wrap gap-1.5">
+                          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-slate-600">Fachadas</span>
+                          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-slate-600">Portones</span>
+                          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-slate-600">Pérgolas</span>
+                        </div>
+                      </div>
+                      <div className="mt-5 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-100">
+                        <button
+                          onClick={() => setPage('celosias')}
+                          className="flex items-center gap-1.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-orange-600 transition-colors hover:text-orange-700 cursor-pointer"
+                        >
+                          Ver catálogo de celosías
+                          <ArrowRight size={15} />
+                        </button>
+                      </div>
+                    </div>
+                  </Reveal>
+
+                  {/* Card 3: Materiales */}
+                  <Reveal delay={0.15} className="h-full sm:col-span-2 lg:col-span-1">
+                    <div className="flex h-full flex-col justify-between rounded-2xl sm:rounded-3xl border border-slate-200 bg-white p-5 sm:p-7 shadow-sm transition-all hover:border-orange-300 hover:shadow-xl hover:shadow-orange-500/5">
+                      <div>
+                        <div className="flex h-11 w-11 sm:h-13 sm:w-13 items-center justify-center rounded-xl sm:rounded-2xl bg-slate-900 text-white">
+                          <Layers size={22} className="sm:w-6 sm:h-6 text-orange-400" />
+                        </div>
+                        <h3 className="font-display mt-4 sm:mt-5 text-xl sm:text-2xl font-bold uppercase tracking-tight text-slate-900">
+                          Materiales y Espesores
+                        </h3>
+                        <p className="mt-2 text-xs sm:text-sm leading-relaxed text-slate-600">
+                          Cortamos lámina y placa desde 0.5 mm hasta 25 mm en acero al carbón, acero inoxidable, aluminio, cobre, latón y hierro.
+                        </p>
+                        <div className="mt-3 sm:mt-4 flex flex-wrap gap-1.5">
+                          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-slate-600">Hasta 25 mm</span>
+                          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-slate-600">6 Metales</span>
+                          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-slate-600">Fichas técnicas</span>
+                        </div>
+                      </div>
+                      <div className="mt-5 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-100">
+                        <button
+                          onClick={() => setPage('materiales')}
+                          className="flex items-center gap-1.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-orange-600 transition-colors hover:text-orange-700 cursor-pointer"
+                        >
+                          Ver tabla de materiales
+                          <ArrowRight size={15} />
+                        </button>
+                      </div>
+                    </div>
+                  </Reveal>
+                </div>
+              </div>
+            </section>
+
+            {/* STATS RÁPIDOS - 2x2 en móvil */}
+            <section className="bg-slate-900 py-8 sm:py-12 lg:py-16">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
+                  {STATS.map((s, i) => (
+                    <Reveal key={s.label} delay={i * 0.04}>
+                      <div className="text-center">
+                        <div className="font-display text-3xl sm:text-5xl font-extrabold tracking-tight text-orange-500">
+                          {s.value}
+                        </div>
+                        <p className="mt-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-300">
+                          {s.label}
+                        </p>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* TESTIMONIOS - HORIZONTAL SWIPE EN MÓVIL, GRID EN DESKTOP */}
+            <section className="bg-white py-10 sm:py-16 lg:py-20 overflow-hidden">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <Reveal className="text-center max-w-3xl mx-auto">
+                  <Eyebrow>Testimonios</Eyebrow>
+                  <h2 className="font-display mt-3 text-3xl sm:text-4xl lg:text-5xl font-bold uppercase text-slate-900">
+                    Confianza de <span className="text-orange-500">la industria</span>
+                  </h2>
+                  <p className="mt-2 text-xs text-slate-400 md:hidden flex items-center justify-center gap-1.5">
+                    <span>← Desliza para ver más →</span>
+                  </p>
+                </Reveal>
+
+                {/* Contenedor horizontal en móvil (snap) y grid en desktop */}
+                <div className="mt-6 sm:mt-10 flex gap-3.5 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scrollbar-none px-4 -mx-4 sm:px-0 sm:mx-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible">
+                  {TESTIMONIOS.map((t, i) => (
+                    <div
+                      key={t.nombre}
+                      className="w-[84vw] max-w-[310px] shrink-0 snap-center md:w-auto md:max-w-none flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50/70 p-5 sm:p-6 shadow-sm"
+                    >
+                      <div>
+                        <div className="flex gap-1 text-orange-500">
+                          {[...Array(5)].map((_, j) => (
+                            <svg key={j} width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 2l2.9 6.26 6.6.64-5 4.36 1.5 6.74L12 16.9 5.99 20l1.5-6.74-5-4.36 6.6-.64z"/>
+                            </svg>
+                          ))}
+                        </div>
+                        <p className="mt-3 text-sm leading-relaxed text-slate-600 italic">"{t.quote}"</p>
+                      </div>
+                      <div className="mt-5 border-t border-slate-200/70 pt-3">
+                        <p className="font-display text-base font-bold uppercase tracking-tight text-slate-900">
+                          {t.nombre}
+                        </p>
+                        <p className="text-[11px] text-slate-500 truncate">{t.rol}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* CTA INFERIOR INICIO */}
+            <section className="bg-slate-900 py-10 sm:py-16 lg:py-20 relative overflow-hidden text-center">
+              <div className="absolute inset-0 metal-grid opacity-20" />
+              <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+                <h2 className="font-display text-3xl sm:text-5xl font-extrabold uppercase text-white">
+                  ¿Listo para arrancar tu <span className="text-orange-500">producción</span>?
+                </h2>
+                <p className="mt-2.5 sm:mt-4 text-xs sm:text-base text-slate-300 max-w-xl mx-auto">
+                  Envíanos tus planos o bocetos. Te respondemos con cotización formal en menos de 24 horas.
+                </p>
+                <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4 sm:px-0">
+                  <button
+                    onClick={() => setPage('cotizar')}
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-orange-500 px-7 py-3 sm:px-8 sm:py-3.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-lg shadow-orange-500/30 hover:bg-orange-600 transition-colors cursor-pointer"
+                  >
+                    <FileText size={16} />
+                    Ir a Cotizar y Subir Archivo
+                  </button>
+                  <a
+                    href={wa('Hola VICMA LASER, quiero cotizar un proyecto.')}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-7 py-3 sm:px-8 sm:py-3.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-lg shadow-[#25D366]/20 hover:bg-[#1ebe5d] transition-colors"
+                  >
+                    <MessageCircle size={16} />
+                    Hablar por WhatsApp
+                  </a>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* ================================================================
+            2. SUBPÁGINA: CORTE LÁSER (VENTAJAS, POR QUÉ ELEGIRNOS, INDUSTRIAS)
+            ================================================================ */}
+        {activeTab === 'corte-laser' && (
+          <div>
+            <SubpageHeader
+              badge="Maquila de corte láser industrial"
+              title="Corte Láser CNC de"
+              highlight="Fibra Óptica"
+              desc="Tecnología de última generación para cortes exactos, limpios y sin rebabas en lámina y placa con entregas rápidas de 24 a 72 horas."
+            />
+
+            {/* 3 PILARES TÉCNICOS */}
+            <section className="border-b border-slate-200 bg-white py-16 lg:py-20">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <Reveal className="text-center max-w-3xl mx-auto mb-12">
+                  <Eyebrow>Capacidad y precisión</Eyebrow>
+                  <h2 className="font-display mt-4 text-4xl font-bold uppercase text-slate-900 sm:text-5xl">
+                    Tecnología de corte <span className="text-orange-500">sin tolerancias al error</span>
+                  </h2>
+                </Reveal>
+
+                <div className="grid gap-6 md:grid-cols-3">
+                  {CORTE_FEATURES.map((f, i) => (
+                    <Reveal key={f.title} delay={i * 0.08} className="h-full">
+                      <div className="h-full rounded-2xl bg-slate-100 p-2 ring-1 ring-slate-200/70">
+                        <div className="h-full rounded-xl bg-white p-8">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600">
+                            <f.icon size={26} strokeWidth={1.75} />
+                          </div>
+                          <h3 className="font-display mt-6 text-2xl font-bold uppercase tracking-tight text-slate-900">
+                            {f.title}
+                          </h3>
+                          <p className="mt-3 text-sm leading-relaxed text-slate-600">{f.desc}</p>
+                        </div>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* 6 VENTAJAS COMPETITIVAS */}
+            <section className="bg-slate-50 py-20 lg:py-24">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <Reveal className="text-center max-w-3xl mx-auto">
+                  <Eyebrow>Ventajas industriales</Eyebrow>
+                  <h2 className="font-display mt-4 text-4xl font-bold uppercase text-slate-900 sm:text-5xl">
+                    Ventajas del Corte Láser <span className="text-orange-500">Industrial</span>
+                  </h2>
+                  <p className="mt-3 text-base text-slate-600">
+                    Aumenta la productividad de tu taller o empresa con piezas listas para ensamble inmediato.
+                  </p>
+                </Reveal>
+
+                <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {VENTAJAS_LASER.map((v, i) => (
+                    <Reveal key={v.title} delay={i * 0.05}>
+                      <div className="group rounded-2xl border border-slate-200 bg-white p-7 transition-all hover:border-orange-300 hover:shadow-lg">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 text-white group-hover:bg-orange-500 transition-colors">
+                          <v.icon size={24} strokeWidth={1.75} />
+                        </div>
+                        <h3 className="font-display mt-5 text-2xl font-bold uppercase tracking-tight text-slate-900">
+                          {v.title}
+                        </h3>
+                        <p className="mt-2.5 text-sm leading-relaxed text-slate-600">{v.desc}</p>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* POR QUÉ ELEGIR VICMA LASER */}
+            <section className="bg-slate-900 py-20 lg:py-24 text-white relative overflow-hidden">
+              <div className="absolute inset-0 metal-grid opacity-20" />
+              <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <Reveal className="text-center max-w-3xl mx-auto">
+                  <Eyebrow>Respaldo de planta</Eyebrow>
+                  <h2 className="font-display mt-4 text-4xl font-bold uppercase text-white sm:text-5xl">
+                    ¿Por qué elegir <span className="text-orange-500">Vicma Laser</span>?
+                  </h2>
+                  <p className="mt-3 text-base text-slate-400">
+                    No solo cortamos metal: somos el eslabón de certeza que tu cadena productiva necesita.
+                  </p>
+                </Reveal>
+
+                <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  {POR_QUE_ELEGIR.map((p, i) => (
+                    <Reveal key={p.title} delay={i * 0.04}>
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
+                        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                          <p.icon size={26} strokeWidth={1.75} />
+                        </div>
+                        <h3 className="font-display mt-5 text-xl font-bold uppercase tracking-tight text-white">
+                          {p.title}
+                        </h3>
+                        <p className="mt-2.5 text-xs leading-relaxed text-slate-400">{p.desc}</p>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* APLICACIONES INDUSTRIALES */}
+            <section className="bg-white py-20 lg:py-24">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <Reveal className="text-center max-w-3xl mx-auto">
+                  <Eyebrow>Sectores que servimos</Eyebrow>
+                  <h2 className="font-display mt-4 text-4xl font-bold uppercase text-slate-900 sm:text-5xl">
+                    Aplicaciones <span className="text-orange-500">Industriales</span>
+                  </h2>
+                  <p className="mt-3 text-base text-slate-600">
+                    Nuestros cortes son utilizados en los proyectos más rigurosos del país.
+                  </p>
+                </Reveal>
+
+                <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {INDUSTRIAS.map((ind, i) => (
+                    <Reveal key={ind.name} delay={i * 0.05}>
+                      <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-slate-50/60 p-7 transition-all hover:border-orange-300 hover:shadow-md">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600">
+                          <ind.icon size={24} strokeWidth={1.75} />
+                        </div>
+                        <h3 className="font-display mt-5 text-2xl font-bold uppercase tracking-tight text-slate-900">
+                          {ind.name}
+                        </h3>
+                        <p className="mt-2.5 text-sm leading-relaxed text-slate-600">{ind.desc}</p>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+
+                <div className="mt-14 text-center">
+                  <button
+                    onClick={() => setPage('cotizar')}
+                    className="inline-flex items-center gap-2 rounded-full bg-orange-500 px-8 py-4 text-sm font-bold uppercase tracking-wider text-white shadow-lg shadow-orange-500/25 hover:bg-orange-600 transition-colors cursor-pointer"
+                  >
+                    Cotizar piezas de corte láser
+                    <ArrowRight size={16} />
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* ================================================================
+            3. SUBPÁGINA: CELOSÍAS METÁLICAS
+            ================================================================ */}
+        {activeTab === 'celosias' && (
+          <div>
+            <SubpageHeader
+              badge="Arquitectura, interiorismo y diseño"
+              title="Celosías Metálicas para"
+              highlight="Fachadas y Espacios"
+              desc="Diseños cortados con láser para control solar, ventilación, seguridad y estética contemporánea en proyectos residenciales y comerciales."
+            />
+
+            <section className="bg-white py-16 lg:py-24">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <Reveal className="text-center max-w-3xl mx-auto mb-12">
+                  <Eyebrow>Catálogo de aplicaciones</Eyebrow>
+                  <h2 className="font-display mt-4 text-4xl font-bold uppercase text-slate-900 sm:text-5xl">
+                    6 Aplicaciones de <span className="text-orange-500">Celosías de Alta Gama</span>
+                  </h2>
+                  <p className="mt-3 text-base text-slate-600">
+                    Fabricamos con tu diseño o te ayudamos a crear el patrón arquitectónico ideal para tu obra.
+                  </p>
+                </Reveal>
+
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {CELOSIAS.map((c, i) => (
+                    <Reveal key={c.title} delay={i * 0.06} className="h-full">
+                      <div className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all hover:border-orange-300 hover:shadow-xl hover:shadow-orange-500/10">
+                        <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-slate-800">
+                          <img
+                            src={c.img}
+                            alt={`Celosía metálica ${c.title} — Vicma Laser`}
+                            loading="lazy"
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                          <span className="absolute bottom-3 left-4 rounded-full bg-black/60 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-sm">
+                            Celosía · {c.title}
+                          </span>
+                        </div>
+                        <div className="flex flex-1 flex-col justify-between p-6">
+                          <div>
+                            <h3 className="font-display text-2xl font-bold uppercase tracking-tight text-slate-900">
+                              {c.title}
+                            </h3>
+                            <p className="mt-2 text-sm leading-relaxed text-slate-600">{c.use}</p>
+                          </div>
+                          <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                            <a
+                              href={wa(`Hola VICMA LASER, me interesa cotizar una celosía para ${c.title}.`)}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-xs font-bold uppercase tracking-wider text-orange-600 hover:text-orange-700 inline-flex items-center gap-1.5"
+                            >
+                              Cotizar esta celosía
+                              <ArrowRight size={14} />
+                            </a>
+                            <button
+                              onClick={() => setLightbox({ title: `Celosía para ${c.title}`, img: c.img, categoria: 'Celosías' })}
+                              className="text-xs font-semibold text-slate-400 hover:text-slate-700 cursor-pointer"
+                            >
+                              Ver foto
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* BENEFICIOS PARA ARQUITECTOS */}
+            <section className="bg-slate-900 py-16 lg:py-24 text-white relative overflow-hidden">
+              <div className="absolute inset-0 metal-grid opacity-25" />
+              <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <Reveal className="text-center max-w-3xl mx-auto">
+                  <Eyebrow>Especificaciones para obra</Eyebrow>
+                  <h2 className="font-display mt-4 text-4xl font-bold uppercase text-white sm:text-5xl">
+                    Por qué los arquitectos <span className="text-orange-500">eligen nuestras celosías</span>
+                  </h2>
+                </Reveal>
+
+                <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  {[
+                    { t: 'Diseños Personalizados', d: 'Patrones geométricos, orgánicos o paramétricos en cualquier escala.' },
+                    { t: 'Materiales Resistentes', d: 'Acero al carbón para pintar, galvanizado anticorrosión o acero inoxidable.' },
+                    { t: 'Plegado y Bastidor', d: 'Servicio de doblez perimetral para rigidizar y anclar fácil en obra.' },
+                    { t: 'Envío Protegido', d: 'Embalaje de madera para evitar deformaciones en transporte a cualquier estado.' },
+                  ].map((item, idx) => (
+                    <Reveal key={item.t} delay={idx * 0.05}>
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-left">
+                        <div className="h-2 w-8 bg-orange-500 rounded-full mb-4" />
+                        <h3 className="font-display text-xl font-bold uppercase text-white">{item.t}</h3>
+                        <p className="mt-2 text-xs leading-relaxed text-slate-400">{item.d}</p>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+
+                <div className="mt-12 text-center">
+                  <button
+                    onClick={() => setPage('cotizar')}
+                    className="inline-flex items-center gap-2 rounded-full bg-orange-500 px-8 py-4 text-sm font-bold uppercase tracking-wider text-white shadow-lg shadow-orange-500/30 hover:bg-orange-600 transition-colors cursor-pointer"
+                  >
+                    Cotizar proyecto de celosías
+                    <ArrowRight size={16} />
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* ================================================================
+            4. SUBPÁGINA: MATERIALES (FICHAS COMPLETAS DE CADA METAL)
+            ================================================================ */}
+        {activeTab === 'materiales' && (
+          <div>
+            <SubpageHeader
+              badge="Capacidades de corte y calibres"
+              title="Materiales y"
+              highlight="Espesores de Corte"
+              desc="Trabajamos lámina delgada y placa pesada desde 0.5 mm hasta 25 mm de espesor en 8 metales y aleaciones industriales."
+            />
+
+            <section className="bg-white py-16 lg:py-24">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <Reveal className="text-center max-w-3xl mx-auto mb-12">
+                  <Eyebrow>Fichas técnicas</Eyebrow>
+                  <h2 className="font-display mt-4 text-4xl font-bold uppercase text-slate-900 sm:text-5xl">
+                    ¿Qué material <span className="text-orange-500">requiere tu proyecto</span>?
+                  </h2>
+                  <p className="mt-3 text-base text-slate-600">
+                    Haz clic en cada tarjeta para desplegar el rango de espesores, ventajas y aplicaciones específicas.
+                  </p>
+                </Reveal>
+
+                <div className="grid gap-5 sm:grid-cols-2">
+                  {CORTE_MATERIALES.map((m, i) => (
+                    <Reveal key={m.id} delay={(i % 2) * 0.05}>
+                      <MaterialCard material={m} />
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* TABLA COMPARATIVA RÁPIDA */}
+            <section className="bg-slate-50 py-16 lg:py-20 border-t border-slate-200">
+              <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-10">
+                  <h3 className="font-display text-3xl font-bold uppercase text-slate-900">
+                    Resumen de <span className="text-orange-500">Capacidades Máximas</span>
+                  </h3>
+                  <p className="mt-2 text-sm text-slate-600">
+                    Corte láser de fibra óptica con tolerancias dimensionales de ±0.1 mm.
+                  </p>
+                </div>
+
+                <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+                  <table className="w-full text-left text-sm">
+                    <thead className="border-b border-slate-200 bg-slate-100 text-xs font-bold uppercase tracking-wider text-slate-700">
+                      <tr>
+                        <th className="px-6 py-4">Material</th>
+                        <th className="px-6 py-4">Rango de Espesor</th>
+                        <th className="px-6 py-4">Uso Principal</th>
+                        <th className="px-6 py-4 text-right">Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-slate-600">
+                      {CORTE_MATERIALES.map((m) => (
+                        <tr key={m.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="px-6 py-4 font-bold text-slate-900">{m.name}</td>
+                          <td className="px-6 py-4 font-semibold text-orange-600">{m.espesor}</td>
+                          <td className="px-6 py-4 text-xs">{m.aplicaciones.slice(0, 2).join(', ')}</td>
+                          <td className="px-6 py-4 text-right">
+                            <a
+                              href={wa(`Hola VICMA LASER, quiero cotizar corte de ${m.name}.`)}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 text-xs font-bold uppercase text-slate-900 hover:text-orange-500"
+                            >
+                              Cotizar
+                              <ArrowRight size={12} />
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="mt-10 text-center">
+                  <p className="text-sm text-slate-500">
+                    ¿Tu material no aparece en la lista o requieres aleaciones especiales?
+                  </p>
+                  <button
+                    onClick={() => setPage('cotizar')}
+                    className="mt-3 inline-flex items-center gap-2 rounded-full bg-slate-900 px-7 py-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-orange-500 transition-colors cursor-pointer"
+                  >
+                    Consultar a un Ingeniero
+                    <ArrowRight size={14} />
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* ================================================================
+            5. SUBPÁGINA: GALERÍA (FILTROS Y LIGHTBOX INTERACTIVO)
+            ================================================================ */}
+        {activeTab === 'galeria' && (
+          <div>
+            <SubpageHeader
+              badge="Portafolio fotográfico de proyectos"
+              title="Galería de"
+              highlight="Trabajos Entregados"
+              desc="Conoce la calidad de corte, celosías metálicas y piezas industriales fabricadas en nuestra planta."
+            />
+
+            <section className="bg-white py-16 lg:py-24">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                {/* Botones de filtro */}
+                <div className="flex flex-wrap justify-center gap-2.5 mb-12">
+                  {PORTFOLIO_CATEGORIAS.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setFiltroPortafolio(cat)}
+                      className={`rounded-full px-6 py-2.5 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                        filtroPortafolio === cat
+                          ? 'bg-orange-500 text-white shadow-md shadow-orange-500/25'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Grid fotográfico */}
+                <motion.div layout className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <AnimatePresence mode="popLayout">
+                    {PORTFOLIO.filter((p) => filtroPortafolio === 'Todas' || p.categoria === filtroPortafolio).map((p) => (
+                      <motion.button
+                        key={p.title}
+                        layout
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.3 }}
+                        onClick={() => setLightbox(p)}
+                        className="group relative aspect-square overflow-hidden rounded-3xl bg-slate-900 text-left shadow-sm cursor-pointer"
+                      >
+                        <img
+                          src={p.img}
+                          alt={`${p.title} — Vicma Laser`}
+                          loading="lazy"
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                        <div className="absolute inset-x-0 bottom-0 translate-y-3 p-6 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                          <span className="inline-block rounded-full bg-orange-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                            {p.categoria}
+                          </span>
+                          <h3 className="font-display mt-2 text-2xl font-bold uppercase tracking-tight text-white">
+                            {p.title}
+                          </h3>
+                          <p className="mt-1 text-xs text-slate-300">Clic para ampliar imagen</p>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </AnimatePresence>
+                </motion.div>
+
+                <div className="mt-16 text-center">
+                  <p className="text-base text-slate-600">
+                    ¿Viste un diseño que te gustó o tienes tu propio boceto?
+                  </p>
+                  <button
+                    onClick={() => setPage('cotizar')}
+                    className="mt-4 inline-flex items-center gap-2 rounded-full bg-orange-500 px-8 py-3.5 text-sm font-bold uppercase tracking-wider text-white shadow-lg shadow-orange-500/25 hover:bg-orange-600 transition-colors cursor-pointer"
+                  >
+                    Cotizar este tipo de pieza
+                    <ArrowRight size={16} />
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* ================================================================
+            6. SUBPÁGINA: COTIZAR Y FAQ
+            ================================================================ */}
+        {activeTab === 'cotizar' && (
+          <div>
+            <SubpageHeader
+              badge="Atención directa y cotizaciones rápidas"
+              title="Cotiza tu Proyecto en"
+              highlight="Menos de 24 Horas"
+              desc="Sube tus archivos DWG, DXF o planos en PDF. Si aún no tienes diseño, nuestro equipo de ingeniería te asesora desde cero."
+            />
+
+            <section className="bg-gray-100 py-16 lg:py-24">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                {/* Estrategia dual */}
+                <div className="grid gap-6 lg:grid-cols-2 mb-16">
+                  {/* Opción 1: Tengo diseño */}
+                  <div className="flex flex-col justify-between rounded-3xl bg-white p-8 lg:p-10 shadow-sm border border-slate-200">
                     <div>
-                      <h4 className="font-display text-xl font-bold uppercase tracking-tight text-slate-900">
-                        {s.t}
-                      </h4>
-                      <p className="mt-1 text-sm leading-relaxed text-slate-600">{s.d}</p>
+                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-500 text-white">
+                        <FileUp size={26} />
+                      </div>
+                      <h3 className="font-display mt-6 text-3xl font-bold uppercase tracking-tight text-slate-900">
+                        Ya tengo mi archivo
+                      </h3>
+                      <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                        Envíanos tu archivo en formato vectorial o plano acotado. Optimizamos el anidado para darte el mejor precio por lámina.
+                      </p>
+                      <div className="mt-5 flex flex-wrap gap-2">
+                        {['DXF', 'DWG', 'PDF', 'AI / EPS'].map((f) => (
+                          <span
+                            key={f}
+                            className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700"
+                          >
+                            {f}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="mt-8 pt-6 border-t border-slate-100">
+                      <a
+                        href={wa('Hola VICMA LASER, ya tengo mi diseño (DXF/DWG/PDF) listo para cotizar.')}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group flex w-full items-center justify-center gap-2 rounded-full bg-slate-900 px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white transition-all hover:bg-slate-800"
+                      >
+                        Enviar archivo por WhatsApp
+                        <ArrowUpRight size={16} />
+                      </a>
                     </div>
                   </div>
-                ))}
-              </div>
-            </Reveal>
 
-            {/* Formulario */}
-            <Reveal delay={0.1}>
-              <div className="rounded-3xl bg-slate-100 p-2 ring-1 ring-slate-200">
-                <div className="rounded-2xl bg-white p-8">
-                  <QuoteForm />
+                  {/* Opción 2: No tengo diseño */}
+                  <div className="flex flex-col justify-between rounded-3xl bg-white p-8 lg:p-10 shadow-sm border border-slate-200">
+                    <div>
+                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-white">
+                        <PenTool size={26} className="text-orange-400" />
+                      </div>
+                      <h3 className="font-display mt-6 text-3xl font-bold uppercase tracking-tight text-slate-900">
+                        No tengo el archivo digital
+                      </h3>
+                      <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                        ¿Solo tienes medidas o un dibujo en papel? Nuestro equipo te ayuda a digitalizarlo y prepararlo para corte CNC sin costo extra.
+                      </p>
+                      <div className="mt-5 flex flex-wrap gap-2">
+                        {['Boceto en papel', 'Medidas en obra', 'Fotos de muestra'].map((f) => (
+                          <span
+                            key={f}
+                            className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700"
+                          >
+                            {f}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="mt-8 pt-6 border-t border-slate-100">
+                      <a
+                        href={wa('Hola VICMA LASER, no tengo archivo CAD pero tengo las medidas de mi proyecto y quiero asesoría.')}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group flex w-full items-center justify-center gap-2 rounded-full bg-orange-500 px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white shadow-md shadow-orange-500/20 transition-all hover:bg-orange-600"
+                      >
+                        Solicitar Asesoría Técnica
+                        <ArrowRight size={16} />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Formulario + Proceso */}
+                <div className="grid gap-12 lg:grid-cols-12 lg:items-start">
+                  <div className="lg:col-span-5 space-y-6">
+                    <div>
+                      <Eyebrow>Paso a paso</Eyebrow>
+                      <h3 className="font-display mt-3 text-3xl font-bold uppercase tracking-tight text-slate-900">
+                        ¿Cómo funciona la cotización?
+                      </h3>
+                    </div>
+
+                    <div className="space-y-4">
+                      {[
+                        { n: '1', t: 'Envía tus requerimientos', d: 'Adjunta tu archivo, dibujo o describe los espesores y medidas necesarias.' },
+                        { n: '2', t: 'Revisión por ingeniería', d: 'Analizamos la geometría y calculamos el aprovechamiento óptimo de material.' },
+                        { n: '3', t: 'Cotización en < 24 hrs', d: 'Recibes presupuesto detallado con tiempos de entrega garantizados.' },
+                      ].map((s) => (
+                        <div key={s.n} className="flex gap-4 rounded-2xl bg-white p-5 border border-slate-200">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-500 font-display text-xl font-bold text-white">
+                            {s.n}
+                          </div>
+                          <div>
+                            <h4 className="font-display text-lg font-bold uppercase tracking-tight text-slate-900">{s.t}</h4>
+                            <p className="mt-1 text-xs leading-relaxed text-slate-500">{s.d}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Datos de contacto */}
+                    <div className="rounded-2xl border border-slate-200 bg-white p-6 space-y-3 text-xs text-slate-600">
+                      <p className="font-bold uppercase tracking-wider text-slate-900 text-sm">Contacto Directo de Planta</p>
+                      <div className="flex items-center gap-2.5">
+                        <Phone size={15} className="text-orange-500" />
+                        <span>{PHONE}</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <Mail size={15} className="text-orange-500" />
+                        <span>{EMAIL}</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <Clock size={15} className="text-orange-500" />
+                        <span>Lunes a Sábado · 9:00 a 18:00</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Formulario */}
+                  <div className="lg:col-span-7">
+                    <div className="rounded-3xl bg-white p-8 lg:p-10 shadow-sm border border-slate-200">
+                      <h3 className="font-display text-2xl font-bold uppercase tracking-tight text-slate-900 mb-6">
+                        Formulario de Cotización Inmediata
+                      </h3>
+                      <QuoteForm />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </Reveal>
+            </section>
+
+            {/* PREGUNTAS FRECUENTES (FAQ) */}
+            <section className="bg-white py-16 lg:py-24 border-t border-slate-200">
+              <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                  <Eyebrow>Dudas habituales</Eyebrow>
+                  <h2 className="font-display mt-4 text-4xl font-bold uppercase text-slate-900 sm:text-5xl">
+                    Preguntas <span className="text-orange-500">Frecuentes</span>
+                  </h2>
+                </div>
+
+                <div className="space-y-3.5">
+                  {FAQ.map((f) => (
+                    <FaqItem key={f.q} q={f.q} a={f.a} />
+                  ))}
+                </div>
+              </div>
+            </section>
           </div>
-        </div>
-      </section>
+        )}
+      </main>
 
       {/* ===================== FOOTER ===================== */}
       <footer className="bg-slate-900 text-slate-300">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <div className="grid gap-12 md:grid-cols-3">
-            {/* Bloque 1: Logo + descripción */}
-            <div>
-              <a href="#/vicma-laser" onClick={goTo('inicio')} className="font-display text-3xl font-bold tracking-tight">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:py-12 lg:py-16 sm:px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-3 lg:gap-12">
+            {/* Bloque 1: Identidad */}
+            <div className="space-y-3">
+              <button
+                onClick={() => setPage('inicio')}
+                className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-left cursor-pointer"
+              >
                 <span className="text-white">VICMA</span>
                 <span className="text-orange-500">LASER</span>
-              </a>
-              <p className="mt-4 max-w-xs leading-relaxed text-slate-400">
-                Servicios de corte láser y fabricación de celosías metálicas para arquitectura,
-                diseño e industria. Precisión y calidad en cada pieza.
+              </button>
+              <p className="max-w-xs text-xs sm:text-sm leading-relaxed text-slate-400">
+                Maquila industrial de corte láser de fibra óptica y celosías metálicas para arquitectura, diseño e ingeniería mexicana.
               </p>
-              <div className="mt-5 flex gap-3">
-                <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" aria-label="Facebook" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-slate-300 transition-colors hover:bg-orange-500 hover:text-white">
-                  <Facebook size={18} />
+              <div className="flex gap-2.5 pt-1">
+                <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" aria-label="Facebook" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-slate-300 transition-colors hover:bg-orange-500 hover:text-white">
+                  <Facebook size={16} />
                 </a>
-                <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" aria-label="Instagram" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-slate-300 transition-colors hover:bg-orange-500 hover:text-white">
-                  <Instagram size={18} />
-                </a>
-                <a href="https://www.tiktok.com/" target="_blank" rel="noreferrer" aria-label="TikTok" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-slate-300 transition-colors hover:bg-orange-500 hover:text-white">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.3 0 .58.05.85.13V9.4a6.33 6.33 0 0 0-.85-.05A6.34 6.34 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
+                <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" aria-label="Instagram" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-slate-300 transition-colors hover:bg-orange-500 hover:text-white">
+                  <Instagram size={16} />
                 </a>
               </div>
             </div>
 
-            {/* Bloque 2: Enlaces rápidos */}
-            <div>
-              <h4 className="text-sm font-bold uppercase tracking-[0.18em] text-white">
-                Enlaces rápidos
-              </h4>
-              <ul className="mt-5 space-y-3">
-                {NAV_LINKS.map((l) => (
-                  <li key={l.id}>
-                    <a
-                      href="#/vicma-laser"
-                      onClick={goTo(l.id)}
-                      className="inline-flex items-center gap-2 text-slate-400 transition-colors hover:text-orange-400"
-                    >
-                      <ChevronRight size={14} className="text-orange-500/60" />
-                      {l.label}
+            {/* Bloques 2 y 3: Dos columnas paralelas en móvil (Páginas y Planta/Atención) */}
+            <div className="grid grid-cols-2 gap-4 sm:gap-8 lg:col-span-2 lg:grid-cols-2">
+              {/* Bloque 2: Páginas del Sitio */}
+              <div>
+                <h4 className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-white">
+                  Páginas
+                </h4>
+                <ul className="mt-3.5 space-y-2 text-xs sm:text-sm">
+                  {NAV_PAGES.map((p) => (
+                    <li key={p.id}>
+                      <button
+                        onClick={() => setPage(p.id)}
+                        className="inline-flex items-center gap-1.5 text-slate-400 transition-colors hover:text-orange-400 cursor-pointer"
+                      >
+                        <ChevronRight size={12} className="text-orange-500 shrink-0" />
+                        <span>{p.label}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Bloque 3: Planta y Contacto */}
+              <div>
+                <h4 className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-white">
+                  Planta y Contacto
+                </h4>
+                <ul className="mt-3.5 space-y-2.5 text-xs sm:text-sm">
+                  <li className="flex items-start gap-2">
+                    <MapPin size={15} className="mt-0.5 shrink-0 text-orange-500" />
+                    <span className="text-slate-400 line-clamp-2">{ADDRESS}</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Phone size={15} className="shrink-0 text-orange-500" />
+                    <a href={`tel:${PHONE.replace(/\s/g, '')}`} className="text-slate-400 hover:text-white truncate">
+                      {PHONE}
                     </a>
                   </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Bloque 3: Contacto */}
-            <div>
-              <h4 className="text-sm font-bold uppercase tracking-[0.18em] text-white">
-                Contacto
-              </h4>
-              <ul className="mt-5 space-y-4">
-                <li className="flex items-start gap-3">
-                  <MapPin size={18} className="mt-0.5 shrink-0 text-orange-500" />
-                  <span className="text-slate-400">{ADDRESS}</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Phone size={18} className="shrink-0 text-orange-500" />
-                  <a href={`tel:${PHONE.replace(/\s/g, '')}`} className="text-slate-400 transition-colors hover:text-white">
-                    {PHONE}
-                  </a>
-                </li>
-                <li className="flex items-center gap-3">
-                  <MessageCircle size={18} className="shrink-0 text-green-500" />
-                  <a
-                    href={wa('Hola VICMA LASER, quiero más información.')}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-slate-400 transition-colors hover:text-white"
-                  >
-                    {PHONE} (WhatsApp)
-                  </a>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Mail size={18} className="shrink-0 text-orange-500" />
-                  <a href={`mailto:${EMAIL}`} className="text-slate-400 transition-colors hover:text-white">
-                    {EMAIL}
-                  </a>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Clock size={18} className="shrink-0 text-orange-500" />
-                  <span className="text-slate-400">Lun – Sáb · 9:00 a 18:00</span>
-                </li>
-              </ul>
+                  <li className="flex items-center gap-2">
+                    <MessageCircle size={15} className="shrink-0 text-[#25D366]" />
+                    <a
+                      href={wa('Hola VICMA LASER, quiero información.')}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-slate-400 hover:text-white truncate"
+                    >
+                      WhatsApp
+                    </a>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Mail size={15} className="shrink-0 text-orange-500" />
+                    <a href={`mailto:${EMAIL}`} className="text-slate-400 hover:text-white truncate">
+                      {EMAIL}
+                    </a>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Clock size={15} className="shrink-0 text-orange-500" />
+                    <span className="text-slate-400">Lun – Sáb · 9-18h</span>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Barra inferior */}
+        {/* Barra legal */}
         <div className="border-t border-white/10">
-          <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 text-center sm:flex-row sm:px-6 lg:px-8">
+          <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2.5 px-4 py-4 sm:py-5 text-center sm:flex-row sm:px-6 lg:px-8">
             <p className="text-xs text-slate-500">
               © 2026 VICMA LASER. Todos los derechos reservados.
             </p>
             <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
               <button
                 onClick={() => setPrivacidadOpen(true)}
-                className="text-xs text-slate-500 transition-colors hover:text-orange-400"
+                className="text-xs text-slate-500 transition-colors hover:text-orange-400 cursor-pointer"
               >
-                Aviso de privacidad
+                Aviso de Privacidad
               </button>
               <p className="text-xs text-slate-500">
                 Diseñado por{' '}
@@ -1497,7 +1770,7 @@ export default function VicmaLaser() {
                   href="https://imagineandstamp.site"
                   target="_blank"
                   rel="noreferrer"
-                  className="font-semibold text-slate-400 transition-colors hover:text-orange-400"
+                  className="font-semibold text-slate-400 hover:text-orange-400"
                 >
                   IMAGINE &amp; STAMP
                 </a>
@@ -1507,7 +1780,7 @@ export default function VicmaLaser() {
         </div>
       </footer>
 
-      {/* ===================== BOTÓN VOLVER ARRIBA ===================== */}
+      {/* BOTÓN VOLVER ARRIBA */}
       <button
         onClick={scrollTop}
         aria-label="Volver arriba"
@@ -1518,7 +1791,7 @@ export default function VicmaLaser() {
         <ChevronDown size={22} className="rotate-180" />
       </button>
 
-      {/* ===================== BOTÓN FLOTANTE WHATSAPP ===================== */}
+      {/* BOTÓN FLOTANTE WHATSAPP */}
       <a
         href={wa('Hola VICMA LASER, quiero cotizar un proyecto.')}
         target="_blank"
@@ -1533,7 +1806,7 @@ export default function VicmaLaser() {
         Cotizar
       </a>
 
-      {/* ===================== LIGHTBOX PORTAFOLIO ===================== */}
+      {/* LIGHTBOX PORTAFOLIO */}
       <AnimatePresence>
         {lightbox && (
           <motion.div
@@ -1576,7 +1849,7 @@ export default function VicmaLaser() {
                   href={wa(`Hola VICMA LASER, vi el proyecto "${lightbox.title}" en su portafolio y quiero algo similar.`)}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-green-500 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#1ebe5d]"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#1ebe5d]"
                 >
                   <MessageCircle size={16} />
                   Quiero algo similar
@@ -1587,7 +1860,7 @@ export default function VicmaLaser() {
         )}
       </AnimatePresence>
 
-      {/* ===================== MODAL AVISO DE PRIVACIDAD ===================== */}
+      {/* MODAL AVISO DE PRIVACIDAD */}
       {privacidadOpen && (
         <div
           className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
@@ -1622,10 +1895,6 @@ export default function VicmaLaser() {
               <p>
                 No compartimos, vendemos ni transferimos tu información a terceros sin tu
                 consentimiento, salvo los casos previstos por la ley.
-              </p>
-              <p>
-                Puedes ejercer tus derechos de acceso, rectificación, cancelación u oposición (ARCO)
-                enviando un correo a nuestro equipo de contacto.
               </p>
             </div>
           </div>
