@@ -16,20 +16,22 @@ import {
 import { clientConfig, bankInfo } from '../config';
 import heroImg from '../assets/hero-mariscada.webp';
 import logoImg from '../assets/logo-mesa-jarocha.webp';
+import memelaImg from '../assets/memela-de-cecina.webp';
+import enmoladasImg from '../assets/enmoladas-jarochas.webp';
 
 const C = clientConfig.colors;
 
-// ── Tipos ──
+// ── Categorías Oficiales de la Carta ──
 type CategoryId =
   | 'todos'
   | 'favoritos'
-  | 'especialidades'
-  | 'camarones-pulpo'
-  | 'pescados'
-  | 'cocteles-tostadas'
-  | 'aguachiles-botanas'
-  | 'bebidas'
-  | 'guarniciones';
+  | 'caldos-sopas'
+  | 'mar'
+  | 'proteina'
+  | 'maiz'
+  | 'servicio-cuarto'
+  | 'peques'
+  | 'postres';
 
 interface Product {
   id: string;
@@ -42,7 +44,7 @@ interface Product {
   featured?: boolean;
   isPopular?: boolean;
   canCustomize?: boolean;
-  customType?: 'marisco' | 'aguachile' | 'coctel' | 'pescado' | 'bebida';
+  customType?: 'memela' | 'enchiladas' | 'carne' | 'coctel' | 'general';
   sizes?: { name: string; price: number }[];
 }
 
@@ -59,412 +61,318 @@ interface CartItem {
   unitPrice: number;
   quantity: number;
   category: CategoryId;
-  selectedSize?: string;
-  selectedSpicy?: string;
+  selectedProtein?: string;
+  selectedSauce?: string;
   selectedPrep?: string;
   extras?: CustomOption[];
   specialNotes?: string;
 }
 
-// ── Opciones de personalización de mariscos ──
-const MARISCO_EXTRAS: CustomOption[] = [
+// ── Extras sugeridos ──
+const MENU_EXTRAS: CustomOption[] = [
+  { name: 'Porción Extra de Queso Oaxaca', price: 20 },
+  { name: 'Porción de Guacamole Casero', price: 35 },
+  { name: 'Frijoles Refritos con Totopos', price: 25 },
+  { name: 'Orden Extra de Tortillas Calientes (4 pzas)', price: 15 },
   { name: 'Porción Extra de Aguacate', price: 20 },
-  { name: 'Camarones Adicionales (4 pzas)', price: 35 },
-  { name: 'Queso Gratinado Manchego', price: 18 },
-  { name: 'Arroz Blanco Extra', price: 15 },
-  { name: 'Orden de Tostadas Horneadas', price: 12 },
 ];
 
-// ── Catálogo de Productos Completo (Mesa Jarocha) ──
+// ── Catálogo Oficial Fiel a la Carta Física de Mesa Jarocha ──
 const PRODUCTS: Product[] = [
-  // ── 1. Especialidades
+  // ── 1. CALDOS Y SOPAS ──
   {
-    id: 'esp-01',
-    name: 'Gran Mariscada Veracruzana (2-3 Personas)',
-    description: 'Festín costero con camarones al mojo, pulpo asado, filete dorado, coctel de camarón en copa, aguacate tierno, limones al carbón y salsas de la casa.',
-    price: 395,
-    category: 'especialidades',
-    badge: 'ESTRELLA DE LA CASA 🦞',
-    featured: true,
-    isPopular: true,
-    canCustomize: true,
-    customType: 'marisco',
-  },
-  {
-    id: 'esp-02',
-    name: 'Paella Marinera Jarocha',
-    description: 'Arroz azafranado con camarón del Golfo, mejillones, calamar tierno, trocitos de pescado y tiras de pimiento morrón asado.',
-    price: 320,
-    category: 'especialidades',
-    badge: 'TRADICIÓN 🥘',
-    featured: true,
+    id: 'cal-01',
+    name: 'Caldo de Pollo',
+    description: 'Tradicional y reconfortante caldo con pollo tierno, verduras de temporada y consomé sazonado con hierbas.',
+    price: 90,
+    category: 'caldos-sopas',
+    badge: 'CONFORT 🍲',
     isPopular: true,
   },
   {
-    id: 'esp-03',
-    name: 'Cazuela de Mariscos Gratinada',
-    description: 'Combinación de mariscos selectos en salsa cremosa de chipotle dulce, cubierta de queso manchego fundido al horno.',
-    price: 260,
-    category: 'especialidades',
-    badge: 'CHEF PICK 🧀',
-    canCustomize: true,
-    customType: 'marisco',
-  },
-  {
-    id: 'esp-04',
-    name: 'Vuelve a la Vida Especial Jarocho',
-    description: 'El legendario coctel afrodisíaco: camarón, pulpo, ostión fresco, caracol y calamar con consomé frío, cebolla morada, cilantro y aguacate.',
-    price: 185,
-    category: 'especialidades',
-    badge: 'AFRODISÍACO 🌊',
+    id: 'cal-02',
+    name: 'Sopa Azteca',
+    description: 'Sopa tradicional de tortilla crujiente en caldo de jitomate y pasilla, con aguacate, queso fresco, crema y tiritas de chile.',
+    price: 90,
+    category: 'caldos-sopas',
+    badge: 'CLÁSICA 🥑',
     isPopular: true,
-    canCustomize: true,
-    customType: 'coctel',
   },
   {
-    id: 'esp-05',
-    name: 'Caldo de Mariscos 7 Mares',
-    description: 'Consomé espeso cocinado a fuego lento con jaiba entera, camarones con cáscara, filete, pulpo y verduras tiernas con epazote.',
-    price: 175,
-    category: 'especialidades',
-    badge: 'RECONSTITUYENTE 🍲',
-  },
-
-  // ── 2. Camarones y Pulpo
-  {
-    id: 'cam-01',
-    name: 'Camarones al Mojo de Ajo Dorado',
-    description: 'Salteados en mantequilla pura con láminas crujientes de ajo tostado, vino blanco y un toque de perejil fresco. Acompañados de arroz y ensalada.',
+    id: 'cal-03',
+    name: 'Caldo de Camarón',
+    description: 'Consomé caliente y especiado con camarones frescos cocinados en su punto y verduras tiernas con epazote.',
     price: 165,
-    category: 'camarones-pulpo',
-    badge: 'CLÁSICO 🧄',
-    isPopular: true,
-    canCustomize: true,
-    customType: 'marisco',
-  },
-  {
-    id: 'cam-02',
-    name: 'Camarones a la Diabla Brava',
-    description: 'Camarones gigantes bañados en salsa artesanal de tres chiles secos ahumados. Servidos con arroz blanco y frijoles refritos.',
-    price: 170,
-    category: 'camarones-pulpo',
-    badge: 'PICOSO 🌶️🔥',
-    canCustomize: true,
-    customType: 'marisco',
-  },
-  {
-    id: 'cam-03',
-    name: 'Camarones Empanizados al Coco',
-    description: 'Crujientes camarones envueltos en coco rallado tostado, acompañados de dip agridulce de mango y habanero.',
-    price: 180,
-    category: 'camarones-pulpo',
-    badge: 'CRUJIENTES 🥥',
+    category: 'caldos-sopas',
+    badge: 'COSTERO 🦐',
     isPopular: true,
   },
   {
-    id: 'cam-04',
-    name: 'Camarones a la Mantequilla & Finas Hierbas',
-    description: 'Suaves y jugosos en emulsión de mantequilla aromatizada con orégano costeño, romero y limón real.',
-    price: 160,
-    category: 'camarones-pulpo',
-    canCustomize: true,
-    customType: 'marisco',
-  },
-  {
-    id: 'pul-01',
-    name: 'Pulpo a las Brasas con Chimichurri Jarocho',
-    description: 'Tentáculos de pulpo cocidos a la perfección y sellados al carbón con aceite de oliva extra virgen, pimentón y sal en grano.',
+    id: 'cal-04',
+    name: 'Chilpachole de Jaiba',
+    description: 'Especialidad culinaria jarocha: caldo espeso y aromático preparado con jaiba fresca entera, masa de maíz, chiles y epazote.',
     price: 240,
-    category: 'camarones-pulpo',
-    badge: 'GOURMET 🐙',
+    category: 'caldos-sopas',
+    badge: 'ESTRELLA JAROCHA 🦀',
+    featured: true,
+    isPopular: true,
+  },
+
+  // ── 2. DEL MAR A TU MESA ──
+  {
+    id: 'mar-01',
+    name: 'Coctel de Camarón',
+    description: 'Camarón en salsa coctelera con cilantro, cebolla, jitomate y aguacate.',
+    price: 105,
+    category: 'mar',
+    badge: 'FRESCO 🦐',
+    isPopular: true,
+    canCustomize: true,
+    customType: 'coctel',
+  },
+  {
+    id: 'mar-02',
+    name: 'Campechana',
+    description: 'Camarón y pulpo en salsa coctelera con cilantro, cebolla, jitomate y aguacate.',
+    price: 145,
+    category: 'mar',
+    badge: 'CLÁSICA 🦐🐙',
+    isPopular: true,
+    canCustomize: true,
+    customType: 'coctel',
+  },
+  {
+    id: 'mar-03',
+    name: 'Vuelve a la Vida',
+    description: 'Pulpo, camarón y jaiba en salsa coctelera.',
+    price: 225,
+    category: 'mar',
+    badge: 'ESPECIAL DEL MAR 🌊',
     featured: true,
     isPopular: true,
     canCustomize: true,
-    customType: 'marisco',
+    customType: 'coctel',
   },
   {
-    id: 'pul-02',
-    name: 'Pulpo al Ajillo Costero',
-    description: 'Trozos tiernos de pulpo salteados con rodajas de chile guajillo frito, ajo picado y aceite de oliva.',
-    price: 215,
-    category: 'camarones-pulpo',
-    canCustomize: true,
-    customType: 'marisco',
-  },
-
-  // ── 3. Pescados del Día
-  {
-    id: 'pes-01',
-    name: 'Filete a la Veracruzana Auténtica',
-    description: 'Filete blanco fresco bañado con la tradicional salsa jarocha de jitomate maduro, alcaparras, aceitunas verdes, cebolla y orégano.',
-    price: 155,
-    category: 'pescados',
-    badge: '100% JAROCHO 🐟',
-    isPopular: true,
-    canCustomize: true,
-    customType: 'pescado',
-  },
-  {
-    id: 'pes-02',
-    name: 'Filete Empanizado Dorado',
-    description: 'Filete sazonado con especias del puerto, empanizado crujiente. Servido con papas a la francesa, arroz y ensalada.',
-    price: 140,
-    category: 'pescados',
-    isPopular: true,
-  },
-  {
-    id: 'pes-03',
-    name: 'Filete Relleno de Mariscos al Horno',
-    description: 'Filete doblado y relleno de camarones, pulpo y queso, bañado en salsa de chipotle cremoso.',
+    id: 'mar-04',
+    name: 'Tacos de Marisco (3)',
+    description: 'Orden de tres tacos con mariscos selectos en tortilla de maíz con guarnición y aderezo especial de la casa.',
     price: 210,
-    category: 'pescados',
-    badge: 'ESPECIAL 🌟',
-    canCustomize: true,
-    customType: 'pescado',
-  },
-  {
-    id: 'pes-04',
-    name: 'Mojarra Frita al Ajo Dorado (500g)',
-    description: 'Mojarra entera frita al punto exacto con piel crujiente y carne jugosa, bañada con ajos fritos. Servida con tortillas recién hechas.',
-    price: 165,
-    category: 'pescados',
-    badge: 'TRADICIONAL 🎣',
+    category: 'mar',
+    badge: '3 TACOS 🌮',
     isPopular: true,
   },
   {
-    id: 'pes-05',
-    name: 'Mojarra a la Diabla',
-    description: 'Mojarra entera frita y bañada en nuestra salsa brava de chile de árbol y chipotle.',
-    price: 175,
-    category: 'pescados',
-    badge: 'PICANTE 🌶️',
-  },
-
-  // ── 4. Cocteles & Tostadas
-  {
-    id: 'coc-01',
-    name: 'Coctel de Camarón Jarocho',
-    description: 'Camarones tiernos en salsa coctelera tradicional preparada con jugo de tomate, clamato, cebolla morada, cilantro y abanico de aguacate.',
-    price: 125,
-    category: 'cocteles-tostadas',
-    badge: 'FAVORITO 🦐',
-    isPopular: true,
-    canCustomize: true,
-    customType: 'coctel',
-    sizes: [
-      { name: 'Chico (Copita)', price: 125 },
-      { name: 'Mediano (Copa)', price: 165 },
-      { name: 'Grande (Copa Rey)', price: 215 },
-    ],
-  },
-  {
-    id: 'coc-02',
-    name: 'Coctel Campechano (Camarón y Pulpo)',
-    description: 'El balance perfecto entre camarón fresco y pulpo suave en salsa coctelera sazonada al estilo puerto.',
-    price: 145,
-    category: 'cocteles-tostadas',
-    isPopular: true,
-    canCustomize: true,
-    customType: 'coctel',
-    sizes: [
-      { name: 'Chico', price: 145 },
-      { name: 'Mediano', price: 185 },
-      { name: 'Grande', price: 235 },
-    ],
-  },
-  {
-    id: 'coc-03',
-    name: 'Coctel de Pulpo Especial',
-    description: 'Pulpo tierno en cubos con el toque de aceite de oliva, jugo de naranja agria, cilantro y aguacate.',
-    price: 150,
-    category: 'cocteles-tostadas',
-    canCustomize: true,
-    customType: 'coctel',
-    sizes: [
-      { name: 'Mediano', price: 150 },
-      { name: 'Grande', price: 210 },
-    ],
-  },
-  {
-    id: 'tos-01',
-    name: 'Trilogía de Tostadas de Ceviche de Pescado',
-    description: 'Tres tostadas de maíz horneadas con ceviche marinado en jugo de limón fresco, jitomate, cebolla morada, pepino y aguacate.',
-    price: 98,
-    category: 'cocteles-tostadas',
-    badge: 'CRUJIENTES 🥑',
-    isPopular: true,
-  },
-  {
-    id: 'tos-02',
-    name: 'Tostada Gobernador de Camarón (2 pzas)',
-    description: 'Tortilla tostada con base de frijoles negros, camarones salteados con pimiento y cebolla, y queso gratinado.',
-    price: 110,
-    category: 'cocteles-tostadas',
-    badge: 'DELICIOSA 🧀',
-  },
-  {
-    id: 'tos-03',
-    name: 'Tostada de Pulpo Enamorado (2 pzas)',
-    description: 'Pulpo picado con aderezo ligero de mayonesa de chipotle, apio crocante, cebollín y ajonjolí negro.',
-    price: 115,
-    category: 'cocteles-tostadas',
-  },
-
-  // ── 5. Aguachiles & Botanas
-  {
-    id: 'agu-01',
-    name: 'Aguachile Verde Tradicional',
-    description: 'Camarones abiertos en mariposa marinados al momento con jugo de limón colima, salsa de serrano y cilantro, pepino y cebolla morada.',
-    price: 165,
-    category: 'aguachiles-botanas',
-    badge: 'FRESCO & PICOSO 🥒🌶️',
+    id: 'mar-05',
+    name: 'Tacos de Pulpo Zarandeado',
+    description: 'Tentáculos de pulpo marinados y asados con adobo zarandeado en tres tortillas de maíz calientes.',
+    price: 210,
+    category: 'mar',
+    badge: 'ZARANDEADO 🐙',
     featured: true,
     isPopular: true,
-    canCustomize: true,
-    customType: 'aguachile',
   },
   {
-    id: 'agu-02',
-    name: 'Aguachile Negro Tatuado',
-    description: 'Camarones frescos con reducción de chiles secos tatemados, salsa de soya, jugo maggi, limón y ajo negro.',
-    price: 180,
-    category: 'aguachiles-botanas',
-    badge: 'CHEF SECRETO 🖤',
+    id: 'mar-06',
+    name: 'Tacos de Camarón',
+    description: 'Camarones salteados con sazón de la costa, servidos en tres tacos de maíz con aguacate y limón.',
+    price: 225,
+    category: 'mar',
+    badge: 'CRUJIENTES 🦐',
     isPopular: true,
-    canCustomize: true,
-    customType: 'aguachile',
   },
   {
-    id: 'agu-03',
-    name: 'Aguachile Rojo al Chiltepín',
-    description: 'Con auténtico chile chiltepín machacado, pepino persa y un toque cítrico intenso. Para amantes del picante real.',
+    id: 'mar-07',
+    name: 'Aguacate Relleno de Atún',
+    description: 'Mitades de aguacate fresco rellenas de ensalada fresca de atún con verduras y toques de mayonesa y limón.',
     price: 175,
-    category: 'aguachiles-botanas',
-    badge: 'BRAVO 🔥',
+    category: 'mar',
+    badge: 'FRESCO & LIGERO 🥑',
+  },
+  {
+    id: 'mar-08',
+    name: 'Camarones al Ajillo',
+    description: 'Salteados en salsa especial con arroz y verduras.',
+    price: 260,
+    category: 'mar',
+    badge: 'CHEF PICK 🧄',
+    featured: true,
+    isPopular: true,
+  },
+
+  // ── 3. PROTEÍNA ──
+  {
+    id: 'pro-01',
+    name: 'Pollo con Mole',
+    description: 'Pechuga rellena de queso bañada en mole de la casa acompañado de arroz.',
+    price: 185,
+    category: 'proteina',
+    badge: 'TRADICIÓN 🍗',
+    featured: true,
+    isPopular: true,
+  },
+  {
+    id: 'pro-02',
+    name: 'Pierna de Cerdo al Pipián',
+    description: 'En pipián verde con arroz y frijoles.',
+    price: 175,
+    category: 'proteina',
+    badge: 'ESPECIALIDAD 🍃',
+    isPopular: true,
+  },
+  {
+    id: 'pro-03',
+    name: 'Arrachera',
+    description: 'A la plancha, con guacamole, frijoles y chiles toreados.',
+    price: 245,
+    category: 'proteina',
+    badge: 'A LA PLANCHA 🥩',
+    featured: true,
+    isPopular: true,
+  },
+  {
+    id: 'pro-04',
+    name: 'Tacos de Arrachera o Picaña',
+    description: 'Orden de tacos de corte selecto a la plancha. Elige entre Arrachera marinada o Picaña jugosa.',
+    price: 225,
+    category: 'proteina',
+    badge: 'CORTE SELECTO 🌮',
     canCustomize: true,
-    customType: 'aguachile',
+    customType: 'carne',
+    isPopular: true,
   },
+
+  // ── 4. MAÍZ ──
   {
-    id: 'bot-01',
-    name: 'Chicharrón de Pescado Crujiente (Orden)',
-    description: 'Trocitos de filete marinados en mostaza y especias, fritos hasta quedar ultra crujientes con mayonesa de habanero.',
-    price: 135,
-    category: 'aguachiles-botanas',
-    badge: 'BOTANA TOP 🍺',
+    id: 'mai-01',
+    name: 'Memela de la Casa',
+    description: 'Con carne chinameca o pollo o cecina y queso oaxaca.',
+    price: 140,
+    category: 'maiz',
+    image: memelaImg,
+    badge: 'ANTOJITO JAROCHO 🫓',
+    featured: true,
+    canCustomize: true,
+    customType: 'memela',
     isPopular: true,
   },
   {
-    id: 'bot-02',
-    name: 'Dedos de Pescado Empanizados (8 pzas)',
-    description: 'Palitos de pescado fresco empanizados acompañados de salsa tártara casera y papas fritas.',
-    price: 115,
-    category: 'aguachiles-botanas',
-  },
-  {
-    id: 'bot-03',
-    name: 'Calamar Frito a la Romana',
-    description: 'Aros de calamar tierno rebosados y dorados con salsa tártara y gajos de limón.',
+    id: 'mai-02',
+    name: 'Enchiladas (3)',
+    description: 'Rellenas de pollo con salsa roja o verde o pipián.',
     price: 145,
-    category: 'aguachiles-botanas',
+    category: 'maiz',
+    badge: '3 PIEZAS 🌶️',
+    canCustomize: true,
+    customType: 'enchiladas',
+    isPopular: true,
+  },
+  {
+    id: 'mai-03',
+    name: 'Enmoladas (3)',
+    description: 'Tres tortillas rellenas de pollo bañadas en mole artesanal de la casa con crema fresca y queso.',
+    price: 145,
+    category: 'maiz',
+    image: enmoladasImg,
+    badge: 'MOLE DE LA CASA 🍫',
+    featured: true,
+    isPopular: true,
   },
 
-  // ── 6. Bebidas & Refrescos
+  // ── 5. SERVICIO AL CUARTO ──
   {
-    id: 'beb-01',
-    name: 'Michelada Preparada Mesa Jarocha (1 Litro)',
-    description: 'Vaso escarchado con chamoy y chilito artesanal, mezcla de salsas negras de la casa, clamato, jugo de limón y camarón Botanero.',
+    id: 'ser-01',
+    name: 'Club Sandwich',
+    description: 'Tradicional sándwich de tres pisos con jamón, pollo, queso, tocino crocante, lechuga y jitomate, servido con papas a la francesa.',
+    price: 155,
+    category: 'servicio-cuarto',
+    badge: 'CON PAPAS 🥪',
+    isPopular: true,
+  },
+  {
+    id: 'ser-02',
+    name: 'Hamburguesa de la Casa',
+    description: 'Jugosa carne artesanal con queso fundido, aderezos de la casa y vegetales frescos, acompañada de papas crujientes.',
+    price: 175,
+    category: 'servicio-cuarto',
+    badge: 'GOURMET 🍔',
+    featured: true,
+    isPopular: true,
+  },
+
+  // ── 6. PARA LOS PEQUES ──
+  {
+    id: 'peq-01',
+    name: 'Perrocho',
+    description: 'Hot dog clásico infantil con salchicha de pavo, cátsup y mayonesa con papas a la francesa.',
+    price: 70,
+    category: 'peques',
+    badge: 'INFANTIL 🌭',
+  },
+  {
+    id: 'peq-02',
+    name: 'Nuggets de Pollo',
+    description: 'Crujientes nuggets de pechuga de pollo empanizada servidos con aderezo y papas a la francesa.',
     price: 85,
-    category: 'bebidas',
-    badge: 'CON CAMARÓN 🦐🍺',
+    category: 'peques',
+    badge: 'CRUJIENTES 🍗',
     isPopular: true,
   },
   {
-    id: 'beb-02',
-    name: 'Cerveza Nacional Bien Fría (355ml)',
-    description: 'Corona Extra, Victoria, Modelo Especial o Negra Modelo. Elige tu favorita en notas.',
-    price: 45,
-    category: 'bebidas',
-  },
-  {
-    id: 'beb-03',
-    name: 'Agua Fresca Natural de Jamaica Costera (1L)',
-    description: 'Infusión de flor de jamaica pura con un toque de canela y endulzada al punto justo.',
-    price: 35,
-    category: 'bebidas',
+    id: 'peq-03',
+    name: 'Mini Hamburguesa',
+    description: 'Hamburguesita jugosa con queso fundido y papas a la francesa para los pequeños de la casa.',
+    price: 90,
+    category: 'peques',
+    badge: 'FAVORITA 🍔',
     isPopular: true,
-  },
-  {
-    id: 'beb-04',
-    name: 'Agua Fresca de Horchata de Coco (1L)',
-    description: 'Horchata artesanal de arroz con leche de coco natural y espolvoreada de canela.',
-    price: 40,
-    category: 'bebidas',
-    badge: 'FAVORITA 🥥',
-    isPopular: true,
-  },
-  {
-    id: 'beb-05',
-    name: 'Refrescos de Línea (600ml)',
-    description: 'Coca-Cola, Coca-Cola Sin Azúcar, Sidral Mundet, Sprite o Manzana.',
-    price: 30,
-    category: 'bebidas',
   },
 
-  // ── 7. Guarniciones & Extras
+  // ── 7. POSTRES ──
   {
-    id: 'ext-01',
-    name: 'Orden de Arroz a la Mantequilla',
-    description: 'Arroz esponjoso cocinado con mantequilla y granos de elote.',
-    price: 30,
-    category: 'guarniciones',
+    id: 'pos-01',
+    name: 'Oveja Negra',
+    description: 'Betún artesanal de chocolate Turin con cacahuate.',
+    price: 200,
+    category: 'postres',
+    badge: 'POSTRE ESTRELLA 🍫',
+    featured: true,
+    isPopular: true,
   },
   {
-    id: 'ext-02',
-    name: 'Orden de Papas a la Francesa Crujientes',
-    description: 'Papas doradas sazonadas con sal de mar y paprika.',
-    price: 45,
-    category: 'guarniciones',
-  },
-  {
-    id: 'ext-03',
-    name: 'Orden de Frijoles Refritos con Totopos',
-    description: 'Frijoles negros refritos al estilo veracruzano con queso cotija.',
-    price: 35,
-    category: 'guarniciones',
-  },
-  {
-    id: 'ext-04',
-    name: 'Frasco de Salsa Habanera Asada de la Casa (150g)',
-    description: 'Nuestra salsa insignia de habanero amarillo tatemado con limón y aceite de oliva para llevar a casa.',
-    price: 55,
-    category: 'guarniciones',
-    badge: 'PARA LLEVAR 🌶️',
+    id: 'pos-02',
+    name: 'Crepas de Cajeta',
+    description: 'Delicadas crepas bañadas en cajeta tradicional con trocitos de nuez tostada.',
+    price: 95,
+    category: 'postres',
+    badge: 'DULCE TRADICIÓN 🍯',
+    isPopular: true,
   },
 ];
 
-// ── Categorías para navegación ──
-const CATEGORIES: { id: CategoryId; name: string; icon: string; countBadge?: number }[] = [
-  { id: 'todos', name: 'Todo el Menú', icon: '🌊' },
-  { id: 'especialidades', name: 'Especialidades', icon: '🌟' },
-  { id: 'camarones-pulpo', name: 'Camarones & Pulpo', icon: '🦐' },
-  { id: 'pescados', name: 'Pescados del Día', icon: '🐟' },
-  { id: 'cocteles-tostadas', name: 'Cocteles & Tostadas', icon: '🦀' },
-  { id: 'aguachiles-botanas', name: 'Aguachiles & Botanas', icon: '🍤' },
-  { id: 'bebidas', name: 'Bebidas Frías', icon: '🥤' },
-  { id: 'guarniciones', name: 'Guarniciones', icon: '🍽️' },
+// ── Categorías para navegación (fieles a la carta física) ──
+const CATEGORIES: { id: CategoryId; name: string; icon: string }[] = [
+  { id: 'todos', name: 'Todo el Menú', icon: '📋' },
+  { id: 'caldos-sopas', name: 'Caldos y Sopas', icon: '🍲' },
+  { id: 'mar', name: 'Del Mar a Tu Mesa', icon: '🌊' },
+  { id: 'proteina', name: 'Proteína', icon: '🥩' },
+  { id: 'maiz', name: 'Maíz', icon: '🌽' },
+  { id: 'servicio-cuarto', name: 'Servicio al Cuarto', icon: '🛎️' },
+  { id: 'peques', name: 'Para los Peques', icon: '👶' },
+  { id: 'postres', name: 'Postres', icon: '🍨' },
 ];
 
 // ── Emojis representativos por categoría ──
 const CATEGORY_EMOJIS: Record<CategoryId, string> = {
-  todos: '🌊',
+  todos: '📋',
   favoritos: '❤️',
-  especialidades: '🦞',
-  'camarones-pulpo': '🦐',
-  pescados: '🐟',
-  'cocteles-tostadas': '🦀',
-  'aguachiles-botanas': '🍤',
-  bebidas: '🥤',
-  guarniciones: '🍽️',
+  'caldos-sopas': '🍲',
+  mar: '🌊',
+  proteina: '🥩',
+  maiz: '🌽',
+  'servicio-cuarto': '🛎️',
+  peques: '👶',
+  postres: '🍨',
 };
 
 export default function MesaJarochaMenu() {
@@ -513,9 +421,9 @@ export default function MesaJarochaMenu() {
 
   // ── Modal de personalización de producto ──
   const [customizingProduct, setCustomizingProduct] = useState<Product | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string>('');
-  const [selectedSpicy, setSelectedSpicy] = useState<'sin' | 'medio' | 'bravo'>('medio');
-  const [selectedPrep, setSelectedPrep] = useState<string>('Con todo (Cebolla, Cilantro, Aguacate)');
+  const [selectedProtein, setSelectedProtein] = useState<string>('Carne Chinameca');
+  const [selectedSauce, setSelectedSauce] = useState<string>('Salsa Roja');
+  const [selectedPrep, setSelectedPrep] = useState<string>('Con todo (Cilantro, Cebolla, Jitomate y Aguacate)');
   const [selectedExtras, setSelectedExtras] = useState<CustomOption[]>([]);
   const [specialNoteInput, setSpecialNoteInput] = useState('');
 
@@ -556,9 +464,15 @@ export default function MesaJarochaMenu() {
   const openCustomModal = (product: Product, e?: React.MouseEvent) => {
     e?.stopPropagation();
     setCustomizingProduct(product);
-    setSelectedSize(product.sizes?.[0]?.name || '');
-    setSelectedSpicy('medio');
-    setSelectedPrep('Con todo (Cebolla, Cilantro, Aguacate)');
+    setSelectedProtein(
+      product.customType === 'memela'
+        ? 'Carne Chinameca'
+        : product.customType === 'carne'
+        ? 'Arrachera'
+        : ''
+    );
+    setSelectedSauce(product.customType === 'enchiladas' ? 'Salsa Roja' : '');
+    setSelectedPrep('Con todo (Cilantro, Cebolla, Jitomate y Aguacate)');
     setSelectedExtras([]);
     setSpecialNoteInput('');
   };
@@ -574,7 +488,7 @@ export default function MesaJarochaMenu() {
     const itemPrice = product.price;
     const lineId = `${product.id}-${Date.now()}`;
     setCart(prev => {
-      const existing = prev.find(item => item.productId === product.id && !item.selectedSize && !item.extras?.length);
+      const existing = prev.find(item => item.productId === product.id && !item.extras?.length);
       if (existing) {
         return prev.map(item =>
           item.lineId === existing.lineId ? { ...item, quantity: item.quantity + 1 } : item
@@ -599,12 +513,7 @@ export default function MesaJarochaMenu() {
   const confirmCustomAdd = () => {
     if (!customizingProduct) return;
 
-    let base = customizingProduct.price;
-    if (customizingProduct.sizes && selectedSize) {
-      const sizeObj = customizingProduct.sizes.find(s => s.name === selectedSize);
-      if (sizeObj) base = sizeObj.price;
-    }
-
+    const base = customizingProduct.price;
     const extrasTotal = selectedExtras.reduce((sum, ext) => sum + ext.price, 0);
     const unitPrice = base + extrasTotal;
     const lineId = `${customizingProduct.id}-${Date.now()}`;
@@ -617,9 +526,9 @@ export default function MesaJarochaMenu() {
       unitPrice,
       quantity: 1,
       category: customizingProduct.category,
-      selectedSize: selectedSize || undefined,
-      selectedSpicy: customizingProduct.customType === 'aguachile' || customizingProduct.customType === 'marisco' ? selectedSpicy : undefined,
-      selectedPrep: selectedPrep || undefined,
+      selectedProtein: selectedProtein || undefined,
+      selectedSauce: selectedSauce || undefined,
+      selectedPrep: customizingProduct.customType === 'coctel' ? selectedPrep : undefined,
       extras: selectedExtras.length > 0 ? selectedExtras : undefined,
       specialNotes: specialNoteInput.trim() || undefined,
     };
@@ -716,11 +625,8 @@ export default function MesaJarochaMenu() {
 
     cart.forEach((item, idx) => {
       text += `\n${idx + 1}. *${item.quantity}x ${item.name}* — $${item.unitPrice * item.quantity}\n`;
-      if (item.selectedSize) text += `   • Tamaño: ${item.selectedSize}\n`;
-      if (item.selectedSpicy) {
-        const spicyName = item.selectedSpicy === 'sin' ? 'Sin picante' : item.selectedSpicy === 'medio' ? 'Picante Medio' : 'Bien Bravo 🔥';
-        text += `   • Picante: ${spicyName}\n`;
-      }
+      if (item.selectedProtein) text += `   • Carne/Corte: ${item.selectedProtein}\n`;
+      if (item.selectedSauce) text += `   • Salsa: ${item.selectedSauce}\n`;
       if (item.selectedPrep) text += `   • Prep: ${item.selectedPrep}\n`;
       if (item.extras?.length) {
         text += `   • Extras: ${item.extras.map(e => `${e.name} (+$${e.price})`).join(', ')}\n`;
@@ -875,13 +781,13 @@ export default function MesaJarochaMenu() {
               
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0D1B2D]/90 border border-[#FFC043]/40 text-[#FFC043] text-xs font-bold tracking-wide shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-[#FFC043] animate-ping" />
-                AUTÉNTICO SABOR DEL PUERTO DE VERACRUZ 🌴
+                MENÚ MAR Y TIERRA · SERVIDO DESDE LA 1:00 PM 🦞🥩
               </div>
 
               <h2 className="text-3xl md:text-5xl font-black text-white leading-tight font-serif tracking-tight">
-                Mariscos Frescos, <br className="hidden md:inline" />
+                Menú Mar y Tierra <br className="hidden md:inline" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00A8E8] via-[#2DD4BF] to-[#FFC043]">
-                  Tradición y Pasión Costera
+                  Tradición, Caldos & Cortes
                 </span>
               </h2>
 
@@ -892,24 +798,24 @@ export default function MesaJarochaMenu() {
               {/* 4 Badges de Confianza */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
                 <div className="bg-[#13243B]/80 border border-[#00A8E8]/15 rounded-xl p-2.5 text-center backdrop-blur-sm">
+                  <span className="text-lg block mb-0.5">🍲</span>
+                  <span className="text-[11px] font-bold text-[#F1F7FF] block">Caldos y Sopas</span>
+                  <span className="text-[9px] text-[#8EA5C2]">Chilpachole & Camarón</span>
+                </div>
+                <div className="bg-[#13243B]/80 border border-[#00A8E8]/15 rounded-xl p-2.5 text-center backdrop-blur-sm">
                   <span className="text-lg block mb-0.5">🌊</span>
-                  <span className="text-[11px] font-bold text-[#F1F7FF] block">Fresco del Día</span>
-                  <span className="text-[9px] text-[#8EA5C2]">Pesca seleccionada</span>
+                  <span className="text-[11px] font-bold text-[#F1F7FF] block">Del Mar a Tu Mesa</span>
+                  <span className="text-[9px] text-[#8EA5C2]">Cocteles y Ajillo</span>
                 </div>
                 <div className="bg-[#13243B]/80 border border-[#00A8E8]/15 rounded-xl p-2.5 text-center backdrop-blur-sm">
-                  <span className="text-lg block mb-0.5">🔥</span>
-                  <span className="text-[11px] font-bold text-[#F1F7FF] block">A las Brasas</span>
-                  <span className="text-[9px] text-[#8EA5C2]">Sazón artesanal</span>
+                  <span className="text-lg block mb-0.5">🥩</span>
+                  <span className="text-[11px] font-bold text-[#F1F7FF] block">Proteína Selecta</span>
+                  <span className="text-[9px] text-[#8EA5C2]">Arrachera a la plancha</span>
                 </div>
                 <div className="bg-[#13243B]/80 border border-[#00A8E8]/15 rounded-xl p-2.5 text-center backdrop-blur-sm">
-                  <span className="text-lg block mb-0.5">🌶️</span>
-                  <span className="text-[11px] font-bold text-[#F1F7FF] block">Salsa Bruja</span>
-                  <span className="text-[9px] text-[#8EA5C2]">Receta secreta</span>
-                </div>
-                <div className="bg-[#13243B]/80 border border-[#00A8E8]/15 rounded-xl p-2.5 text-center backdrop-blur-sm">
-                  <span className="text-lg block mb-0.5">🛵</span>
-                  <span className="text-[11px] font-bold text-[#F1F7FF] block">A Domicilio</span>
-                  <span className="text-[9px] text-[#8EA5C2]">Directo a tu mesa</span>
+                  <span className="text-lg block mb-0.5">🌽</span>
+                  <span className="text-[11px] font-bold text-[#F1F7FF] block">Maíz Casero</span>
+                  <span className="text-[9px] text-[#8EA5C2]">Memelas & Enmoladas</span>
                 </div>
               </div>
 
@@ -917,12 +823,12 @@ export default function MesaJarochaMenu() {
               <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3">
                 <button
                   onClick={() => {
-                    const heroProd = PRODUCTS.find(p => p.id === 'esp-01');
-                    if (heroProd) openCustomModal(heroProd);
+                    const heroProd = PRODUCTS.find(p => p.id === 'cal-04');
+                    if (heroProd) handleQuickAdd(heroProd);
                   }}
                   className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#FF5942] to-[#FF8C00] text-white font-black text-xs md:text-sm tracking-wide uppercase shadow-xl shadow-[#FF5942]/30 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
                 >
-                  <Sparkles size={18} /> Pedir Mariscada Estrella · $395
+                  <Sparkles size={18} /> Probar Chilpachole de Jaiba · $240
                 </button>
                 <div className="text-xs text-[#8EA5C2] flex items-center gap-1.5">
                   <Clock size={14} className="text-[#25D366]" />
@@ -937,7 +843,7 @@ export default function MesaJarochaMenu() {
               <div className="relative rounded-3xl overflow-hidden border-2 border-[#00A8E8]/30 shadow-2xl shadow-[#0084C7]/30 group">
                 <img
                   src={heroImg}
-                  alt="Gran Mariscada Veracruzana"
+                  alt="Menú Mar y Tierra Mesa Jarocha"
                   className="w-full h-[260px] sm:h-[340px] object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#07111E] via-transparent to-transparent opacity-80" />
@@ -945,11 +851,11 @@ export default function MesaJarochaMenu() {
                 {/* Badge flotante en la foto */}
                 <div className="absolute bottom-3 left-3 right-3 bg-[#0D1B2D]/90 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl border border-[#FFC043]/30 flex items-center justify-between gap-2">
                   <div className="min-w-0 flex-1">
-                    <span className="text-[10px] font-bold text-[#FFC043] uppercase tracking-wider block truncate">Recomendación del Chef</span>
-                    <span className="text-xs font-black text-white block truncate">Gran Mariscada Veracruzana</span>
+                    <span className="text-[10px] font-bold text-[#FFC043] uppercase tracking-wider block truncate">Especialidad de la Casa</span>
+                    <span className="text-xs font-black text-white block truncate">Chilpachole de Jaiba Tradicional</span>
                   </div>
                   <span className="text-xs sm:text-sm font-black text-[#2DD4BF] bg-[#07111E]/80 px-2.5 py-1 rounded-xl border border-[#2DD4BF]/30 flex-shrink-0 whitespace-nowrap">
-                    $395 MXN
+                    $240 MXN
                   </span>
                 </div>
               </div>
@@ -1118,6 +1024,18 @@ export default function MesaJarochaMenu() {
                     </button>
 
                     <div>
+                      {/* Imagen si el platillo la tiene */}
+                      {product.image && (
+                        <div className="w-full h-36 mb-3 rounded-2xl overflow-hidden relative border border-[#00A8E8]/20 bg-[#07111E]">
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                          />
+                        </div>
+                      )}
+
                       {/* Badge si tiene, o chip con emoji de categoría como fallback */}
                       <div className="mb-2">
                         {product.badge ? (
@@ -1213,109 +1131,115 @@ export default function MesaJarochaMenu() {
               {/* Contenido scrolleable */}
               <div className="p-5 overflow-y-auto space-y-5 text-xs text-[#8EA5C2]">
                 
-                {/* Selector de Tamaño si tiene */}
-                {customizingProduct.sizes && customizingProduct.sizes.length > 0 && (
+                {/* 1. Selector de Carne para Memela de la Casa */}
+                {customizingProduct.customType === 'memela' && (
                   <div>
                     <label className="block text-white font-bold mb-2 uppercase text-[11px] tracking-wide">
-                      1. Elige el Tamaño de la Copa / Porción:
+                      🥩 Elige la carne de tu Memela:
                     </label>
                     <div className="grid grid-cols-3 gap-2">
-                      {customizingProduct.sizes.map(sz => (
+                      {['Carne Chinameca', 'Pollo', 'Cecina'].map(protein => (
                         <button
-                          key={sz.name}
-                          onClick={() => setSelectedSize(sz.name)}
+                          key={protein}
+                          onClick={() => setSelectedProtein(protein)}
                           className={`p-2.5 rounded-xl border text-center font-bold transition-all ${
-                            selectedSize === sz.name
+                            selectedProtein === protein
                               ? 'bg-[#0084C7] border-[#00A8E8] text-white shadow-md'
                               : 'bg-[#13243B] border-[#00A8E8]/15 text-[#8EA5C2] hover:text-white'
                           }`}
                         >
-                          <span className="block text-xs">{sz.name}</span>
-                          <span className="block text-[11px] text-[#2DD4BF] mt-0.5">${sz.price}</span>
+                          <span className="block text-xs">{protein}</span>
                         </button>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* Selector de Nivel de Picante (para aguachiles o mariscos) */}
-                {(customizingProduct.customType === 'aguachile' || customizingProduct.customType === 'marisco') && (
+                {/* 2. Selector de Salsa para Enchiladas (3) */}
+                {customizingProduct.customType === 'enchiladas' && (
                   <div>
                     <label className="block text-white font-bold mb-2 uppercase text-[11px] tracking-wide">
-                      🌶️ Nivel de Picante Deseado:
+                      🌶️ Elige tu salsa para las Enchiladas:
                     </label>
                     <div className="grid grid-cols-3 gap-2">
-                      <button
-                        onClick={() => setSelectedSpicy('sin')}
-                        className={`p-2.5 rounded-xl border text-center font-bold transition-all ${
-                          selectedSpicy === 'sin'
-                            ? 'bg-[#25D366]/20 border-[#25D366] text-white shadow-md'
-                            : 'bg-[#13243B] border-[#00A8E8]/15 text-[#8EA5C2]'
-                        }`}
-                      >
-                        <span className="block text-base mb-0.5">🟢</span>
-                        <span className="text-[11px]">Sin Picante</span>
-                      </button>
-                      <button
-                        onClick={() => setSelectedSpicy('medio')}
-                        className={`p-2.5 rounded-xl border text-center font-bold transition-all ${
-                          selectedSpicy === 'medio'
-                            ? 'bg-[#FFC043]/20 border-[#FFC043] text-white shadow-md'
-                            : 'bg-[#13243B] border-[#00A8E8]/15 text-[#8EA5C2]'
-                        }`}
-                      >
-                        <span className="block text-base mb-0.5">🟡</span>
-                        <span className="text-[11px]">Medio Costero</span>
-                      </button>
-                      <button
-                        onClick={() => setSelectedSpicy('bravo')}
-                        className={`p-2.5 rounded-xl border text-center font-bold transition-all ${
-                          selectedSpicy === 'bravo'
-                            ? 'bg-[#FF5942]/20 border-[#FF5942] text-white shadow-md'
-                            : 'bg-[#13243B] border-[#00A8E8]/15 text-[#8EA5C2]'
-                        }`}
-                      >
-                        <span className="block text-base mb-0.5">🔥</span>
-                        <span className="text-[11px]">Bien Bravo</span>
-                      </button>
+                      {['Salsa Roja', 'Salsa Verde', 'Pipián'].map(sauce => (
+                        <button
+                          key={sauce}
+                          onClick={() => setSelectedSauce(sauce)}
+                          className={`p-2.5 rounded-xl border text-center font-bold transition-all ${
+                            selectedSauce === sauce
+                              ? 'bg-[#0084C7] border-[#00A8E8] text-white shadow-md'
+                              : 'bg-[#13243B] border-[#00A8E8]/15 text-[#8EA5C2] hover:text-white'
+                          }`}
+                        >
+                          <span className="block text-xs">{sauce}</span>
+                        </button>
+                      ))}
                     </div>
                   </div>
                 )}
 
-                {/* Preparación Base */}
-                <div>
-                  <label className="block text-white font-bold mb-2 uppercase text-[11px] tracking-wide">
-                    🥗 Preparación de Verduras & Sazón:
-                  </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {[
-                      'Con todo (Cebolla, Cilantro, Aguacate)',
-                      'Sin Cebolla',
-                      'Sin Cilantro',
-                      'Solo salsa y limón (Sin verduras)',
-                    ].map(prep => (
-                      <button
-                        key={prep}
-                        onClick={() => setSelectedPrep(prep)}
-                        className={`p-2 rounded-xl border text-left font-medium transition-all ${
-                          selectedPrep === prep
-                            ? 'bg-[#0084C7]/25 border-[#00A8E8] text-white'
-                            : 'bg-[#13243B] border-[#00A8E8]/15 text-[#8EA5C2] hover:text-white'
-                        }`}
-                      >
-                        {prep}
-                      </button>
-                    ))}
+                {/* 3. Selector de Corte para Tacos de Arrachera o Picaña */}
+                {customizingProduct.customType === 'carne' && (
+                  <div>
+                    <label className="block text-white font-bold mb-2 uppercase text-[11px] tracking-wide">
+                      🥩 Elige tu corte para los tacos:
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {['Arrachera', 'Picaña'].map(corte => (
+                        <button
+                          key={corte}
+                          onClick={() => setSelectedProtein(corte)}
+                          className={`p-2.5 rounded-xl border text-center font-bold transition-all ${
+                            selectedProtein === corte
+                              ? 'bg-[#0084C7] border-[#00A8E8] text-white shadow-md'
+                              : 'bg-[#13243B] border-[#00A8E8]/15 text-[#8EA5C2] hover:text-white'
+                          }`}
+                        >
+                          <span className="block text-xs">{corte}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* 4. Selector de Preparación para Cocteles y Del Mar */}
+                {customizingProduct.customType === 'coctel' && (
+                  <div>
+                    <label className="block text-white font-bold mb-2 uppercase text-[11px] tracking-wide">
+                      🥗 Preparación de Verduras & Sazón:
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {[
+                        'Con todo (Cilantro, Cebolla, Jitomate y Aguacate)',
+                        'Sin Cebolla',
+                        'Sin Cilantro',
+                        'Solo salsa coctelera (Sin verduras)',
+                        'Verduras por separado',
+                      ].map(prep => (
+                        <button
+                          key={prep}
+                          onClick={() => setSelectedPrep(prep)}
+                          className={`p-2 rounded-xl border text-left font-medium transition-all ${
+                            selectedPrep === prep
+                              ? 'bg-[#0084C7]/25 border-[#00A8E8] text-white'
+                              : 'bg-[#13243B] border-[#00A8E8]/15 text-[#8EA5C2] hover:text-white'
+                          }`}
+                        >
+                          {prep}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Extras Añadibles */}
                 <div>
                   <label className="block text-white font-bold mb-2 uppercase text-[11px] tracking-wide">
-                    ➕ Extras para enriquecer tu platillo:
+                    ➕ Extras para acompañar tu platillo:
                   </label>
                   <div className="space-y-1.5">
-                    {MARISCO_EXTRAS.map(extra => {
+                    {MENU_EXTRAS.map(extra => {
                       const isSelected = selectedExtras.some(e => e.name === extra.name);
                       return (
                         <button
@@ -1346,7 +1270,7 @@ export default function MesaJarochaMenu() {
                   </label>
                   <input
                     type="text"
-                    placeholder="Ej. Limón aparte, muy dorado, salsa en bolsita..."
+                    placeholder="Ej. Salsa aparte, término de la carne, limón extra..."
                     value={specialNoteInput}
                     onChange={e => setSpecialNoteInput(e.target.value)}
                     className="w-full p-2.5 rounded-xl bg-[#13243B] border border-[#00A8E8]/20 text-white placeholder-[#8EA5C2]/50 text-xs focus:outline-none focus:border-[#00A8E8]"
@@ -1360,15 +1284,7 @@ export default function MesaJarochaMenu() {
                 <div>
                   <span className="text-[10px] text-[#8EA5C2] uppercase font-bold block">Total Platillo</span>
                   <span className="text-xl font-black text-[#2DD4BF]">
-                    ${(() => {
-                      let base = customizingProduct.price;
-                      if (customizingProduct.sizes && selectedSize) {
-                        const s = customizingProduct.sizes.find(sz => sz.name === selectedSize);
-                        if (s) base = s.price;
-                      }
-                      const extraSum = selectedExtras.reduce((sum, e) => sum + e.price, 0);
-                      return base + extraSum;
-                    })()} <span className="text-[10px] text-[#8EA5C2] font-normal">MXN</span>
+                    ${customizingProduct.price + selectedExtras.reduce((sum, e) => sum + e.price, 0)} <span className="text-[10px] text-[#8EA5C2] font-normal">MXN</span>
                   </span>
                 </div>
 
@@ -1472,14 +1388,8 @@ export default function MesaJarochaMenu() {
                               <div>
                                 <h4 className="font-bold text-sm text-white font-serif">{item.name}</h4>
                                 <div className="text-[11px] text-[#8EA5C2] space-y-0.5 mt-1">
-                                  {item.selectedSize && <div>• Tamaño: <span className="text-white">{item.selectedSize}</span></div>}
-                                  {item.selectedSpicy && (
-                                    <div>
-                                      • Picante: <span className="text-white">
-                                        {item.selectedSpicy === 'sin' ? 'Sin picante' : item.selectedSpicy === 'medio' ? 'Medio' : 'Bien Bravo 🔥'}
-                                      </span>
-                                    </div>
-                                  )}
+                                  {item.selectedProtein && <div>• Carne / Corte: <span className="text-white font-semibold">{item.selectedProtein}</span></div>}
+                                  {item.selectedSauce && <div>• Salsa: <span className="text-white font-semibold">{item.selectedSauce}</span></div>}
                                   {item.selectedPrep && <div>• {item.selectedPrep}</div>}
                                   {item.extras?.map(e => (
                                     <div key={e.name} className="text-[#2DD4BF]">

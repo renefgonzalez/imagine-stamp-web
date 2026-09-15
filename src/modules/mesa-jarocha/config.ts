@@ -3,11 +3,11 @@
 // mariscadas, camarones al mojo, aguachiles, cocteles y pulpo a las brasas.
 
 export const clientConfig = {
-  businessName: 'Mesa Jarocha · Mariscos & Sabor Costero',
+  businessName: 'Mesa Jarocha · Menú Mar y Tierra',
   shortName: 'Mesa Jarocha',
-  tagline: 'El auténtico sabor del Golfo y la tradición Jarocha 🦞🌊',
+  tagline: 'Menú Mar y Tierra · Servido desde la 1:00 PM 🦞🥩',
   description:
-    'Mariscadas gourmet, camarones al mojo de ajo, pulpo a las brasas, aguachiles sinaloenses y jarochos, cocteles preparados al momento y pescados frescos con sazón tradicional de Veracruz.',
+    'Especialidades del mar a tu mesa, caldos y sopas tradicionales, cortes selectos a la plancha, antojitos de maíz caseros y servicio al cuarto.',
 
   // ⚠️ IMPORTANTE: Reemplazar con el WhatsApp real del cliente al entregar la demo/producción
   phonePrimary: '5215500000000', // TODO: Reemplazar con el WhatsApp oficial de Mesa Jarocha
@@ -17,10 +17,10 @@ export const clientConfig = {
   email: 'contacto@mesajarocha.mx',
 
   // Ubicación y horarios
-  address: 'Zona Costera & Servicio a Domicilio · Cobertura Local',
-  hours: 'Mar–Dom: 11:00 AM – 7:30 PM · Lunes cerrado',
-  badgeQuality: '🌊 100% Mariscos Frescos del Día · Sabor Tradicional Jarocho',
-  sauceSpecialty: 'Salsa Bruja y Habanero Asado de la Casa 🌶️',
+  address: 'Zona Costera & Servicio al Cuarto / Domicilio · Cobertura Local',
+  hours: 'Servido desde la 1:00 PM · Mar–Dom: 1:00 PM – 9:00 PM · Lunes cerrado',
+  badgeQuality: '🦞 Menú Mar y Tierra · Especialidades Jarochas & Cortes',
+  sauceSpecialty: 'Salsa Bruja y Salsas de la Casa 🌶️',
 
   // Redes sociales
   instagramUrl: 'https://instagram.com/',
