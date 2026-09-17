@@ -22,6 +22,8 @@ const LabalMenu = React.lazy(() => import('./modules/labal/pages/LabalMenu'));
 const VicmaLaser = React.lazy(() => import('./modules/vicma-laser/VicmaLaser'));
 const BurgaslocasMenu = React.lazy(() => import('./modules/burgaslocas/pages/BurgaslocasMenu'));
 const MesaJarochaMenu = React.lazy(() => import('./modules/mesa-jarocha/pages/MesaJarochaMenu'));
+const PincheCheMenu = React.lazy(() => import('./modules/pinche-che/pages/PincheCheMenu'));
+
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
 import { CartButton } from './components/common/CartButton';
@@ -806,7 +808,10 @@ export default function App() {
         <Route path="/burgas-locas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#FF381E' }} /></div>}><BurgaslocasMenu /></Suspense></ErrorBoundary>} />
         <Route path="/mesa-jarocha" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#0084C7' }} /></div>}><MesaJarochaMenu /></Suspense></ErrorBoundary>} />
         <Route path="/mesajarocha" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#0084C7' }} /></div>}><MesaJarochaMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/pinche-che" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#E0531B' }} /></div>}><PincheCheMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/pincheche" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#E0531B' }} /></div>}><PincheCheMenu /></Suspense></ErrorBoundary>} />
         {/* <Route path="/amelie-patisserie" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]" /></div>}><AmeliePatisserieMenu /></Suspense></ErrorBoundary>} /> */}
+
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
     </HashRouter>
