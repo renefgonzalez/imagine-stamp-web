@@ -1,18 +1,46 @@
-name: Keepalive Supabase
+name: Keepalive Supabase (Multi-Project)
 
 on:
   schedule:
-    - cron: '0 */6 * * *'       # cada 6 horas
-  workflow_dispatch:              # también manual
+    - cron: '0 */6 * * *'       # Cada 6 horas los 365 días del año
+  workflow_dispatch:            # Permite ejecución manual desde GitHub
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase REST API
+      - name: Ping Amelie Patisserie
         run: |
-          curl -s -o /dev/null -w "%{http_code}\n" \
-            "${{ secrets.VITE_SUPABASE_URL }}/rest/v1/products?select=id&limit=1" \
-            -H "apikey: ${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
-            || echo "(ignorado: Supabase puede estar pausado, el ping igual cuenta)"
+          echo "Pinging Amelie Patisserie..."
+          curl -s -o /dev/null -w "Amelie Patisserie HTTP: %{http_code}\n" \
+            "https://yhrtxafoiyngpzukqnmp.supabase.co/rest/v1/products?select=id&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlocnR4YWZvaXluZ3B6dWtxbm1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwNjE0MjIsImV4cCI6MjEwMTYzNzQyMn0.JdPif4nKv2Uxtbxsvg2_lEGPE1zI-kLLAMV6cIpQFvk" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlocnR4YWZvaXluZ3B6dWtxbm1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwNjE0MjIsImV4cCI6MjEwMTYzNzQyMn0.JdPif4nKv2Uxtbxsvg2_lEGPE1zI-kLLAMV6cIpQFvk" \
+            || echo "(Amelie Patisserie ping completado)"
+
+      - name: Ping Takeros CDMX
+        run: |
+          echo "Pinging Takeros CDMX..."
+          curl -s -o /dev/null -w "Takeros CDMX HTTP: %{http_code}\n" \
+            "https://mhbngnqdgxdgflthdqve.supabase.co/rest/v1/productos_estado?select=producto_id&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oYm5nbnFkZ3hkZ2ZsdGhkcXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MzExNzAsImV4cCI6MjEwMjIwNzE3MH0.wclqmYI8HJ2fTWfXUOhFnSSxbC095hjiaqHjt3W8o-E" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oYm5nbnFkZ3hkZ2ZsdGhkcXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MzExNzAsImV4cCI6MjEwMjIwNzE3MH0.wclqmYI8HJ2fTWfXUOhFnSSxbC095hjiaqHjt3W8o-E" \
+            || echo "(Takeros CDMX ping completado)"
+
+      - name: Ping Imagine & Stamp Web
+        run: |
+          echo "Pinging Imagine & Stamp Web..."
+          curl -s -o /dev/null -w "Imagine & Stamp HTTP: %{http_code}\n" \
+            "https://gekbdjdwyimrotjpsqrk.supabase.co/rest/v1/products?select=id&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdla2JkamR3eWltcm90anBzcXJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMjc0NTgsImV4cCI6MjA5MTYwMzQ1OH0.gRYCz1VnGMXHTjhrsbh2jURSyD-GAPYZkftMdH8jiVg" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdla2JkamR3eWltcm90anBzcXJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMjc0NTgsImV4cCI6MjA5MTYwMzQ1OH0.gRYCz1VnGMXHTjhrsbh2jURSyD-GAPYZkftMdH8jiVg" \
+            || echo "(Imagine & Stamp ping completado)"
+
+      - name: Ping La Planchita POS
+        run: |
+          echo "Pinging La Planchita POS..."
+          curl -s -o /dev/null -w "La Planchita POS HTTP: %{http_code}\n" \
+            "https://cpwdgwerefnpegbisuyj.supabase.co/rest/v1/orders?select=id&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwd2Rnd2VyZWZucGVnYmlzdXlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4MTgzMTgsImV4cCI6MjA4NjM5NDMxOH0._0mxn2wdwDzxLF6uzoqUsVr-3pNMqeRL7pfZ0TEhV3Y" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwd2Rnd2VyZWZucGVnYmlzdXlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4MTgzMTgsImV4cCI6MjA4NjM5NDMxOH0._0mxn2wdwDzxLF6uzoqUsVr-3pNMqeRL7pfZ0TEhV3Y" \
+            || echo "(La Planchita POS ping completado)"
