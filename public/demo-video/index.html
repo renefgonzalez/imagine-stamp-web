@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Videos Animados 3D para Negocios • Desde $249 MXN 🎬 Imagine &amp; Stamp</title>
+    <meta
+      name="description"
+      content="Creamos tu personaje 3D estilo Pixar a partir de tu foto, mascota o logotipo con locución profesional mexicana. Ideal para Reels, TikTok y WhatsApp."
+    />
+
+    <!-- ===== Open Graph / WhatsApp Preview ===== -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Imagine &amp; Stamp | Videos 3D" />
+    <meta property="og:title" content="Videos Animados 3D para Negocios • Desde $249 MXN 🎬🚀" />
+    <meta
+      property="og:description"
+      content="Personajes estilo Pixar desde una foto, mascota o desde cero. Con locución profesional mexicana para Reels y TikTok. ¡Cotiza el tuyo!"
+    />
+    <meta property="og:url" content="https://imagineandstamp.site/demo-video/" />
+    <meta property="og:image" content="https://imagineandstamp.site/og-video-demo.jpg" />
+    <meta property="og:image:secure_url" content="https://imagineandstamp.site/og-video-demo.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Videos Animados 3D con Personajes Pixar para Negocios" />
+    <meta property="og:locale" content="es_MX" />
+
+    <!-- ===== Twitter Card ===== -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Videos Animados 3D para Negocios • Desde $249 MXN 🎬🚀" />
+    <meta
+      name="twitter:description"
+      content="Personajes estilo Pixar desde una foto, mascota o desde cero. Con locución profesional mexicana para Reels y TikTok."
+    />
+    <meta name="twitter:image" content="https://imagineandstamp.site/og-video-demo.jpg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary: #3b82f6;
+        --accent: #8b5cf6;
+        --amber: #f59e0b;
+        --green: #10b981;
+        --bg-dark: #070a13;
+        --card-bg: rgba(18, 24, 43, 0.75);
+        --card-border: rgba(255, 255, 255, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: var(--bg-dark);
+        color: #f1f5f9;
+        min-height: 100vh;
+        overflow-x: hidden;
+        line-height: 1.5;
+        position: relative;
+      }
+
+      /* Ambient background lights */
+      .glow-1 {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 600px;
+        height: 450px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(7, 10, 19, 0) 70%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .glow-2 {
+        position: absolute;
+        top: 700px;
+        right: -100px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, rgba(7, 10, 19, 0) 70%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .container {
+        max-width: 580px;
+        margin: 0 auto;
+        padding: 1.25rem 1rem 6rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Header */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0 1.5rem;
+      }
+
+      .logo-badge {
+        font-weight: 800;
+        font-size: 1.15rem;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #ffffff 40%, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .live-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: rgba(16, 185, 129, 0.12);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.25);
+        padding: 4px 10px;
+        border-radius: 9999px;
+      }
+
+      .live-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background-color: #10b981;
+        box-shadow: 0 0 8px #10b981;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.85); }
+      }
+
+      /* Hero */
+      .hero {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .tag-top {
+        display: inline-block;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: linear-gradient(90deg, #f59e0b, #ef4444);
+        color: #fff;
+        padding: 4px 14px;
+        border-radius: 9999px;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+      }
+
+      h1 {
+        font-size: 2.1rem;
+        font-weight: 900;
+        line-height: 1.15;
+        letter-spacing: -0.5px;
+        margin-bottom: 0.75rem;
+      }
+
+      .grad-text {
+        background: linear-gradient(135deg, #60a5fa 0%, #c084fc 60%, #f472b6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .hero-sub {
+        font-size: 1rem;
+        color: #94a3b8;
+        line-height: 1.45;
+        max-width: 440px;
+        margin: 0 auto;
+      }
+
+      /* Phone Mockup Video Player */
+      .video-wrapper {
+        position: relative;
+        max-width: 320px;
+        margin: 0 auto 2.5rem;
+        border-radius: 28px;
+        padding: 8px;
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.03));
+        box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.25);
+      }
+
+      .video-inner {
+        position: relative;
+        border-radius: 22px;
+        overflow: hidden;
+        background: #000;
+        aspect-ratio: 9 / 16;
+      }
+
+      video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .player-hint {
+        position: absolute;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(8px);
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        pointer-events: none;
+        white-space: nowrap;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+
+      /* Section styling */
+      .section-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        margin-bottom: 0.4rem;
+        letter-spacing: -0.3px;
+      }
+
+      .section-sub {
+        font-size: 0.9rem;
+        color: #94a3b8;
+        margin-bottom: 1.25rem;
+      }
+
+      /* Cards: 3 Formas de crear tu personaje */
+      .creation-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .creation-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 1.1rem;
+        border-radius: 16px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        backdrop-filter: blur(12px);
+      }
+
+      .creation-icon {
+        font-size: 1.8rem;
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .creation-card h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 4px;
+      }
+
+      .creation-card p {
+        font-size: 0.88rem;
+        color: #94a3b8;
+        line-height: 1.4;
+      }
+
+      /* Pricing Grid */
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .pricing-card {
+        padding: 1rem;
+        border-radius: 16px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .pricing-card.featured {
+        border-color: rgba(99, 102, 241, 0.6);
+        background: linear-gradient(180deg, rgba(99, 102, 241, 0.18) 0%, rgba(18, 24, 43, 0.85) 100%);
+      }
+
+      .card-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font-size: 0.65rem;
+        font-weight: 800;
+        background: #f59e0b;
+        color: #000;
+        padding: 2px 7px;
+        border-radius: 9999px;
+        text-transform: uppercase;
+      }
+
+      .pricing-time {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #cbd5e1;
+        margin-bottom: 4px;
+      }
+
+      .pricing-amount {
+        font-size: 1.65rem;
+        font-weight: 900;
+        color: #fff;
+        letter-spacing: -0.5px;
+      }
+
+      .pricing-mxn {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-weight: 600;
+      }
+
+      .pricing-note {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-top: 6px;
+      }
+
+      /* Features Box */
+      .features-box {
+        padding: 1.2rem;
+        border-radius: 16px;
+        background: rgba(30, 41, 59, 0.4);
+        border: 1px dashed rgba(255, 255, 255, 0.15);
+        margin-bottom: 2.5rem;
+      }
+
+      .features-box h4 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: #38bdf8;
+      }
+
+      .features-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 0.88rem;
+        color: #e2e8f0;
+      }
+
+      .features-list li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* Floating Bottom CTA Bar */
+      .bottom-cta-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(7, 10, 19, 0.92);
+        backdrop-filter: blur(16px);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0.85rem 1rem;
+        z-index: 100;
+      }
+
+      .cta-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        max-width: 580px;
+        margin: 0 auto;
+        padding: 1rem 1.5rem;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        color: #ffffff;
+        font-size: 1.05rem;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .cta-btn:active {
+        transform: scale(0.98);
+      }
+
+      .footer-note {
+        text-align: center;
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="glow-1"></div>
+    <div class="glow-2"></div>
+
+    <div class="container">
+      <!-- Header -->
+      <header>
+        <div class="logo-badge">IMAGINE &amp; STAMP</div>
+        <div class="live-pill">
+          <span class="live-dot"></span>
+          <span>Entrega en 3 días</span>
+        </div>
+      </header>
+
+      <!-- Hero -->
+      <div class="hero">
+        <span class="tag-top">🔥 DESDE $249 MXN</span>
+        <h1>
+          Tu Negocio en 3D<br />
+          <span class="grad-text">Estilo Pixar</span>
+        </h1>
+        <p class="hero-sub">
+          Videos animados con locución profesional mexicana listos para vender en Reels, TikTok y WhatsApp.
+        </p>
+      </div>
+
+      <!-- Video Mockup -->
+      <div class="video-wrapper">
+        <div class="video-inner">
+          <video
+            src="/demo-video/video-muestra.mp4"
+            poster="/og-video-demo.jpg"
+            controls
+            playsinline
+            preload="metadata"
+          ></video>
+          <div class="player-hint">🔊 Toca para reproducir con audio</div>
+        </div>
+      </div>
+
+      <!-- 3 Formas de crear tu personaje -->
+      <section>
+        <h2 class="section-title">¿Cómo creamos tu personaje?</h2>
+        <p class="section-sub">Tú eliges cómo quieres que luzca el vocero de tu marca:</p>
+
+        <div class="creation-grid">
+          <div class="creation-card">
+            <div class="creation-icon">📸</div>
+            <div>
+              <h3>1. A partir de una foto tuya</h3>
+              <p>
+                Mándanos una foto de tu rostro o de cuerpo entero. Te transformamos en un personaje 3D estilo Pixar con
+                tu peinado, playera o uniforme.
+              </p>
+            </div>
+          </div>
+
+          <div class="creation-card">
+            <div class="creation-icon">🧸</div>
+            <div>
+              <h3>2. De tu mascota o logotipo</h3>
+              <p>
+                ¿Tienes un dibujo, muñeco, botarga o la mascota de tu negocio? La traemos a la vida en 3D hiperrealista
+                para que hable por tu marca.
+              </p>
+            </div>
+          </div>
+
+          <div class="creation-card">
+            <div class="creation-icon">🎨</div>
+            <div>
+              <h3>3. Diseñado desde cero</h3>
+              <p>
+                Elige la profesión y el estilo: chef, barbero, mecánico, doctora, vendedora... con los colores y
+                herramientas de tu local.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Precios Especiales -->
+      <section>
+        <h2 class="section-title">Precios de Lanzamiento</h2>
+        <p class="section-sub">Pago único por video terminado (sin rentas ni cargos extras):</p>
+
+        <div class="pricing-grid">
+          <div class="pricing-card">
+            <div class="pricing-time">14 segundos</div>
+            <div class="pricing-amount">$249</div>
+            <div class="pricing-mxn">MXN</div>
+            <div class="pricing-note">Ideal para 1 promo rápida</div>
+          </div>
+
+          <div class="pricing-card featured">
+            <div class="card-badge">MÁS PEDIDO</div>
+            <div class="pricing-time">21 segundos</div>
+            <div class="pricing-amount">$299</div>
+            <div class="pricing-mxn">MXN</div>
+            <div class="pricing-note">Promo + llamado a la acción</div>
+          </div>
+
+          <div class="pricing-card">
+            <div class="pricing-time">28 segundos</div>
+            <div class="pricing-amount">$349</div>
+            <div class="pricing-mxn">MXN</div>
+            <div class="pricing-note">Explicar menú o catálogo</div>
+          </div>
+
+          <div class="pricing-card">
+            <div class="pricing-time">35 segundos</div>
+            <div class="pricing-amount">$399</div>
+            <div class="pricing-mxn">MXN</div>
+            <div class="pricing-note">Presentación completa</div>
+          </div>
+        </div>
+
+        <div class="features-box">
+          <h4>✨ Todos los paquetes incluyen:</h4>
+          <ul class="features-list">
+            <li>✅ Creación de personaje 3D personalizado</li>
+            <li>✅ Locución profesional mexicana (voz hombre o mujer)</li>
+            <li>✅ Redacción de guion publicitario vendedor</li>
+            <li>✅ Música de fondo con licencia comercial</li>
+            <li>✅ Formato vertical HD (1080x1920) para Reels, TikTok y WhatsApp</li>
+            <li>✅ Entrega garantizada en 3 a 5 días hábiles</li>
+          </ul>
+        </div>
+      </section>
+
+      <div class="footer-note">
+        <p>© Imagine &amp; Stamp • Videos Publicitarios con IA y Diseño Digital</p>
+      </div>
+    </div>
+
+    <!-- Floating Sticky Button -->
+    <div class="bottom-cta-bar">
+      <a
+        href="https://wa.me/5215650469993?text=Hola%20Imagine%20%26%20Stamp,%20vi%20la%20demo%20y%20quiero%20cotizar%20un%20video%20animado%203D%20para%20mi%20negocio"
+        class="cta-btn"
+      >
+        <span>💬 Cotizar mi Personaje por WhatsApp</span>
+      </a>
+    </div>
+  </body>
+</html>
