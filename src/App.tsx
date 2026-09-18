@@ -16,13 +16,14 @@ import AdminPanel from './AdminPanel';
 
 const CatalogoEtiquetas = React.lazy(() => import('./modules/etiquetas-escolares/pages/CatalogoEtiquetas'));
 const DemoCrepasMenu = React.lazy(() => import('./modules/demo-crepas/pages/DemoCrepasMenu'));
-const TarjetaBarberia = React.lazy(() => import('./modules/tarjeta-digital/pages/TarjetaBarberia'));
+const TarjetaBarberia = React.lazy(() => import('./modules/tarjeta-barberia/pages/TarjetaBarberia'));
 const TarjetaVeterinaria = React.lazy(() => import('./modules/tarjeta-veterinaria/pages/TarjetaVeterinaria'));
 const LabalMenu = React.lazy(() => import('./modules/labal/pages/LabalMenu'));
 const VicmaLaser = React.lazy(() => import('./modules/vicma-laser/VicmaLaser'));
 const BurgaslocasMenu = React.lazy(() => import('./modules/burgaslocas/pages/BurgaslocasMenu'));
 const MesaJarochaMenu = React.lazy(() => import('./modules/mesa-jarocha/pages/MesaJarochaMenu'));
 const PincheCheMenu = React.lazy(() => import('./modules/pinche-che/pages/PincheCheMenu'));
+const DemoVideo = React.lazy(() => import('./modules/demo-video/pages/DemoVideo'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -810,6 +811,8 @@ export default function App() {
         <Route path="/mesajarocha" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#0084C7' }} /></div>}><MesaJarochaMenu /></Suspense></ErrorBoundary>} />
         <Route path="/pinche-che" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#E0531B' }} /></div>}><PincheCheMenu /></Suspense></ErrorBoundary>} />
         <Route path="/pincheche" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#E0531B' }} /></div>}><PincheCheMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/demo-video" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500" /></div>}><DemoVideo /></Suspense></ErrorBoundary>} />
+        <Route path="/video-demo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500" /></div>}><DemoVideo /></Suspense></ErrorBoundary>} />
         {/* <Route path="/amelie-patisserie" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]" /></div>}><AmeliePatisserieMenu /></Suspense></ErrorBoundary>} /> */}
 
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />

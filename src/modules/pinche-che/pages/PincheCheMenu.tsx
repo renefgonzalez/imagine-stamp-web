@@ -14,6 +14,8 @@ import {
   Share2, AlertCircle, Info, Star, Edit3
 } from 'lucide-react';
 import { clientConfig, bankInfo } from '../config';
+import pincheLogo from '../assets/logo.jpg';
+import pincheHero from '../assets/hero.jpg';
 
 const C = clientConfig.colors;
 
@@ -646,7 +648,7 @@ export default function PincheCheMenu() {
           {/* Logo y Nombre */}
           <div className="flex items-center gap-3">
             <img
-              src="/pinche-che/logo.jpg"
+              src={pincheLogo}
               alt="Pinche Che Logo"
               className="w-10 h-10 rounded-full object-cover border-2 border-[#E0531B] shadow-md"
               onError={(e) => {
@@ -738,7 +740,7 @@ export default function PincheCheMenu() {
           {/* Imagen Hero con marco de fuego */}
           <div className="w-full md:w-1/2 relative rounded-3xl overflow-hidden border-2 border-[#E0531B]/40 shadow-[0_15px_40px_rgba(224,83,27,0.25)] group">
             <img
-              src="/pinche-che/hero.jpg"
+              src={pincheHero}
               alt="Pinche Che Parrilla Feast"
               className="w-full h-56 sm:h-72 object-cover transform group-hover:scale-105 transition-transform duration-700"
             />
@@ -1592,7 +1594,7 @@ export default function PincheCheMenu() {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <img
-                src="/pinche-che/logo.jpg"
+                src={pincheLogo}
                 alt="Pinche Che Logo"
                 className="w-8 h-8 rounded-full border border-[#E0531B]"
               />
