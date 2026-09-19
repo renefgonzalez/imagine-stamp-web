@@ -25,6 +25,7 @@ const MesaJarochaMenu = React.lazy(() => import('./modules/mesa-jarocha/pages/Me
 const PincheCheMenu = React.lazy(() => import('./modules/pinche-che/pages/PincheCheMenu'));
 const DemoVideo = React.lazy(() => import('./modules/demo-video/pages/DemoVideo'));
 const AaahCarbonMenu = React.lazy(() => import('./modules/aaah-carbon/pages/AaahCarbonMenu'));
+const HombreRutaGrillMenu = React.lazy(() => import('./modules/hombre-ruta-grill/pages/HombreRutaGrillMenu'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -817,6 +818,10 @@ export default function App() {
         <Route path="/aaah-carbon" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#FF6A00' }} /></div>}><AaahCarbonMenu /></Suspense></ErrorBoundary>} />
         <Route path="/aaahcarbon" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#FF6A00' }} /></div>}><AaahCarbonMenu /></Suspense></ErrorBoundary>} />
         <Route path="/menu-narvarte" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#FF6A00' }} /></div>}><AaahCarbonMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/hombre-ruta-grill" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#E65100' }} /></div>}><HombreRutaGrillMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/hombrerutagrill" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#E65100' }} /></div>}><HombreRutaGrillMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/hombre-ruta" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#E65100' }} /></div>}><HombreRutaGrillMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/hrg" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#E65100' }} /></div>}><HombreRutaGrillMenu /></Suspense></ErrorBoundary>} />
         {/* <Route path="/amelie-patisserie" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]" /></div>}><AmeliePatisserieMenu /></Suspense></ErrorBoundary>} /> */}
 
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
