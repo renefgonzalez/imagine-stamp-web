@@ -1704,6 +1704,31 @@ export default function AaahCarbonMenu() {
     setTimeout(() => setCopiedBank(false), 2500);
   };
 
+  const handleShare = async () => {
+    const cleanUrl = 'https://imagineandstamp.site/aaah-carbon/';
+    const shareData = {
+      title: 'AAAH! CARBÓN · Menú Digital Interactivo 🔥🥩',
+      text: '¡Checa el menú al carbón y cortes sonorenses de AAAH! CARBÓN Narvarte! Pide directo a WhatsApp:',
+      url: cleanUrl,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch {
+        // Fallback al portapapeles si el usuario cancela o no es soportado
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(cleanUrl);
+      showToast('¡Enlace oficial copiado! Listo para enviar por WhatsApp 📋');
+    } catch {
+      showToast('Enlace oficial: https://imagineandstamp.site/aaah-carbon/');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#121110] text-stone-100 font-sans selection:bg-[#FF6A00] selection:text-white pb-24 md:pb-12">
       
@@ -1776,6 +1801,15 @@ export default function AaahCarbonMenu() {
                   {favorites.length}
                 </span>
               )}
+            </button>
+
+            {/* Botón Compartir Menú Oficial (Preview Limpio sin SEO Imagine) */}
+            <button
+              onClick={handleShare}
+              className="p-2.5 rounded-xl border transition-all bg-stone-900 text-stone-300 border-stone-800 hover:border-orange-500 hover:text-white"
+              title="Compartir enlace oficial del menú"
+            >
+              <Share2 className="w-4 h-4" />
             </button>
 
             {/* Carrito Button */}
