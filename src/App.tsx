@@ -24,6 +24,7 @@ const BurgaslocasMenu = React.lazy(() => import('./modules/burgaslocas/pages/Bur
 const MesaJarochaMenu = React.lazy(() => import('./modules/mesa-jarocha/pages/MesaJarochaMenu'));
 const PincheCheMenu = React.lazy(() => import('./modules/pinche-che/pages/PincheCheMenu'));
 const DemoVideo = React.lazy(() => import('./modules/demo-video/pages/DemoVideo'));
+const VideoInvitaciones = React.lazy(() => import('./modules/video-invitaciones/pages/VideoInvitaciones'));
 const AaahCarbonMenu = React.lazy(() => import('./modules/aaah-carbon/pages/AaahCarbonMenu'));
 const HombreRutaGrillMenu = React.lazy(() => import('./modules/hombre-ruta-grill/pages/HombreRutaGrillMenu'));
 
@@ -823,6 +824,11 @@ export default function App() {
         <Route path="/hombre-ruta" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#E65100' }} /></div>}><HombreRutaGrillMenu /></Suspense></ErrorBoundary>} />
         <Route path="/hrg" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#E65100' }} /></div>}><HombreRutaGrillMenu /></Suspense></ErrorBoundary>} />
         {/* <Route path="/amelie-patisserie" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]" /></div>}><AmeliePatisserieMenu /></Suspense></ErrorBoundary>} /> */}
+
+        <Route path="/videoinvitaciones" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500" /></div>}><VideoInvitaciones /></Suspense></ErrorBoundary>} />
+        <Route path="/video-invitaciones" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500" /></div>}><VideoInvitaciones /></Suspense></ErrorBoundary>} />
+        <Route path="/invitaciones" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500" /></div>}><VideoInvitaciones /></Suspense></ErrorBoundary>} />
+        <Route path="/invitaciones-3d" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500" /></div>}><VideoInvitaciones /></Suspense></ErrorBoundary>} />
 
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
