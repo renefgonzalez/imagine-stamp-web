@@ -19,6 +19,15 @@ export const VideoInvitaciones: React.FC = () => {
 
   const [filtroDemo, setFiltroDemo] = useState<string>('todos');
   const [videoActivoId, setVideoActivoId] = useState<string | null>(null);
+  const demoVideoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
+
+  const reproducirDemo = (id: string) => {
+    Object.entries(demoVideoRefs.current).forEach(([otroId, v]) => {
+      if (otroId !== id && v && !v.paused) v.pause();
+    });
+    setVideoActivoId(id);
+    demoVideoRefs.current[id]?.play().catch(() => {});
+  };
   const [faqAbierta, setFaqAbierta] = useState<number | null>(null);
 
   const toggleHeroSound = () => {
@@ -313,23 +322,25 @@ export const VideoInvitaciones: React.FC = () => {
                       src={item.url}
                       poster={item.poster}
                       className="w-full h-full object-cover"
+                      ref={(el) => { demoVideoRefs.current[item.id] = el; }}
                       controls={videoActivoId === item.id}
-                      autoPlay={videoActivoId === item.id}
                       loop
                       playsInline
-                      onPlay={() => setVideoActivoId(item.id)}
+                      preload="metadata"
+                      onPlay={() => reproducirDemo(item.id)}
                     />
                   ) : (
                     <img
                       src={item.url}
                       alt={item.titulo}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-contain bg-[#4c1d95] group-hover:scale-105 transition-transform duration-500"
                     />
                   )}
 
                   {item.tipo === 'video' && videoActivoId !== item.id && (
                     <button
-                      onClick={() => setVideoActivoId(item.id)}
+                      onClick={() => reproducirDemo(item.id)}
+                      aria-label={`Reproducir ${item.titulo}`}
                       className="absolute inset-0 m-auto w-14 h-14 rounded-full bg-pink-600 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
                     >
                       <Play className="w-6 h-6 ml-1 fill-white" />
