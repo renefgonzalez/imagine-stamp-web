@@ -285,7 +285,7 @@ export const VideoInvitaciones: React.FC = () => {
               { id: 'video animado', label: 'Video Animado ($399)' },
               { id: 'cinemática', label: 'Historia ($499)' },
               { id: 'protagonista', label: 'Protagonista 3D ($699)' },
-              { id: 'interactiva', label: 'Interactiva ($110)' }
+              { id: 'interactiva', label: 'Interactiva ($99)' }
             ].map(f => (
               <button
                 key={f.id}

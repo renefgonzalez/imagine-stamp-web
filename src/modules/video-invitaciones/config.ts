@@ -28,7 +28,7 @@ export const inviteConfig = {
     {
       id: 'interactiva',
       nombre: 'Interactiva Digital',
-      precio: 110,
+      precio: 99,
       badge: 'Opción Express',
       color: '#10B981',
       descripcionCorta: 'Tarjeta digital en PDF para celular con botones que abren Maps y WhatsApp.',
@@ -120,7 +120,7 @@ export const inviteConfig = {
       id: 'mateo',
       titulo: 'Mateo Héroe 3D (Habla a cámara)',
       categoria: 'Protagonista 3D',
-      paquete: 'Protagonista VIP + Canción ()',
+      paquete: 'Protagonista 3D + Canción ($699)',
       tipo: 'video',
       url: '/videoinvitaciones/assets/hero_mateo.mp4',
       poster: '/videoinvitaciones/assets/poster_mateo.jpg',
@@ -130,7 +130,7 @@ export const inviteConfig = {
       id: 'kpop',
       titulo: 'Guerreras K-Pop (Idols en Concierto)',
       categoria: 'Video Animado',
-      paquete: 'Video Animado ()',
+      paquete: 'Video Animado ($399)',
       tipo: 'video',
       url: '/videoinvitaciones/assets/demo_kpop.mp4',
       poster: '/videoinvitaciones/assets/poster_kpop.jpg',
@@ -140,7 +140,7 @@ export const inviteConfig = {
       id: 'bluey',
       titulo: 'Bluey & Amigos',
       categoria: 'Video Animado',
-      paquete: 'Video Animado ()',
+      paquete: 'Video Animado ($399)',
       tipo: 'video',
       url: '/videoinvitaciones/assets/demo_bluey.mp4',
       poster: '/videoinvitaciones/assets/poster_bluey.jpg',
@@ -150,7 +150,7 @@ export const inviteConfig = {
       id: 'blanca',
       titulo: 'Blanca Nieves y el Sobre Mágico',
       categoria: 'Historia Cinemática',
-      paquete: 'Historia Cinemática ()',
+      paquete: 'Historia Cinemática ($499)',
       tipo: 'video',
       url: '/videoinvitaciones/assets/demo_blancanieves.mp4',
       poster: '/videoinvitaciones/assets/poster_blanca.jpg',
@@ -160,7 +160,7 @@ export const inviteConfig = {
       id: 'interactiva',
       titulo: 'Tarjeta Interactiva con Botones',
       categoria: 'Interactiva Digital',
-      paquete: 'Interactiva Express ()',
+      paquete: 'Interactiva Express ($99)',
       tipo: 'imagen',
       url: '/videoinvitaciones/assets/carrusel_1.jpg',
       descripcion: 'Diseño para celular con botones directos para abrir Google Maps y confirmar en WhatsApp.'
@@ -182,7 +182,7 @@ export const inviteConfig = {
     },
     {
       pregunta: '¿Cuánto tiempo tarda la entrega?',
-      respuesta: 'Para Interactivas () y Videos Animados () entregamos en menos de 24 horas. Para Historias Cinemáticas () y Protagonista 3D () el tiempo es de 24 a 48 horas.'
+      respuesta: 'Interactiva ($99): menos de 24 horas. Video Animado ($399) e Historia Cinemática ($499): de 24 a 48 horas. Protagonista 3D + Canción ($699): 48 horas.'
     },
     {
       pregunta: '¿Cómo se realiza el pago?',
