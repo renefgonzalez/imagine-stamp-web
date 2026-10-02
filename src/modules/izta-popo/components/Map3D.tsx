@@ -1,0 +1,454 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { Map as MapLibreMap, Marker as MapLibreMarker } from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import {
+  RotateCw,
+  Compass,
+  Eye,
+  EyeOff,
+  Layers,
+  AlertTriangle,
+  ZoomIn,
+  ZoomOut,
+  Maximize2
+} from 'lucide-react';
+import { LUGARES, Lugar } from '../data/lugares';
+import { RECORRIDOS } from '../data/recorridos';
+import { CATEGORIAS } from '../data/categorias';
+import { POPO_CRATER, POPO_EXCLUSION_RADIUS_KM, IZTA_CUMBRE } from '../config';
+import { createGeoJSONCircle } from '../lib/geo';
+
+interface Map3DProps {
+  lugaresFiltrados?: Lugar[];
+  lugarSeleccionado?: Lugar | null;
+  onSelectLugar?: (lugar: Lugar) => void;
+  modoCompacto?: boolean;
+  className?: string;
+  centroInicial?: [number, number];
+  zoomInicial?: number;
+  pitchInicial?: number;
+}
+
+export const Map3D: React.FC<Map3DProps> = ({
+  lugaresFiltrados = LUGARES,
+  lugarSeleccionado = null,
+  onSelectLugar,
+  modoCompacto = false,
+  className = '',
+  centroInicial = [-98.66, 19.10],
+  zoomInicial = 10.6,
+  pitchInicial = 70,
+}) => {
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<MapLibreMap | null>(null);
+  const markersRef = useRef<{ [key: string]: MapLibreMarker }>({});
+  const animationFrameRef = useRef<number | null>(null);
+
+  const [isRotating, setIsRotating] = useState(false);
+  const [showRutas, setShowRutas] = useState(true);
+  const [showPopoRestriccion, setShowPopoRestriccion] = useState(true);
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  // Inicialización del Mapa
+  useEffect(() => {
+    if (!mapContainer.current) return;
+
+    const isMobile = window.innerWidth < 768;
+
+    const map = new MapLibreMap({
+      container: mapContainer.current,
+      style: {
+        version: 8,
+        sources: {
+          satellite: {
+            type: 'raster',
+            tiles: [
+              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            ],
+            tileSize: 256,
+            attribution: 'Esri, Maxar, Earthstar Geographics',
+          },
+          dem: {
+            type: 'raster-dem',
+            encoding: 'terrarium',
+            tiles: [
+              'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png',
+            ],
+            tileSize: 256,
+            maxzoom: 15,
+          },
+        },
+        layers: [
+          {
+            id: 'satellite-layer',
+            type: 'raster',
+            source: 'satellite',
+            minzoom: 0,
+            maxzoom: 19,
+          },
+          {
+            id: 'hills',
+            type: 'hillshade',
+            source: 'dem',
+            paint: {
+              'hillshade-shadow-color': '#0E0F0F',
+              'hillshade-highlight-color': '#E8A15A',
+              'hillshade-accent-color': '#1A1C1B',
+              'hillshade-exaggeration': 0.4,
+            },
+          },
+        ],
+        sky: {
+          'sky-color': '#0E0F0F',
+          'horizon-color': '#E8A15A',
+          'fog-color': '#1A1C1B',
+        } as any,
+      },
+      center: isMobile ? centroInicial : [-98.66, 19.05],
+      zoom: isMobile ? zoomInicial - 0.5 : 9.5,
+      pitch: pitchInicial,
+      bearing: -20,
+      maxPitch: 85,
+      attributionControl: false,
+    });
+
+    mapRef.current = map;
+
+    map.on('load', () => {
+      // Activar terreno 3D con exageración
+      map.setTerrain({
+        source: 'dem',
+        exaggeration: isMobile ? 1.1 : 1.4,
+      });
+
+      // Animación suave de aproximación inicial cinematográfica
+      if (!modoCompacto) {
+        map.flyTo({
+          center: centroInicial,
+          zoom: zoomInicial,
+          pitch: pitchInicial,
+          bearing: -20,
+          duration: 3500,
+          essential: true,
+        });
+      }
+
+      // 1. ZONA DE EXCLUSIÓN POPOCATÉPETL (12 KM)
+      const popoCircle = createGeoJSONCircle(POPO_CRATER, POPO_EXCLUSION_RADIUS_KM * 1000);
+      map.addSource('popo-exclusion', {
+        type: 'geojson',
+        data: popoCircle,
+      });
+
+      map.addLayer({
+        id: 'popo-exclusion-fill',
+        type: 'fill',
+        source: 'popo-exclusion',
+        paint: {
+          'fill-color': '#C2502E', // Magma
+          'fill-opacity': 0.12,
+        },
+      });
+
+      map.addLayer({
+        id: 'popo-exclusion-line',
+        type: 'line',
+        source: 'popo-exclusion',
+        paint: {
+          'line-color': '#C2502E',
+          'line-width': 2,
+          'line-dasharray': [3, 2],
+        },
+      });
+
+      // 2. ZONAS SENSIBLES ARQUEOLÓGICAS (700 M)
+      const sitiosSensibles = LUGARES.filter((l) => l.sensible);
+      const sensiblesFeatures = sitiosSensibles.map((s) =>
+        createGeoJSONCircle(s.coords, 700)
+      );
+
+      map.addSource('zonas-sensibles', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: sensiblesFeatures,
+        },
+      });
+
+      map.addLayer({
+        id: 'zonas-sensibles-fill',
+        type: 'fill',
+        source: 'zonas-sensibles',
+        paint: {
+          'fill-color': '#B88A4A', // Ocre
+          'fill-opacity': 0.25,
+        },
+      });
+
+      map.addLayer({
+        id: 'zonas-sensibles-line',
+        type: 'line',
+        source: 'zonas-sensibles',
+        paint: {
+          'line-color': '#B88A4A',
+          'line-width': 1.5,
+          'line-dasharray': [2, 2],
+        },
+      });
+
+      // 3. RUTAS / RECORRIDOS (LÍNEAS DIBUJADAS)
+      const rutasFeatures = RECORRIDOS.map((r) => ({
+        type: 'Feature',
+        properties: { id: r.id, color: r.color },
+        geometry: {
+          type: 'LineString',
+          coordinates: r.coordenadas,
+        },
+      }));
+
+      map.addSource('recorridos-source', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: rutasFeatures as any,
+        },
+      });
+
+      map.addLayer({
+        id: 'recorridos-lines',
+        type: 'line',
+        source: 'recorridos-source',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round',
+        },
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 3.5,
+          'line-opacity': 0.85,
+        },
+      });
+
+      setMapLoaded(true);
+    });
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      map.remove();
+    };
+  }, []);
+
+  // Actualizar visibilidad de capas de rutas y exclusión
+  useEffect(() => {
+    if (!mapRef.current || !mapLoaded) return;
+    const map = mapRef.current;
+
+    if (map.getLayer('recorridos-lines')) {
+      map.setLayoutProperty('recorridos-lines', 'visibility', showRutas ? 'visible' : 'none');
+    }
+
+    if (map.getLayer('popo-exclusion-fill')) {
+      map.setLayoutProperty('popo-exclusion-fill', 'visibility', showPopoRestriccion ? 'visible' : 'none');
+      map.setLayoutProperty('popo-exclusion-line', 'visibility', showPopoRestriccion ? 'visible' : 'none');
+    }
+  }, [showRutas, showPopoRestriccion, mapLoaded]);
+
+  // Actualizar Pines HTML en el mapa
+  useEffect(() => {
+    if (!mapRef.current || !mapLoaded) return;
+    const map = mapRef.current;
+
+    // Eliminar pines antiguos
+    Object.values(markersRef.current).forEach((marker) => marker.remove());
+    markersRef.current = {};
+
+    lugaresFiltrados.forEach((lugar) => {
+      const cat = CATEGORIAS[lugar.categoria];
+      const isSelected = lugarSeleccionado?.id === lugar.id;
+
+      // Crear elemento contenedor del pin
+      const el = document.createElement('div');
+      el.className = 'group cursor-pointer select-none';
+
+      el.innerHTML = `
+        <div class="relative flex flex-col items-center">
+          <div class="w-7 h-7 rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 ${
+            isSelected ? 'scale-125 ring-4 ring-[#E8A15A]' : 'group-hover:scale-110'
+          }" style="background-color: ${cat.colorHex}; border: 2px solid #F2F1EC;">
+            <div class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></div>
+          </div>
+          <span class="mt-1 px-2 py-0.5 rounded-md text-[10px] font-medium font-sans text-white shadow-md backdrop-blur-md whitespace-nowrap transition-all ${
+            isSelected ? 'bg-black/80 font-bold border border-[#E8A15A]' : 'bg-black/60 opacity-0 group-hover:opacity-100'
+          }">
+            ${lugar.nombre}
+          </span>
+        </div>
+      `;
+
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (onSelectLugar) onSelectLugar(lugar);
+        volarALugar(lugar);
+      });
+
+      const marker = new MapLibreMarker({ element: el })
+        .setLngLat(lugar.coords)
+        .addTo(map);
+
+      markersRef.current[lugar.id] = marker;
+    });
+
+    // Etiquetas de cumbres principales
+    const iztaLabel = document.createElement('div');
+    iztaLabel.className = 'px-2 py-1 rounded bg-black/70 border border-[#8FC1D4]/40 text-[#8FC1D4] text-[10px] font-mono font-bold tracking-wider';
+    iztaLabel.innerText = 'Iztaccíhuatl · 5,230 m';
+    new MapLibreMarker({ element: iztaLabel, anchor: 'bottom' })
+      .setLngLat(IZTA_CUMBRE)
+      .addTo(map);
+
+    const popoLabel = document.createElement('div');
+    popoLabel.className = 'px-2 py-1 rounded bg-black/70 border border-[#C2502E]/40 text-[#C2502E] text-[10px] font-mono font-bold tracking-wider';
+    popoLabel.innerText = 'Popocatépetl · 5,393 m';
+    new MapLibreMarker({ element: popoLabel, anchor: 'bottom' })
+      .setLngLat(POPO_CRATER)
+      .addTo(map);
+
+  }, [lugaresFiltrados, lugarSeleccionado, mapLoaded]);
+
+  // Vuelo de cámara suave al seleccionar un lugar
+  const volarALugar = (lugar: Lugar) => {
+    if (!mapRef.current) return;
+    mapRef.current.flyTo({
+      center: lugar.coords,
+      zoom: 13.8,
+      pitch: 65,
+      bearing: -15,
+      duration: 3000,
+      essential: true,
+    });
+  };
+
+  // Reaccionar cuando cambie `lugarSeleccionado` externamente
+  useEffect(() => {
+    if (lugarSeleccionado && mapLoaded) {
+      volarALugar(lugarSeleccionado);
+    }
+  }, [lugarSeleccionado, mapLoaded]);
+
+  // Rotación suave automática
+  useEffect(() => {
+    if (!mapRef.current || !mapLoaded) return;
+    const map = mapRef.current;
+
+    const rotateStep = () => {
+      if (!isRotating) return;
+      map.setBearing(map.getBearing() + 0.15);
+      animationFrameRef.current = requestAnimationFrame(rotateStep);
+    };
+
+    if (isRotating) {
+      animationFrameRef.current = requestAnimationFrame(rotateStep);
+    } else if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+
+    return () => {
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    };
+  }, [isRotating, mapLoaded]);
+
+  // Vista general de ambos volcanes
+  const resetVistaGeneral = () => {
+    if (!mapRef.current) return;
+    mapRef.current.flyTo({
+      center: [-98.66, 19.10],
+      zoom: 10.6,
+      pitch: 70,
+      bearing: -20,
+      duration: 2500,
+    });
+  };
+
+  return (
+    <div className={`relative w-full h-full overflow-hidden bg-[#0A0B0B] ${className}`}>
+      {/* Contenedor WebGL */}
+      <div ref={mapContainer} className="w-full h-full" />
+
+      {/* Controles flotantes superiores derechos */}
+      <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
+        <button
+          onClick={resetVistaGeneral}
+          className="p-2.5 rounded-xl bg-[#1A1C1B]/90 hover:bg-[#1A1C1B] border border-white/10 text-[#F2F1EC] hover:text-[#E8A15A] shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium"
+          title="Vista general de ambos volcanes"
+        >
+          <Compass className="w-4 h-4 text-[#E8A15A]" />
+          <span className="hidden sm:inline">Vista General</span>
+        </button>
+
+        <button
+          onClick={() => setIsRotating(!isRotating)}
+          className={`p-2.5 rounded-xl border shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium ${
+            isRotating
+              ? 'bg-[#E8A15A] text-black border-[#E8A15A]'
+              : 'bg-[#1A1C1B]/90 hover:bg-[#1A1C1B] border-white/10 text-[#F2F1EC]'
+          }`}
+          title="Girar cámara lentamente"
+        >
+          <RotateCw className={`w-4 h-4 ${isRotating ? 'animate-spin' : ''}`} />
+          <span className="hidden sm:inline">Rotar</span>
+        </button>
+
+        <button
+          onClick={() => setShowRutas(!showRutas)}
+          className={`p-2.5 rounded-xl border shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium ${
+            showRutas
+              ? 'bg-[#1A1C1B]/90 border-[#8FC1D4]/40 text-[#8FC1D4]'
+              : 'bg-[#1A1C1B]/60 border-white/10 text-[#9AA3A0]'
+          }`}
+          title="Mostrar u ocultar senderos y rutas"
+        >
+          <Layers className="w-4 h-4" />
+          <span className="hidden sm:inline">Rutas</span>
+        </button>
+
+        <button
+          onClick={() => setShowPopoRestriccion(!showPopoRestriccion)}
+          className={`p-2.5 rounded-xl border shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium ${
+            showPopoRestriccion
+              ? 'bg-[#1A1C1B]/90 border-[#C2502E]/40 text-[#C2502E]'
+              : 'bg-[#1A1C1B]/60 border-white/10 text-[#9AA3A0]'
+          }`}
+          title="Zona de exclusión Popocatépetl 12 km"
+        >
+          <AlertTriangle className="w-4 h-4" />
+          <span className="hidden sm:inline">Zona Popo</span>
+        </button>
+      </div>
+
+      {/* Controles de Zoom inferiores */}
+      <div className="absolute bottom-6 right-4 z-20 hidden sm:flex flex-col bg-[#1A1C1B]/90 border border-white/10 rounded-xl overflow-hidden shadow-xl backdrop-blur-md">
+        <button
+          onClick={() => mapRef.current?.zoomIn()}
+          className="p-2 text-[#9AA3A0] hover:text-white hover:bg-white/10 transition-colors border-b border-white/5"
+          title="Acercar mapa"
+        >
+          <ZoomIn className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => mapRef.current?.zoomOut()}
+          className="p-2 text-[#9AA3A0] hover:text-white hover:bg-white/10 transition-colors"
+          title="Alejar mapa"
+        >
+          <ZoomOut className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Atribución de datos de mapas obligatoria */}
+      <div className="absolute bottom-2 right-2 sm:right-16 z-10 px-2 py-0.5 rounded bg-black/60 text-[9px] font-mono text-white/50 backdrop-blur-sm pointer-events-none">
+        Esri · AWS Terrarium DEM · MapLibre GL
+      </div>
+    </div>
+  );
+};

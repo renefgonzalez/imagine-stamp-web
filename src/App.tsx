@@ -20,6 +20,7 @@ const TarjetaVeterinaria = React.lazy(() => import('./modules/tarjeta-veterinari
 const LabalMenu = React.lazy(() => import('./modules/labal/pages/LabalMenu'));
 const DemoVideo = React.lazy(() => import('./modules/demo-video/pages/DemoVideo'));
 const VideoInvitaciones = React.lazy(() => import('./modules/video-invitaciones/pages/VideoInvitaciones'));
+const IztaPopoApp = React.lazy(() => import('./modules/izta-popo/pages/IztaPopoApp'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -806,6 +807,9 @@ export default function App() {
         <Route path="/video-invitaciones" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500" /></div>}><VideoInvitaciones /></Suspense></ErrorBoundary>} />
         <Route path="/invitaciones" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500" /></div>}><VideoInvitaciones /></Suspense></ErrorBoundary>} />
         <Route path="/invitaciones-3d" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500" /></div>}><VideoInvitaciones /></Suspense></ErrorBoundary>} />
+
+        <Route path="/izta-popo/*" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0E0F0F]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E8A15A]" /></div>}><IztaPopoApp /></Suspense></ErrorBoundary>} />
+        <Route path="/izta-popo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0E0F0F]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E8A15A]" /></div>}><IztaPopoApp /></Suspense></ErrorBoundary>} />
 
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>

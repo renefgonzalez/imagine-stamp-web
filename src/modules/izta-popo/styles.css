@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..800&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* Tokens de diseño Izta-Popo */
+:root {
+  --roca: #0E0F0F;
+  --ceniza: #1A1C1B;
+  --niebla: #9AA3A0;
+  --nieve: #F2F1EC;
+  --pino: #3F6B4F;
+  --amanecer: #E8A15A;
+  --magma: #C2502E;
+  --glaciar: #8FC1D4;
+  --ocre: #B88A4A;
+}
+
+.font-serif {
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* 3D Transform Utilities para las tarjetas de plantas */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* OpenSeadragon Navigator Container */
+.openseadragon-container {
+  background-color: #070808 !important;
+}
