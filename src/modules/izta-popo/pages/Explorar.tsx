@@ -121,7 +121,7 @@ export const Explorar: React.FC = () => {
                   loop
                   muted
                   playsInline
-                  poster={`${MEDIA_BASE}/fotos/teporingo-800.webp`}
+                  poster={`${MEDIA_BASE}/fotos/teporingo-1280.webp`}
                   className="w-full h-full object-cover"
                 >
                   <source src={`${MEDIA_BASE}/video/presentacion-teaser.mp4`} type="video/mp4" />

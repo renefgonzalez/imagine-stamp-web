@@ -55,39 +55,39 @@ export const PresentationModal: React.FC<PresentationModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-label="Video de presentación de Conocimiento de la Montaña"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-[#0E0F0F]/95 backdrop-blur-xl animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/90 backdrop-blur-xl animate-fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
         ref={modalRef}
-        className="relative w-full max-w-[1100px] rounded-3xl overflow-hidden bg-[#1A1C1B] border border-white/15 shadow-2xl transition-all duration-250 transform scale-100 flex flex-col"
+        className="relative w-full max-w-4xl rounded-2xl sm:rounded-3xl overflow-hidden bg-[#141615] border border-white/15 shadow-2xl transition-all duration-200 flex flex-col my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabecera del modal */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10 bg-black/40">
-          <div className="flex items-center gap-2.5">
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-[#E8A15A]/20 text-[#E8A15A] border border-[#E8A15A]/30">
-              SD · Video Oficial
+        <div className="flex items-center justify-between px-3 sm:px-5 py-2.5 sm:py-3 border-b border-white/10 bg-black/60 gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-mono font-bold uppercase bg-[#E8A15A]/20 text-[#E8A15A] border border-[#E8A15A]/30 shrink-0">
+              SD · VIDEO
             </span>
-            <span className="text-xs font-serif font-semibold text-white/90 truncate">
-              {CLIENT_NAME} — por {GUIDE_NAME}
+            <span className="text-[11px] sm:text-xs font-serif font-semibold text-white/90 truncate">
+              {CLIENT_NAME} · {GUIDE_NAME}
             </span>
           </div>
 
           <button
             ref={closeBtnRef}
             onClick={onClose}
-            className="p-2 rounded-xl bg-white/5 hover:bg-white/15 text-white/70 hover:text-white transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors shrink-0"
             aria-label="Cerrar reproductor"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
 
-        {/* Reproductor de Video */}
-        <div className="relative aspect-video w-full bg-black">
+        {/* Reproductor de Video (ajuste perfecto sin entrecortar en móviles) */}
+        <div className="relative aspect-video w-full bg-black flex items-center justify-center overflow-hidden">
           <SmartVideo
             videoId="presentacion"
             titulo={`Presentación: ${CLIENT_NAME}`}
@@ -96,14 +96,15 @@ export const PresentationModal: React.FC<PresentationModalProps> = ({
             autoPlay={true}
             muted={false} // Inicia con sonido a petición del usuario
             controls={true}
-            className="w-full h-full"
+            objectFit="contain"
+            className="w-full h-full rounded-none border-none shadow-none"
           />
         </div>
 
-        {/* Pie informativo del video */}
-        <div className="px-5 py-3 border-t border-white/10 bg-black/60 flex items-center justify-between text-xs text-[#9AA3A0]">
+        {/* Pie informativo del video adaptativo a móvil */}
+        <div className="px-3 sm:px-5 py-2 sm:py-2.5 border-t border-white/10 bg-black/60 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[10px] sm:text-xs text-[#9AA3A0]">
           <span>Duración: 1:27 min · Grabación documental de fauna y flora</span>
-          <span className="font-mono text-[11px] text-white/60">Resolución nativa: 1024×576 SD</span>
+          <span className="font-mono text-[10px] text-white/60">Resolución nativa: 1024×576 SD</span>
         </div>
       </div>
     </div>

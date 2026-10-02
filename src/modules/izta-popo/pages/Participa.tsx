@@ -27,7 +27,7 @@ const LINEAS_ACCION: ActionLine[] = [
   {
     id: 'reforestacion',
     titulo: 'Reforestación con Especies Nativas',
-    fotoId: 'bosque-oyamel',
+    fotoId: 'oyamel',
     resumen: 'Plantación estacional de pino de altura (Pinus hartwegii) y oyamel (Abies religiosa) en zonas afectadas por incendios o pastoreo.',
     queHacemos: [
       'Selección de plántulas nativas germinadas en viveros comunitarios de la región.',
@@ -38,7 +38,7 @@ const LINEAS_ACCION: ActionLine[] = [
   {
     id: 'apoyo-incendios',
     titulo: 'Apoyo y Prevención de Incendios Forestales',
-    fotoId: 'bosque-pino',
+    fotoId: 'bosque-hartwegii',
     resumen: 'Labores preventivas de apertura de brechas cortafuego, retiro de material combustible seco y apoyo logístico a brigadistas oficiales.',
     queHacemos: [
       'Faenas preventivas de brechas cortafuego antes del inicio del estiaje.',
@@ -50,7 +50,7 @@ const LINEAS_ACCION: ActionLine[] = [
   {
     id: 'cultura-naturaleza',
     titulo: 'Cultura de Naturaleza y Tradición Oral',
-    fotoId: 'izta-amanecer',
+    fotoId: 'hero-volcanes',
     resumen: 'Talleres comunitarios, pláticas escolares y divulgación audiovisual para rescatar el valor sagrado de las montañas y la memoria biocultural.',
     queHacemos: [
       'Rescate de toponimia náhuatl y relatos tradicionales de las comunidades del volcán.',
@@ -125,10 +125,15 @@ export const ParticipaPage: React.FC = () => {
             >
               <div className="relative h-56 bg-black">
                 <img
-                  src={`/izta-popo/media/fotos/${linea.fotoId}-800.webp`}
+                  src={`/izta-popo/media/fotos/${linea.fotoId}-1280.webp`}
                   alt={linea.titulo}
                   className="w-full h-full object-cover"
                   loading="lazy"
+                  onError={(e) => {
+                    const el = e.currentTarget;
+                    el.onerror = null;
+                    el.src = '/izta-popo/media/fotos/la-joya-1280.webp';
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#141615] via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">

@@ -485,11 +485,13 @@ export const Home: React.FC = () => {
                   }`}
                 >
                   <img
-                    src={`${MEDIA_BASE}/fotos/${f.id}-800.webp`}
+                    src={`${MEDIA_BASE}/fotos/${f.id}-480.webp`}
                     alt={f.pie}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = `${MEDIA_BASE}/fotos/bosque-pino-800.webp`;
+                      const el = e.currentTarget;
+                      el.onerror = null;
+                      el.src = `${MEDIA_BASE}/fotos/la-joya-480.webp`;
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-2 flex items-end">

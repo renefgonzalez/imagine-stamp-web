@@ -56,13 +56,14 @@ export const ProblematicaPage: React.FC = () => {
               {/* Imagen */}
               <div className="lg:col-span-5 relative min-h-[260px] lg:min-h-[380px] bg-black">
                 <img
-                  src={`/izta-popo/media/fotos/${item.fotoId}-800.webp`}
+                  src={`/izta-popo/media/fotos/${item.fotoId}-1280.webp`}
                   alt={item.titulo}
                   className="w-full h-full object-cover"
                   loading="lazy"
                   onError={(e) => {
-                    // Fallback to pino if specific image fails
-                    (e.target as HTMLImageElement).src = '/izta-popo/media/fotos/bosque-pino-800.webp';
+                    const el = e.currentTarget;
+                    el.onerror = null;
+                    el.src = '/izta-popo/media/fotos/bosque-hartwegii-1280.webp';
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#141615] via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-[#141615]" />

@@ -14,7 +14,7 @@ export const PROBLEMAS_AMBIENTALES: ProblemaAmbiental[] = [
     id: 'incendios-forestales',
     titulo: 'Incendios Forestales Provocados',
     subtitulo: 'La gran mayoría de los siniestros en la sierra derivan de descuidos humanos.',
-    fotoId: 'bosque-pino',
+    fotoId: 'bosque-hartwegii',
     descripcion: 'Las fogatas mal apagadas, colillas arrojadas al zacatonal y quemas agrícolas no controladas devoran cientos de hectáreas de bosque de alta montaña cada temporada de estiaje, destruyendo renuevos de pino hartwegii y fauna endémica.',
     comoMitigarlo: [
       'Cero fogatas en áreas naturales protegidas; utiliza estufillas de gas de montaña.',
@@ -40,7 +40,7 @@ export const PROBLEMAS_AMBIENTALES: ProblemaAmbiental[] = [
     id: 'tala-clandestina',
     titulo: 'Tala Clandestina y Cambio de Uso de Suelo',
     subtitulo: 'La fragmentación del bosque debilita la fábrica de oxígeno y agua del Valle.',
-    fotoId: 'bosque-oyamel',
+    fotoId: 'oyamel',
     descripcion: 'La tala ilegal despoja laderas enteras de árboles maduros de oyamel y pino, acelerando la erosión del suelo volcánico, reduciendo la captación de agua en los mantos freáticos y alterando el microclima regional.',
     comoMitigarlo: [
       'Denunciar cargamentos y motosierras ilegales ante PROFEPA y autoridades comunitarias.',
@@ -53,7 +53,7 @@ export const PROBLEMAS_AMBIENTALES: ProblemaAmbiental[] = [
     id: 'extraccion-musgo-tierra',
     titulo: 'Extracción de Musgo, Heno y Tierra de Monte',
     subtitulo: 'El saqueo navideño despoja a la montaña de su esponja natural de agua.',
-    fotoId: 'flora-zacatonal',
+    fotoId: 'flora-eryngium',
     descripcion: 'Cada invierno, el saqueo desmedido de musgo y tierra de monte para nacimientos navideños destruye la capa vegetal que retiene la humedad, evita deslaves y da albergue a microorganismos y germinación de semillas.',
     comoMitigarlo: [
       'Rechazar la compra de musgo, heno silvestre y tierra de monte en tianguis y mercados.',

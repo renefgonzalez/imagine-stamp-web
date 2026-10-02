@@ -119,11 +119,13 @@ export const BitacoraPage: React.FC = () => {
                         className="rounded-2xl overflow-hidden aspect-[4/3] bg-black border border-white/10 relative group/foto"
                       >
                         <img
-                          src={`${MEDIA_BASE}/fotos/${foto.id}-800.webp`}
+                          src={`${MEDIA_BASE}/fotos/${foto.id}-480.webp`}
                           alt={foto.pie}
                           className="w-full h-full object-cover group-hover/foto:scale-105 transition-transform duration-500"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = `${MEDIA_BASE}/fotos/bosque-pino-800.webp`;
+                            const el = e.currentTarget;
+                            el.onerror = null;
+                            el.src = `${MEDIA_BASE}/fotos/la-joya-480.webp`;
                           }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover/foto:opacity-100 transition-opacity p-3 flex items-end">

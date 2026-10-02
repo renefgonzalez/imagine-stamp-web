@@ -61,11 +61,11 @@ export const BITACORA_JORNADAS: EntradaJornada[] = [
     voluntariosParticipantes: 35,
     logro: 'Plantación de 450 arbolitos nativos protegidos con acolchado vegetal orgánico.',
     resumen: 'Siembra comunitaria con familias y jóvenes en una ladera afectada por erosión. Se enseñó la técnica correcta de apertura de cepellón y se colocaron protectores contra heladas para asegurar una tasa de supervivencia superior al 80%.',
-    lugaresIds: ['oyamel', 'sacromonte', 'arroyo-deshielo'],
+    lugaresIds: ['oyamel', 'sacromonte'],
     fotos: [
       { id: 'oyamel', pie: 'Bosque de Oyamel sagrado donde se integraron plántulas' },
       { id: 'sacromonte', pie: 'Punto de reunión comunitaria previo a la siembra' },
-      { id: 'arroyo-deshielo', pie: 'Verificación de humedad en el suelo de cañada' }
+      { id: 'vista-noreste', pie: 'Verificación de humedad en el suelo de cañada' }
     ],
     coordinador: GUIDE_NAME,
     esEjemplo: true,
@@ -79,7 +79,7 @@ export const BITACORA_JORNADAS: EntradaJornada[] = [
     voluntariosParticipantes: 50,
     logro: 'Difusión de la tradición oral náhuatl y concientización contra el saqueo de sitios rituales.',
     resumen: 'Encuentro cultural donde adultos mayores y cronistas compartieron los relatos sobre el agua sagrada de Tláloc y la toponimia de los volcanes, creando un frente juvenil de protección contra el saqueo en Nahualac.',
-    lugaresIds: ['nahualac', 'sacromonte', 'paso-de-cortes'],
+    lugaresIds: ['sacromonte', 'paso-de-cortes'],
     fotos: [
       { id: 'vista-noreste', pie: 'Perspectiva de las cuencas sagradas analizadas' },
       { id: 'sacromonte', pie: 'Santuario del Sacromonte donde inició el diálogo' },

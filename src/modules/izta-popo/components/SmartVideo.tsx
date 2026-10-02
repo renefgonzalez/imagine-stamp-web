@@ -14,6 +14,7 @@ interface SmartVideoProps {
   loop?: boolean;
   muted?: boolean;
   controls?: boolean;
+  objectFit?: 'contain' | 'cover';
 }
 
 export const SmartVideo: React.FC<SmartVideoProps> = ({
@@ -26,6 +27,7 @@ export const SmartVideo: React.FC<SmartVideoProps> = ({
   loop = false,
   muted = true,
   controls = true,
+  objectFit = 'contain',
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -183,7 +185,7 @@ export const SmartVideo: React.FC<SmartVideoProps> = ({
         }}
         onEnded={() => setIsPlaying(false)}
         onError={() => setHasError(true)}
-        className="w-full h-full object-cover"
+        className={`w-full h-full ${objectFit === 'cover' ? 'object-cover' : 'object-contain'} bg-black`}
       />
 
       {/* Botón Central de Play si está pausado */}
