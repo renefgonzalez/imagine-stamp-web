@@ -58,19 +58,22 @@ export const Map3D: React.FC<Map3DProps> = ({
   const [showPopoRestriccion, setShowPopoRestriccion] = useState(true);
   const [mapLoaded, setMapLoaded] = useState(false);
 
-  // Vuelo de cámara suave al seleccionar un lugar
+  // Vuelo de cámara suave al seleccionar un lugar adaptado a PC vs Móvil
   const volarALugar = (lugar: Lugar) => {
     if (!mapRef.current) return;
     const isDesktop = window.innerWidth >= 1024;
+    const isMobile = window.innerWidth < 768;
 
     mapRef.current.flyTo({
       center: lugar.coords,
-      zoom: 13.8,
-      pitch: 65,
+      zoom: isMobile ? 13.2 : 13.8,
+      pitch: isMobile ? 55 : 65,
       bearing: -15,
-      // Desplazar hacia la derecha en escritorio para no quedar cubierto por el panel lateral
-      offset: isDesktop ? [140, 0] : [0, -40],
-      duration: 2500,
+      // En PC desplazamos hacia la derecha (el panel está a la izquierda).
+      // En móvil desplazamos hacia ARRIBA (-115px) para que la montaña quede libre en la mitad superior de la pantalla,
+      // sin ser tapada por la ficha inferior (PlaceSheet).
+      offset: isDesktop ? [140, 0] : isMobile ? [0, -115] : [0, -40],
+      duration: 2200,
       essential: true,
     });
   };
@@ -126,7 +129,7 @@ export const Map3D: React.FC<Map3DProps> = ({
         ],
       },
       center: isMobile ? centroInicial : [-98.66, 19.05],
-      zoom: isMobile ? zoomInicial - 0.5 : 9.8,
+      zoom: isMobile ? zoomInicial - 0.7 : 9.8,
       pitch: pitchInicial,
       bearing: -20,
       maxPitch: 85,
@@ -154,7 +157,7 @@ export const Map3D: React.FC<Map3DProps> = ({
       if (!modoCompacto) {
         map.flyTo({
           center: centroInicial,
-          zoom: zoomInicial,
+          zoom: isMobile ? zoomInicial - 0.5 : zoomInicial,
           pitch: pitchInicial,
           bearing: -20,
           duration: 3000,
@@ -281,10 +284,11 @@ export const Map3D: React.FC<Map3DProps> = ({
     };
   }, []);
 
-  // Marcadores interactivos HTML 3D colocados directamente sobre el relieve
+  // Marcadores interactivos HTML 3D adaptativos (limpios y sin amontonamiento en móviles)
   useEffect(() => {
     if (!mapRef.current) return;
     const map = mapRef.current;
+    const isMobile = window.innerWidth < 768;
 
     // Limpiar marcadores anteriores
     Object.values(markersRef.current).forEach((m) => m.remove());
@@ -300,27 +304,31 @@ export const Map3D: React.FC<Map3DProps> = ({
       el.className = 'group relative flex flex-col items-center cursor-pointer select-none transition-transform duration-200';
       el.style.zIndex = isSelected ? '50' : '10';
 
+      // En móviles, para evitar amontonamiento, solo el punto seleccionado muestra la pastilla de texto completa.
+      // Los demás puntos se muestran como gemas luminosas elegantes y limpias.
+      const showBadge = !isMobile || isSelected;
+
       el.innerHTML = `
-        <div class="px-2 py-0.5 mb-1.5 rounded-full text-[10px] font-mono font-bold tracking-wider backdrop-blur-md border shadow-xl transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap ${
+        <div class="${showBadge ? 'flex' : 'hidden group-hover:flex'} px-2 py-0.5 mb-1 rounded-full text-[10px] font-mono font-bold tracking-wider backdrop-blur-md border shadow-xl transition-all duration-200 items-center gap-1.5 whitespace-nowrap ${
           isSelected
             ? 'bg-[#E8A15A] text-black border-white shadow-[#E8A15A]/50 scale-110'
             : 'bg-[#0E0F0F]/90 text-white/90 border-white/20 group-hover:border-[#E8A15A] group-hover:scale-105'
         }">
-          <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${isSelected ? '#000000' : color};"></span>
+          <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color: ${isSelected ? '#000000' : color};"></span>
           <span>${lugar.nombre}</span>
           <span class="opacity-60 text-[9px] font-normal">${lugar.altitud.toLocaleString()}m</span>
         </div>
         <div class="relative flex items-center justify-center">
           ${
             isSelected
-              ? `<div class="absolute w-8 h-8 rounded-full animate-ping opacity-75" style="background-color: ${color};"></div>`
+              ? `<div class="absolute w-7 h-7 sm:w-8 sm:h-8 rounded-full animate-ping opacity-75" style="background-color: ${color};"></div>`
               : ''
           }
-          <div class="w-5 h-5 rounded-full transition-transform duration-300 relative shadow-2xl ${
+          <div class="w-4 h-4 sm:w-5 sm:h-5 rounded-full transition-transform duration-300 relative shadow-2xl ${
             isSelected
               ? 'scale-125 ring-4 ring-[#E8A15A]/60'
               : 'group-hover:scale-110'
-          }" style="background-color: ${color}; border: 2.5px solid #FFFFFF;"></div>
+          }" style="background-color: ${color}; border: 2px solid #FFFFFF;"></div>
         </div>
       `;
 
@@ -397,9 +405,10 @@ export const Map3D: React.FC<Map3DProps> = ({
   // Vista general de ambos volcanes
   const resetVistaGeneral = () => {
     if (!mapRef.current) return;
+    const isMobile = window.innerWidth < 768;
     mapRef.current.flyTo({
       center: [-98.66, 19.10],
-      zoom: 10.6,
+      zoom: isMobile ? 9.8 : 10.6,
       pitch: 70,
       bearing: -20,
       offset: [0, 0],
@@ -413,10 +422,10 @@ export const Map3D: React.FC<Map3DProps> = ({
       <div ref={mapContainer} className="w-full h-full" />
 
       {/* Controles flotantes superiores derechos */}
-      <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
+      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex flex-col gap-1.5 sm:gap-2">
         <button
           onClick={resetVistaGeneral}
-          className="p-2.5 rounded-xl bg-[#1A1C1B]/90 hover:bg-[#1A1C1B] border border-white/10 text-[#F2F1EC] hover:text-[#E8A15A] shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium"
+          className="p-2 sm:p-2.5 rounded-xl bg-[#1A1C1B]/90 hover:bg-[#1A1C1B] border border-white/10 text-[#F2F1EC] hover:text-[#E8A15A] shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium"
           title="Vista general de ambos volcanes"
         >
           <Compass className="w-4 h-4 text-[#E8A15A]" />
@@ -426,7 +435,7 @@ export const Map3D: React.FC<Map3DProps> = ({
         {lugarSeleccionado && (
           <button
             onClick={() => volarALugar(lugarSeleccionado)}
-            className="p-2.5 rounded-xl bg-[#E8A15A] hover:bg-[#f3b578] text-black font-semibold shadow-xl transition-all flex items-center gap-1.5 text-xs"
+            className="p-2 sm:p-2.5 rounded-xl bg-[#E8A15A] hover:bg-[#f3b578] text-black font-semibold shadow-xl transition-all flex items-center gap-1.5 text-xs"
             title="Centrar en el lugar activo"
           >
             <Target className="w-4 h-4" />
@@ -436,7 +445,7 @@ export const Map3D: React.FC<Map3DProps> = ({
 
         <button
           onClick={() => setIsRotating(!isRotating)}
-          className={`p-2.5 rounded-xl border shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium ${
+          className={`p-2 sm:p-2.5 rounded-xl border shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium ${
             isRotating
               ? 'bg-[#E8A15A] text-black border-[#E8A15A]'
               : 'bg-[#1A1C1B]/90 hover:bg-[#1A1C1B] border-white/10 text-[#F2F1EC]'
@@ -449,7 +458,7 @@ export const Map3D: React.FC<Map3DProps> = ({
 
         <button
           onClick={() => setShowRutas(!showRutas)}
-          className={`p-2.5 rounded-xl border shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium ${
+          className={`p-2 sm:p-2.5 rounded-xl border shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium ${
             showRutas
               ? 'bg-[#1A1C1B]/90 border-[#8FC1D4]/40 text-[#8FC1D4]'
               : 'bg-[#1A1C1B]/60 border-white/10 text-[#9AA3A0]'
@@ -462,7 +471,7 @@ export const Map3D: React.FC<Map3DProps> = ({
 
         <button
           onClick={() => setShowPopoRestriccion(!showPopoRestriccion)}
-          className={`p-2.5 rounded-xl border shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium ${
+          className={`p-2 sm:p-2.5 rounded-xl border shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium ${
             showPopoRestriccion
               ? 'bg-[#1A1C1B]/90 border-[#C2502E]/40 text-[#C2502E]'
               : 'bg-[#1A1C1B]/60 border-white/10 text-[#9AA3A0]'

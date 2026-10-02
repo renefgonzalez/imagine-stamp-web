@@ -38,6 +38,11 @@ export const Explorar: React.FC = () => {
   const handleCenterLugar = (lugar: Lugar) => {
     setSelectedLugar(lugar);
     setCenterTrigger((prev) => ({ lugar, count: (prev?.count || 0) + 1 }));
+
+    // En móviles, colapsar el panel de exploración al elegir un lugar para despejar la vista 3D
+    if (window.innerWidth < 768) {
+      setPanelOpen(false);
+    }
   };
 
   // Filtrado reactivo de lugares
@@ -65,10 +70,10 @@ export const Explorar: React.FC = () => {
         />
       </div>
 
-      {/* 2. PANEL LATERAL IZQUIERDO */}
+      {/* 2. PANEL LATERAL DE EXPLORACIÓN */}
       <div
-        className={`absolute top-4 left-4 bottom-4 z-20 w-80 sm:w-96 flex flex-col rounded-3xl bg-[#0E0F0F]/92 border border-white/15 shadow-2xl backdrop-blur-2xl transition-transform duration-300 ${
-          panelOpen ? 'translate-x-0' : '-translate-x-[110%]'
+        className={`absolute top-3 left-3 bottom-3 sm:top-4 sm:left-4 sm:bottom-4 z-20 w-[calc(100%-24px)] max-w-sm sm:w-96 flex flex-col rounded-3xl bg-[#0E0F0F]/95 sm:bg-[#0E0F0F]/92 border border-white/15 shadow-2xl backdrop-blur-2xl transition-transform duration-300 ${
+          panelOpen ? 'translate-x-0' : '-translate-x-[115%]'
         }`}
       >
         {/* Cabecera del panel */}
@@ -177,7 +182,7 @@ export const Explorar: React.FC = () => {
 
         {/* Footer del panel */}
         <div className="p-3 border-t border-white/10 text-center text-[10px] font-mono text-[#9AA3A0]">
-          {lugaresFiltrados.length} lugares · Clic en la tarjeta para volar en 3D
+          {lugaresFiltrados.length} lugares · Toca para volar en 3D
         </div>
       </div>
 
@@ -185,19 +190,22 @@ export const Explorar: React.FC = () => {
       {!panelOpen && (
         <button
           onClick={() => setPanelOpen(true)}
-          className="absolute top-4 left-4 z-20 px-4 py-2.5 rounded-2xl bg-[#0E0F0F]/90 border border-white/15 text-xs font-semibold text-white shadow-2xl backdrop-blur-xl flex items-center gap-2 hover:bg-[#1A1C1B]"
+          className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl bg-[#0E0F0F]/90 border border-white/15 text-xs font-semibold text-white shadow-2xl backdrop-blur-xl flex items-center gap-2 hover:bg-[#1A1C1B]"
         >
           <SlidersHorizontal className="w-4 h-4 text-[#E8A15A]" />
           <span>Lugares & Filtros ({lugaresFiltrados.length})</span>
         </button>
       )}
 
-      {/* 3. TARJETA FLOTANTE DE DETALLE RÁPIDO (DOCK EN LA DERECHA) */}
-      <PlaceSheet
-        lugar={selectedLugar}
-        onClose={() => setSelectedLugar(null)}
-        onCenter={handleCenterLugar}
-      />
+      {/* 3. TARJETA FLOTANTE DE DETALLE RÁPIDO (DOCK EN LA DERECHA / INFERIOR) */}
+      {/* En móvil sólo se muestra si el panel principal está cerrado para no encimarse */}
+      {(!panelOpen || (typeof window !== 'undefined' && window.innerWidth >= 768)) && (
+        <PlaceSheet
+          lugar={selectedLugar}
+          onClose={() => setSelectedLugar(null)}
+          onCenter={handleCenterLugar}
+        />
+      )}
     </div>
   );
 };
