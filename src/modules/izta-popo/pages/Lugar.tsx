@@ -2,16 +2,15 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   Mountain,
-  Calendar,
-  Compass,
   AlertTriangle,
   ShieldCheck,
   ArrowLeft,
-  MapPin,
-  Trees,
-  Maximize2
+  HeartHandshake,
+  Calendar,
+  Sparkles,
+  Info
 } from 'lucide-react';
-import { LUGARES, Lugar } from '../data/lugares';
+import { LUGARES } from '../data/lugares';
 import { CATEGORIAS } from '../data/categorias';
 import { Gallery } from '../components/Gallery';
 import { SmartVideo } from '../components/SmartVideo';
@@ -22,7 +21,6 @@ import { MEDIA_BASE } from '../config';
 
 export const LugarPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const basePrefix = '/izta-popo';
 
   const lugar = LUGARES.find((l) => l.id === id) || LUGARES[0];
   const cat = CATEGORIAS[lugar.categoria];
@@ -63,6 +61,9 @@ export const LugarPage: React.FC = () => {
             src={heroFotoUrl}
             alt={lugar.nombre}
             className="w-full h-full object-cover scale-105 filter brightness-85"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = `${MEDIA_BASE}/fotos/bosque-pino-2560.webp`;
+            }}
           />
         )}
 
@@ -71,7 +72,7 @@ export const LugarPage: React.FC = () => {
         {/* Botón Volver y Categoría */}
         <div className="absolute top-6 left-4 sm:left-8 right-4 flex items-center justify-between z-20">
           <Link
-            to={`${basePrefix}/explorar`}
+            to="/explorar"
             className="px-4 py-2 rounded-xl bg-black/60 hover:bg-black/80 border border-white/10 text-xs font-medium text-white backdrop-blur-md transition-colors flex items-center gap-1.5"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -103,7 +104,7 @@ export const LugarPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. CONTENIDO PRINCIPAL: FICHA TÉCNICA + RELATO EDITORIAL */}
+      {/* 2. CONTENIDO PRINCIPAL: FICHA DE CONSERVACIÓN + CRÓNICA */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
         {/* Avisos de protección o volcánicos */}
         <div className="space-y-4 mb-10">
@@ -114,7 +115,7 @@ export const LugarPage: React.FC = () => {
                 <div>
                   <h4 className="font-semibold text-white text-sm">Zona de Exclusión Volcánica Activa</h4>
                   <p className="text-[#f89b82]/90 mt-0.5">
-                    Este punto se encuentra dentro del radio de 12 km del cráter del Popocatépetl. El ascenso está restringido por actividad volcánica. Consulta el semáforo oficial de CENAPRED antes de planear tu salida.
+                    Este punto se encuentra dentro del radio de 12 km del cráter del Popocatépetl. El acceso está restringido por seguridad volcánica oficial. Consulta el semáforo de CENAPRED.
                   </p>
                 </div>
               </div>
@@ -133,7 +134,7 @@ export const LugarPage: React.FC = () => {
             <div className="p-4 sm:p-5 rounded-2xl bg-[#B88A4A]/15 border border-[#B88A4A]/30 flex items-center gap-3 text-xs text-[#f2dcad]">
               <ShieldCheck className="w-6 h-6 text-[#B88A4A] shrink-0" />
               <div>
-                <h4 className="font-semibold text-white text-sm">Patrimonio Arqueológico Protegido</h4>
+                <h4 className="font-semibold text-white text-sm">Patrimonio Arqueológico y Ceremonial Protegido</h4>
                 <p className="text-[#f2dcad]/90 mt-0.5">
                   Por protección del patrimonio arqueológico y para evitar saqueos de vestigios ceremoniales prehispánicos, las coordenadas en el mapa se muestran de forma aproximada.
                 </p>
@@ -143,15 +144,15 @@ export const LugarPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          {/* Columna Izquierda: Ficha Técnica (4 cols) */}
+          {/* Columna Izquierda: Ficha de Conservación (4 cols) */}
           <div className="lg:col-span-4 space-y-6">
             <div className="p-6 rounded-3xl bg-[#141615] border border-white/10 space-y-4 shadow-xl">
               <h3 className="font-serif text-lg font-bold text-white pb-3 border-b border-white/10 flex items-center gap-2">
                 <Mountain className="w-5 h-5 text-[#E8A15A]" />
-                <span>Ficha Técnica de Expedición</span>
+                <span>Ficha de Conservación</span>
               </h3>
 
-              <div className="space-y-3 text-xs font-mono">
+              <div className="space-y-4 text-xs font-mono">
                 <div>
                   <span className="text-[#9AA3A0] block text-[10px] uppercase">Altitud Oficial</span>
                   <span className="text-white text-sm font-bold">{lugar.altitud.toLocaleString()} m</span>
@@ -169,29 +170,43 @@ export const LugarPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <span className="text-[#9AA3A0] block text-[10px] uppercase">Temporada Recomendada</span>
-                  <span className="text-white text-xs">{lugar.temporada}</span>
+                  <span className="text-[#9AA3A0] block text-[10px] uppercase">Mejor Época para Observar</span>
+                  <span className="text-white text-xs">{lugar.mejorEpoca || lugar.temporada}</span>
                 </div>
 
                 <div>
-                  <span className="text-[#9AA3A0] block text-[10px] uppercase">Nivel de Dificultad</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[#9AA3A0] block text-[10px] uppercase">Estado de Conservación</span>
+                    <span className="text-[10px] text-[#E8A15A]">(Ejemplo)</span>
+                  </div>
                   <span
-                    className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold mt-1 ${
-                      lugar.dificultad === 'Fácil'
-                        ? 'bg-emerald-500/20 text-emerald-300'
-                        : lugar.dificultad === 'Media'
-                        ? 'bg-amber-500/20 text-amber-300'
-                        : 'bg-rose-500/20 text-rose-300'
+                    className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-bold mt-1.5 ${
+                      lugar.estadoConservacion?.includes('Bien') || lugar.estadoConservacion?.includes('Estable')
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                        : lugar.estadoConservacion?.includes('Extinto') || lugar.estadoConservacion?.includes('Vulnerable') || lugar.estadoConservacion?.includes('incendios')
+                        ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                        : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                     }`}
                   >
-                    {lugar.dificultad}
+                    {lugar.estadoConservacion || 'En monitoreo'}
                   </span>
                 </div>
 
                 <div>
-                  <span className="text-[#9AA3A0] block text-[10px] uppercase">Última Visita Guiada</span>
+                  <span className="text-[#9AA3A0] block text-[10px] uppercase">Último Registro de Observación</span>
                   <span className="text-white text-xs">{lugar.fechaVisita}</span>
                 </div>
+              </div>
+
+              {/* Botón CTA de Voluntariado para este lugar */}
+              <div className="pt-4 border-t border-white/10">
+                <Link
+                  to="/participa"
+                  className="w-full py-3 px-4 rounded-2xl bg-[#E8A15A] hover:bg-[#d68f47] text-[#0E0F0F] font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-lg"
+                >
+                  <HeartHandshake className="w-4 h-4" />
+                  <span>¿Quieres ayudar a cuidar este lugar? → Participa</span>
+                </Link>
               </div>
             </div>
 
@@ -207,14 +222,14 @@ export const LugarPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Columna Derecha: Relato Editorial del Guía (8 cols) */}
+          {/* Columna Derecha: Crónica y Observaciones (8 cols) */}
           <div className="lg:col-span-8 space-y-8">
             <div>
               <span className="text-xs font-mono text-[#E8A15A] uppercase tracking-wider block mb-2">
-                Diario de Ascenso
+                Memoria y Observaciones de Campo
               </span>
               <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white mb-6">
-                Crónica de la montaña
+                Crónica del paraje
               </h2>
 
               <div className="space-y-6 text-[#F2F1EC]/90 text-sm sm:text-base leading-relaxed max-w-[70ch]">
@@ -230,7 +245,7 @@ export const LugarPage: React.FC = () => {
             {lugar.video && (
               <div className="space-y-3 pt-6 border-t border-white/10">
                 <h3 className="font-serif text-xl font-bold text-white">
-                  Registro de Video 4K
+                  Registro Audiovisual
                 </h3>
                 <div className="aspect-video w-full rounded-2xl overflow-hidden shadow-2xl">
                   <SmartVideo
@@ -268,7 +283,7 @@ export const LugarPage: React.FC = () => {
         <div className="mt-24 pt-12 border-t border-white/10 space-y-6">
           <div>
             <span className="text-xs font-mono uppercase tracking-[0.2em] text-[#8FC1D4] block mb-1">
-              Continuar la travesía
+              Continuar explorando
             </span>
             <h3 className="font-serif text-2xl font-bold text-white">
               Lugares cercanos a {lugar.nombre}

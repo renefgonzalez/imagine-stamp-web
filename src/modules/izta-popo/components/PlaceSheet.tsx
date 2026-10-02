@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { X, ArrowRight, Calendar, AlertTriangle, ShieldCheck, Target } from 'lucide-react';
+import { X, ArrowRight, Eye, AlertTriangle, ShieldCheck, Target, HeartHandshake } from 'lucide-react';
 import { Lugar } from '../data/lugares';
 import { CATEGORIAS } from '../data/categorias';
 import { MEDIA_BASE } from '../config';
@@ -32,7 +32,7 @@ export const PlaceSheet: React.FC<PlaceSheetProps> = ({ lugar, onClose, onCenter
           <X className="w-4 h-4" />
         </button>
 
-        {/* Imagen de cabecera más compacta en móvil para no tapar la montaña */}
+        {/* Imagen de cabecera */}
         <div className="relative h-28 sm:h-44 w-full overflow-hidden bg-black">
           <img
             src={fotoUrl}
@@ -95,15 +95,35 @@ export const PlaceSheet: React.FC<PlaceSheetProps> = ({ lugar, onClose, onCenter
             </div>
           )}
 
-          <div className="flex items-center justify-between text-[11px] sm:text-xs text-[#9AA3A0] pt-1 border-t border-white/10">
-            <span className="flex items-center gap-1.5">
-              <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#E8A15A]" />
-              <span className="truncate max-w-[150px] sm:max-w-[170px]">{lugar.temporada}</span>
-            </span>
+          {/* Estado de conservación y mejor época */}
+          <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 space-y-1.5 text-[11px]">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[#9AA3A0] flex items-center gap-1.5">
+                <Eye className="w-3.5 h-3.5 text-[#E8A15A]" />
+                <span>Observación:</span>
+              </span>
+              <span className="text-[#F2F1EC] font-medium truncate max-w-[170px]">
+                {lugar.mejorEpoca}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2 border-t border-white/5 pt-1">
+              <span className="text-[#9AA3A0]">Estado:</span>
+              <span className="font-mono text-[10px] px-2 py-0.5 rounded-md bg-[#E8A15A]/15 text-[#E8A15A] font-semibold border border-[#E8A15A]/25 truncate max-w-[180px]">
+                {lugar.estadoConservacion}
+              </span>
+            </div>
+          </div>
 
-            <span className="font-mono text-[10px] sm:text-[11px]">
-              Dificultad: <strong className="text-white">{lugar.dificultad}</strong>
-            </span>
+          {/* Llamado a conservación */}
+          <div className="flex items-center justify-between text-[11px] text-[#9AA3A0] pt-0.5">
+            <span>¿Quieres ayudar a cuidar este lugar?</span>
+            <Link
+              to="/izta-popo/participa"
+              className="text-[#E8A15A] font-semibold hover:underline flex items-center gap-1"
+            >
+              <HeartHandshake className="w-3.5 h-3.5" />
+              <span>Participa →</span>
+            </Link>
           </div>
 
           {/* Acciones */}

@@ -113,6 +113,29 @@ export const Explorar: React.FC = () => {
 
         {/* Lista de lugares filtrados */}
         <div className="flex-1 overflow-y-auto hide-scrollbar p-3 space-y-2">
+          {selectedCat === 'fauna' && (
+            <div className="p-3 rounded-2xl bg-[#1A1C1B] border border-white/10 mb-3 overflow-hidden">
+              <div className="relative aspect-video rounded-xl overflow-hidden mb-2 bg-black">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  poster={`${MEDIA_BASE}/fotos/teporingo-800.webp`}
+                  className="w-full h-full object-cover"
+                >
+                  <source src={`${MEDIA_BASE}/video/presentacion-teaser.mp4`} type="video/mp4" />
+                </video>
+                <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm text-[10px] font-mono text-[#E8A15A]">
+                  Filmación propia de fauna
+                </div>
+              </div>
+              <p className="text-[11px] text-[#9AA3A0] leading-relaxed">
+                Tomas de campo registradas en la sierra por Conocimiento de la Montaña: especies nativas y endémicas en su hábitat.
+              </p>
+            </div>
+          )}
+
           {lugaresFiltrados.length === 0 ? (
             <div className="p-8 text-center text-xs text-[#9AA3A0]">
               No se encontraron lugares con esos criterios.

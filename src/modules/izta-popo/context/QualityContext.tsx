@@ -36,15 +36,15 @@ export const QualityProvider: React.FC<{ children: React.ReactNode }> = ({ child
       // LocalStorage bloqueado o inaccesible
     }
 
-    // Detección automática por conexión lenta o ahorro de datos
+    // Detección automática: solo cambiar a ligero si saveData === true o 2g/slow-2g (no 3g)
     if (typeof navigator !== 'undefined') {
       const conn = (navigator as any).connection;
-      if (conn?.saveData === true || conn?.effectiveType === '2g' || conn?.effectiveType === '3g') {
+      if (conn?.saveData === true || conn?.effectiveType === '2g' || conn?.effectiveType === 'slow-2g') {
         return 'ligero';
       }
     }
 
-    return 'alta'; // Predeterminado
+    return 'alta'; // Predeterminado en Alta calidad
   });
 
   const [autoDetectedSlow, setAutoDetectedSlow] = useState(false);
@@ -61,9 +61,9 @@ export const QualityProvider: React.FC<{ children: React.ReactNode }> = ({ child
   useEffect(() => {
     if (typeof navigator !== 'undefined') {
       const conn = (navigator as any).connection;
-      if (conn?.saveData === true || conn?.effectiveType === '2g' || conn?.effectiveType === '3g') {
+      if (conn?.saveData === true || conn?.effectiveType === '2g' || conn?.effectiveType === 'slow-2g') {
         setAutoDetectedSlow(true);
-        setToastMessage('Detectamos una conexión lenta o modo ahorro. Iniciamos en calidad "Ligero" para ahorrar datos.');
+        setToastMessage('Detectamos una conexión lenta o modo ahorro. Iniciamos en calidad "Ligero" para optimizar datos.');
       }
     }
   }, []);

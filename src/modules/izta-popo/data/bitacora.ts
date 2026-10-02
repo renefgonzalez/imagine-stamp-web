@@ -1,89 +1,93 @@
-export interface Expedicion {
+import { GUIDE_NAME } from '../config';
+
+export interface EntradaJornada {
   id: string;
   titulo: string;
+  tipoJornada: 'Limpieza de parajes' | 'Reforestación' | 'Observación y censo biológico' | 'Plática y cultura comunitaria';
   fecha: string;
-  ruta: string;
-  distanciaKm: number;
-  desnivelM: number;
-  duracionHoras: number;
+  lugar: string;
+  voluntariosParticipantes: number;
+  logro: string; // Lo que se logró en la jornada
   resumen: string;
   lugaresIds: string[];
   fotos: { id: string; pie: string }[];
-  clima: string;
-  guia: string;
+  coordinador: string;
+  esEjemplo: boolean;
 }
 
-export const BITACORA_EXPEDICIONES: Expedicion[] = [
+export const BITACORA_JORNADAS: EntradaJornada[] = [
   {
-    id: 'exp-2026-03-cumbre-invernal',
-    titulo: 'Travesía Invernal a El Pecho bajo Cielo Polar',
+    id: 'jornada-2026-02-limpieza-joya',
+    titulo: 'Jornada de Limpieza y Retiro de Residuos en La Joya',
+    tipoJornada: 'Limpieza de parajes',
     fecha: '18 de febrero de 2026',
-    ruta: 'La Joya → Refugio de los Cien → Arista del Sol → El Pecho',
-    distanciaKm: 13.5,
-    desnivelM: 1280,
-    duracionHoras: 9.5,
-    resumen: 'Apertura de temporada con condiciones de nieve compacta y viento de 45 km/h. Amanecer nítido a 5,000 m con visión completa del Pico de Orizaba.',
-    lugaresIds: ['la-joya', 'cumbre-izta', 'glaciar-ayoloco'],
+    lugar: 'La Joya → Los Portillos',
+    voluntariosParticipantes: 24,
+    logro: 'Retiro de 180 kg de plásticos, latas y residuos inorgánicos de las cañadas altas.',
+    resumen: 'Jornada colectiva de saneamiento ambiental a 3,950 m. Con el apoyo de voluntarios locales se retiraron desechos acumulados en zonas de campamento, previniendo la contaminación de los veneros de deshielo.',
+    lugaresIds: ['la-joya', 'glaciar-ayoloco'],
     fotos: [
-      { id: 'la-joya', pie: 'Partida a las 2:30 AM desde La Joya' },
-      { id: 'cumbre-izta', pie: 'Cresta cimera en El Pecho (5,230 m)' },
-      { id: 'glaciar-ayoloco', pie: 'Paso por el lecho del extinto Ayoloco' },
+      { id: 'la-joya', pie: 'Inicio de la jornada en el campamento La Joya' },
+      { id: 'glaciar-ayoloco', pie: 'Recolección en senderos hacia el antiguo glaciar' },
+      { id: 'vista-noreste', pie: 'Revisión final de cuenca limpia' }
     ],
-    clima: '-6 °C en base, -14 °C en cumbre, cielo despejado',
-    guia: 'Martín Hernández',
+    coordinador: GUIDE_NAME,
+    esEjemplo: true,
   },
   {
-    id: 'exp-2026-01-vigilia-volcanica',
-    titulo: 'Vigilia Geológica y Amanecer en Paso de Cortés',
-    fecha: '25 de enero de 2026',
-    ruta: 'Paso de Cortés → Mirador del Popocatépetl → Laderas de Tenenepanco',
-    distanciaKm: 6.8,
-    desnivelM: 220,
-    duracionHoras: 4.5,
-    resumen: 'Sesión de astrofotografía y observación vulcanológica con teleobjetivos. El Popocatépetl presentó tres exhalaciones de vapor blanco y ceniza fina hacia el este.',
-    lugaresIds: ['paso-de-cortes', 'mirador-popo', 'tenenepanco'],
-    fotos: [
-      { id: 'paso-de-cortes', pie: 'Llegada antes del alba al collado' },
-      { id: 'mirador-popo', pie: 'Fumarola iluminada por el sol naciente' },
-      { id: 'tenenepanco', pie: 'Laderas volcánicas norteñas' },
-    ],
-    clima: '1 °C, calma de viento, excelente visibilidad astronómica',
-    guia: 'Martín Hernández',
-  },
-  {
-    id: 'exp-2026-01-santuario-hartwegii',
-    titulo: 'Rastreo del Teporingo y Censo en Bosque Hartwegii',
+    id: 'jornada-2026-01-censo-teporingo',
+    titulo: 'Monitoreo Comunitario y Censo del Teporingo en el Pinar',
+    tipoJornada: 'Observación y censo biológico',
     fecha: '14 de enero de 2026',
-    ruta: 'Circuito Cañada de Altzomoni → Pinar de Altura',
-    distanciaKm: 8.2,
-    desnivelM: 450,
-    duracionHoras: 5.0,
-    resumen: 'Recorrido de ecología aplicada documentando ejemplares centenarios de Pinus hartwegii y avistamiento de tres individuos de Romerolagus diazi en su madriguera.',
+    lugar: 'Cañada de Altzomoni → Bosque Hartwegii',
+    voluntariosParticipantes: 12,
+    logro: 'Registro de 3 colonias activas de conejo zacatuche y georreferenciación de madrigueras.',
+    resumen: 'Recorrido silencioso de educación ambiental y ciencia ciudadana. Se documentó la interacción del zacatuche con el zacatonal alpino y se sensibilizó a los asistentes sobre no ingresar con perros que amenacen su supervivencia.',
     lugaresIds: ['bosque-hartwegii', 'teporingo', 'oyamel'],
     fotos: [
-      { id: 'bosque-hartwegii', pie: 'Corteza hexagonal centenaria a 3,750 m' },
-      { id: 'teporingo', pie: 'Avistamiento de teporingo entre el zacate' },
-      { id: 'oyamel', pie: 'Descenso por la franja de abetos' },
+      { id: 'teporingo', pie: 'Avistamiento de teporingo entre las matas de zacate' },
+      { id: 'bosque-hartwegii', pie: 'Bosque de Pinus hartwegii donde se refugia' },
+      { id: 'oyamel', pie: 'Franja de abetos y amortiguamiento' }
     ],
-    clima: '4 °C a 12 °C, neblina flotante intermitente',
-    guia: 'Martín Hernández',
+    coordinador: GUIDE_NAME,
+    esEjemplo: true,
   },
   {
-    id: 'exp-2025-11-santuarios-prehispanicos',
-    titulo: 'Exploración Arqueoastronómica en Nahualac',
-    fecha: '10 de noviembre de 2025',
-    ruta: 'Amecameca → Sacromonte → Aproximación al adoratorio de Nahualac',
-    distanciaKm: 11.0,
-    desnivelM: 780,
-    duracionHoras: 7.0,
-    resumen: 'Expedición de memoria histórica conectando el antiguo santuario del Sacromonte con el adoratorio sumergido de Tláloc a 3,870 m. Registro fotográfico sin impacto.',
-    lugaresIds: ['sacromonte', 'nahualac', 'arroyo-deshielo'],
+    id: 'jornada-2025-11-reforestacion-oyamel',
+    titulo: 'Siembra y Mantenimiento de Plántulas Nativas de Oyamel',
+    tipoJornada: 'Reforestación',
+    fecha: '25 de noviembre de 2025',
+    lugar: 'Laderas de Amecameca y bosque de oyamel',
+    voluntariosParticipantes: 35,
+    logro: 'Plantación de 450 arbolitos nativos protegidos con acolchado vegetal orgánico.',
+    resumen: 'Siembra comunitaria con familias y jóvenes en una ladera afectada por erosión. Se enseñó la técnica correcta de apertura de cepellón y se colocaron protectores contra heladas para asegurar una tasa de supervivencia superior al 80%.',
+    lugaresIds: ['oyamel', 'sacromonte', 'arroyo-deshielo'],
     fotos: [
-      { id: 'sacromonte', pie: 'Santuario del Sacromonte con vista a volcanes' },
-      { id: 'vista-noreste', pie: 'Cuenca ceremonial de Nahualac' },
-      { id: 'oyamel', pie: 'Cañada húmeda y arroyo de deshielo' },
+      { id: 'oyamel', pie: 'Bosque de Oyamel sagrado donde se integraron plántulas' },
+      { id: 'sacromonte', pie: 'Punto de reunión comunitaria previo a la siembra' },
+      { id: 'arroyo-deshielo', pie: 'Verificación de humedad en el suelo de cañada' }
     ],
-    clima: '6 °C, viento moderado del noroeste',
-    guia: 'Martín Hernández',
+    coordinador: GUIDE_NAME,
+    esEjemplo: true,
   },
+  {
+    id: 'jornada-2025-10-platica-tradicion-nahualac',
+    titulo: 'Plática sobre Memoria Biocultural y Montañas Sagradas',
+    tipoJornada: 'Plática y cultura comunitaria',
+    fecha: '18 de octubre de 2025',
+    lugar: 'Auditorio Comunitario de Amecameca',
+    voluntariosParticipantes: 50,
+    logro: 'Difusión de la tradición oral náhuatl y concientización contra el saqueo de sitios rituales.',
+    resumen: 'Encuentro cultural donde adultos mayores y cronistas compartieron los relatos sobre el agua sagrada de Tláloc y la toponimia de los volcanes, creando un frente juvenil de protección contra el saqueo en Nahualac.',
+    lugaresIds: ['nahualac', 'sacromonte', 'paso-de-cortes'],
+    fotos: [
+      { id: 'vista-noreste', pie: 'Perspectiva de las cuencas sagradas analizadas' },
+      { id: 'sacromonte', pie: 'Santuario del Sacromonte donde inició el diálogo' },
+      { id: 'paso-de-cortes', pie: 'Los dos volcanes como testigos de la tradición oral' }
+    ],
+    coordinador: GUIDE_NAME,
+    esEjemplo: true,
+  }
 ];
+
+export const BITACORA_EXPEDICIONES = BITACORA_JORNADAS;

@@ -5,9 +5,9 @@ import { useQuality, QualityMode } from '../context/QualityContext';
 import { MEDIA_BASE, STREAM_BASE } from '../config';
 
 interface SmartVideoProps {
-  videoId: string; // nombre base, ej. 'video-popo-4k-noaa' o 'video-volcanes-avion'
+  videoId: string; // nombre base, ej. 'presentacion', 'video-popo-4k-noaa' o 'video-volcanes-avion'
   titulo?: string;
-  resolucionNativa?: '4K' | '1080p';
+  resolucionNativa?: '4K' | '1080p' | 'SD';
   pesoOriginalGB?: number;
   className?: string;
   autoPlay?: boolean;
@@ -18,7 +18,7 @@ interface SmartVideoProps {
 
 export const SmartVideo: React.FC<SmartVideoProps> = ({
   videoId,
-  titulo = 'Video de expedición',
+  titulo = 'Video documental',
   resolucionNativa = '1080p',
   pesoOriginalGB = 0.25,
   className = '',
@@ -59,14 +59,25 @@ export const SmartVideo: React.FC<SmartVideoProps> = ({
     // Archivos MP4 / WebM locales
     if (localMode === 'ligero') {
       videoSrc = `${MEDIA_BASE}/video/${videoId}-ligero.mp4`;
-      activeResolution = '720p HD';
+      activeResolution = resolucionNativa === 'SD' ? 'SD (480p)' : '720p HD';
     } else if (localMode === 'alta') {
       videoSrc = `${MEDIA_BASE}/video/${videoId}-alta.mp4`;
-      activeResolution = resolucionNativa === '4K' ? '1080p / 4K' : '1080p Full HD';
+      activeResolution =
+        resolucionNativa === 'SD'
+          ? 'SD (576p)'
+          : resolucionNativa === '4K'
+          ? '1080p / 4K'
+          : '1080p Full HD';
     } else {
       // Original
-      videoSrc = `${MEDIA_BASE}/video/${videoId}-original.webm`;
-      activeResolution = resolucionNativa === '4K' ? '4K Ultra HD (Original)' : '1080p (Original)';
+      const ext = videoId === 'presentacion' ? 'mp4' : 'webm';
+      videoSrc = `${MEDIA_BASE}/video/${videoId}-original.${ext}`;
+      activeResolution =
+        resolucionNativa === 'SD'
+          ? 'SD (Original 15 MB)'
+          : resolucionNativa === '4K'
+          ? '4K Ultra HD (Original)'
+          : '1080p (Original)';
     }
   }
 
@@ -78,196 +89,231 @@ export const SmartVideo: React.FC<SmartVideoProps> = ({
     let hls: Hls | null = null;
     const prevTime = currentTime;
 
-    if (videoSrc.endsWith('.m3u8')) {
-      if (Hls.isSupported()) {
-        hls = new Hls({ enableWorker: true });
-        hls.loadSource(videoSrc);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          if (prevTime > 0) video.currentTime = prevTime;
-          if (isPlaying) video.play().catch(() => {});
-        });
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = videoSrc;
-        video.addEventListener('loadedmetadata', () => {
-          if (prevTime > 0) video.currentTime = prevTime;
-          if (isPlaying) video.play().catch(() => {});
-        });
-      }
+    if (hasStreamBase && Hls.isSupported() && videoSrc.endsWith('.m3u8')) {
+      hls = new Hls({ enableWorker: true });
+      hls.loadSource(videoSrc);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        if (prevTime > 0) video.currentTime = prevTime;
+        if (isPlaying) video.play().catch(() => {});
+      });
+      hls.on(Hls.Events.ERROR, () => {
+        setHasError(true);
+      });
     } else {
       video.src = videoSrc;
       video.load();
-      video.currentTime = prevTime;
+      if (prevTime > 0) video.currentTime = prevTime;
       if (isPlaying) {
-        video.play().catch(() => setIsPlaying(false));
+        video.play().catch(() => {
+          // Si el navegador bloquea autoplay con sonido, continuar
+        });
       }
     }
 
     return () => {
-      if (hls) hls.destroy();
+      if (hls) {
+        hls.destroy();
+      }
     };
   }, [videoSrc]);
 
-  // Cambiar calidad conservando el segundo actual
-  const handleQualityChange = (newMode: QualityMode) => {
-    if (videoRef.current) {
-      setCurrentTime(videoRef.current.currentTime);
-    }
-
-    if (newMode === 'original') {
-      const pesoMB = Math.round(pesoOriginalGB * 1024);
-      requestOriginalQuality(pesoMB, 'video', titulo, () => {
-        setLocalMode('original');
-        setShowSettings(false);
-      });
-    } else {
-      setLocalMode(newMode);
-      setShowSettings(false);
-    }
-  };
-
+  // Actualizar estado de reproducción
   const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (isPlaying) {
-      videoRef.current.pause();
-      setIsPlaying(false);
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (video.paused) {
+      video.play().then(() => setIsPlaying(true)).catch(() => {});
     } else {
-      videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      video.pause();
+      setIsPlaying(false);
     }
   };
 
   const toggleMute = () => {
-    if (!videoRef.current) return;
-    videoRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    setIsMuted(video.muted);
   };
 
-  const toggleFullscreen = () => {
-    if (!containerRef.current) return;
+  const handleFullscreen = () => {
+    const container = containerRef.current;
+    if (!container) return;
+
     if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen?.().catch(() => {});
+      container.requestFullscreen().catch(() => {});
     } else {
-      document.exitFullscreen?.().catch(() => {});
+      document.exitFullscreen().catch(() => {});
     }
+  };
+
+  const handleModeChange = (targetMode: QualityMode) => {
+    const video = videoRef.current;
+    if (video) setCurrentTime(video.currentTime);
+
+    if (targetMode === 'original' && resolucionNativa !== 'SD') {
+      requestOriginalQuality(
+        Math.round(pesoOriginalGB * 1024),
+        'video',
+        titulo,
+        () => setLocalMode('original')
+      );
+    } else {
+      setLocalMode(targetMode);
+    }
+    setShowSettings(false);
   };
 
   return (
     <div
       ref={containerRef}
-      className={`relative group overflow-hidden rounded-2xl bg-black border border-white/10 ${className}`}
+      className={`relative rounded-3xl overflow-hidden bg-black/90 group select-none shadow-2xl border border-white/10 ${className}`}
     >
+      {/* Elemento de Video */}
       <video
         ref={videoRef}
         poster={posterUrl}
         playsInline
-        muted={muted}
         loop={loop}
-        autoPlay={autoPlay}
-        onTimeUpdate={() => videoRef.current && setCurrentTime(videoRef.current.currentTime)}
+        muted={isMuted}
+        onTimeUpdate={() => {
+          if (videoRef.current) setCurrentTime(videoRef.current.currentTime);
+        }}
         onEnded={() => setIsPlaying(false)}
         onError={() => setHasError(true)}
         className="w-full h-full object-cover"
       />
 
-      {/* Fallback amigable */}
-      {hasError && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#0E0F0F]/90 backdrop-blur-md z-10">
-          <AlertCircle className="w-10 h-10 text-[#E8A15A] mb-3" />
-          <h4 className="font-serif text-lg text-[#F2F1EC] font-semibold mb-1">Video en preparación</h4>
-          <p className="text-xs text-[#9AA3A0] max-w-sm">
-            En la versión de producción aquí se transmitirá el video 4K adaptativo mediante CDN.
-          </p>
-        </div>
+      {/* Botón Central de Play si está pausado */}
+      {!isPlaying && (
+        <button
+          onClick={togglePlay}
+          className="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#E8A15A] text-black flex items-center justify-center shadow-2xl shadow-[#E8A15A]/40 hover:scale-110 hover:bg-[#f3b578] transition-all z-10"
+          aria-label="Reproducir video"
+        >
+          <Play className="w-8 h-8 fill-black translate-x-0.5" />
+        </button>
       )}
 
-      {/* Badge de Resolución Superior Izquierda */}
-      <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
-        <span className="px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-md border border-white/15 text-[10px] font-mono font-bold tracking-wider text-[#E8A15A] uppercase shadow-lg">
+      {/* Badge de Resolución y Calidad */}
+      <div className="absolute top-4 left-4 z-20 flex items-center gap-2 pointer-events-none">
+        <span
+          className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold tracking-wider backdrop-blur-md border ${
+            resolucionNativa === 'SD'
+              ? 'bg-[#1A1C1B]/80 text-[#E8A15A] border-[#E8A15A]/40'
+              : localMode === 'original'
+              ? 'bg-[#E8A15A] text-black border-[#E8A15A]'
+              : 'bg-black/60 text-white/90 border-white/20'
+          }`}
+        >
           {activeResolution}
         </span>
-        {localMode === 'original' && (
-          <span className="px-2 py-0.5 rounded-md bg-[#E8A15A] text-black text-[10px] font-mono font-bold">
-            ORIGINAL
-          </span>
-        )}
       </div>
 
-      {/* Menú de Calidad Flotante */}
-      {showSettings && (
-        <div className="absolute bottom-16 right-4 z-30 w-52 p-3 rounded-xl bg-[#1A1C1B]/95 border border-white/15 shadow-2xl backdrop-blur-xl animate-fade-in-up text-xs">
-          <p className="text-[#9AA3A0] font-mono uppercase text-[10px] mb-2 px-1">Calidad de este video</p>
-          <div className="space-y-1">
-            <button
-              onClick={() => handleQualityChange('ligero')}
-              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-colors ${
-                localMode === 'ligero' ? 'bg-[#E8A15A] text-black font-semibold' : 'text-[#F2F1EC] hover:bg-white/10'
-              }`}
-            >
-              <span>⚡ 720p Ligero</span>
-              <span className="text-[10px] opacity-70">Ahorro</span>
-            </button>
-            <button
-              onClick={() => handleQualityChange('alta')}
-              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-colors ${
-                localMode === 'alta' ? 'bg-[#E8A15A] text-black font-semibold' : 'text-[#F2F1EC] hover:bg-white/10'
-              }`}
-            >
-              <span>🎬 1080p Alta</span>
-              <span className="text-[10px] opacity-70">Fluido</span>
-            </button>
-            <button
-              onClick={() => handleQualityChange('original')}
-              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-colors ${
-                localMode === 'original' ? 'bg-[#E8A15A] text-black font-semibold' : 'text-[#F2F1EC] hover:bg-white/10'
-              }`}
-            >
-              <span>💎 4K Original</span>
-              <span className="text-[10px] opacity-70">Ultra HD</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Barra de Controles Inferior */}
+      {/* Controles de Reproducción Inferiores */}
       {controls && (
-        <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-center justify-between gap-3 opacity-90 group-hover:opacity-100 transition-opacity z-20">
+        <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
           <div className="flex items-center gap-3">
             <button
               onClick={togglePlay}
-              className="p-2 rounded-lg bg-white/10 hover:bg-[#E8A15A] hover:text-black text-white transition-colors"
+              className="p-2 rounded-xl text-white hover:text-[#E8A15A] hover:bg-white/10 transition-colors"
               aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
             >
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
             </button>
 
             <button
               onClick={toggleMute}
-              className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+              className="p-2 rounded-xl text-white hover:text-[#E8A15A] hover:bg-white/10 transition-colors"
               aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}
             >
-              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
             </button>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className={`p-2 rounded-lg transition-colors ${
-                showSettings ? 'bg-[#E8A15A] text-black' : 'bg-white/10 hover:bg-white/20 text-white'
-              }`}
-              title="Ajustar calidad"
-            >
-              <Settings className="w-4 h-4" />
-            </button>
+            {/* Menú de Selector de Calidad del Video */}
+            <div className="relative">
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className="p-2 rounded-xl text-white hover:text-[#E8A15A] hover:bg-white/10 transition-colors flex items-center gap-1 text-xs font-mono"
+                aria-label="Ajustes de calidad"
+              >
+                <Settings className="w-5 h-5" />
+              </button>
+
+              {showSettings && (
+                <div className="absolute bottom-12 right-0 w-44 rounded-2xl bg-[#1A1C1B] border border-white/15 shadow-2xl p-2 z-30 font-sans text-xs space-y-1">
+                  <div className="px-2 py-1 text-[10px] font-mono text-[#9AA3A0] uppercase border-b border-white/10">
+                    Calidad de Video
+                  </div>
+
+                  <button
+                    onClick={() => handleModeChange('ligero')}
+                    className={`w-full px-2.5 py-1.5 rounded-xl text-left flex items-center justify-between ${
+                      localMode === 'ligero'
+                        ? 'bg-[#E8A15A] text-black font-semibold'
+                        : 'text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <span>⚡ Ligero</span>
+                    <span className="text-[10px] font-mono opacity-70">
+                      {resolucionNativa === 'SD' ? '480p' : '720p'}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => handleModeChange('alta')}
+                    className={`w-full px-2.5 py-1.5 rounded-xl text-left flex items-center justify-between ${
+                      localMode === 'alta'
+                        ? 'bg-[#E8A15A] text-black font-semibold'
+                        : 'text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <span>🎬 Alta calidad</span>
+                    <span className="text-[10px] font-mono opacity-70">
+                      {resolucionNativa === 'SD' ? '576p' : '1080p'}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => handleModeChange('original')}
+                    className={`w-full px-2.5 py-1.5 rounded-xl text-left flex items-center justify-between ${
+                      localMode === 'original'
+                        ? 'bg-[#E8A15A] text-black font-semibold'
+                        : 'text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <span>💎 Original</span>
+                    <span className="text-[10px] font-mono opacity-70">
+                      {resolucionNativa === 'SD' ? '15 MB' : `${Math.round(pesoOriginalGB * 1024)} MB`}
+                    </span>
+                  </button>
+                </div>
+              )}
+            </div>
 
             <button
-              onClick={toggleFullscreen}
-              className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+              onClick={handleFullscreen}
+              className="p-2 rounded-xl text-white hover:text-[#E8A15A] hover:bg-white/10 transition-colors"
               aria-label="Pantalla completa"
             >
-              <Maximize2 className="w-4 h-4" />
+              <Maximize2 className="w-5 h-5" />
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Mensaje de Error en Video */}
+      {hasError && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 text-white p-6 text-center z-30">
+          <AlertCircle className="w-10 h-10 text-[#C2502E] mb-2" />
+          <p className="text-sm font-semibold">No se pudo cargar el video</p>
+          <p className="text-xs text-[#9AA3A0] mt-1">
+            Intenta cambiar a modo Ligero o verifica tu conexión.
+          </p>
         </div>
       )}
     </div>

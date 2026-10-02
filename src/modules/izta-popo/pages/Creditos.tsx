@@ -1,8 +1,13 @@
-import React from 'react';
-import { ExternalLink, Award, FileText, ShieldAlert } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { ExternalLink, Award, ShieldAlert, Film } from 'lucide-react';
 import { CREDITOS_MEDIA } from '../data/creditos';
 
 export const CreditosPage: React.FC = () => {
+  useEffect(() => {
+    document.title = 'Créditos y Licencias · Conocimiento de la Montaña';
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="w-full text-[#F2F1EC] bg-[#0E0F0F] pb-28">
       {/* Cabecera */}
@@ -18,12 +23,31 @@ export const CreditosPage: React.FC = () => {
           </h1>
 
           <p className="text-sm sm:text-base text-[#9AA3A0] leading-relaxed">
-            Todo el material fotográfico y audiovisual presentado en este prototipo demo proviene de <strong>Wikimedia Commons</strong> bajo licencias libres (Creative Commons CC BY, CC BY-SA o Dominio Público). En la versión final del cliente, este material se reemplazará por las fotografías y videos originales del guía.
+            Todo el material fotográfico y audiovisual presentado en este prototipo demo proviene de <strong>Wikimedia Commons</strong> bajo licencias libres (Creative Commons CC BY, CC BY-SA o Dominio Público), así como material audiovisual proporcionado directamente por el titular de Conocimiento de la Montaña.
           </p>
         </div>
       </section>
 
-      {/* Tabla completa de créditos */}
+      {/* SECCIÓN OBLIGATORIA: Material del cliente */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        <div className="p-6 sm:p-8 rounded-3xl bg-[#141615] border border-[#E8A15A]/40 shadow-2xl space-y-3">
+          <div className="flex items-center gap-2.5 text-[#E8A15A] font-mono text-xs uppercase tracking-wider font-semibold">
+            <Film className="w-4 h-4" />
+            <span>Material del Cliente</span>
+          </div>
+          <h2 className="font-serif text-2xl font-bold text-white">
+            Producción audiovisual institucional
+          </h2>
+          <p className="text-sm sm:text-base text-white/90 leading-relaxed font-sans">
+            Video de presentación: <strong>Ricardo Pérez Romero – Conocimiento de la Montaña</strong>. Todos los derechos reservados.
+          </p>
+          <p className="text-xs text-[#9AA3A0]">
+            Utilizado con autorización expresa del autor para el portal de divulgación y concientización ambiental de la Sierra Nevada.
+          </p>
+        </div>
+      </section>
+
+      {/* Tabla completa de créditos Wikimedia Commons */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-3xl overflow-hidden bg-[#141615] border border-white/10 shadow-2xl">
           <div className="overflow-x-auto">

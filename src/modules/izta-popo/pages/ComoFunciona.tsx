@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
 import {
-  UploadCloud,
+  Compass,
   Film,
-  Sparkles,
-  Layers,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  Maximize2,
   Zap,
+  Sparkles,
+  Maximize2,
   Server,
-  Eye
+  Layers,
+  Eye,
+  CheckCircle2,
+  HeartHandshake
 } from 'lucide-react';
 import { ExifDropDemo } from '../components/ExifDropDemo';
 import { AdminMockup } from '../components/AdminMockup';
 import { DeepZoomViewer } from '../components/DeepZoomViewer';
-import { MEDIA_BASE } from '../config';
+import { MEDIA_BASE, GUIDE_NAME } from '../config';
 
 export const ComoFuncionaPage: React.FC = () => {
   const [showDeepZoomDemo, setShowDeepZoomDemo] = useState(false);
@@ -26,8 +25,8 @@ export const ComoFuncionaPage: React.FC = () => {
       <section className="pt-16 pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E8A15A]/15 text-[#E8A15A] border border-[#E8A15A]/30 text-xs font-mono font-semibold">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>TECNOLOGÍA & CAPACIDADES DE LA PLATAFORMA</span>
+            <Layers className="w-3.5 h-3.5" />
+            <span>ARQUITECTURA TÉCNICA DEL PROYECTO</span>
           </div>
 
           <h1 className="font-serif text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
@@ -35,7 +34,7 @@ export const ComoFuncionaPage: React.FC = () => {
           </h1>
 
           <p className="text-sm sm:text-base text-[#9AA3A0] leading-relaxed">
-            Este proyecto está concebido específicamente para guías y exploradores que necesitan compartir la majestuosidad de la alta montaña con fotografías de 50 MP, videos 4K fluidos y un mapa 3D interactivo que se expande tras cada recorrido.
+            Este proyecto está concebido específicamente para la divulgación ambiental y la custodia comunitaria: compartir la majestuosidad de la alta montaña con fotografías de 50 MP, videos fluidos sin compresión agresiva y un mapa 3D interactivo que se enriquece tras cada jornada de conservación.
           </p>
         </div>
       </section>
@@ -44,30 +43,30 @@ export const ComoFuncionaPage: React.FC = () => {
         {/* BLOQUE 1: DEMO FUNCIONAL EXIF GPS */}
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-xs font-mono text-[#E8A15A] uppercase tracking-wider">
-            <span>01 · Automatización de Rutas</span>
+            <span>01 · Automatización de Rutas y Puntos</span>
           </div>
           <ExifDropDemo />
         </section>
 
-        {/* BLOQUE 2: VIDEOS 4K ADAPTATIVOS CON BUNNY STREAM */}
+        {/* BLOQUE 2: VIDEOS ADAPTATIVOS CON BUNNY STREAM */}
         <section className="rounded-3xl p-8 sm:p-12 bg-[#141615] border border-white/10 shadow-2xl grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-5">
             <span className="text-xs font-mono text-[#8FC1D4] uppercase tracking-wider block">
               02 · Transmisión sin Cortes
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white">
-              Tus videos en 4K sin perder un ápice de calidad
+              Tus videos con la máxima fidelidad visual
             </h2>
             <p className="text-sm text-[#9AA3A0] leading-relaxed">
-              En plataformas tradicionales como redes sociales o web estándar, los videos 4K son recomprimidos violentamente hasta perder texturas de roca y fumarolas. En tu sitio web implementamos el selector de 3 modos:
+              En plataformas tradicionales como redes sociales o web estándar, los videos son recomprimidos violentamente hasta perder texturas de roca y fumarolas. En tu sitio web implementamos el selector adaptativo:
             </p>
 
             <div className="space-y-3 text-xs">
               <div className="p-3.5 rounded-xl bg-black/40 border border-white/5 flex items-start gap-3">
                 <Zap className="w-4 h-4 text-[#E8A15A] shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-white">⚡ Modo Ligero (720p):</strong>
-                  <span className="text-[#9AA3A0] block">Para visitantes en la montaña con señal celular 3G. Carga inmediata y mínimo consumo de megas.</span>
+                  <strong className="text-white">⚡ Modo Ligero (720p / 480p):</strong>
+                  <span className="text-[#9AA3A0] block">Para visitantes en la montaña con señal celular reducida. Carga inmediata y mínimo consumo de datos.</span>
                 </div>
               </div>
 
@@ -82,8 +81,8 @@ export const ComoFuncionaPage: React.FC = () => {
               <div className="p-3.5 rounded-xl bg-black/40 border border-white/5 flex items-start gap-3">
                 <Sparkles className="w-4 h-4 text-[#E8A15A] shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-white">💎 Modo Original 4K (Ultra HD):</strong>
-                  <span className="text-[#9AA3A0] block">El archivo maestro sin recompresión para pantallas 4K y conexiones de fibra óptica con aviso de ancho de banda.</span>
+                  <strong className="text-white">✨ Modo Original (Ultra HD / Máster):</strong>
+                  <span className="text-[#9AA3A0] block">El archivo maestro sin recompresión para pantallas grandes y conexiones de alta velocidad.</span>
                 </div>
               </div>
             </div>
@@ -92,7 +91,7 @@ export const ComoFuncionaPage: React.FC = () => {
           <div className="relative rounded-2xl overflow-hidden aspect-video bg-black border border-white/10 shadow-2xl">
             <img
               src={`${MEDIA_BASE}/fotos/mirador-popo-1280.webp`}
-              alt="Transmisión 4K"
+              alt="Transmisión Adaptativa"
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-6 text-center">
@@ -153,10 +152,10 @@ export const ComoFuncionaPage: React.FC = () => {
           </div>
         </section>
 
-        {/* BLOQUE 4: TU BITÁCORA CRECE CON CADA RECORRIDO */}
+        {/* BLOQUE 4: TU BITÁCORA CRECE CON CADA JORNADA */}
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-xs font-mono text-[#E8A15A] uppercase tracking-wider">
-            <span>04 · Panel de Control Simple</span>
+            <span>04 · Tu bitácora crece con cada jornada</span>
           </div>
           <AdminMockup />
         </section>
@@ -166,7 +165,7 @@ export const ComoFuncionaPage: React.FC = () => {
       {showDeepZoomDemo && (
         <DeepZoomViewer
           fotoId="bosque-hartwegii"
-          alt="Pinus hartwegii centenario · Muestra Deep Zoom 40.3 MP"
+          alt="Pinus hartwegii centenario — Muestra Deep Zoom 40.3 MP"
           megapixeles={40.3}
           onClose={() => setShowDeepZoomDemo(false)}
         />

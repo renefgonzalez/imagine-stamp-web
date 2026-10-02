@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mountain, Calendar, ArrowRight, ShieldAlert } from 'lucide-react';
+import { ArrowRight, ShieldAlert } from 'lucide-react';
 import { Lugar } from '../data/lugares';
 import { CATEGORIAS } from '../data/categorias';
 import { MEDIA_BASE } from '../config';
@@ -70,22 +70,13 @@ export const PlaceCard: React.FC<PlaceCardProps> = ({ lugar, onClick, destacado 
         </div>
 
         <div className="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-[#9AA3A0]">
-          <span className="flex items-center gap-1">
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${
-                lugar.dificultad === 'Fácil'
-                  ? 'bg-emerald-400'
-                  : lugar.dificultad === 'Media'
-                  ? 'bg-amber-400'
-                  : 'bg-rose-400'
-              }`}
-            />
-            {lugar.dificultad}
+          <span className="truncate max-w-[160px] text-[10px] font-mono text-[#E8A15A]/90 bg-[#E8A15A]/10 px-2 py-0.5 rounded">
+            {lugar.estadoConservacion}
           </span>
 
           <Link
             to={`/izta-popo/lugar/${lugar.id}`}
-            className="text-[#E8A15A] font-medium flex items-center gap-1 hover:underline"
+            className="text-[#E8A15A] font-medium flex items-center gap-1 hover:underline shrink-0"
           >
             <span>Ver ficha</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />

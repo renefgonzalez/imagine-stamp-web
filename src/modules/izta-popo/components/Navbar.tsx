@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Menu, X, Mountain, Compass, Trees, BookOpen, Send, HelpCircle, AlertCircle } from 'lucide-react';
+import {
+  Menu,
+  X,
+  Mountain,
+  Compass,
+  Trees,
+  BookOpen,
+  HeartHandshake,
+  AlertTriangle,
+  AlertCircle
+} from 'lucide-react';
 import { QualitySwitch } from './QualitySwitch';
 import { useQuality } from '../context/QualityContext';
 
@@ -13,11 +23,12 @@ export const Navbar: React.FC = () => {
   const basePrefix = '/izta-popo';
 
   const navLinks = [
+    { to: `${basePrefix}/conocimiento`, label: 'La Montaña', icon: Mountain },
     { to: `${basePrefix}/explorar`, label: 'Explorar 3D', icon: Compass },
-    { to: `${basePrefix}/flora`, label: 'Flora por Altitud', icon: Trees },
+    { to: `${basePrefix}/flora`, label: 'Flora', icon: Trees },
+    { to: `${basePrefix}/problematica`, label: 'Problemática', icon: AlertTriangle },
     { to: `${basePrefix}/bitacora`, label: 'Bitácora', icon: BookOpen },
-    { to: `${basePrefix}/recorre-conmigo`, label: 'Recorre Conmigo', icon: Send },
-    { to: `${basePrefix}/como-funciona`, label: 'Cómo Funciona', icon: HelpCircle },
+    { to: `${basePrefix}/participa`, label: 'Participa', icon: HeartHandshake },
   ];
 
   return (
@@ -37,27 +48,34 @@ export const Navbar: React.FC = () => {
         </div>
       )}
 
-      <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-[#0E0F0F]/85 border-b border-white/[0.08] transition-all">
+      <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-[#0E0F0F]/90 border-b border-white/[0.08] transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-          {/* Logo */}
+          {/* Logo Oficial: CONOCIMIENTO DE LA MONTAÑA / Izta-Popo */}
           <Link
             to={basePrefix}
             className="group flex items-center gap-3 select-none shrink-0"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#E8A15A]/20 to-[#3F6B4F]/20 border border-[#E8A15A]/30 flex items-center justify-center text-[#E8A15A] group-hover:scale-105 transition-transform">
-              <Mountain className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-full bg-[#141615] border border-[#E8A15A]/40 overflow-hidden flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 shadow-lg ring-1 ring-[#E8A15A]/20">
+              <img
+                src="/izta-popo/media/logo-izta-popo.jpg"
+                alt="Conocimiento de la Montaña - Izta y Popo"
+                className="w-full h-full object-cover scale-105"
+              />
             </div>
-            <div className="flex flex-col">
-              <span className="font-serif tracking-widest text-lg font-bold text-[#F2F1EC] group-hover:text-[#E8A15A] transition-colors leading-tight">
-                IZTA<span className="text-[#E8A15A]">·</span>POPO
+            <div className="flex flex-col justify-center leading-none">
+              <span className="font-serif text-sm sm:text-base font-extrabold text-[#F2F1EC] tracking-wide leading-tight group-hover:text-white transition-colors">
+                CONOCIMIENTO
               </span>
-              <span className="text-[10px] tracking-[0.25em] text-[#9AA3A0] uppercase font-mono">
-                Expediciones
+              <span className="text-[11px] sm:text-xs font-serif font-bold text-[#E8A15A] tracking-wider leading-tight">
+                DE LA MONTAÑA
+              </span>
+              <span className="text-[9px] sm:text-[10px] tracking-[0.22em] text-[#9AA3A0] uppercase font-mono mt-0.5 leading-tight">
+                PARQUE NACIONAL IZTA-POPO
               </span>
             </div>
           </Link>
 
-          {/* Enlaces de escritorio */}
+          {/* Enlaces de escritorio (exactamente en el orden de E6) */}
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
             {navLinks.map((link) => {
               const Icon = link.icon;
@@ -97,31 +115,32 @@ export const Navbar: React.FC = () => {
 
         {/* Menú Móvil desplegable */}
         {mobileMenuOpen && (
-          <div className="lg:hidden px-4 pt-2 pb-6 bg-[#0E0F0F]/95 border-b border-white/10 backdrop-blur-2xl animate-fade-in-up">
-            <div className="mb-4 pt-2 pb-3 border-b border-white/10">
-              <p className="text-[11px] font-mono uppercase text-[#9AA3A0] mb-2">Modo de Calidad</p>
-              <QualitySwitch />
-            </div>
-            <div className="flex flex-col gap-1">
+          <div className="lg:hidden px-4 pt-2 pb-6 bg-[#0E0F0F]/98 border-b border-white/10 backdrop-blur-2xl animate-fade-in-up space-y-3">
+            <div className="flex flex-col space-y-1">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = location.pathname.startsWith(link.to);
                 return (
-                  <NavLink
+                  <Link
                     key={link.to}
                     to={link.to}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-[#E8A15A]/15 text-[#E8A15A] font-semibold'
-                        : 'text-[#9AA3A0] hover:text-[#F2F1EC] hover:bg-white/5'
+                        ? 'bg-white/10 text-[#E8A15A] font-semibold'
+                        : 'text-[#9AA3A0] hover:text-white hover:bg-white/5'
                     }`}
                   >
                     <Icon className="w-4 h-4 text-[#E8A15A]" />
                     <span>{link.label}</span>
-                  </NavLink>
+                  </Link>
                 );
               })}
+            </div>
+
+            <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+              <span className="text-xs font-mono text-[#9AA3A0]">Modo de calidad</span>
+              <QualitySwitch />
             </div>
           </div>
         )}

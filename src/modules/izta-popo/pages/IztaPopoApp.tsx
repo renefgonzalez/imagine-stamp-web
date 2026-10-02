@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import '../styles.css';
 import { QualityProvider } from '../context/QualityContext';
 import { Navbar } from '../components/Navbar';
@@ -8,11 +8,13 @@ import { DemoBadge } from '../components/DemoBadge';
 import { WeightWarningModal } from '../components/WeightWarningModal';
 
 import { Home } from './Home';
+import { ConocimientoPage } from './Conocimiento';
 import { Explorar } from './Explorar';
 import { LugarPage } from './Lugar';
 import { FloraPage } from './Flora';
+import { ProblematicaPage } from './Problematica';
 import { BitacoraPage } from './Bitacora';
-import { RecorreConmigoPage } from './RecorreConmigo';
+import { ParticipaPage } from './Participa';
 import { ComoFuncionaPage } from './ComoFunciona';
 import { CreditosPage } from './Creditos';
 
@@ -24,9 +26,9 @@ export default function IztaPopoApp() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  // Título del documento
+  // Título del documento general según sección E1
   useEffect(() => {
-    document.title = 'Izta-Popo · Expediciones | Alta Montaña & Biodiversidad';
+    document.title = 'Conocimiento de la Montaña · Izta-Popo';
   }, []);
 
   return (
@@ -37,11 +39,15 @@ export default function IztaPopoApp() {
         <main className="flex-1 w-full">
           <Routes>
             <Route index element={<Home />} />
+            <Route path="conocimiento" element={<ConocimientoPage />} />
             <Route path="explorar" element={<Explorar />} />
             <Route path="lugar/:id" element={<LugarPage />} />
             <Route path="flora" element={<FloraPage />} />
+            <Route path="problematica" element={<ProblematicaPage />} />
             <Route path="bitacora" element={<BitacoraPage />} />
-            <Route path="recorre-conmigo" element={<RecorreConmigoPage />} />
+            <Route path="participa" element={<ParticipaPage />} />
+            {/* Redirección automática de recorre-conmigo a participa */}
+            <Route path="recorre-conmigo" element={<Navigate to="../participa" replace />} />
             <Route path="como-funciona" element={<ComoFuncionaPage />} />
             <Route path="creditos" element={<CreditosPage />} />
             {/* Fallback de ruta dentro del módulo */}

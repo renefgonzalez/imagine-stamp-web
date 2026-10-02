@@ -44,9 +44,9 @@ export const Map3D: React.FC<Map3DProps> = ({
   onSelectLugar,
   modoCompacto = false,
   className = '',
-  centroInicial = [-98.66, 19.10],
-  zoomInicial = 10.6,
-  pitchInicial = 70,
+  centroInicial = [-98.64, 19.10],
+  zoomInicial = 11.2,
+  pitchInicial = 68,
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -70,8 +70,7 @@ export const Map3D: React.FC<Map3DProps> = ({
       pitch: isMobile ? 55 : 65,
       bearing: -15,
       // En PC desplazamos hacia la derecha (el panel está a la izquierda).
-      // En móvil desplazamos hacia ARRIBA (-115px) para que la montaña quede libre en la mitad superior de la pantalla,
-      // sin ser tapada por la ficha inferior (PlaceSheet).
+      // En móvil desplazamos hacia ARRIBA (-115px) para que la montaña quede libre en la mitad superior de la pantalla.
       offset: isDesktop ? [140, 0] : isMobile ? [0, -115] : [0, -40],
       duration: 2200,
       essential: true,
@@ -128,10 +127,10 @@ export const Map3D: React.FC<Map3DProps> = ({
           },
         ],
       },
-      center: isMobile ? centroInicial : [-98.66, 19.05],
-      zoom: isMobile ? zoomInicial - 0.7 : 9.8,
+      center: centroInicial,
+      zoom: isMobile ? zoomInicial - 0.7 : zoomInicial,
       pitch: pitchInicial,
-      bearing: -20,
+      bearing: -15,
       maxPitch: 85,
       attributionControl: false,
     });
@@ -159,8 +158,8 @@ export const Map3D: React.FC<Map3DProps> = ({
           center: centroInicial,
           zoom: isMobile ? zoomInicial - 0.5 : zoomInicial,
           pitch: pitchInicial,
-          bearing: -20,
-          duration: 3000,
+          bearing: -15,
+          duration: 2500,
           essential: true,
         });
       }
@@ -304,8 +303,6 @@ export const Map3D: React.FC<Map3DProps> = ({
       el.className = 'group relative flex flex-col items-center cursor-pointer select-none transition-transform duration-200';
       el.style.zIndex = isSelected ? '50' : '10';
 
-      // En móviles, para evitar amontonamiento, solo el punto seleccionado muestra la pastilla de texto completa.
-      // Los demás puntos se muestran como gemas luminosas elegantes y limpias.
       const showBadge = !isMobile || isSelected;
 
       el.innerHTML = `
@@ -402,15 +399,15 @@ export const Map3D: React.FC<Map3DProps> = ({
     };
   }, [isRotating]);
 
-  // Vista general de ambos volcanes
+  // Vista general de ambos volcanes (exactamente [-98.64, 19.10], zoom 11.2, pitch 68, bearing -15)
   const resetVistaGeneral = () => {
     if (!mapRef.current) return;
     const isMobile = window.innerWidth < 768;
     mapRef.current.flyTo({
-      center: [-98.66, 19.10],
-      zoom: isMobile ? 9.8 : 10.6,
-      pitch: 70,
-      bearing: -20,
+      center: [-98.64, 19.10],
+      zoom: isMobile ? 10.5 : 11.2,
+      pitch: 68,
+      bearing: -15,
       offset: [0, 0],
       duration: 2500,
     });
