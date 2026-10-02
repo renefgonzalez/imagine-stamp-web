@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, SlidersHorizontal, Mountain, X, ChevronRight, Target, MapPin } from 'lucide-react';
+import { Search, SlidersHorizontal, Mountain, X, Target } from 'lucide-react';
 import { LUGARES, Lugar } from '../data/lugares';
 import { CATEGORIAS } from '../data/categorias';
 import { CategoryChips } from '../components/CategoryChips';
@@ -15,6 +15,7 @@ export const Explorar: React.FC = () => {
   const [selectedCat, setSelectedCat] = useState<string | null>(catParam);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLugar, setSelectedLugar] = useState<Lugar | null>(null);
+  const [centerTrigger, setCenterTrigger] = useState<{ lugar: Lugar; count: number } | null>(null);
   const [panelOpen, setPanelOpen] = useState(true);
 
   // Sincronizar parámetro de categoría de la URL
@@ -32,6 +33,11 @@ export const Explorar: React.FC = () => {
     } else {
       setSearchParams({});
     }
+  };
+
+  const handleCenterLugar = (lugar: Lugar) => {
+    setSelectedLugar(lugar);
+    setCenterTrigger((prev) => ({ lugar, count: (prev?.count || 0) + 1 }));
   };
 
   // Filtrado reactivo de lugares
@@ -54,7 +60,8 @@ export const Explorar: React.FC = () => {
         <Map3D
           lugaresFiltrados={lugaresFiltrados}
           lugarSeleccionado={selectedLugar}
-          onSelectLugar={(lugar) => setSelectedLugar(lugar)}
+          centroTrigger={centerTrigger}
+          onSelectLugar={handleCenterLugar}
         />
       </div>
 
@@ -115,7 +122,7 @@ export const Explorar: React.FC = () => {
               return (
                 <div
                   key={lugar.id}
-                  onClick={() => setSelectedLugar(lugar)}
+                  onClick={() => handleCenterLugar(lugar)}
                   className={`p-3 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center gap-3 group ${
                     isSelected
                       ? 'bg-white/15 border-[#E8A15A] shadow-xl shadow-[#E8A15A]/15 scale-[1.01]'
@@ -155,7 +162,7 @@ export const Explorar: React.FC = () => {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setSelectedLugar(lugar);
+                      handleCenterLugar(lugar);
                     }}
                     className="p-2 rounded-xl bg-white/5 hover:bg-[#E8A15A] hover:text-black text-[#9AA3A0] transition-colors"
                     title="Volar a este lugar en el mapa 3D"
@@ -189,7 +196,7 @@ export const Explorar: React.FC = () => {
       <PlaceSheet
         lugar={selectedLugar}
         onClose={() => setSelectedLugar(null)}
-        onCenter={(l) => setSelectedLugar({ ...l })}
+        onCenter={handleCenterLugar}
       />
     </div>
   );

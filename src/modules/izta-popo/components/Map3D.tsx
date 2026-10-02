@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Map as MapLibreMap, Marker as MapLibreMarker } from 'maplibre-gl';
+import { Map as MapLibreMap, Marker as MapLibreMarker, setWorkerUrl } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {
   RotateCw,
@@ -13,12 +13,22 @@ import {
 import { LUGARES, Lugar } from '../data/lugares';
 import { RECORRIDOS } from '../data/recorridos';
 import { CATEGORIAS } from '../data/categorias';
-import { POPO_CRATER, POPO_EXCLUSION_RADIUS_KM, IZTA_CUMBRE } from '../config';
+import { POPO_CRATER, POPO_EXCLUSION_RADIUS_KM } from '../config';
 import { createGeoJSONCircle } from '../lib/geo';
+
+// Configurar URL del worker estático local para evitar fallos de resolución en Vite / producción
+if (typeof window !== 'undefined') {
+  try {
+    setWorkerUrl('/izta-popo/maplibre-gl-worker.mjs');
+  } catch (err) {
+    console.warn('No se pudo establecer workerUrl de MapLibre:', err);
+  }
+}
 
 interface Map3DProps {
   lugaresFiltrados?: Lugar[];
   lugarSeleccionado?: Lugar | null;
+  centroTrigger?: { lugar: Lugar; count: number } | null;
   onSelectLugar?: (lugar: Lugar) => void;
   modoCompacto?: boolean;
   className?: string;
@@ -30,6 +40,7 @@ interface Map3DProps {
 export const Map3D: React.FC<Map3DProps> = ({
   lugaresFiltrados = LUGARES,
   lugarSeleccionado = null,
+  centroTrigger = null,
   onSelectLugar,
   modoCompacto = false,
   className = '',
@@ -47,6 +58,23 @@ export const Map3D: React.FC<Map3DProps> = ({
   const [showPopoRestriccion, setShowPopoRestriccion] = useState(true);
   const [mapLoaded, setMapLoaded] = useState(false);
 
+  // Vuelo de cámara suave al seleccionar un lugar
+  const volarALugar = (lugar: Lugar) => {
+    if (!mapRef.current) return;
+    const isDesktop = window.innerWidth >= 1024;
+
+    mapRef.current.flyTo({
+      center: lugar.coords,
+      zoom: 13.8,
+      pitch: 65,
+      bearing: -15,
+      // Desplazar hacia la derecha en escritorio para no quedar cubierto por el panel lateral
+      offset: isDesktop ? [140, 0] : [0, -40],
+      duration: 2500,
+      essential: true,
+    });
+  };
+
   // Inicialización del Mapa
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -57,7 +85,6 @@ export const Map3D: React.FC<Map3DProps> = ({
       container: mapContainer.current,
       style: {
         version: 8,
-        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
         sources: {
           satellite: {
             type: 'raster',
@@ -93,15 +120,10 @@ export const Map3D: React.FC<Map3DProps> = ({
               'hillshade-shadow-color': '#0E0F0F',
               'hillshade-highlight-color': '#E8A15A',
               'hillshade-accent-color': '#1A1C1B',
-              'hillshade-exaggeration': 0.4,
+              'hillshade-exaggeration': 0.35,
             },
           },
         ],
-        sky: {
-          'sky-color': '#0E0F0F',
-          'horizon-color': '#E8A15A',
-          'fog-color': '#1A1C1B',
-        } as any,
       },
       center: isMobile ? centroInicial : [-98.66, 19.05],
       zoom: isMobile ? zoomInicial - 0.5 : 9.8,
@@ -113,213 +135,140 @@ export const Map3D: React.FC<Map3DProps> = ({
 
     mapRef.current = map;
 
-    map.on('load', () => {
-      // Terreno 3D
-      map.setTerrain({
-        source: 'dem',
-        exaggeration: isMobile ? 1.1 : 1.4,
-      });
+    map.on('error', (e) => {
+      console.warn('[MapLibre Event]:', e);
+    });
 
-      // Animación suave de aproximación inicial
+    map.on('load', () => {
+      // Activar Terreno 3D
+      try {
+        map.setTerrain({
+          source: 'dem',
+          exaggeration: isMobile ? 1.1 : 1.4,
+        });
+      } catch (err) {
+        console.warn('Error al activar relieve 3D:', err);
+      }
+
+      // Animación suave de aproximación inicial si no es compacto
       if (!modoCompacto) {
         map.flyTo({
           center: centroInicial,
           zoom: zoomInicial,
           pitch: pitchInicial,
           bearing: -20,
-          duration: 3500,
+          duration: 3000,
           essential: true,
         });
       }
 
       // 1. ZONA DE EXCLUSIÓN POPOCATÉPETL (12 KM)
-      const popoCircle = createGeoJSONCircle(POPO_CRATER, POPO_EXCLUSION_RADIUS_KM * 1000);
-      map.addSource('popo-exclusion', {
-        type: 'geojson',
-        data: popoCircle,
-      });
+      try {
+        const popoCircle = createGeoJSONCircle(POPO_CRATER, POPO_EXCLUSION_RADIUS_KM * 1000);
+        map.addSource('popo-exclusion', {
+          type: 'geojson',
+          data: popoCircle,
+        });
 
-      map.addLayer({
-        id: 'popo-exclusion-fill',
-        type: 'fill',
-        source: 'popo-exclusion',
-        paint: {
-          'fill-color': '#C2502E', // Magma
-          'fill-opacity': 0.15,
-        },
-      });
+        map.addLayer({
+          id: 'popo-exclusion-fill',
+          type: 'fill',
+          source: 'popo-exclusion',
+          paint: {
+            'fill-color': '#C2502E',
+            'fill-opacity': 0.15,
+          },
+        });
 
-      map.addLayer({
-        id: 'popo-exclusion-line',
-        type: 'line',
-        source: 'popo-exclusion',
-        paint: {
-          'line-color': '#C2502E',
-          'line-width': 2.5,
-          'line-dasharray': [3, 2],
-        },
-      });
+        map.addLayer({
+          id: 'popo-exclusion-line',
+          type: 'line',
+          source: 'popo-exclusion',
+          paint: {
+            'line-color': '#C2502E',
+            'line-width': 2.5,
+            'line-dasharray': [3, 2],
+          },
+        });
+      } catch (err) {
+        console.warn('Error al agregar capa Popo:', err);
+      }
 
       // 2. ZONAS SENSIBLES ARQUEOLÓGICAS (700 M)
-      const sitiosSensibles = LUGARES.filter((l) => l.sensible);
-      const sensiblesFeatures = sitiosSensibles.map((s) =>
-        createGeoJSONCircle(s.coords, 700)
-      );
+      try {
+        const sitiosSensibles = LUGARES.filter((l) => l.sensible);
+        const sensiblesFeatures = sitiosSensibles.map((s) =>
+          createGeoJSONCircle(s.coords, 700)
+        );
 
-      map.addSource('zonas-sensibles', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: sensiblesFeatures,
-        },
-      });
+        map.addSource('zonas-sensibles', {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: sensiblesFeatures,
+          },
+        });
 
-      map.addLayer({
-        id: 'zonas-sensibles-fill',
-        type: 'fill',
-        source: 'zonas-sensibles',
-        paint: {
-          'fill-color': '#B88A4A', // Ocre
-          'fill-opacity': 0.28,
-        },
-      });
+        map.addLayer({
+          id: 'zonas-sensibles-fill',
+          type: 'fill',
+          source: 'zonas-sensibles',
+          paint: {
+            'fill-color': '#B88A4A',
+            'fill-opacity': 0.28,
+          },
+        });
 
-      map.addLayer({
-        id: 'zonas-sensibles-line',
-        type: 'line',
-        source: 'zonas-sensibles',
-        paint: {
-          'line-color': '#B88A4A',
-          'line-width': 2,
-          'line-dasharray': [2, 2],
-        },
-      });
+        map.addLayer({
+          id: 'zonas-sensibles-line',
+          type: 'line',
+          source: 'zonas-sensibles',
+          paint: {
+            'line-color': '#B88A4A',
+            'line-width': 2,
+            'line-dasharray': [2, 2],
+          },
+        });
+      } catch (err) {
+        console.warn('Error al agregar capas sensibles:', err);
+      }
 
       // 3. RUTAS / RECORRIDOS
-      const rutasFeatures = RECORRIDOS.map((r) => ({
-        type: 'Feature',
-        properties: { id: r.id, color: r.color },
-        geometry: {
-          type: 'LineString',
-          coordinates: r.coordenadas,
-        },
-      }));
+      try {
+        const rutasFeatures = RECORRIDOS.map((r) => ({
+          type: 'Feature',
+          properties: { id: r.id, color: r.color },
+          geometry: {
+            type: 'LineString',
+            coordinates: r.coordenadas,
+          },
+        }));
 
-      map.addSource('recorridos-source', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: rutasFeatures as any,
-        },
-      });
+        map.addSource('recorridos-source', {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: rutasFeatures as any,
+          },
+        });
 
-      map.addLayer({
-        id: 'recorridos-lines',
-        type: 'line',
-        source: 'recorridos-source',
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round',
-        },
-        paint: {
-          'line-color': ['get', 'color'],
-          'line-width': 3.5,
-          'line-opacity': 0.85,
-        },
-      });
-
-      // 4. CAPAS GEOJSON PARA PUNTOS DE LUGARES DIRECTOS SOBRE EL RELIEVE 3D
-      map.addSource('puntos-lugares', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [],
-        },
-      });
-
-      // Resplandor exterior (Glow)
-      map.addLayer({
-        id: 'lugares-glow',
-        type: 'circle',
-        source: 'puntos-lugares',
-        paint: {
-          'circle-radius': [
-            'case',
-            ['get', 'selected'],
-            26,
-            16,
-          ],
-          'circle-color': ['get', 'color'],
-          'circle-opacity': 0.45,
-          'circle-blur': 0.6,
-        },
-      });
-
-      // Círculo del marcador con borde blanco grueso
-      map.addLayer({
-        id: 'lugares-circle',
-        type: 'circle',
-        source: 'puntos-lugares',
-        paint: {
-          'circle-radius': [
-            'case',
-            ['get', 'selected'],
-            13,
-            8.5,
-          ],
-          'circle-color': ['get', 'color'],
-          'circle-stroke-width': 2.5,
-          'circle-stroke-color': '#FFFFFF',
-        },
-      });
-
-      // Centro blanco para contraste
-      map.addLayer({
-        id: 'lugares-center-dot',
-        type: 'circle',
-        source: 'puntos-lugares',
-        paint: {
-          'circle-radius': 3.5,
-          'circle-color': '#FFFFFF',
-        },
-      });
-
-      // Etiquetas con nombre y altitud
-      map.addLayer({
-        id: 'lugares-label',
-        type: 'symbol',
-        source: 'puntos-lugares',
-        layout: {
-          'text-field': ['concat', ['get', 'nombre'], ' · ', ['get', 'altitud']],
-          'text-size': 11,
-          'text-offset': [0, 1.4],
-          'text-anchor': 'top',
-          'text-allow-overlap': true,
-        },
-        paint: {
-          'text-color': '#FFFFFF',
-          'text-halo-color': '#0E0F0F',
-          'text-halo-width': 2.5,
-        },
-      });
-
-      // Eventos de clic sobre los círculos del mapa
-      map.on('click', 'lugares-circle', (e) => {
-        if (!e.features || e.features.length === 0) return;
-        const lugarId = e.features[0].properties?.id;
-        const found = LUGARES.find((l) => l.id === lugarId);
-        if (found && onSelectLugar) {
-          onSelectLugar(found);
-        }
-      });
-
-      map.on('mouseenter', 'lugares-circle', () => {
-        map.getCanvas().style.cursor = 'pointer';
-      });
-
-      map.on('mouseleave', 'lugares-circle', () => {
-        map.getCanvas().style.cursor = '';
-      });
+        map.addLayer({
+          id: 'recorridos-lines',
+          type: 'line',
+          source: 'recorridos-source',
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round',
+          },
+          paint: {
+            'line-color': ['get', 'color'],
+            'line-width': 3.5,
+            'line-opacity': 0.85,
+          },
+        });
+      } catch (err) {
+        console.warn('Error al agregar capas de rutas:', err);
+      }
 
       setMapLoaded(true);
     });
@@ -332,60 +281,69 @@ export const Map3D: React.FC<Map3DProps> = ({
     };
   }, []);
 
-  // Sincronizar puntos GeoJSON y marcadores cuando cambian los lugares filtrados o el lugar seleccionado
+  // Marcadores interactivos HTML 3D colocados directamente sobre el relieve
   useEffect(() => {
-    if (!mapRef.current || !mapLoaded) return;
+    if (!mapRef.current) return;
     const map = mapRef.current;
 
-    const features = lugaresFiltrados.map((lugar) => {
+    // Limpiar marcadores anteriores
+    Object.values(markersRef.current).forEach((m) => m.remove());
+    markersRef.current = {};
+
+    lugaresFiltrados.forEach((lugar) => {
       const cat = CATEGORIAS[lugar.categoria];
       const isSelected = lugarSeleccionado?.id === lugar.id;
-      return {
-        type: 'Feature',
-        id: lugar.id,
-        properties: {
-          id: lugar.id,
-          nombre: lugar.nombre,
-          altitud: `${lugar.altitud.toLocaleString()} m`,
-          color: cat?.colorHex || '#E8A15A',
-          selected: isSelected,
-        },
-        geometry: {
-          type: 'Point',
-          coordinates: lugar.coords,
-        },
-      };
-    });
+      const color = cat?.colorHex || '#E8A15A';
 
-    const source = map.getSource('puntos-lugares') as any;
-    if (source) {
-      source.setData({
-        type: 'FeatureCollection',
-        features,
+      // Elemento DOM interactivo
+      const el = document.createElement('div');
+      el.className = 'group relative flex flex-col items-center cursor-pointer select-none transition-transform duration-200';
+      el.style.zIndex = isSelected ? '50' : '10';
+
+      el.innerHTML = `
+        <div class="px-2 py-0.5 mb-1.5 rounded-full text-[10px] font-mono font-bold tracking-wider backdrop-blur-md border shadow-xl transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap ${
+          isSelected
+            ? 'bg-[#E8A15A] text-black border-white shadow-[#E8A15A]/50 scale-110'
+            : 'bg-[#0E0F0F]/90 text-white/90 border-white/20 group-hover:border-[#E8A15A] group-hover:scale-105'
+        }">
+          <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${isSelected ? '#000000' : color};"></span>
+          <span>${lugar.nombre}</span>
+          <span class="opacity-60 text-[9px] font-normal">${lugar.altitud.toLocaleString()}m</span>
+        </div>
+        <div class="relative flex items-center justify-center">
+          ${
+            isSelected
+              ? `<div class="absolute w-8 h-8 rounded-full animate-ping opacity-75" style="background-color: ${color};"></div>`
+              : ''
+          }
+          <div class="w-5 h-5 rounded-full transition-transform duration-300 relative shadow-2xl ${
+            isSelected
+              ? 'scale-125 ring-4 ring-[#E8A15A]/60'
+              : 'group-hover:scale-110'
+          }" style="background-color: ${color}; border: 2.5px solid #FFFFFF;"></div>
+        </div>
+      `;
+
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (onSelectLugar) {
+          onSelectLugar(lugar);
+        }
+        volarALugar(lugar);
       });
-    }
 
-    // Actualizar propiedades de capas
-    if (map.getLayer('lugares-glow')) {
-      map.setPaintProperty('lugares-glow', 'circle-radius', [
-        'case',
-        ['get', 'selected'],
-        26,
-        16,
-      ]);
-    }
+      const marker = new MapLibreMarker({
+        element: el,
+        anchor: 'bottom',
+      })
+        .setLngLat(lugar.coords)
+        .addTo(map);
 
-    if (map.getLayer('lugares-circle')) {
-      map.setPaintProperty('lugares-circle', 'circle-radius', [
-        'case',
-        ['get', 'selected'],
-        13,
-        8.5,
-      ]);
-    }
-  }, [lugaresFiltrados, lugarSeleccionado, mapLoaded]);
+      markersRef.current[lugar.id] = marker;
+    });
+  }, [lugaresFiltrados, lugarSeleccionado]);
 
-  // Actualizar visibilidad de capas de rutas y exclusión
+  // Actualizar visibilidad de capas de rutas y exclusión volcánica
   useEffect(() => {
     if (!mapRef.current || !mapLoaded) return;
     const map = mapRef.current;
@@ -400,33 +358,23 @@ export const Map3D: React.FC<Map3DProps> = ({
     }
   }, [showRutas, showPopoRestriccion, mapLoaded]);
 
-  // Vuelo de cámara suave al seleccionar un lugar
-  const volarALugar = (lugar: Lugar) => {
-    if (!mapRef.current) return;
-    const isDesktop = window.innerWidth >= 1024;
-
-    mapRef.current.flyTo({
-      center: lugar.coords,
-      zoom: 13.8,
-      pitch: 65,
-      bearing: -15,
-      // Desplazar el centro hacia la derecha en desktop para que no quede detrás del panel izquierdo
-      offset: isDesktop ? [140, 0] : [0, -60],
-      duration: 3000,
-      essential: true,
-    });
-  };
-
-  // Reaccionar cuando cambie `lugarSeleccionado` externamente
+  // Reaccionar cuando cambie `lugarSeleccionado` por selección de tarjeta
   useEffect(() => {
-    if (lugarSeleccionado && mapLoaded) {
+    if (lugarSeleccionado && mapRef.current) {
       volarALugar(lugarSeleccionado);
     }
-  }, [lugarSeleccionado, mapLoaded]);
+  }, [lugarSeleccionado?.id]);
 
-  // Rotación suave automática
+  // Reaccionar ante un trigger explícito de centrado (botón "Centrar vista")
   useEffect(() => {
-    if (!mapRef.current || !mapLoaded) return;
+    if (centroTrigger?.lugar && mapRef.current) {
+      volarALugar(centroTrigger.lugar);
+    }
+  }, [centroTrigger]);
+
+  // Rotación suave automática del relieve 3D
+  useEffect(() => {
+    if (!mapRef.current) return;
     const map = mapRef.current;
 
     const rotateStep = () => {
@@ -444,7 +392,7 @@ export const Map3D: React.FC<Map3DProps> = ({
     return () => {
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [isRotating, mapLoaded]);
+  }, [isRotating]);
 
   // Vista general de ambos volcanes
   const resetVistaGeneral = () => {
@@ -478,7 +426,7 @@ export const Map3D: React.FC<Map3DProps> = ({
         {lugarSeleccionado && (
           <button
             onClick={() => volarALugar(lugarSeleccionado)}
-            className="p-2.5 rounded-xl bg-[#E8A15A] text-black font-semibold shadow-xl transition-all flex items-center gap-1.5 text-xs"
+            className="p-2.5 rounded-xl bg-[#E8A15A] hover:bg-[#f3b578] text-black font-semibold shadow-xl transition-all flex items-center gap-1.5 text-xs"
             title="Centrar en el lugar activo"
           >
             <Target className="w-4 h-4" />
