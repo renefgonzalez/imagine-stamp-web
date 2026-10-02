@@ -15,17 +15,11 @@ import ContactCard from './pages/ContactCard';
 import AdminPanel from './AdminPanel';
 
 const CatalogoEtiquetas = React.lazy(() => import('./modules/etiquetas-escolares/pages/CatalogoEtiquetas'));
-const DemoCrepasMenu = React.lazy(() => import('./modules/demo-crepas/pages/DemoCrepasMenu'));
 const TarjetaBarberia = React.lazy(() => import('./modules/tarjeta-barberia/pages/TarjetaBarberia'));
 const TarjetaVeterinaria = React.lazy(() => import('./modules/tarjeta-veterinaria/pages/TarjetaVeterinaria'));
 const LabalMenu = React.lazy(() => import('./modules/labal/pages/LabalMenu'));
-const VicmaLaser = React.lazy(() => import('./modules/vicma-laser/VicmaLaser'));
-const BurgaslocasMenu = React.lazy(() => import('./modules/burgaslocas/pages/BurgaslocasMenu'));
-const MesaJarochaMenu = React.lazy(() => import('./modules/mesa-jarocha/pages/MesaJarochaMenu'));
-const PincheCheMenu = React.lazy(() => import('./modules/pinche-che/pages/PincheCheMenu'));
 const DemoVideo = React.lazy(() => import('./modules/demo-video/pages/DemoVideo'));
 const VideoInvitaciones = React.lazy(() => import('./modules/video-invitaciones/pages/VideoInvitaciones'));
-const AaahCarbonMenu = React.lazy(() => import('./modules/aaah-carbon/pages/AaahCarbonMenu'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -799,25 +793,13 @@ export default function App() {
         <Route path="/tarjeta" element={<ContactCard />} />
 
         <Route path="/etiquetas-escolares" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" /></div>}><CatalogoEtiquetas /></Suspense></ErrorBoundary>} />
-        <Route path="/demo-crepas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#C67B3D' }} /></div>}><DemoCrepasMenu /></Suspense></ErrorBoundary>} />
         <Route path="/tarjeta-barberia" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#f59e0b' }} /></div>}><TarjetaBarberia /></Suspense></ErrorBoundary>} />
         <Route path="/tarjeta-digital" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#f59e0b' }} /></div>}><TarjetaBarberia /></Suspense></ErrorBoundary>} />
         <Route path="/tarjeta-veterinaria" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#14b8a6' }} /></div>}><TarjetaVeterinaria /></Suspense></ErrorBoundary>} />
         <Route path="/tarjeta-vet" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#14b8a6' }} /></div>}><TarjetaVeterinaria /></Suspense></ErrorBoundary>} />
         <Route path="/labal" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#000000' }} /></div>}><LabalMenu /></Suspense></ErrorBoundary>} />
-        <Route path="/vicma-laser" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#f97316' }} /></div>}><VicmaLaser /></Suspense></ErrorBoundary>} />
-        <Route path="/vicmalser" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#f97316' }} /></div>}><VicmaLaser /></Suspense></ErrorBoundary>} />
-        <Route path="/burgaslocas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#FF381E' }} /></div>}><BurgaslocasMenu /></Suspense></ErrorBoundary>} />
-        <Route path="/burgas-locas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#FF381E' }} /></div>}><BurgaslocasMenu /></Suspense></ErrorBoundary>} />
-        <Route path="/mesa-jarocha" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#0084C7' }} /></div>}><MesaJarochaMenu /></Suspense></ErrorBoundary>} />
-        <Route path="/mesajarocha" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#0084C7' }} /></div>}><MesaJarochaMenu /></Suspense></ErrorBoundary>} />
-        <Route path="/pinche-che" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#E0531B' }} /></div>}><PincheCheMenu /></Suspense></ErrorBoundary>} />
-        <Route path="/pincheche" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#E0531B' }} /></div>}><PincheCheMenu /></Suspense></ErrorBoundary>} />
         <Route path="/demo-video" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500" /></div>}><DemoVideo /></Suspense></ErrorBoundary>} />
         <Route path="/video-demo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500" /></div>}><DemoVideo /></Suspense></ErrorBoundary>} />
-        <Route path="/aaah-carbon" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#FF6A00' }} /></div>}><AaahCarbonMenu /></Suspense></ErrorBoundary>} />
-        <Route path="/aaahcarbon" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#FF6A00' }} /></div>}><AaahCarbonMenu /></Suspense></ErrorBoundary>} />
-        <Route path="/menu-narvarte" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#FF6A00' }} /></div>}><AaahCarbonMenu /></Suspense></ErrorBoundary>} />
         {/* <Route path="/amelie-patisserie" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]" /></div>}><AmeliePatisserieMenu /></Suspense></ErrorBoundary>} /> */}
 
         <Route path="/videoinvitaciones" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500" /></div>}><VideoInvitaciones /></Suspense></ErrorBoundary>} />
