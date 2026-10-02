@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { LogoVolcanes } from './LogoVolcanes';
 import {
   Mountain,
   AlertTriangle,
@@ -47,13 +48,7 @@ export const Footer: React.FC = () => {
           {/* Columna 1: Marca y Misión */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#141615] border border-[#E8A15A]/40 overflow-hidden flex items-center justify-center shrink-0 shadow-lg ring-1 ring-[#E8A15A]/20">
-                <img
-                  src="/izta-popo/media/logo-izta-popo.jpg"
-                  alt="Conocimiento de la Montaña - Izta y Popo"
-                  className="w-full h-full object-cover scale-105"
-                />
-              </div>
+              <LogoVolcanes size={40} />
               <div className="flex flex-col justify-center leading-none">
                 <span className="font-serif text-sm font-extrabold text-[#F2F1EC] tracking-wide leading-tight">
                   CONOCIMIENTO

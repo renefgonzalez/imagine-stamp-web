@@ -12,6 +12,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { QualitySwitch } from './QualitySwitch';
+import { LogoVolcanes } from './LogoVolcanes';
 import { useQuality } from '../context/QualityContext';
 
 export const Navbar: React.FC = () => {
@@ -55,13 +56,7 @@ export const Navbar: React.FC = () => {
             to={basePrefix}
             className="group flex items-center gap-3 select-none shrink-0"
           >
-            <div className="w-10 h-10 rounded-full bg-[#141615] border border-[#E8A15A]/40 overflow-hidden flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 shadow-lg ring-1 ring-[#E8A15A]/20">
-              <img
-                src="/izta-popo/media/logo-izta-popo.jpg"
-                alt="Conocimiento de la Montaña - Izta y Popo"
-                className="w-full h-full object-cover scale-105"
-              />
-            </div>
+            <LogoVolcanes size={40} className="group-hover:scale-105" />
             <div className="flex flex-col justify-center leading-none">
               <span className="font-serif text-sm sm:text-base font-extrabold text-[#F2F1EC] tracking-wide leading-tight group-hover:text-white transition-colors">
                 CONOCIMIENTO
