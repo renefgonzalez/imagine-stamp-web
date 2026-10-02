@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, SlidersHorizontal, Mountain, X, ChevronRight, MapPin } from 'lucide-react';
+import { Search, SlidersHorizontal, Mountain, X, ChevronRight, Target, MapPin } from 'lucide-react';
 import { LUGARES, Lugar } from '../data/lugares';
 import { CATEGORIAS } from '../data/categorias';
 import { CategoryChips } from '../components/CategoryChips';
@@ -26,6 +26,7 @@ export const Explorar: React.FC = () => {
 
   const handleSelectCategory = (catId: string | null) => {
     setSelectedCat(catId);
+    setSelectedLugar(null);
     if (catId) {
       setSearchParams({ cat: catId });
     } else {
@@ -57,9 +58,9 @@ export const Explorar: React.FC = () => {
         />
       </div>
 
-      {/* 2. PANEL LATERAL IZQUIERDO (DESKTOP) / BOTTOM DRAWER (MÓVIL) */}
+      {/* 2. PANEL LATERAL IZQUIERDO */}
       <div
-        className={`absolute top-4 left-4 bottom-4 z-20 w-80 sm:w-96 flex flex-col rounded-3xl bg-[#0E0F0F]/90 border border-white/10 shadow-2xl backdrop-blur-2xl transition-transform duration-300 ${
+        className={`absolute top-4 left-4 bottom-4 z-20 w-80 sm:w-96 flex flex-col rounded-3xl bg-[#0E0F0F]/92 border border-white/15 shadow-2xl backdrop-blur-2xl transition-transform duration-300 ${
           panelOpen ? 'translate-x-0' : '-translate-x-[110%]'
         }`}
       >
@@ -72,7 +73,7 @@ export const Explorar: React.FC = () => {
             </div>
             <button
               onClick={() => setPanelOpen(false)}
-              className="p-1 rounded-lg text-[#9AA3A0] hover:text-white hover:bg-white/10"
+              className="p-1.5 rounded-xl text-[#9AA3A0] hover:text-white hover:bg-white/10 transition-colors"
               title="Minimizar panel"
             >
               <X className="w-4 h-4" />
@@ -87,7 +88,7 @@ export const Explorar: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar cumbre, glaciar o paraje..."
-              className="w-full pl-9 pr-4 py-2 rounded-xl bg-black/50 border border-white/10 text-xs text-white placeholder-[#9AA3A0] focus:outline-none focus:border-[#E8A15A]/60"
+              className="w-full pl-9 pr-4 py-2 rounded-xl bg-black/60 border border-white/10 text-xs text-white placeholder-[#9AA3A0] focus:outline-none focus:border-[#E8A15A]/60"
             />
           </div>
 
@@ -115,10 +116,10 @@ export const Explorar: React.FC = () => {
                 <div
                   key={lugar.id}
                   onClick={() => setSelectedLugar(lugar)}
-                  className={`p-2.5 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center gap-3 group ${
+                  className={`p-3 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center gap-3 group ${
                     isSelected
-                      ? 'bg-white/10 border-[#E8A15A] shadow-lg shadow-[#E8A15A]/10'
-                      : 'bg-black/30 border-white/5 hover:border-white/20 hover:bg-black/50'
+                      ? 'bg-white/15 border-[#E8A15A] shadow-xl shadow-[#E8A15A]/15 scale-[1.01]'
+                      : 'bg-black/40 border-white/5 hover:border-white/20 hover:bg-black/60'
                   }`}
                 >
                   {/* Miniatura */}
@@ -149,7 +150,18 @@ export const Explorar: React.FC = () => {
                     </div>
                   </div>
 
-                  <ChevronRight className="w-4 h-4 text-[#9AA3A0] group-hover:text-[#E8A15A] group-hover:translate-x-0.5 transition-all" />
+                  {/* Botón rápido para volar y centrar */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedLugar(lugar);
+                    }}
+                    className="p-2 rounded-xl bg-white/5 hover:bg-[#E8A15A] hover:text-black text-[#9AA3A0] transition-colors"
+                    title="Volar a este lugar en el mapa 3D"
+                  >
+                    <Target className="w-4 h-4" />
+                  </button>
                 </div>
               );
             })
@@ -158,7 +170,7 @@ export const Explorar: React.FC = () => {
 
         {/* Footer del panel */}
         <div className="p-3 border-t border-white/10 text-center text-[10px] font-mono text-[#9AA3A0]">
-          {lugaresFiltrados.length} lugares visibles · Haz clic para volar la cámara
+          {lugaresFiltrados.length} lugares · Clic en la tarjeta para volar en 3D
         </div>
       </div>
 
@@ -173,10 +185,11 @@ export const Explorar: React.FC = () => {
         </button>
       )}
 
-      {/* 3. TARJETA FLOTANTE DE DETALLE RÁPIDO */}
+      {/* 3. TARJETA FLOTANTE DE DETALLE RÁPIDO (DOCK EN LA DERECHA) */}
       <PlaceSheet
         lugar={selectedLugar}
         onClose={() => setSelectedLugar(null)}
+        onCenter={(l) => setSelectedLugar({ ...l })}
       />
     </div>
   );

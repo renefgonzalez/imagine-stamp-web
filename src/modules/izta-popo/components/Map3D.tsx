@@ -4,13 +4,11 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import {
   RotateCw,
   Compass,
-  Eye,
-  EyeOff,
   Layers,
   AlertTriangle,
   ZoomIn,
   ZoomOut,
-  Maximize2
+  Target
 } from 'lucide-react';
 import { LUGARES, Lugar } from '../data/lugares';
 import { RECORRIDOS } from '../data/recorridos';
@@ -59,6 +57,7 @@ export const Map3D: React.FC<Map3DProps> = ({
       container: mapContainer.current,
       style: {
         version: 8,
+        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
         sources: {
           satellite: {
             type: 'raster',
@@ -105,7 +104,7 @@ export const Map3D: React.FC<Map3DProps> = ({
         } as any,
       },
       center: isMobile ? centroInicial : [-98.66, 19.05],
-      zoom: isMobile ? zoomInicial - 0.5 : 9.5,
+      zoom: isMobile ? zoomInicial - 0.5 : 9.8,
       pitch: pitchInicial,
       bearing: -20,
       maxPitch: 85,
@@ -115,13 +114,13 @@ export const Map3D: React.FC<Map3DProps> = ({
     mapRef.current = map;
 
     map.on('load', () => {
-      // Activar terreno 3D con exageración
+      // Terreno 3D
       map.setTerrain({
         source: 'dem',
         exaggeration: isMobile ? 1.1 : 1.4,
       });
 
-      // Animación suave de aproximación inicial cinematográfica
+      // Animación suave de aproximación inicial
       if (!modoCompacto) {
         map.flyTo({
           center: centroInicial,
@@ -146,7 +145,7 @@ export const Map3D: React.FC<Map3DProps> = ({
         source: 'popo-exclusion',
         paint: {
           'fill-color': '#C2502E', // Magma
-          'fill-opacity': 0.12,
+          'fill-opacity': 0.15,
         },
       });
 
@@ -156,7 +155,7 @@ export const Map3D: React.FC<Map3DProps> = ({
         source: 'popo-exclusion',
         paint: {
           'line-color': '#C2502E',
-          'line-width': 2,
+          'line-width': 2.5,
           'line-dasharray': [3, 2],
         },
       });
@@ -181,7 +180,7 @@ export const Map3D: React.FC<Map3DProps> = ({
         source: 'zonas-sensibles',
         paint: {
           'fill-color': '#B88A4A', // Ocre
-          'fill-opacity': 0.25,
+          'fill-opacity': 0.28,
         },
       });
 
@@ -191,12 +190,12 @@ export const Map3D: React.FC<Map3DProps> = ({
         source: 'zonas-sensibles',
         paint: {
           'line-color': '#B88A4A',
-          'line-width': 1.5,
+          'line-width': 2,
           'line-dasharray': [2, 2],
         },
       });
 
-      // 3. RUTAS / RECORRIDOS (LÍNEAS DIBUJADAS)
+      // 3. RUTAS / RECORRIDOS
       const rutasFeatures = RECORRIDOS.map((r) => ({
         type: 'Feature',
         properties: { id: r.id, color: r.color },
@@ -229,6 +228,99 @@ export const Map3D: React.FC<Map3DProps> = ({
         },
       });
 
+      // 4. CAPAS GEOJSON PARA PUNTOS DE LUGARES DIRECTOS SOBRE EL RELIEVE 3D
+      map.addSource('puntos-lugares', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [],
+        },
+      });
+
+      // Resplandor exterior (Glow)
+      map.addLayer({
+        id: 'lugares-glow',
+        type: 'circle',
+        source: 'puntos-lugares',
+        paint: {
+          'circle-radius': [
+            'case',
+            ['get', 'selected'],
+            26,
+            16,
+          ],
+          'circle-color': ['get', 'color'],
+          'circle-opacity': 0.45,
+          'circle-blur': 0.6,
+        },
+      });
+
+      // Círculo del marcador con borde blanco grueso
+      map.addLayer({
+        id: 'lugares-circle',
+        type: 'circle',
+        source: 'puntos-lugares',
+        paint: {
+          'circle-radius': [
+            'case',
+            ['get', 'selected'],
+            13,
+            8.5,
+          ],
+          'circle-color': ['get', 'color'],
+          'circle-stroke-width': 2.5,
+          'circle-stroke-color': '#FFFFFF',
+        },
+      });
+
+      // Centro blanco para contraste
+      map.addLayer({
+        id: 'lugares-center-dot',
+        type: 'circle',
+        source: 'puntos-lugares',
+        paint: {
+          'circle-radius': 3.5,
+          'circle-color': '#FFFFFF',
+        },
+      });
+
+      // Etiquetas con nombre y altitud
+      map.addLayer({
+        id: 'lugares-label',
+        type: 'symbol',
+        source: 'puntos-lugares',
+        layout: {
+          'text-field': ['concat', ['get', 'nombre'], ' · ', ['get', 'altitud']],
+          'text-size': 11,
+          'text-offset': [0, 1.4],
+          'text-anchor': 'top',
+          'text-allow-overlap': true,
+        },
+        paint: {
+          'text-color': '#FFFFFF',
+          'text-halo-color': '#0E0F0F',
+          'text-halo-width': 2.5,
+        },
+      });
+
+      // Eventos de clic sobre los círculos del mapa
+      map.on('click', 'lugares-circle', (e) => {
+        if (!e.features || e.features.length === 0) return;
+        const lugarId = e.features[0].properties?.id;
+        const found = LUGARES.find((l) => l.id === lugarId);
+        if (found && onSelectLugar) {
+          onSelectLugar(found);
+        }
+      });
+
+      map.on('mouseenter', 'lugares-circle', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+
+      map.on('mouseleave', 'lugares-circle', () => {
+        map.getCanvas().style.cursor = '';
+      });
+
       setMapLoaded(true);
     });
 
@@ -239,6 +331,59 @@ export const Map3D: React.FC<Map3DProps> = ({
       map.remove();
     };
   }, []);
+
+  // Sincronizar puntos GeoJSON y marcadores cuando cambian los lugares filtrados o el lugar seleccionado
+  useEffect(() => {
+    if (!mapRef.current || !mapLoaded) return;
+    const map = mapRef.current;
+
+    const features = lugaresFiltrados.map((lugar) => {
+      const cat = CATEGORIAS[lugar.categoria];
+      const isSelected = lugarSeleccionado?.id === lugar.id;
+      return {
+        type: 'Feature',
+        id: lugar.id,
+        properties: {
+          id: lugar.id,
+          nombre: lugar.nombre,
+          altitud: `${lugar.altitud.toLocaleString()} m`,
+          color: cat?.colorHex || '#E8A15A',
+          selected: isSelected,
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: lugar.coords,
+        },
+      };
+    });
+
+    const source = map.getSource('puntos-lugares') as any;
+    if (source) {
+      source.setData({
+        type: 'FeatureCollection',
+        features,
+      });
+    }
+
+    // Actualizar propiedades de capas
+    if (map.getLayer('lugares-glow')) {
+      map.setPaintProperty('lugares-glow', 'circle-radius', [
+        'case',
+        ['get', 'selected'],
+        26,
+        16,
+      ]);
+    }
+
+    if (map.getLayer('lugares-circle')) {
+      map.setPaintProperty('lugares-circle', 'circle-radius', [
+        'case',
+        ['get', 'selected'],
+        13,
+        8.5,
+      ]);
+    }
+  }, [lugaresFiltrados, lugarSeleccionado, mapLoaded]);
 
   // Actualizar visibilidad de capas de rutas y exclusión
   useEffect(() => {
@@ -255,76 +400,18 @@ export const Map3D: React.FC<Map3DProps> = ({
     }
   }, [showRutas, showPopoRestriccion, mapLoaded]);
 
-  // Actualizar Pines HTML en el mapa
-  useEffect(() => {
-    if (!mapRef.current || !mapLoaded) return;
-    const map = mapRef.current;
-
-    // Eliminar pines antiguos
-    Object.values(markersRef.current).forEach((marker) => marker.remove());
-    markersRef.current = {};
-
-    lugaresFiltrados.forEach((lugar) => {
-      const cat = CATEGORIAS[lugar.categoria];
-      const isSelected = lugarSeleccionado?.id === lugar.id;
-
-      // Crear elemento contenedor del pin
-      const el = document.createElement('div');
-      el.className = 'group cursor-pointer select-none';
-
-      el.innerHTML = `
-        <div class="relative flex flex-col items-center">
-          <div class="w-7 h-7 rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 ${
-            isSelected ? 'scale-125 ring-4 ring-[#E8A15A]' : 'group-hover:scale-110'
-          }" style="background-color: ${cat.colorHex}; border: 2px solid #F2F1EC;">
-            <div class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></div>
-          </div>
-          <span class="mt-1 px-2 py-0.5 rounded-md text-[10px] font-medium font-sans text-white shadow-md backdrop-blur-md whitespace-nowrap transition-all ${
-            isSelected ? 'bg-black/80 font-bold border border-[#E8A15A]' : 'bg-black/60 opacity-0 group-hover:opacity-100'
-          }">
-            ${lugar.nombre}
-          </span>
-        </div>
-      `;
-
-      el.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (onSelectLugar) onSelectLugar(lugar);
-        volarALugar(lugar);
-      });
-
-      const marker = new MapLibreMarker({ element: el })
-        .setLngLat(lugar.coords)
-        .addTo(map);
-
-      markersRef.current[lugar.id] = marker;
-    });
-
-    // Etiquetas de cumbres principales
-    const iztaLabel = document.createElement('div');
-    iztaLabel.className = 'px-2 py-1 rounded bg-black/70 border border-[#8FC1D4]/40 text-[#8FC1D4] text-[10px] font-mono font-bold tracking-wider';
-    iztaLabel.innerText = 'Iztaccíhuatl · 5,230 m';
-    new MapLibreMarker({ element: iztaLabel, anchor: 'bottom' })
-      .setLngLat(IZTA_CUMBRE)
-      .addTo(map);
-
-    const popoLabel = document.createElement('div');
-    popoLabel.className = 'px-2 py-1 rounded bg-black/70 border border-[#C2502E]/40 text-[#C2502E] text-[10px] font-mono font-bold tracking-wider';
-    popoLabel.innerText = 'Popocatépetl · 5,393 m';
-    new MapLibreMarker({ element: popoLabel, anchor: 'bottom' })
-      .setLngLat(POPO_CRATER)
-      .addTo(map);
-
-  }, [lugaresFiltrados, lugarSeleccionado, mapLoaded]);
-
   // Vuelo de cámara suave al seleccionar un lugar
   const volarALugar = (lugar: Lugar) => {
     if (!mapRef.current) return;
+    const isDesktop = window.innerWidth >= 1024;
+
     mapRef.current.flyTo({
       center: lugar.coords,
       zoom: 13.8,
       pitch: 65,
       bearing: -15,
+      // Desplazar el centro hacia la derecha en desktop para que no quede detrás del panel izquierdo
+      offset: isDesktop ? [140, 0] : [0, -60],
       duration: 3000,
       essential: true,
     });
@@ -367,6 +454,7 @@ export const Map3D: React.FC<Map3DProps> = ({
       zoom: 10.6,
       pitch: 70,
       bearing: -20,
+      offset: [0, 0],
       duration: 2500,
     });
   };
@@ -386,6 +474,17 @@ export const Map3D: React.FC<Map3DProps> = ({
           <Compass className="w-4 h-4 text-[#E8A15A]" />
           <span className="hidden sm:inline">Vista General</span>
         </button>
+
+        {lugarSeleccionado && (
+          <button
+            onClick={() => volarALugar(lugarSeleccionado)}
+            className="p-2.5 rounded-xl bg-[#E8A15A] text-black font-semibold shadow-xl transition-all flex items-center gap-1.5 text-xs"
+            title="Centrar en el lugar activo"
+          >
+            <Target className="w-4 h-4" />
+            <span className="hidden sm:inline">Centrar Lugar</span>
+          </button>
+        )}
 
         <button
           onClick={() => setIsRotating(!isRotating)}
