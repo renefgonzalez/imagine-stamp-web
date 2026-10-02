@@ -56,7 +56,7 @@ export const Navbar: React.FC = () => {
             to={basePrefix}
             className="group flex items-center gap-3 select-none shrink-0"
           >
-            <LogoVolcanes size={40} className="group-hover:scale-105" />
+            <LogoVolcanes size={44} className="group-hover:scale-105" />
             <div className="flex flex-col justify-center leading-none">
               <span className="font-serif text-sm sm:text-base font-extrabold text-[#F2F1EC] tracking-wide leading-tight group-hover:text-white transition-colors">
                 CONOCIMIENTO

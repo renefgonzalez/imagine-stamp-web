@@ -48,7 +48,7 @@ export const Footer: React.FC = () => {
           {/* Columna 1: Marca y Misión */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <LogoVolcanes size={40} />
+              <LogoVolcanes size={44} />
               <div className="flex flex-col justify-center leading-none">
                 <span className="font-serif text-sm font-extrabold text-[#F2F1EC] tracking-wide leading-tight">
                   CONOCIMIENTO

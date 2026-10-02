@@ -2,43 +2,58 @@ import React from 'react';
 
 interface LogoVolcanesProps {
   className?: string;
-  size?: number; // Tamaño del contenedor en píxeles (40px)
+  size?: number; // Tamaño del badge (por defecto 44px)
   strokeColor?: string;
   fill?: boolean;
 }
 
 export const LogoVolcanes: React.FC<LogoVolcanesProps> = ({
   className = '',
-  size = 40,
+  size = 44,
   strokeColor = '#E8A15A',
   fill = false,
 }) => {
   return (
     <div
-      className={`rounded-full bg-[#181918] border border-[#B88A4A]/60 flex items-center justify-center shrink-0 shadow-md ${className}`}
+      className={`rounded-full bg-[#161716] border border-[#B88A4A]/60 flex items-center justify-center shrink-0 shadow-md ${className}`}
       style={{ width: size, height: size }}
       title="Conocimiento de la Montaña · Iztaccíhuatl & Popocatépetl"
     >
       <svg
-        viewBox="0 0 48 48"
+        viewBox="0 0 52 40"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="w-[74%] h-[74%]"
+        className="w-[82%] h-[82%]"
       >
         {/*
-          Trazo único, grueso y limpio (estilo minimalista):
-          - Izquierda: Silueta de la Mujer Dormida (Iztaccíhuatl: pies, rodilla, pecho y cabeza)
-          - Centro: Depresión del Paso de Cortés
-          - Derecha: Silueta cónica del Popocatépetl con cráter
-          - Base: Línea recta inferior cerrada
+          Silueta alargada y panorámica inspirada en la Sierra Nevada al atardecer:
+          - Izquierda: Iztaccíhuatl alargado (la Mujer Dormida con pies, rodillas, pecho amplio y cabeza)
+          - Centro: Amplio collado del Paso de Cortés
+          - Derecha: Cono majestuoso del Popocatépetl con su cráter
+          - Trazo único, grueso y limpio (sin líneas internas confusas)
         */}
         <path
-          d="M 7.5 34.5 L 12.5 24 L 16 26.5 L 20.5 18.5 L 23.5 22 L 26.5 28 L 34.5 16 L 36.8 16.8 L 40.5 34.5 Z"
+          d="M 3.5 28.5 
+             L 7 27.5 
+             L 9.5 25 
+             L 12 23 
+             L 14 24 
+             L 17 20 
+             L 20.5 20.5 
+             L 23 23 
+             L 25.5 22.5 
+             L 28 26 
+             L 32 26.5 
+             L 34.5 25.5 
+             L 42 16 
+             L 43.5 16.3 
+             L 48.5 28.5 
+             Z"
           stroke={strokeColor}
-          strokeWidth="3.2"
+          strokeWidth="2.8"
           strokeLinecap="round"
           strokeLinejoin="round"
-          fill={fill ? `${strokeColor}22` : 'none'}
+          fill={fill ? `${strokeColor}20` : 'none'}
         />
       </svg>
     </div>
