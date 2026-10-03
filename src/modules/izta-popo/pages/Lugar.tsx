@@ -72,7 +72,7 @@ export const LugarPage: React.FC = () => {
         {/* Botón Volver y Categoría */}
         <div className="absolute top-6 left-4 sm:left-8 right-4 flex items-center justify-between z-20">
           <Link
-            to="/explorar"
+            to="/izta-popo/explorar"
             className="px-4 py-2 rounded-xl bg-black/60 hover:bg-black/80 border border-white/10 text-xs font-medium text-white backdrop-blur-md transition-colors flex items-center gap-1.5"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -201,7 +201,7 @@ export const LugarPage: React.FC = () => {
               {/* Botón CTA de Voluntariado para este lugar */}
               <div className="pt-4 border-t border-white/10">
                 <Link
-                  to="/participa"
+                  to="/izta-popo/participa"
                   className="w-full py-3 px-4 rounded-2xl bg-[#E8A15A] hover:bg-[#d68f47] text-[#0E0F0F] font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-lg"
                 >
                   <HeartHandshake className="w-4 h-4" />

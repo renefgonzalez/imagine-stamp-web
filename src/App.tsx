@@ -7,7 +7,7 @@ import {
   Landmark, Copy, Check, CreditCard
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Product } from './data/products';
 import logo from './logo.png';
 import DemoMenu from './modules/demo-menu/pages/DemoMenu';
@@ -810,6 +810,14 @@ export default function App() {
 
         <Route path="/izta-popo/*" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0E0F0F]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E8A15A]" /></div>}><IztaPopoApp /></Suspense></ErrorBoundary>} />
         <Route path="/izta-popo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0E0F0F]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E8A15A]" /></div>}><IztaPopoApp /></Suspense></ErrorBoundary>} />
+
+        {/* Redirecciones de conveniencia para sub-rutas directas de Izta-Popo */}
+        <Route path="/explorar" element={<Navigate to="/izta-popo/explorar" replace />} />
+        <Route path="/conocimiento" element={<Navigate to="/izta-popo/conocimiento" replace />} />
+        <Route path="/participa" element={<Navigate to="/izta-popo/participa" replace />} />
+        <Route path="/flora" element={<Navigate to="/izta-popo/flora" replace />} />
+        <Route path="/bitacora" element={<Navigate to="/izta-popo/bitacora" replace />} />
+        <Route path="/problematica" element={<Navigate to="/izta-popo/problematica" replace />} />
 
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>

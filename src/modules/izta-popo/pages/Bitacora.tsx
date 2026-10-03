@@ -31,7 +31,7 @@ export const BitacoraPage: React.FC = () => {
 
           <div className="pt-2">
             <Link
-              to="/participa"
+              to="/izta-popo/participa"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#E8A15A] hover:bg-[#d68f47] text-[#0E0F0F] font-bold text-xs transition-all shadow-md"
             >
               <span>Súmate a la próxima jornada</span>
@@ -146,7 +146,7 @@ export const BitacoraPage: React.FC = () => {
                       return (
                         <Link
                           key={lId}
-                          to={`/lugar/${lId}`}
+                          to={`/izta-popo/lugar/${lId}`}
                           className="px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono text-[#8FC1D4] hover:text-white transition-colors"
                         >
                           {lInfo.nombre}

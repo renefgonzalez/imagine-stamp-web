@@ -107,7 +107,7 @@ export const ProblematicaPage: React.FC = () => {
                 {item.enlaceLugarId && (
                   <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between">
                     <Link
-                      to={`/lugar/${item.enlaceLugarId}`}
+                      to={`/izta-popo/lugar/${item.enlaceLugarId}`}
                       className="inline-flex items-center gap-2 text-xs font-mono text-[#8FC1D4] hover:text-white transition-colors"
                     >
                       <span>{item.enlaceTexto || 'Ver en el mapa 3D'}</span>
@@ -133,14 +133,14 @@ export const ProblematicaPage: React.FC = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to="/participa"
+              to="/izta-popo/participa"
               className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#E8A15A] hover:bg-[#d68f47] text-[#0E0F0F] font-bold text-sm transition-all duration-200 shadow-lg hover:scale-105 flex items-center justify-center gap-2"
             >
               <span>Súmate como voluntario</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              to="/explorar"
+              to="/izta-popo/explorar"
               className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white/10 hover:bg-white/15 text-white font-medium text-sm border border-white/20 transition-all duration-200 flex items-center justify-center gap-2"
             >
               <span>Explorar el mapa 3D</span>

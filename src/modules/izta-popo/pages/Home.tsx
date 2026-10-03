@@ -78,7 +78,7 @@ export const Home: React.FC = () => {
 
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to="/explorar"
+              to="/izta-popo/explorar"
               className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-[#E8A15A] hover:bg-[#f3b578] text-[#0E0F0F] font-bold text-sm tracking-wide transition-all shadow-xl shadow-[#E8A15A]/25 flex items-center justify-center gap-2 group scale-100 hover:scale-105"
             >
               <Compass className="w-5 h-5 text-[#0E0F0F] group-hover:rotate-45 transition-transform" />
@@ -86,7 +86,7 @@ export const Home: React.FC = () => {
             </Link>
 
             <Link
-              to="/participa"
+              to="/izta-popo/participa"
               className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-black/60 hover:bg-white/10 text-white font-semibold text-sm tracking-wide transition-all border border-white/20 backdrop-blur-md flex items-center justify-center gap-2 group"
             >
               <HeartHandshake className="w-5 h-5 text-[#E8A15A] group-hover:scale-110 transition-transform" />
@@ -123,7 +123,7 @@ export const Home: React.FC = () => {
 
               <div className="pt-2 flex flex-wrap items-center gap-4">
                 <Link
-                  to="/conocimiento"
+                  to="/izta-popo/conocimiento"
                   className="px-6 py-3.5 rounded-full bg-[#E8A15A] hover:bg-[#d68f47] text-[#0E0F0F] font-bold text-xs transition-all shadow-lg flex items-center gap-2"
                 >
                   <span>Leer el manifiesto completo</span>
@@ -131,7 +131,7 @@ export const Home: React.FC = () => {
                 </Link>
 
                 <Link
-                  to="/conocimiento?lang=en"
+                  to="/izta-popo/conocimiento?lang=en"
                   className="px-4 py-3 rounded-full text-xs font-mono text-[#8FC1D4] hover:text-white transition-colors border border-white/10 hover:border-white/20"
                 >
                   <span>Read in English →</span>
@@ -243,7 +243,7 @@ export const Home: React.FC = () => {
             </h2>
           </div>
           <Link
-            to="/explorar"
+            to="/izta-popo/explorar"
             className="text-xs font-mono text-[#E8A15A] hover:underline flex items-center gap-1.5"
           >
             <span>Ver todos los lugares en el mapa 3D</span>
@@ -260,7 +260,7 @@ export const Home: React.FC = () => {
             return (
               <Link
                 key={cat.id}
-                to={`/explorar?cat=${cat.id}`}
+                to={`/izta-popo/explorar?cat=${cat.id}`}
                 className={`group relative rounded-3xl overflow-hidden h-72 border border-white/10 hover:border-[#E8A15A]/50 transition-all duration-300 shadow-xl flex flex-col justify-end p-6 ${
                   idx === 0 ? 'sm:col-span-2 lg:col-span-1' : ''
                 }`}
@@ -366,14 +366,14 @@ export const Home: React.FC = () => {
 
               <div className="flex flex-wrap items-center gap-4 pt-2">
                 <Link
-                  to="/lugar/glaciar-ayoloco"
+                  to="/izta-popo/lugar/glaciar-ayoloco"
                   className="px-6 py-3.5 rounded-2xl bg-[#E8A15A] hover:bg-[#f3b578] text-black font-bold text-xs transition-all shadow-lg flex items-center gap-2"
                 >
                   <span>Ver ficha en el mapa 3D</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
-                  to="/problematica#perdida-de-glaciares"
+                  to="/izta-popo/problematica#perdida-de-glaciares"
                   className="px-5 py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 text-white font-mono text-xs border border-white/10 transition-colors"
                 >
                   <span>Ver problemática de glaciares</span>
@@ -403,7 +403,7 @@ export const Home: React.FC = () => {
               Explora los 14 puntos estratégicos, las áreas de conservación y el radio de exclusión volcánica del Popocatépetl.
             </p>
             <Link
-              to="/explorar"
+              to="/izta-popo/explorar"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#E8A15A] hover:bg-[#f3b578] text-black font-semibold text-xs transition-all shadow-lg"
             >
               <Compass className="w-4 h-4" />
@@ -426,7 +426,7 @@ export const Home: React.FC = () => {
               </h2>
             </div>
             <Link
-              to="/bitacora"
+              to="/izta-popo/bitacora"
               className="text-xs font-mono text-[#E8A15A] hover:underline flex items-center gap-1.5"
             >
               <span>Ver bitácora de jornadas completa</span>
@@ -522,7 +522,7 @@ export const Home: React.FC = () => {
 
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to="/participa"
+              to="/izta-popo/participa"
               className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-[#E8A15A] hover:bg-[#d68f47] text-[#0E0F0F] font-bold text-sm tracking-wide transition-all shadow-xl shadow-[#E8A15A]/25 flex items-center justify-center gap-2 group scale-100 hover:scale-105"
             >
               <HeartHandshake className="w-5 h-5 text-[#0E0F0F] group-hover:scale-110 transition-transform" />
