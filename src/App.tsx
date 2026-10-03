@@ -21,6 +21,7 @@ const LabalMenu = React.lazy(() => import('./modules/labal/pages/LabalMenu'));
 const DemoVideo = React.lazy(() => import('./modules/demo-video/pages/DemoVideo'));
 const VideoInvitaciones = React.lazy(() => import('./modules/video-invitaciones/pages/VideoInvitaciones'));
 const IztaPopoApp = React.lazy(() => import('./modules/izta-popo/pages/IztaPopoApp'));
+const GoWingsGoMenu = React.lazy(() => import('./modules/go-wings-go/pages/GoWingsGoMenu'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -818,6 +819,9 @@ export default function App() {
         <Route path="/flora" element={<Navigate to="/izta-popo/flora" replace />} />
         <Route path="/bitacora" element={<Navigate to="/izta-popo/bitacora" replace />} />
         <Route path="/problematica" element={<Navigate to="/izta-popo/problematica" replace />} />
+
+        <Route path="/go-wings-go" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0D0C0B]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF4816]" /></div>}><GoWingsGoMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/gowingsgo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0D0C0B]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF4816]" /></div>}><GoWingsGoMenu /></Suspense></ErrorBoundary>} />
 
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
