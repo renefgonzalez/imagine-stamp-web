@@ -19,7 +19,7 @@ export const clientConfig = {
   hours: 'Mar a Dom: 1:30 PM - 10:30 PM · Lunes cerrado',
 
   instagramUrl: 'https://instagram.com',
-  facebookUrl: 'https://facebook.com',
+  facebookUrl: 'https://www.facebook.com/share/v/1EAWcHxLvQ/',
   tiktokUrl: 'https://tiktok.com',
 
   // Paleta de marca de alta fidelidad inspirada en horno de leña, salsa pomodoro y queso dorado

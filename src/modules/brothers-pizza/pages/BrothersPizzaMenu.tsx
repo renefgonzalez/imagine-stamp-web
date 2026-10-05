@@ -592,6 +592,16 @@ export default function BrothersPizzaMenu() {
               {favorites.length > 0 && <span>{favorites.length}</span>}
             </button>
 
+            <a
+              href={clientConfig.facebookUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="p-2.5 rounded-2xl border border-white/10 bg-white/5 text-white/70 hover:text-[#1877F2] hover:border-[#1877F2]/40 hover:bg-[#1877F2]/10 transition-all flex items-center justify-center"
+              title="Visítanos en Facebook"
+            >
+              <Facebook size={16} />
+            </a>
+
             <button
               type="button"
               onClick={() => setIsCartOpen(true)}
@@ -716,6 +726,16 @@ export default function BrothersPizzaMenu() {
                 {clientConfig.secondaryPhone}
               </a>
             </div>
+            <div className="h-4 w-px bg-white/10 hidden sm:block" />
+            <a
+              href={clientConfig.facebookUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 text-white/70 hover:text-[#1877F2] transition-colors"
+            >
+              <Facebook size={14} className="text-[#1877F2]" />
+              <span className="font-bold">Facebook Oficial</span>
+            </a>
           </div>
         </div>
       </section>
@@ -1030,16 +1050,28 @@ export default function BrothersPizzaMenu() {
                 </div>
               </div>
 
-              {/* Botón directo a WhatsApp */}
-              <a
-                href={`https://wa.me/${clientConfig.phone}?text=${encodeURIComponent('¡Hola Brothers Pizza! Quisiera pedir informes o hacer un pedido 🍕')}`}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full py-2.5 px-3 bg-[#25D366]/20 hover:bg-[#25D366]/30 border border-[#25D366]/40 text-[#25D366] rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-colors"
-              >
-                <MessageCircle size={16} />
-                <span>Contactar por WhatsApp</span>
-              </a>
+              {/* Botones de Redes Sociales y WhatsApp */}
+              <div className="flex flex-col gap-2 pt-1">
+                <a
+                  href={clientConfig.facebookUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-2.5 px-3 bg-[#1877F2]/15 hover:bg-[#1877F2]/25 border border-[#1877F2]/30 text-[#1877F2] hover:text-[#4294FF] rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all"
+                >
+                  <Facebook size={16} />
+                  <span>Síguenos en Facebook</span>
+                </a>
+
+                <a
+                  href={`https://wa.me/${clientConfig.phone}?text=${encodeURIComponent('¡Hola Brothers Pizza! Quisiera pedir informes o hacer un pedido 🍕')}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-2.5 px-3 bg-[#25D366]/20 hover:bg-[#25D366]/30 border border-[#25D366]/40 text-[#25D366] rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-colors"
+                >
+                  <MessageCircle size={16} />
+                  <span>Contactar por WhatsApp</span>
+                </a>
+              </div>
             </div>
           </div>
 
