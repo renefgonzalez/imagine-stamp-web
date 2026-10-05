@@ -22,6 +22,7 @@ const DemoVideo = React.lazy(() => import('./modules/demo-video/pages/DemoVideo'
 const VideoInvitaciones = React.lazy(() => import('./modules/video-invitaciones/pages/VideoInvitaciones'));
 const IztaPopoApp = React.lazy(() => import('./modules/izta-popo/pages/IztaPopoApp'));
 const GoWingsGoMenu = React.lazy(() => import('./modules/go-wings-go/pages/GoWingsGoMenu'));
+const BrothersPizzaMenu = React.lazy(() => import('./modules/brothers-pizza/pages/BrothersPizzaMenu'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -822,6 +823,9 @@ export default function App() {
 
         <Route path="/go-wings-go" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0D0C0B]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF4816]" /></div>}><GoWingsGoMenu /></Suspense></ErrorBoundary>} />
         <Route path="/gowingsgo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0D0C0B]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF4816]" /></div>}><GoWingsGoMenu /></Suspense></ErrorBoundary>} />
+
+        <Route path="/brothers-pizza" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0F0E0D]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E11D48]" /></div>}><BrothersPizzaMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/brotherspizza" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0F0E0D]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E11D48]" /></div>}><BrothersPizzaMenu /></Suspense></ErrorBoundary>} />
 
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
