@@ -14,10 +14,10 @@ import {
   Camera,
   X,
   Maximize2,
-  CheckCircle2,
-  Filter
+  CheckCircle2
 } from 'lucide-react';
-import { PROBLEMAS_AMBIENTALES, EVIDENCIAS_MALAS_PRACTICAS, EvidenciaMalaPractica } from '../data/problemas';
+import { MEDIA_BASE } from '../config';
+import { PROBLEMAS_AMBIENTALES, EVIDENCIAS_MALAS_PRACTICAS, FotoMalaPractica } from '../data/problemas';
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   'incendios-forestales': <Flame className="w-5 h-5 text-amber-500" />,
@@ -30,7 +30,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 
 export const ProblematicaPage: React.FC = () => {
   const [categoriaFiltro, setCategoriaFiltro] = useState<'todas' | 'fuego' | 'basura' | 'arbolado'>('todas');
-  const [evidenciaSeleccionada, setEvidenciaSeleccionada] = useState<EvidenciaMalaPractica | null>(null);
+  const [evidenciaSeleccionada, setEvidenciaSeleccionada] = useState<FotoMalaPractica | null>(null);
 
   useEffect(() => {
     document.title = 'Problemática y Mitigación · Conocimiento de la Montaña';
@@ -146,15 +146,10 @@ export const ProblematicaPage: React.FC = () => {
               >
                 <div className="relative aspect-[4/3] bg-black overflow-hidden">
                   <img
-                    src={`/izta-popo/media/fotos/${item.fotoId}-480.webp`}
+                    src={`${MEDIA_BASE}/fotos/${item.fotoId}-480.webp`}
                     alt={item.titulo}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
-                    onError={(e) => {
-                      const el = e.currentTarget;
-                      el.onerror = null;
-                      el.src = '/izta-popo/media/fotos/bosque-hartwegii-480.webp';
-                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
                   
@@ -187,14 +182,14 @@ export const ProblematicaPage: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-white/5 space-y-1.5">
-                    <div className="flex items-start gap-1.5 text-[11px] text-rose-400">
-                      <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                      <span className="line-clamp-1"><strong className="text-white/90">Impacto:</strong> {item.impacto}</span>
+                  <div className="pt-3 border-t border-white/5 space-y-2">
+                    <div className="flex items-start gap-1.5 text-[11px] text-rose-300/90 leading-tight">
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
+                      <span><strong className="text-white/90">Impacto:</strong> {item.impacto}</span>
                     </div>
-                    <div className="flex items-start gap-1.5 text-[11px] text-emerald-400">
-                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                      <span className="line-clamp-1"><strong className="text-white/90">Conducta:</strong> {item.conductaCorrecta}</span>
+                    <div className="flex items-start gap-1.5 text-[11px] text-emerald-300/90 leading-tight">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                      <span><strong className="text-white/90">Conducta:</strong> {item.conductaCorrecta}</span>
                     </div>
                   </div>
                 </div>
@@ -226,7 +221,7 @@ export const ProblematicaPage: React.FC = () => {
             {/* Imagen a alta resolución */}
             <div className="relative aspect-video sm:aspect-[16/10] bg-black">
               <img
-                src={`/izta-popo/media/fotos/${evidenciaSeleccionada.fotoId}-1280.webp`}
+                src={`${MEDIA_BASE}/fotos/${evidenciaSeleccionada.fotoId}-1280.webp`}
                 alt={evidenciaSeleccionada.titulo}
                 className="w-full h-full object-contain"
               />
@@ -294,14 +289,14 @@ export const ProblematicaPage: React.FC = () => {
               {/* Imagen */}
               <div className="lg:col-span-5 relative min-h-[260px] lg:min-h-[380px] bg-black">
                 <img
-                  src={`/izta-popo/media/fotos/${item.fotoId}-1280.webp`}
+                  src={`${MEDIA_BASE}/fotos/${item.fotoId}-1280.webp`}
                   alt={item.titulo}
                   className="w-full h-full object-cover"
                   loading="lazy"
                   onError={(e) => {
                     const el = e.currentTarget;
                     el.onerror = null;
-                    el.src = '/izta-popo/media/fotos/bosque-hartwegii-1280.webp';
+                    el.src = `${MEDIA_BASE}/fotos/bosque-hartwegii-1280.webp`;
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#141615] via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-[#141615]" />
