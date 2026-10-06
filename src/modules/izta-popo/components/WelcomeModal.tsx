@@ -64,7 +64,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
           <div className="flex items-center gap-2.5">
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-[#E8A15A]/20 text-[#E8A15A] border border-[#E8A15A]/30 flex items-center gap-1">
               <Sparkles className="w-3 h-3" />
-              Opción 1 · Modal Inmersivo
+              Carta de Bienvenida
             </span>
             <span className="hidden sm:inline text-xs font-serif text-white/70">
               {CLIENT_NAME}
