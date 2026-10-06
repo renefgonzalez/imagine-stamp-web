@@ -59,6 +59,15 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
         className="relative w-full max-w-3xl max-h-[90vh] rounded-3xl overflow-hidden bg-[#121413] border border-white/15 shadow-2xl flex flex-col my-auto"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Fondo escénico sutil con luz del bosque */}
+        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+          <img
+            src={`${MEDIA_BASE}/fotos/sendero-rayos-sol-1280.webp`}
+            alt="Bosque sagrado"
+            className="w-full h-full object-cover filter brightness-90"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#121413] via-transparent to-[#121413]" />
+        </div>
         {/* Cabecera fija */}
         <div className="flex items-center justify-between px-5 sm:px-7 py-4 border-b border-white/10 bg-black/60 backdrop-blur-md shrink-0">
           <div className="flex items-center gap-2.5">

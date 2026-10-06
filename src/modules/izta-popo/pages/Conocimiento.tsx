@@ -103,7 +103,7 @@ export const Conocimiento: React.FC = () => {
         {/* Foto de bosque de fondo */}
         <div className="absolute inset-0 z-0">
           <img
-            src={`${MEDIA_BASE}/fotos/oyamel-2560.webp`}
+            src={`${MEDIA_BASE}/fotos/laguna-reflejo-volcanes-2560.webp`}
             alt="Bosque sagrado de Oyamel"
             className="w-full h-full object-cover scale-105 animate-fade-in duration-1000"
           />

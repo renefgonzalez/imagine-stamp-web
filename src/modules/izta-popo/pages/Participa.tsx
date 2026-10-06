@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { HeartHandshake, Calendar, MapPin, Users, CheckCircle2, ShieldAlert, MessageCircle, Mail, Share2, AlertTriangle, ArrowRight } from 'lucide-react';
 import { JORNADAS } from '../data/jornadas';
-import { CONTACT_EMAIL, SOCIAL_LINKS, WHATSAPP_NUMBER, VOLUNTEER_WHATSAPP_MESSAGE } from '../config';
+import { CONTACT_EMAIL, SOCIAL_LINKS, WHATSAPP_NUMBER, VOLUNTEER_WHATSAPP_MESSAGE, MEDIA_BASE } from '../config';
 
 interface ActionLine {
   id: string;
@@ -68,8 +68,17 @@ export const ParticipaPage: React.FC = () => {
 
   return (
     <div className="w-full text-[#F2F1EC] bg-[#0E0F0F] pb-28">
-      {/* Cabecera */}
-      <section className="pt-16 pb-12 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* Cabecera con fondo escénico del bosque */}
+      <section className="relative pt-24 pb-20 border-b border-white/[0.08] overflow-hidden text-center mb-12">
+        <div className="absolute inset-0 z-0">
+          <img
+            src={`${MEDIA_BASE}/fotos/sendero-rayos-sol-2560.webp`}
+            alt="Rayos de sol en el bosque de oyamel"
+            className="w-full h-full object-cover filter brightness-[0.32] contrast-110 scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0E0F0F]/80 via-[#0E0F0F]/90 to-[#0E0F0F]" />
+        </div>
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E8A15A]/15 text-[#E8A15A] border border-[#E8A15A]/30 text-xs font-mono font-semibold uppercase tracking-wider mb-4">
           <HeartHandshake className="w-3.5 h-3.5" />
           <span>Voluntariado Ciudadano & Comunitario</span>
@@ -101,6 +110,7 @@ export const ParticipaPage: React.FC = () => {
             <Mail className="w-3.5 h-3.5 text-[#E8A15A]" />
             <span>{CONTACT_EMAIL}</span>
           </a>
+        </div>
         </div>
       </section>
 
