@@ -5,6 +5,9 @@ import {
   Trees,
   Mountain,
   ChevronDown,
+  ChevronUp,
+  BookOpen,
+  ExternalLink,
   ArrowRight,
   Droplets,
   HeartHandshake,
@@ -23,6 +26,8 @@ import { MEDIA_BASE, WHATSAPP_NUMBER, VOLUNTEER_WHATSAPP_MESSAGE, GUIDE_NAME } f
 import { Map3D } from '../components/Map3D';
 import { DeepZoomViewer } from '../components/DeepZoomViewer';
 import { PresentationModal } from '../components/PresentationModal';
+import { WelcomeModal } from '../components/WelcomeModal';
+import { CARTA_BIENVENIDA } from '../data/bienvenida';
 
 export const Home: React.FC = () => {
   const ayoloco = LUGARES.find((l) => l.id === 'glaciar-ayoloco') || LUGARES[3];
@@ -30,6 +35,9 @@ export const Home: React.FC = () => {
 
   const [activeDeepZoom, setActiveDeepZoom] = useState<{ id: string; alt: string; mp: number } | null>(null);
   const [isPresentationOpen, setIsPresentationOpen] = useState(false);
+  const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
+  const [isWelcomeExpanded, setIsWelcomeExpanded] = useState(false);
+  const welcomeTriggerRef = useRef<HTMLButtonElement>(null);
   const presentationTriggerRef = useRef<HTMLButtonElement>(null);
 
   // Categorías con foto de fondo correspondiente
@@ -92,6 +100,18 @@ export const Home: React.FC = () => {
               <HeartHandshake className="w-5 h-5 text-[#E8A15A] group-hover:scale-110 transition-transform" />
               <span>Súmate como voluntario</span>
             </Link>
+
+            {/* OPCIÓN 1: Botón para Modal Inmersivo de Bienvenida */}
+            <button
+              ref={welcomeTriggerRef}
+              type="button"
+              onClick={() => setIsWelcomeModalOpen(true)}
+              className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-white/10 hover:bg-white/20 text-[#F2F1EC] font-semibold text-sm tracking-wide transition-all border border-[#E8A15A]/40 backdrop-blur-md flex items-center justify-center gap-2 group hover:border-[#E8A15A]"
+            >
+              <BookOpen className="w-5 h-5 text-[#E8A15A] group-hover:scale-110 transition-transform" />
+              <span>Carta de Bienvenida</span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E8A15A]/20 text-[#E8A15A] border border-[#E8A15A]/30">Opción 1</span>
+            </button>
           </div>
         </div>
 
@@ -175,6 +195,114 @@ export const Home: React.FC = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* OPCIÓN 2: Bloque Desplegable en el Home */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+          <div className="rounded-3xl bg-[#161817] border border-white/10 overflow-hidden shadow-2xl transition-all">
+            <div className="p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#3F6B4F]/25 text-[#8FC1D4] border border-[#3F6B4F]/40 text-[10px] font-mono font-semibold uppercase">
+                  <BookOpen className="w-3 h-3 text-[#E8A15A]" />
+                  <span>Opción 2 · Sección Desplegable en el Inicio</span>
+                </div>
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white">
+                  {CARTA_BIENVENIDA.titulo}
+                </h3>
+                <p className="text-xs sm:text-sm text-[#9AA3A0] max-w-2xl leading-relaxed">
+                  {CARTA_BIENVENIDA.parrafos[0]}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsWelcomeExpanded(!isWelcomeExpanded)}
+                className="self-start md:self-center px-6 py-3 rounded-2xl bg-[#E8A15A] hover:bg-[#d68f47] text-[#0E0F0F] font-bold text-xs transition-all shadow-lg flex items-center gap-2 shrink-0"
+              >
+                <span>{isWelcomeExpanded ? 'Ocultar carta completa' : 'Leer carta de bienvenida completa'}</span>
+                {isWelcomeExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+            </div>
+
+            {/* Contenido expandido */}
+            {isWelcomeExpanded && (
+              <div className="px-6 sm:px-8 pb-8 pt-2 border-t border-white/10 space-y-6 text-[#D4D3CD] text-sm sm:text-base leading-relaxed animate-fade-in">
+                <div className="p-4 rounded-2xl bg-[#E8A15A]/10 border border-[#E8A15A]/20">
+                  <blockquote className="font-serif text-base sm:text-lg italic text-white">
+                    “Si alguna vez has estado en el bosque sabes de la energía tan poderosa que tiene la naturaleza, y como habitantes de nuestro planeta hemos olvidado lo esencial de esta para nuestras vidas.”
+                  </blockquote>
+                </div>
+
+                <div className="space-y-4 font-light">
+                  {CARTA_BIENVENIDA.parrafos.slice(1).map((parrafo, idx) => (
+                    <p key={idx}>{parrafo}</p>
+                  ))}
+                </div>
+
+                {/* Tipos de bosques & Reforestación */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  <div className="p-5 rounded-2xl bg-black/40 border border-white/10 space-y-3">
+                    <div className="flex items-center gap-2 text-[#8FC1D4]">
+                      <Trees className="w-4 h-4" />
+                      <h4 className="font-serif font-bold text-white text-sm sm:text-base">
+                        Los 4 Grandes Tipos de Bosques
+                      </h4>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                      {CARTA_BIENVENIDA.tiposBosques.items.map((t, i) => (
+                        <div key={i} className="p-2 rounded-lg bg-white/5 border border-white/10 text-white text-center">
+                          <span className="text-[#E8A15A] mr-1">{i + 1}.</span> {t}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="pt-1 text-right">
+                      <a
+                        href={CARTA_BIENVENIDA.tiposBosques.fuenteUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs font-mono text-[#8FC1D4] hover:text-white"
+                      >
+                        <span>Fuente: {CARTA_BIENVENIDA.tiposBosques.fuenteNombre}</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="p-5 rounded-2xl bg-black/40 border border-white/10 space-y-3">
+                    <div className="flex items-center gap-2 text-[#E8A15A]">
+                      <HeartHandshake className="w-4 h-4" />
+                      <h4 className="font-serif font-bold text-white text-sm sm:text-base">
+                        Iniciativas de Reforestación
+                      </h4>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                      {CARTA_BIENVENIDA.reforestacion.iniciativas.map((item, i) => (
+                        <a
+                          key={i}
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors flex flex-col justify-between group"
+                        >
+                          <span className="text-[10px] font-mono text-[#E8A15A]">{item.entidad}</span>
+                          <span className="font-bold text-white flex items-center justify-between mt-1 group-hover:text-[#E8A15A]">
+                            {item.sigla}
+                            <ExternalLink className="w-3 h-3 text-white/50 group-hover:text-[#E8A15A]" />
+                          </span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 text-center">
+                  <p className="font-serif font-bold text-white text-lg">
+                    {CARTA_BIENVENIDA.cierre}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -557,6 +685,13 @@ export const Home: React.FC = () => {
         isOpen={isPresentationOpen}
         onClose={() => setIsPresentationOpen(false)}
         triggerElementRef={presentationTriggerRef}
+      />
+
+      {/* OPCIÓN 1: Modal Inmersivo de Bienvenida */}
+      <WelcomeModal
+        isOpen={isWelcomeModalOpen}
+        onClose={() => setIsWelcomeModalOpen(false)}
+        triggerElementRef={welcomeTriggerRef}
       />
     </div>
   );

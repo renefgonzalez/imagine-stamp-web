@@ -8,9 +8,13 @@ import {
   Facebook,
   Youtube,
   Play,
-  Volume2
+  Volume2,
+  ExternalLink,
+  HeartHandshake,
+  Sparkles
 } from 'lucide-react';
 import { MANIFIESTO } from '../data/manifiesto';
+import { CARTA_BIENVENIDA } from '../data/bienvenida';
 import { MEDIA_BASE, SOCIAL_LINKS, GUIDE_NAME, CLIENT_NAME } from '../config';
 import { SmartVideo } from '../components/SmartVideo';
 import { PresentationModal } from '../components/PresentationModal';
@@ -32,6 +36,10 @@ export const Conocimiento: React.FC = () => {
     return 'es';
   });
 
+  const urlTab = searchParams.get('tab');
+  const [vistaLectura, setVistaLectura] = useState<'manifiesto' | 'bienvenida'>(
+    urlTab === 'bienvenida' ? 'bienvenida' : 'manifiesto'
+  );
   const [isFading, setIsFading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const playBtnRef = useRef<HTMLButtonElement>(null);
@@ -201,7 +209,180 @@ export const Conocimiento: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. CUERPO DEL MANIFIESTO (Columna de 65-70 carácteres, espaciosa y serena) */}
+      {/* SELECTOR DE VISTAS (Manifiesto vs Carta de Bienvenida Opción 3) */}
+      <section className="py-6 px-4 sm:px-6 bg-[#0E0F0F] border-b border-white/[0.06]">
+        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-3">
+          <button
+            onClick={() => setVistaLectura('manifiesto')}
+            className={`px-5 py-2.5 rounded-full text-xs font-mono font-bold transition-all flex items-center gap-2 ${
+              vistaLectura === 'manifiesto'
+                ? 'bg-[#E8A15A] text-black shadow-lg shadow-[#E8A15A]/25'
+                : 'bg-white/5 text-[#9AA3A0] hover:text-white border border-white/10'
+            }`}
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Manifiesto Prehispánico</span>
+          </button>
+
+          <button
+            onClick={() => setVistaLectura('bienvenida')}
+            className={`px-5 py-2.5 rounded-full text-xs font-mono font-bold transition-all flex items-center gap-2 ${
+              vistaLectura === 'bienvenida'
+                ? 'bg-[#E8A15A] text-black shadow-lg shadow-[#E8A15A]/25'
+                : 'bg-white/5 text-[#9AA3A0] hover:text-white border border-white/10'
+            }`}
+          >
+            <Trees className="w-3.5 h-3.5" />
+            <span>Carta de Bienvenida al Blog</span>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+              vistaLectura === 'bienvenida' ? 'bg-black/20 text-black' : 'bg-[#E8A15A]/20 text-[#E8A15A]'
+            }`}>
+              Opción 3
+            </span>
+          </button>
+        </div>
+      </section>
+
+      {/* RENDERIZADO CONDICIONAL DE OPCIÓN 3 (CARTA DE BIENVENIDA) */}
+      {vistaLectura === 'bienvenida' && (
+        <div className="animate-fade-in">
+          {/* Cabecera de la carta */}
+          <section className="py-12 px-4 sm:px-6 lg:px-8 border-b border-white/10 bg-[#121413]">
+            <div className="max-w-[70ch] mx-auto space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E8A15A]/15 text-[#E8A15A] border border-[#E8A15A]/30 text-xs font-mono font-semibold uppercase">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Opción 3 · Carta de Bienvenida en Página de Conocimiento</span>
+              </div>
+              <h2 className="font-serif text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+                {CARTA_BIENVENIDA.titulo}
+              </h2>
+              <p className="text-sm sm:text-base text-[#9AA3A0]">
+                {CARTA_BIENVENIDA.subtitulo}
+              </p>
+            </div>
+          </section>
+
+          {/* Cita reflexiva */}
+          <section className="relative py-16 px-6 sm:px-12 bg-gradient-to-b from-[#121413] via-[#0E0F0F] to-[#0A0B0B] border-b border-white/10">
+            <div className="max-w-4xl mx-auto text-center">
+              <blockquote className="font-serif italic text-xl sm:text-2xl md:text-3xl text-white leading-relaxed">
+                “Si alguna vez has estado en el bosque sabes de la energía tan poderosa que tiene la naturaleza, y como habitantes de nuestro planeta hemos olvidado lo esencial de esta para nuestras vidas.”
+              </blockquote>
+              <div className="w-16 h-0.5 bg-[#E8A15A] mx-auto mt-6" />
+            </div>
+          </section>
+
+          {/* Párrafos editoriales */}
+          <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-[68ch] mx-auto space-y-8 text-base sm:text-lg leading-[1.8] text-[#D8D7CE] font-light">
+              <p>{CARTA_BIENVENIDA.parrafos[0]}</p>
+              <p className="font-medium text-white/95">{CARTA_BIENVENIDA.parrafos[1]}</p>
+              <p>{CARTA_BIENVENIDA.parrafos[2]}</p>
+              <p>{CARTA_BIENVENIDA.parrafos[3]}</p>
+              <p>{CARTA_BIENVENIDA.parrafos[4]}</p>
+              <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-white font-normal leading-relaxed">
+                <p>{CARTA_BIENVENIDA.parrafos[5]}</p>
+              </div>
+
+              {/* 4 Tipos de Bosques */}
+              <div className="my-10 p-6 sm:p-8 rounded-3xl bg-[#141615] border border-white/10 space-y-4">
+                <div className="flex items-center gap-2 text-[#8FC1D4]">
+                  <Trees className="w-5 h-5" />
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-white">
+                    Los 4 Grandes Tipos de Bosques en el Mundo
+                  </h3>
+                </div>
+                <p className="text-sm text-[#9AA3A0]">
+                  {CARTA_BIENVENIDA.tiposBosques.introduccion}
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                  {CARTA_BIENVENIDA.tiposBosques.items.map((t, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3 rounded-xl bg-white/5 border border-white/10 text-center font-serif font-bold text-sm text-white"
+                    >
+                      <span className="text-[#E8A15A] mr-1 font-mono text-xs">{idx + 1}.</span>
+                      {t}
+                    </div>
+                  ))}
+                </div>
+                <div className="pt-2 text-right">
+                  <a
+                    href={CARTA_BIENVENIDA.tiposBosques.fuenteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-mono text-[#8FC1D4] hover:text-white"
+                  >
+                    <span>Fuente: {CARTA_BIENVENIDA.tiposBosques.fuenteNombre}</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Reforestación */}
+              <div className="my-10 p-6 sm:p-8 rounded-3xl bg-[#141615] border border-white/10 space-y-4">
+                <div className="flex items-center gap-2 text-[#E8A15A]">
+                  <HeartHandshake className="w-5 h-5" />
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-white">
+                    Programas Oficiales de Reforestación en México
+                  </h3>
+                </div>
+                <p className="text-sm text-[#9AA3A0]">
+                  {CARTA_BIENVENIDA.reforestacion.introduccion}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  {CARTA_BIENVENIDA.reforestacion.iniciativas.map((item, idx) => (
+                    <a
+                      key={idx}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#E8A15A]/50 transition-all flex flex-col justify-between group"
+                    >
+                      <div>
+                        <span className="text-[10px] font-mono text-[#E8A15A] uppercase">{item.entidad}</span>
+                        <h4 className="font-serif text-lg font-bold text-white group-hover:text-[#E8A15A] transition-colors flex items-center justify-between mt-1">
+                          <span>{item.sigla}</span>
+                          <ExternalLink className="w-4 h-4 text-white/50 group-hover:text-[#E8A15A]" />
+                        </h4>
+                        <p className="text-xs text-[#9AA3A0] mt-1">{item.nombreCompleto}</p>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* Cierre */}
+              <div className="pt-6 text-center space-y-4">
+                <p className="font-serif text-2xl sm:text-3xl font-bold text-white">
+                  {CARTA_BIENVENIDA.cierre}
+                </p>
+                <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
+                  <Link
+                    to="/izta-popo/explorar"
+                    className="px-6 py-3 rounded-full bg-[#E8A15A] hover:bg-[#d68f47] text-[#0E0F0F] font-bold text-xs transition-all shadow-lg flex items-center gap-2"
+                  >
+                    <Compass className="w-4 h-4" />
+                    <span>Explorar el mapa 3D</span>
+                  </Link>
+                  <Link
+                    to="/izta-popo/participa"
+                    className="px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/20 transition-all"
+                  >
+                    <span>Sumarse como voluntario</span>
+                  </Link>
+                </div>
+              </div>
+
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* VISTA 1: MANIFIESTO PREHISPÁNICO ORIGINAL */}
+      {vistaLectura === 'manifiesto' && (
+        <>
+          {/* 3. CUERPO DEL MANIFIESTO (Columna de 65-70 carácteres, espaciosa y serena) */}
       <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
         <div
           className={`max-w-[68ch] mx-auto space-y-8 sm:space-y-10 text-base sm:text-lg leading-[1.8] text-[#D8D7CE] transition-opacity duration-200 ${
@@ -249,6 +430,9 @@ export const Conocimiento: React.FC = () => {
           ))}
         </div>
       </section>
+
+              </>
+      )}
 
       {/* 6. CIERRE: TRES ACCESOS A LO QUE EL SITIO MUESTRA (En tamaños distintos) */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[#0E0F0F] border-t border-white/[0.08]">

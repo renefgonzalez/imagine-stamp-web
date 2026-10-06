@@ -30,7 +30,6 @@ const LINEAS_ACCION: ActionLine[] = [
     fotoId: 'oyamel',
     resumen: 'Plantación estacional de pino de altura (Pinus hartwegii) y oyamel (Abies religiosa) en zonas afectadas por incendios o pastoreo.',
     queHacemos: [
-      'Selección de plántulas nativas germinadas en viveros comunitarios de la región.',
       'Siembra estratégica durante la temporada de lluvias (junio a septiembre).',
       'Monitoreo periódico y cajeteo para asegurar la supervivencia de los renuevos.'
     ]
@@ -39,9 +38,8 @@ const LINEAS_ACCION: ActionLine[] = [
     id: 'apoyo-incendios',
     titulo: 'Apoyo y Prevención de Incendios Forestales',
     fotoId: 'bosque-hartwegii',
-    resumen: 'Labores preventivas de apertura de brechas cortafuego, retiro de material combustible seco y apoyo logístico a brigadistas oficiales.',
+    resumen: 'Labores preventivas de retiro de material combustible seco y apoyo logístico a brigadistas oficiales.',
     queHacemos: [
-      'Faenas preventivas de brechas cortafuego antes del inicio del estiaje.',
       'Acopio y entrega de víveres y herramientas para brigadas comunitarias y de CONAFOR.',
       'Campañas de difusión sobre el peligro mortal de las fogatas en pastizales.'
     ],
