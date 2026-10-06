@@ -46,8 +46,10 @@ export const LUGARES: Lugar[] = [
     ],
     fechaRegistro: '12 de enero de 2026',
     fotos: [
-      { id: 'paso-de-cortes', alt: 'Paso de Cortés con vista al Popocatépetl', megapixeles: 3.1 },
-      { id: 'vista-noreste', alt: 'Panorámica de los volcanes desde el collado', megapixeles: 15.9 },
+      { id: 'popocatepetl-cono-despejado', alt: 'Cono del Popocatépetl despejado desde Paso de Cortés', megapixeles: 16.0, esDeepZoom: true },
+      { id: 'laguna-reflejo-volcanes', alt: 'Laguna de montaña reflejando los picos nevados', megapixeles: 14.0, esDeepZoom: true },
+      { id: 'nube-lenticular-volcan', alt: 'Nube lenticular al atardecer sobre los volcanes', megapixeles: 12.5 },
+      { id: 'paso-de-cortes', alt: 'Paso de Cortés con vista al Popocatépetl', megapixeles: 3.1 }
     ],
   },
   {

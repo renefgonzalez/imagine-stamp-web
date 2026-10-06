@@ -15,7 +15,8 @@ import {
   Calendar,
   MessageCircle,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  Camera
 } from 'lucide-react';
 import { CATEGORIAS_ARRAY } from '../data/categorias';
 import { LUGARES } from '../data/lugares';
@@ -25,6 +26,91 @@ import { Map3D } from '../components/Map3D';
 import { DeepZoomViewer } from '../components/DeepZoomViewer';
 import { PresentationModal } from '../components/PresentationModal';
 import { WelcomeModal } from '../components/WelcomeModal';
+
+interface FotoDestacadaSierra {
+  id: string;
+  titulo: string;
+  subtitulo: string;
+  descripcion: string;
+  alt: string;
+  tag: string;
+  megapixeles: number;
+}
+
+const FOTOS_ALTA_MONTANA: FotoDestacadaSierra[] = [
+  {
+    id: 'popocatepetl-cono-despejado',
+    titulo: 'El Guardián Humeante',
+    subtitulo: 'Popocatépetl · 5,426 m s. n. m.',
+    descripcion: 'Cono volcánico perfecto en una mañana despejada, revelando su fumarola activa y los mantos de ceniza ancestral.',
+    alt: 'Volcán Popocatépetl con fumarola activa',
+    tag: 'Cumbre Activa',
+    megapixeles: 8.5
+  },
+  {
+    id: 'glaciar-muro-hielo',
+    titulo: 'Muro de Hielo Fósil',
+    subtitulo: 'Iztaccíhuatl · Cornisas de altura',
+    descripcion: 'Seracs y grietas de hielo milenario que resisten en la cumbre de la Mujer Dormida como memoria viva del clima.',
+    alt: 'Muro de hielo y seracs en la cumbre del Iztaccíhuatl',
+    tag: 'Hielo Relíctico',
+    megapixeles: 6.2
+  },
+  {
+    id: 'laguna-reflejo-volcanes',
+    titulo: 'Espejo de Altura',
+    subtitulo: 'Laguna alpina · Morrena glaciar',
+    descripcion: 'Agua pura de deshielo donde se reflejan las crestas de la sierra antes de que el viento quiebre la superficie.',
+    alt: 'Laguna alpina reflejando los picos de la sierra',
+    tag: 'Agua Sagrada',
+    megapixeles: 5.7
+  },
+  {
+    id: 'sendero-rayos-sol',
+    titulo: 'Catedral de Luz',
+    subtitulo: 'Bosque de Oyamel · Paso de montaña',
+    descripcion: 'Rayos solares perforando la niebla matutina entre gigantescas coníferas que producen el oxígeno de la cuenca.',
+    alt: 'Rayos de sol a través de las copas del bosque de oyamel',
+    tag: 'Bosque Sagrado',
+    megapixeles: 7.0
+  },
+  {
+    id: 'superluna-bosque',
+    titulo: 'Noche Sagrada',
+    subtitulo: 'Superluna sobre el filo volcánico',
+    descripcion: 'La luna llena iluminando las crestas y las siluetas de los pinos de altura en una noche serena de montaña.',
+    alt: 'Superluna sobre el bosque y los volcanes',
+    tag: 'Noche Alpina',
+    megapixeles: 6.8
+  },
+  {
+    id: 'nube-lenticular-volcan',
+    titulo: 'Velo de Viento',
+    subtitulo: 'Nube lenticular sobre el Popo',
+    descripcion: 'Espectacular formación nubosa condensada por las corrientes de altura justo sobre el cráter activo.',
+    alt: 'Nube lenticular sobre el cono del Popocatépetl',
+    tag: 'Atmósfera',
+    megapixeles: 5.5
+  },
+  {
+    id: 'escarcha-cristalina-alpina',
+    titulo: 'Agujas de Escarcha',
+    subtitulo: 'Cencellada & Macro glacial',
+    descripcion: 'Cristales de hielo nacidos del viento gélido y la humedad de altura adheridos a la andesita volcánica.',
+    alt: 'Macro de agujas de hielo y escarcha sobre la roca',
+    tag: 'Detalle Glaciar',
+    megapixeles: 4.8
+  },
+  {
+    id: 'paredes-rocosas-izta',
+    titulo: 'Bastión Mineral',
+    subtitulo: 'Paredes y cascadas de hielo',
+    descripcion: 'Murallas de roca volcánica surcadas por caídas de agua congeladas en las rutas de aproximación técnica.',
+    alt: 'Paredes rocosas con cascadas congeladas en el Iztaccíhuatl',
+    tag: 'Geología Alpina',
+    megapixeles: 6.4
+  }
+];
 
 export const Home: React.FC = () => {
   const ayoloco = LUGARES.find((l) => l.id === 'glaciar-ayoloco') || LUGARES[3];
@@ -396,6 +482,92 @@ export const Home: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 5.5. GALERÍA DE ALTA MONTAÑA: EL LATIDO DE LA SIERRA */}
+      <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E8A15A]/15 text-[#E8A15A] border border-[#E8A15A]/30 text-xs font-mono font-semibold uppercase mb-2">
+              <Camera className="w-3.5 h-3.5" />
+              <span>Fotografía de Alta Montaña</span>
+            </div>
+            <h2 className="font-serif text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+              El latido visual de la sierra
+            </h2>
+            <p className="text-sm sm:text-base text-[#9AA3A0] mt-2 max-w-2xl">
+              Capturas reales de los fenómenos, glaciares, lagunas y luces que coronan al Iztaccíhuatl y al Popocatépetl. Haz clic en cualquiera para explorarla en alta resolución.
+            </p>
+          </div>
+
+          <Link
+            to="/izta-popo/problematica"
+            className="text-xs font-mono text-[#E8A15A] hover:underline flex items-center gap-1.5 self-start md:self-end"
+          >
+            <span>Ver fototeca de problemáticas en campo</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        {/* Grilla visual editorial */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {FOTOS_ALTA_MONTANA.map((foto, index) => {
+            const isLarge = index === 0 || index === 3;
+            return (
+              <div
+                key={foto.id}
+                onClick={() =>
+                  setActiveDeepZoom({
+                    id: foto.id,
+                    alt: foto.alt,
+                    mp: foto.megapixeles
+                  })
+                }
+                className={`group relative rounded-3xl overflow-hidden bg-black border border-white/10 hover:border-[#E8A15A]/60 shadow-xl transition-all duration-500 cursor-pointer flex flex-col justify-end p-5 min-h-[320px] ${
+                  isLarge ? 'sm:col-span-2' : ''
+                }`}
+              >
+                <img
+                  src={`${MEDIA_BASE}/fotos/${foto.id}-1280.webp`}
+                  alt={foto.alt}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 filter brightness-90 group-hover:brightness-100"
+                  loading="lazy"
+                  onError={(e) => {
+                    const el = e.currentTarget;
+                    el.onerror = null;
+                    el.src = `${MEDIA_BASE}/fotos/glaciar-ayoloco-1280.webp`;
+                  }}
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-90 group-hover:opacity-75 transition-opacity" />
+
+                {/* Badge flotante superior */}
+                <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
+                  <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[10px] font-mono uppercase text-[#E8A15A] tracking-wider font-semibold">
+                    {foto.tag}
+                  </span>
+                </div>
+
+                <div className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white/80 group-hover:text-white group-hover:scale-110 group-hover:bg-[#E8A15A] group-hover:text-black transition-all">
+                  <Maximize2 className="w-4 h-4" />
+                </div>
+
+                {/* Pie de foto */}
+                <div className="relative z-10 space-y-1.5">
+                  <span className="text-[11px] font-mono text-[#8FC1D4] block">
+                    {foto.subtitulo}
+                  </span>
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-white group-hover:text-[#E8A15A] transition-colors leading-tight">
+                    {foto.titulo}
+                  </h3>
+                  <p className="text-xs text-[#9AA3A0] line-clamp-2 leading-relaxed">
+                    {foto.descripcion}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 

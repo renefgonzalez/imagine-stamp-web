@@ -27,12 +27,12 @@ export const BITACORA_JORNADAS: EntradaJornada[] = [
     resumen: 'Jornada colectiva de saneamiento ambiental a 3,950 m. Con el apoyo de voluntarios locales se retiraron desechos acumulados en zonas de campamento, previniendo la contaminación de los veneros de deshielo.',
     lugaresIds: ['la-joya', 'glaciar-ayoloco'],
     fotos: [
-      { id: 'la-joya', pie: 'Inicio de la jornada en el campamento La Joya' },
-      { id: 'glaciar-ayoloco', pie: 'Recolección en senderos hacia el antiguo glaciar' },
-      { id: 'vista-noreste', pie: 'Revisión final de cuenca limpia' }
+      { id: 'jornada-limpieza-1', pie: 'Voluntarios recolectando residuos inorgánicos en el pastizal alpino' },
+      { id: 'jornada-limpieza-2', pie: 'Saneamiento de parajes y retiro de plásticos con costales reutilizables' },
+      { id: 'jornada-limpieza-3', pie: 'Brigada comunitaria coordinada por Ricardo Pérez Romero' }
     ],
     coordinador: GUIDE_NAME,
-    esEjemplo: true,
+    esEjemplo: false,
   },
   {
     id: 'jornada-2026-01-censo-teporingo',
