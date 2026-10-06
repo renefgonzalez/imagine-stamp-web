@@ -16,11 +16,14 @@ import {
   MessageCircle,
   ShieldCheck,
   Sparkles,
-  Camera
+  Camera,
+  PawPrint
 } from 'lucide-react';
 import { CATEGORIAS_ARRAY } from '../data/categorias';
 import { LUGARES } from '../data/lugares';
 import { BITACORA_JORNADAS } from '../data/bitacora';
+import { PLANTAS } from '../data/flora';
+import { ANIMALES } from '../data/fauna';
 import { MEDIA_BASE, WHATSAPP_NUMBER, VOLUNTEER_WHATSAPP_MESSAGE, GUIDE_NAME } from '../config';
 import { Map3D } from '../components/Map3D';
 import { DeepZoomViewer } from '../components/DeepZoomViewer';
@@ -158,6 +161,46 @@ const FOTOS_ALTA_MONTANA: FotoDestacadaSierra[] = [
     tag: 'Gran Cordillera',
     categoria: 'cumbres',
     megapixeles: 7.2
+  },
+  {
+    id: 'castilleja-pincel-rojo-2',
+    titulo: 'Pincel Indio en la Nieve',
+    subtitulo: 'Castilleja tolucensis · Cota 4,100 m',
+    descripcion: 'Floración alpina roja de alta montaña brotando entre lajas de andesita y mantos de nieve fresca en las faldas del glaciar.',
+    alt: 'Pincel indio rojo floreciendo sobre la nieve en el Iztaccíhuatl',
+    tag: 'Flora de Altura',
+    categoria: 'flora',
+    megapixeles: 1.2
+  },
+  {
+    id: 'eryngium-cardo-cumbres-1',
+    titulo: 'Guardián de las Cumbres',
+    subtitulo: 'Eryngium proteiflorum · Cota 4,200 m',
+    descripcion: 'Inflorescencia plateada adaptada a la radiación UV recortada majestuosamente frente al perfil del Iztaccíhuatl.',
+    alt: 'Cardo plateado de las cumbres con el Iztaccíhuatl de fondo',
+    tag: 'Flora de Cumbre',
+    categoria: 'flora',
+    megapixeles: 1.2
+  },
+  {
+    id: 'penstemon-campanita-morada-2',
+    titulo: 'Campanitas y Reflejos Alpinos',
+    subtitulo: 'Penstemon gentianoides · Laguna volcánica',
+    descripcion: 'Campanitas moradas polinizadas por colibríes de montaña reflejándose en las aguas cristalinas de deshielo.',
+    alt: 'Penstemon morado junto a laguna de montaña',
+    tag: 'Flora Ribereña',
+    categoria: 'flora',
+    megapixeles: 1.2
+  },
+  {
+    id: 'amanita-muscaria-bosque-1',
+    titulo: 'El Manto Escarlata del Bosque',
+    subtitulo: 'Amanita muscaria · Sotobosque húmedo',
+    descripcion: 'Simbiosis micológica ancestral sobre una alfombra de musgo esmeralda en el corazón del bosque de coníferas.',
+    alt: 'Amanita muscaria roja en musgo del bosque',
+    tag: 'Funga Nativa',
+    categoria: 'flora',
+    megapixeles: 1.2
   }
 ];
 
@@ -166,7 +209,7 @@ export const Home: React.FC = () => {
   const ultimaJornada = BITACORA_JORNADAS[0];
 
   const [activeDeepZoom, setActiveDeepZoom] = useState<{ id: string; alt: string; mp: number } | null>(null);
-  const [filtroGaleria, setFiltroGaleria] = useState<'todas' | 'cumbres' | 'bosques' | 'cielo'>('todas');
+  const [filtroGaleria, setFiltroGaleria] = useState<'todas' | 'cumbres' | 'bosques' | 'cielo' | 'flora'>('todas');
   const [isPresentationOpen, setIsPresentationOpen] = useState(false);
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
   const welcomeTriggerRef = useRef<HTMLButtonElement>(null);
@@ -420,7 +463,7 @@ export const Home: React.FC = () => {
             return (
               <Link
                 key={cat.id}
-                to={`/izta-popo/explorar?cat=${cat.id}`}
+                to={cat.id === 'fauna' ? '/izta-popo/fauna' : `/izta-popo/explorar?cat=${cat.id}`}
                 className={`group relative rounded-3xl overflow-hidden h-72 border border-white/10 hover:border-[#E8A15A]/50 transition-all duration-300 shadow-xl flex flex-col justify-end p-6 ${
                   idx === 0 ? 'sm:col-span-2 lg:col-span-1' : ''
                 }`}
@@ -571,7 +614,7 @@ export const Home: React.FC = () => {
                   : 'bg-white/5 hover:bg-white/10 text-white/80 border border-white/10'
               }`}
             >
-              Todas (12)
+              Todas (16)
             </button>
             <button
               type="button"
@@ -583,6 +626,17 @@ export const Home: React.FC = () => {
               }`}
             >
               🏔️ Cumbres & Glaciares (6)
+            </button>
+            <button
+              type="button"
+              onClick={() => setFiltroGaleria('flora')}
+              className={`px-3.5 py-1.5 rounded-full transition-all ${
+                filtroGaleria === 'flora'
+                  ? 'bg-rose-500 text-black font-bold shadow-md'
+                  : 'bg-white/5 hover:bg-white/10 text-white/80 border border-white/10'
+              }`}
+            >
+              🌸 Flora & Funga (4)
             </button>
             <button
               type="button"
@@ -664,6 +718,26 @@ export const Home: React.FC = () => {
                 </div>
               );
             })}
+        </div>
+
+        {/* Enlace al herbario y fauna */}
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <Link
+            to="/izta-popo/flora"
+            className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-mono text-[#E8A15A] hover:text-white transition-all shadow-md group"
+          >
+            <Trees className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+            <span>Herbario & Funga ({PLANTAS.length} especies)</span>
+            <ArrowRight className="w-4 h-4 text-[#E8A15A] group-hover:translate-x-1 transition-transform" />
+          </Link>
+          <Link
+            to="/izta-popo/fauna"
+            className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-mono text-[#E8A15A] hover:text-white transition-all shadow-md group"
+          >
+            <PawPrint className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+            <span>Fauna Silvestre ({ANIMALES.length} especies)</span>
+            <ArrowRight className="w-4 h-4 text-[#E8A15A] group-hover:translate-x-1 transition-transform" />
+          </Link>
         </div>
       </section>
 

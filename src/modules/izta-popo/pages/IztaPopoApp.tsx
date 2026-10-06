@@ -12,6 +12,7 @@ import { ConocimientoPage } from './Conocimiento';
 import { Explorar } from './Explorar';
 import { LugarPage } from './Lugar';
 import { FloraPage } from './Flora';
+import { FaunaPage } from './Fauna';
 import { ProblematicaPage } from './Problematica';
 import { BitacoraPage } from './Bitacora';
 import { ParticipaPage } from './Participa';
@@ -43,6 +44,7 @@ export default function IztaPopoApp() {
             <Route path="explorar" element={<Explorar />} />
             <Route path="lugar/:id" element={<LugarPage />} />
             <Route path="flora" element={<FloraPage />} />
+            <Route path="fauna" element={<FaunaPage />} />
             <Route path="problematica" element={<ProblematicaPage />} />
             <Route path="bitacora" element={<BitacoraPage />} />
             <Route path="participa" element={<ParticipaPage />} />

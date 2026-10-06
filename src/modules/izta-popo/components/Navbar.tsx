@@ -9,7 +9,8 @@ import {
   BookOpen,
   HeartHandshake,
   AlertTriangle,
-  AlertCircle
+  AlertCircle,
+  PawPrint
 } from 'lucide-react';
 import { QualitySwitch } from './QualitySwitch';
 import { LogoVolcanes } from './LogoVolcanes';
@@ -27,6 +28,7 @@ export const Navbar: React.FC = () => {
     { to: `${basePrefix}/conocimiento`, label: 'La Montaña', icon: Mountain },
     { to: `${basePrefix}/explorar`, label: 'Explorar 3D', icon: Compass },
     { to: `${basePrefix}/flora`, label: 'Flora', icon: Trees },
+    { to: `${basePrefix}/fauna`, label: 'Fauna', icon: PawPrint },
     { to: `${basePrefix}/problematica`, label: 'Problemática', icon: AlertTriangle },
     { to: `${basePrefix}/bitacora`, label: 'Bitácora', icon: BookOpen },
     { to: `${basePrefix}/participa`, label: 'Participa', icon: HeartHandshake },
