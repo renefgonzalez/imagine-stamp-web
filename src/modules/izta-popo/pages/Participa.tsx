@@ -40,10 +40,10 @@ const LINEAS_ACCION: ActionLine[] = [
     fotoId: 'bosque-quemado-incendio',
     resumen: 'Labores preventivas de retiro de material combustible seco y apoyo logístico a brigadistas oficiales.',
     queHacemos: [
-      'Acopio y entrega de víveres y herramientas para brigadas comunitarias y de CONAFOR.',
+      'Acopio y entrega de víveres y herramientas para brigadas comunitarias, de CONAFOR y PROBOSQUE.',
       'Campañas de difusión sobre el peligro mortal de las fogatas en pastizales.'
     ],
-    avisoEspecial: 'La participación en incendios es solo bajo coordinación de brigadas oficiales y autoridades. Si ves un incendio, repórtalo al 911.'
+    avisoEspecial: 'PROBOSQUE y la Coordinación General de Protección Civil y Gestión Integral de Riesgo son las únicas autoridades capacitadas para combatir incendios.'
   },
   {
     id: 'cultura-naturaleza',
