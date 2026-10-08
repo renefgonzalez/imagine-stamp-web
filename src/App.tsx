@@ -20,7 +20,6 @@ const TarjetaVeterinaria = React.lazy(() => import('./modules/tarjeta-veterinari
 const LabalMenu = React.lazy(() => import('./modules/labal/pages/LabalMenu'));
 const DemoVideo = React.lazy(() => import('./modules/demo-video/pages/DemoVideo'));
 const VideoInvitaciones = React.lazy(() => import('./modules/video-invitaciones/pages/VideoInvitaciones'));
-const IztaPopoApp = React.lazy(() => import('./modules/izta-popo/pages/IztaPopoApp'));
 const GoWingsGoMenu = React.lazy(() => import('./modules/go-wings-go/pages/GoWingsGoMenu'));
 const BrothersPizzaMenu = React.lazy(() => import('./modules/brothers-pizza/pages/BrothersPizzaMenu'));
 
@@ -810,16 +809,7 @@ export default function App() {
         <Route path="/invitaciones" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500" /></div>}><VideoInvitaciones /></Suspense></ErrorBoundary>} />
         <Route path="/invitaciones-3d" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500" /></div>}><VideoInvitaciones /></Suspense></ErrorBoundary>} />
 
-        <Route path="/izta-popo/*" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0E0F0F]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E8A15A]" /></div>}><IztaPopoApp /></Suspense></ErrorBoundary>} />
-        <Route path="/izta-popo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0E0F0F]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E8A15A]" /></div>}><IztaPopoApp /></Suspense></ErrorBoundary>} />
 
-        {/* Redirecciones de conveniencia para sub-rutas directas de Izta-Popo */}
-        <Route path="/explorar" element={<Navigate to="/izta-popo/explorar" replace />} />
-        <Route path="/conocimiento" element={<Navigate to="/izta-popo/conocimiento" replace />} />
-        <Route path="/participa" element={<Navigate to="/izta-popo/participa" replace />} />
-        <Route path="/flora" element={<Navigate to="/izta-popo/flora" replace />} />
-        <Route path="/bitacora" element={<Navigate to="/izta-popo/bitacora" replace />} />
-        <Route path="/problematica" element={<Navigate to="/izta-popo/problematica" replace />} />
 
         <Route path="/go-wings-go" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0D0C0B]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF4816]" /></div>}><GoWingsGoMenu /></Suspense></ErrorBoundary>} />
         <Route path="/gowingsgo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0D0C0B]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF4816]" /></div>}><GoWingsGoMenu /></Suspense></ErrorBoundary>} />
