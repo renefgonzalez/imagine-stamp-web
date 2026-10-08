@@ -13,6 +13,7 @@ import {
 import { LUGARES, Lugar } from '../data/lugares';
 import { RECORRIDOS } from '../data/recorridos';
 import { CATEGORIAS } from '../data/categorias';
+import { BioMarkerItem } from '../data/bioMarkers';
 import { POPO_CRATER, POPO_EXCLUSION_RADIUS_KM } from '../config';
 import { createGeoJSONCircle } from '../lib/geo';
 
@@ -30,6 +31,10 @@ interface Map3DProps {
   lugarSeleccionado?: Lugar | null;
   centroTrigger?: { lugar: Lugar; count: number } | null;
   onSelectLugar?: (lugar: Lugar) => void;
+  bioMarkersFiltrados?: BioMarkerItem[];
+  bioMarkerSeleccionado?: BioMarkerItem | null;
+  centroBioTrigger?: { item: BioMarkerItem; count: number } | null;
+  onSelectBioMarker?: (item: BioMarkerItem) => void;
   modoCompacto?: boolean;
   className?: string;
   centroInicial?: [number, number];
@@ -42,6 +47,10 @@ export const Map3D: React.FC<Map3DProps> = ({
   lugarSeleccionado = null,
   centroTrigger = null,
   onSelectLugar,
+  bioMarkersFiltrados = [],
+  bioMarkerSeleccionado = null,
+  centroBioTrigger = null,
+  onSelectBioMarker,
   modoCompacto = false,
   className = '',
   centroInicial = [-98.64, 19.10],
@@ -51,6 +60,7 @@ export const Map3D: React.FC<Map3DProps> = ({
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const markersRef = useRef<{ [key: string]: MapLibreMarker }>({});
+  const bioMarkersRef = useRef<{ [key: string]: MapLibreMarker }>({});
   const animationFrameRef = useRef<number | null>(null);
 
   const [isRotating, setIsRotating] = useState(false);
@@ -58,7 +68,7 @@ export const Map3D: React.FC<Map3DProps> = ({
   const [showPopoRestriccion, setShowPopoRestriccion] = useState(true);
   const [mapLoaded, setMapLoaded] = useState(false);
 
-  // Vuelo de cámara suave al seleccionar un lugar adaptado a PC vs Móvil
+  // Vuelo de cámara suave al seleccionar un lugar
   const volarALugar = (lugar: Lugar) => {
     if (!mapRef.current) return;
     const isDesktop = window.innerWidth >= 1024;
@@ -69,8 +79,23 @@ export const Map3D: React.FC<Map3DProps> = ({
       zoom: isMobile ? 13.2 : 13.8,
       pitch: isMobile ? 55 : 65,
       bearing: -15,
-      // En PC desplazamos hacia la derecha (el panel está a la izquierda).
-      // En móvil desplazamos hacia ARRIBA (-115px) para que la montaña quede libre en la mitad superior de la pantalla.
+      offset: isDesktop ? [140, 0] : isMobile ? [0, -115] : [0, -40],
+      duration: 2200,
+      essential: true,
+    });
+  };
+
+  // Vuelo de cámara suave hacia una especie de flora o fauna
+  const volarACoords = (coords: [number, number]) => {
+    if (!mapRef.current) return;
+    const isDesktop = window.innerWidth >= 1024;
+    const isMobile = window.innerWidth < 768;
+
+    mapRef.current.flyTo({
+      center: coords,
+      zoom: isMobile ? 13.6 : 14.3,
+      pitch: isMobile ? 55 : 62,
+      bearing: -15,
       offset: isDesktop ? [140, 0] : isMobile ? [0, -115] : [0, -40],
       duration: 2200,
       essential: true,
@@ -98,12 +123,11 @@ export const Map3D: React.FC<Map3DProps> = ({
           },
           dem: {
             type: 'raster-dem',
-            encoding: 'terrarium',
             tiles: [
               'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png',
             ],
+            encoding: 'terrarium',
             tileSize: 256,
-            maxzoom: 15,
           },
         },
         layers: [
@@ -111,62 +135,40 @@ export const Map3D: React.FC<Map3DProps> = ({
             id: 'satellite-layer',
             type: 'raster',
             source: 'satellite',
-            minzoom: 0,
-            maxzoom: 19,
-          },
-          {
-            id: 'hills',
-            type: 'hillshade',
-            source: 'dem',
             paint: {
-              'hillshade-shadow-color': '#0E0F0F',
-              'hillshade-highlight-color': '#E8A15A',
-              'hillshade-accent-color': '#1A1C1B',
-              'hillshade-exaggeration': 0.35,
+              'raster-opacity': 1,
+              'raster-contrast': 0.1,
+              'raster-saturation': 0.05,
             },
           },
         ],
-      },
+        terrain: {
+          source: 'dem',
+          exaggeration: 1.45, // Relieve 3D marcado para apreciar cañadas y cumbres
+        },
+        sky: {
+          'sky-color': '#0B0D0F',
+          'sky-horizon-blend': 0.5,
+          'horizon-color': '#1E232A',
+          'horizon-fog-blend': 0.8,
+          'fog-color': '#0B0D0F',
+          'fog-ground-blend': 0.8,
+        },
+      } as any,
       center: centroInicial,
-      zoom: isMobile ? zoomInicial - 0.7 : zoomInicial,
-      pitch: pitchInicial,
+      zoom: isMobile ? 10.4 : zoomInicial,
+      pitch: isMobile ? 55 : pitchInicial,
       bearing: -15,
       maxPitch: 85,
-      attributionControl: false,
+      antialias: true,
     });
 
     mapRef.current = map;
 
-    map.on('error', (e) => {
-      console.warn('[MapLibre Event]:', e);
-    });
-
     map.on('load', () => {
-      // Activar Terreno 3D
+      // 1. ZONA DE EXCLUSIÓN VOLCÁNICA POPOCATÉPETL (12 KM)
       try {
-        map.setTerrain({
-          source: 'dem',
-          exaggeration: isMobile ? 1.1 : 1.4,
-        });
-      } catch (err) {
-        console.warn('Error al activar relieve 3D:', err);
-      }
-
-      // Animación suave de aproximación inicial si no es compacto
-      if (!modoCompacto) {
-        map.flyTo({
-          center: centroInicial,
-          zoom: isMobile ? zoomInicial - 0.5 : zoomInicial,
-          pitch: pitchInicial,
-          bearing: -15,
-          duration: 2500,
-          essential: true,
-        });
-      }
-
-      // 1. ZONA DE EXCLUSIÓN POPOCATÉPETL (12 KM)
-      try {
-        const popoCircle = createGeoJSONCircle(POPO_CRATER, POPO_EXCLUSION_RADIUS_KM * 1000);
+        const popoCircle = createGeoJSONCircle(POPO_CRATER, POPO_EXCLUSION_RADIUS_KM);
         map.addSource('popo-exclusion', {
           type: 'geojson',
           data: popoCircle,
@@ -283,13 +285,12 @@ export const Map3D: React.FC<Map3DProps> = ({
     };
   }, []);
 
-  // Marcadores interactivos HTML 3D adaptativos (limpios y sin amontonamiento en móviles)
+  // 1. Marcadores de Lugares Geográficos
   useEffect(() => {
     if (!mapRef.current) return;
     const map = mapRef.current;
     const isMobile = window.innerWidth < 768;
 
-    // Limpiar marcadores anteriores
     Object.values(markersRef.current).forEach((m) => m.remove());
     markersRef.current = {};
 
@@ -298,7 +299,6 @@ export const Map3D: React.FC<Map3DProps> = ({
       const isSelected = lugarSeleccionado?.id === lugar.id;
       const color = cat?.colorHex || '#E8A15A';
 
-      // Elemento DOM interactivo
       const el = document.createElement('div');
       el.className = 'group relative flex flex-col items-center cursor-pointer select-none transition-transform duration-200';
       el.style.zIndex = isSelected ? '50' : '10';
@@ -348,6 +348,70 @@ export const Map3D: React.FC<Map3DProps> = ({
     });
   }, [lugaresFiltrados, lugarSeleccionado]);
 
+  // 2. Marcadores Interactivos de FLORA y FAUNA
+  useEffect(() => {
+    if (!mapRef.current) return;
+    const map = mapRef.current;
+    const isMobile = window.innerWidth < 768;
+
+    Object.values(bioMarkersRef.current).forEach((m) => m.remove());
+    bioMarkersRef.current = {};
+
+    bioMarkersFiltrados.forEach((item) => {
+      const isSelected = bioMarkerSeleccionado?.id === item.id;
+      const color = item.colorHex;
+
+      const el = document.createElement('div');
+      el.className = 'group relative flex flex-col items-center cursor-pointer select-none transition-transform duration-200';
+      el.style.zIndex = isSelected ? '60' : '20';
+
+      const showBadge = !isMobile || isSelected;
+
+      el.innerHTML = `
+        <div class="${showBadge ? 'flex' : 'hidden group-hover:flex'} px-2 py-0.5 mb-1 rounded-full text-[10px] font-mono font-bold tracking-wider backdrop-blur-md border shadow-xl transition-all duration-200 items-center gap-1.5 whitespace-nowrap ${
+          isSelected
+            ? 'bg-white text-black border-[#E8A15A] shadow-xl scale-110'
+            : 'bg-[#0E0F0F]/95 text-white/95 border-white/20 group-hover:border-white group-hover:scale-105'
+        }">
+          <span class="text-xs leading-none">${item.iconoEmoji}</span>
+          <span class="truncate max-w-[130px]">${item.nombreComun}</span>
+          <span class="opacity-70 text-[9px] font-normal" style="color: ${color};">${item.altitud}m</span>
+        </div>
+        <div class="relative flex items-center justify-center">
+          ${
+            isSelected
+              ? `<div class="absolute w-8 h-8 rounded-full animate-ping opacity-80" style="background-color: ${color};"></div>`
+              : ''
+          }
+          <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-2xl transition-all duration-300 relative ${
+            isSelected
+              ? 'scale-125 ring-4 ring-white/80'
+              : 'group-hover:scale-115'
+          }" style="background-color: #141615; border: 2px solid ${color};">
+            <span class="leading-none text-[11px]">${item.iconoEmoji}</span>
+          </div>
+        </div>
+      `;
+
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (onSelectBioMarker) {
+          onSelectBioMarker(item);
+        }
+        volarACoords(item.coords);
+      });
+
+      const marker = new MapLibreMarker({
+        element: el,
+        anchor: 'bottom',
+      })
+        .setLngLat(item.coords)
+        .addTo(map);
+
+      bioMarkersRef.current[item.id] = marker;
+    });
+  }, [bioMarkersFiltrados, bioMarkerSeleccionado]);
+
   // Actualizar visibilidad de capas de rutas y exclusión volcánica
   useEffect(() => {
     if (!mapRef.current || !mapLoaded) return;
@@ -363,19 +427,26 @@ export const Map3D: React.FC<Map3DProps> = ({
     }
   }, [showRutas, showPopoRestriccion, mapLoaded]);
 
-  // Reaccionar cuando cambie `lugarSeleccionado` por selección de tarjeta
+  // Reaccionar cuando cambie `lugarSeleccionado`
   useEffect(() => {
     if (lugarSeleccionado && mapRef.current) {
       volarALugar(lugarSeleccionado);
     }
   }, [lugarSeleccionado?.id]);
 
-  // Reaccionar ante un trigger explícito de centrado (botón "Centrar vista")
+  // Reaccionar ante un trigger explícito de centrado de lugar
   useEffect(() => {
     if (centroTrigger?.lugar && mapRef.current) {
       volarALugar(centroTrigger.lugar);
     }
   }, [centroTrigger]);
+
+  // Reaccionar ante un trigger de centrado de flora/fauna
+  useEffect(() => {
+    if (centroBioTrigger?.item && mapRef.current) {
+      volarACoords(centroBioTrigger.item.coords);
+    }
+  }, [centroBioTrigger]);
 
   // Rotación suave automática del relieve 3D
   useEffect(() => {
@@ -399,7 +470,7 @@ export const Map3D: React.FC<Map3DProps> = ({
     };
   }, [isRotating]);
 
-  // Vista general de ambos volcanes (exactamente [-98.64, 19.10], zoom 11.2, pitch 68, bearing -15)
+  // Vista general de ambos volcanes
   const resetVistaGeneral = () => {
     if (!mapRef.current) return;
     const isMobile = window.innerWidth < 768;
@@ -409,98 +480,104 @@ export const Map3D: React.FC<Map3DProps> = ({
       pitch: 68,
       bearing: -15,
       offset: [0, 0],
-      duration: 2500,
+      duration: 1800,
+      essential: true,
     });
   };
 
+  const zoomIn = () => {
+    mapRef.current?.zoomIn({ duration: 300 });
+  };
+
+  const zoomOut = () => {
+    mapRef.current?.zoomOut({ duration: 300 });
+  };
+
   return (
-    <div className={`relative w-full h-full overflow-hidden bg-[#0A0B0B] ${className}`}>
-      {/* Contenedor WebGL */}
-      <div ref={mapContainer} className="w-full h-full" />
+    <div className={`relative w-full h-full overflow-hidden ${className}`}>
+      {/* Contenedor MapLibre GL */}
+      <div ref={mapContainer} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
-      {/* Controles flotantes superiores derechos */}
-      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex flex-col gap-1.5 sm:gap-2">
-        <button
-          onClick={resetVistaGeneral}
-          className="p-2 sm:p-2.5 rounded-xl bg-[#1A1C1B]/90 hover:bg-[#1A1C1B] border border-white/10 text-[#F2F1EC] hover:text-[#E8A15A] shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium"
-          title="Vista general de ambos volcanes"
-        >
-          <Compass className="w-4 h-4 text-[#E8A15A]" />
-          <span className="hidden sm:inline">Vista General</span>
-        </button>
-
-        {lugarSeleccionado && (
+      {/* Controles Flotantes 3D */}
+      {!modoCompacto && (
+        <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+          {/* Vista General */}
           <button
-            onClick={() => volarALugar(lugarSeleccionado)}
-            className="p-2 sm:p-2.5 rounded-xl bg-[#E8A15A] hover:bg-[#f3b578] text-black font-semibold shadow-xl transition-all flex items-center gap-1.5 text-xs"
-            title="Centrar en el lugar activo"
+            onClick={resetVistaGeneral}
+            className="p-2.5 rounded-2xl bg-[#0E0F0F]/90 hover:bg-[#E8A15A] hover:text-black text-white border border-white/10 shadow-2xl backdrop-blur-md transition-all duration-200 flex items-center justify-center group"
+            title="Vista panorámica de ambos volcanes"
           >
-            <Target className="w-4 h-4" />
-            <span className="hidden sm:inline">Centrar Lugar</span>
+            <Compass className="w-5 h-5 group-hover:rotate-45 transition-transform" />
           </button>
-        )}
 
-        <button
-          onClick={() => setIsRotating(!isRotating)}
-          className={`p-2 sm:p-2.5 rounded-xl border shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium ${
-            isRotating
-              ? 'bg-[#E8A15A] text-black border-[#E8A15A]'
-              : 'bg-[#1A1C1B]/90 hover:bg-[#1A1C1B] border-white/10 text-[#F2F1EC]'
-          }`}
-          title="Girar cámara lentamente"
-        >
-          <RotateCw className={`w-4 h-4 ${isRotating ? 'animate-spin' : ''}`} />
-          <span className="hidden sm:inline">Rotar</span>
-        </button>
+          {/* Rotación 3D */}
+          <button
+            onClick={() => setIsRotating(!isRotating)}
+            className={`p-2.5 rounded-2xl border shadow-2xl backdrop-blur-md transition-all duration-200 flex items-center justify-center ${
+              isRotating
+                ? 'bg-[#E8A15A] text-black border-white'
+                : 'bg-[#0E0F0F]/90 text-white border-white/10 hover:border-white/30'
+            }`}
+            title={isRotating ? 'Detener rotación' : 'Rotar relieve 3D'}
+          >
+            <RotateCw className={`w-5 h-5 ${isRotating ? 'animate-spin' : ''}`} />
+          </button>
 
-        <button
-          onClick={() => setShowRutas(!showRutas)}
-          className={`p-2 sm:p-2.5 rounded-xl border shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium ${
-            showRutas
-              ? 'bg-[#1A1C1B]/90 border-[#8FC1D4]/40 text-[#8FC1D4]'
-              : 'bg-[#1A1C1B]/60 border-white/10 text-[#9AA3A0]'
-          }`}
-          title="Mostrar u ocultar senderos y rutas"
-        >
-          <Layers className="w-4 h-4" />
-          <span className="hidden sm:inline">Rutas</span>
-        </button>
+          {/* Rutas de senderismo */}
+          <button
+            onClick={() => setShowRutas(!showRutas)}
+            className={`p-2.5 rounded-2xl border shadow-2xl backdrop-blur-md transition-all duration-200 flex items-center justify-center ${
+              showRutas
+                ? 'bg-white/20 text-[#8FC1D4] border-[#8FC1D4]/50'
+                : 'bg-[#0E0F0F]/90 text-white/50 border-white/10'
+            }`}
+            title="Activar / Desactivar senderos"
+          >
+            <Layers className="w-5 h-5" />
+          </button>
 
-        <button
-          onClick={() => setShowPopoRestriccion(!showPopoRestriccion)}
-          className={`p-2 sm:p-2.5 rounded-xl border shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-medium ${
-            showPopoRestriccion
-              ? 'bg-[#1A1C1B]/90 border-[#C2502E]/40 text-[#C2502E]'
-              : 'bg-[#1A1C1B]/60 border-white/10 text-[#9AA3A0]'
-          }`}
-          title="Zona de exclusión Popocatépetl 12 km"
-        >
-          <AlertTriangle className="w-4 h-4" />
-          <span className="hidden sm:inline">Zona Popo</span>
-        </button>
-      </div>
+          {/* Radio de exclusión Popo */}
+          <button
+            onClick={() => setShowPopoRestriccion(!showPopoRestriccion)}
+            className={`p-2.5 rounded-2xl border shadow-2xl backdrop-blur-md transition-all duration-200 flex items-center justify-center ${
+              showPopoRestriccion
+                ? 'bg-[#C2502E]/30 text-[#f89b82] border-[#C2502E]/50'
+                : 'bg-[#0E0F0F]/90 text-white/50 border-white/10'
+            }`}
+            title="Zona de exclusión 12 km Popocatépetl"
+          >
+            <AlertTriangle className="w-5 h-5" />
+          </button>
 
-      {/* Controles de Zoom inferiores */}
-      <div className="absolute bottom-6 right-4 z-20 hidden sm:flex flex-col bg-[#1A1C1B]/90 border border-white/10 rounded-xl overflow-hidden shadow-xl backdrop-blur-md">
-        <button
-          onClick={() => mapRef.current?.zoomIn()}
-          className="p-2 text-[#9AA3A0] hover:text-white hover:bg-white/10 transition-colors border-b border-white/5"
-          title="Acercar mapa"
-        >
-          <ZoomIn className="w-4 h-4" />
-        </button>
-        <button
-          onClick={() => mapRef.current?.zoomOut()}
-          className="p-2 text-[#9AA3A0] hover:text-white hover:bg-white/10 transition-colors"
-          title="Alejar mapa"
-        >
-          <ZoomOut className="w-4 h-4" />
-        </button>
-      </div>
+          {/* Zoom In / Out */}
+          <div className="flex flex-col rounded-2xl bg-[#0E0F0F]/90 border border-white/10 shadow-2xl backdrop-blur-md overflow-hidden mt-1">
+            <button
+              onClick={zoomIn}
+              className="p-2.5 text-white hover:bg-white/10 hover:text-[#E8A15A] transition-colors"
+              title="Acercar mapa"
+            >
+              <ZoomIn className="w-5 h-5" />
+            </button>
+            <div className="h-[1px] bg-white/10" />
+            <button
+              onClick={zoomOut}
+              className="p-2.5 text-white hover:bg-white/10 hover:text-[#E8A15A] transition-colors"
+              title="Alejar mapa"
+            >
+              <ZoomOut className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
 
-      {/* Atribución de datos de mapas obligatoria */}
-      <div className="absolute bottom-2 right-2 sm:right-16 z-10 px-2 py-0.5 rounded bg-black/60 text-[9px] font-mono text-white/50 backdrop-blur-sm pointer-events-none">
-        Esri · AWS Terrarium DEM · MapLibre GL
+      {/* Brújula e indicador de altitud */}
+      <div className="absolute bottom-4 left-4 z-10 hidden sm:flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-[#0E0F0F]/80 border border-white/10 backdrop-blur-md text-[11px] font-mono text-[#9AA3A0]">
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-[#E8A15A] animate-pulse" />
+          <span>Relieve DEM AWS 3D</span>
+        </span>
+        <span>•</span>
+        <span>Satélite Esri World Imagery</span>
       </div>
     </div>
   );

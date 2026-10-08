@@ -1,0 +1,26 @@
+{
+  "bosque-hartwegii": {
+    "lat": 19.1093,
+    "lng": -99.762422,
+    "altitude": null,
+    "tieneGpsNativo": true
+  },
+  "flora-eryngium": {
+    "lat": 19.112319,
+    "lng": -99.754786,
+    "altitude": null,
+    "tieneGpsNativo": true
+  },
+  "flora-lupinus-montanus": {
+    "lat": -16.328583,
+    "lng": -68.041906,
+    "altitude": null,
+    "tieneGpsNativo": true
+  },
+  "teporingo": {
+    "lat": 19.422862,
+    "lng": -99.189868,
+    "altitude": null,
+    "tieneGpsNativo": true
+  }
+}
