@@ -22,6 +22,10 @@ const DemoVideo = React.lazy(() => import('./modules/demo-video/pages/DemoVideo'
 const VideoInvitaciones = React.lazy(() => import('./modules/video-invitaciones/pages/VideoInvitaciones'));
 const GoWingsGoMenu = React.lazy(() => import('./modules/go-wings-go/pages/GoWingsGoMenu'));
 const BrothersPizzaMenu = React.lazy(() => import('./modules/brothers-pizza/pages/BrothersPizzaMenu'));
+const BurgaslocasMenu = React.lazy(() => import('./modules/burgaslocas/pages/BurgaslocasMenu'));
+const AaahCarbonMenu = React.lazy(() => import('./modules/aaah-carbon/pages/AaahCarbonMenu'));
+const PincheCheMenu = React.lazy(() => import('./modules/pinche-che/pages/PincheCheMenu'));
+const MesaJarochaMenu = React.lazy(() => import('./modules/mesa-jarocha/pages/MesaJarochaMenu'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -816,6 +820,17 @@ export default function App() {
 
         <Route path="/brothers-pizza" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0F0E0D]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E11D48]" /></div>}><BrothersPizzaMenu /></Suspense></ErrorBoundary>} />
         <Route path="/brotherspizza" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0F0E0D]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E11D48]" /></div>}><BrothersPizzaMenu /></Suspense></ErrorBoundary>} />
+
+        <Route path="/burgaslocas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0F0E0D]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF381E]" /></div>}><BurgaslocasMenu /></Suspense></ErrorBoundary>} />
+
+        <Route path="/aaah-carbon" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#121110]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6A00]" /></div>}><AaahCarbonMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/aaahcarbon" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#121110]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6A00]" /></div>}><AaahCarbonMenu /></Suspense></ErrorBoundary>} />
+
+        <Route path="/pinche-che" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#141210]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E0531B]" /></div>}><PincheCheMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/pincheche" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#141210]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E0531B]" /></div>}><PincheCheMenu /></Suspense></ErrorBoundary>} />
+
+        <Route path="/mesa-jarocha" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#07111E]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0084C7]" /></div>}><MesaJarochaMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/mesajarocha" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#07111E]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0084C7]" /></div>}><MesaJarochaMenu /></Suspense></ErrorBoundary>} />
 
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
