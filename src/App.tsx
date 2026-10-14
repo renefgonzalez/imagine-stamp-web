@@ -26,6 +26,7 @@ const BurgaslocasMenu = React.lazy(() => import('./modules/burgaslocas/pages/Bur
 const AaahCarbonMenu = React.lazy(() => import('./modules/aaah-carbon/pages/AaahCarbonMenu'));
 const PincheCheMenu = React.lazy(() => import('./modules/pinche-che/pages/PincheCheMenu'));
 const MesaJarochaMenu = React.lazy(() => import('./modules/mesa-jarocha/pages/MesaJarochaMenu'));
+const LaCuevaDelLoboMenu = React.lazy(() => import('./modules/la-cueva-del-lobo/pages/LaCuevaDelLoboMenu'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -831,6 +832,10 @@ export default function App() {
 
         <Route path="/mesa-jarocha" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#07111E]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0084C7]" /></div>}><MesaJarochaMenu /></Suspense></ErrorBoundary>} />
         <Route path="/mesajarocha" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#07111E]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0084C7]" /></div>}><MesaJarochaMenu /></Suspense></ErrorBoundary>} />
+
+        <Route path="/la-cueva-del-lobo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0E0D0B]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E08722]" /></div>}><LaCuevaDelLoboMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/lacuevadellobo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0E0D0B]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E08722]" /></div>}><LaCuevaDelLoboMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/cueva-del-lobo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0E0D0B]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E08722]" /></div>}><LaCuevaDelLoboMenu /></Suspense></ErrorBoundary>} />
 
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
