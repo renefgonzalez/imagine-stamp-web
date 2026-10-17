@@ -1,44 +1,67 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Download } from 'lucide-react';
+import { Download, Search, Sparkles, ChevronUp, MapPin, Phone, Mail, Instagram, Facebook } from 'lucide-react';
 // @ts-ignore
 import html2pdf from 'html2pdf.js';
 import CandymarPrintTemplate from './CandymarPrintTemplate';
-import { CATEGORIES, PRODUCTS, OctopusSVG, CrabSVG } from './CandymarData';
+import { CATEGORIES, PRODUCTS } from './CandymarData';
 import logo from '../assets/logo.png';
-import fondoHero from '../assets/fondo-hero.jpg';
+import pulpoReal from '../assets/pulpo-real.png';
+import cangrejoReal from '../assets/cangrejo-real.png';
 
-
-const OrnamentalDivider = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 300 40" fill="none">
-    {/* Línea central */}
-    <path d="M0 20 L300 20" stroke="currentColor" strokeWidth="0.8" opacity="0.25" />
-    {/* Flourishes */}
-    <path d="M50 10 Q55 20 50 30" stroke="currentColor" strokeWidth="1" opacity="0.2" fill="none" strokeLinecap="round" />
-    <path d="M100 10 Q105 20 100 30" stroke="currentColor" strokeWidth="1" opacity="0.2" fill="none" strokeLinecap="round" />
-    <path d="M150 10 Q155 20 150 30" stroke="currentColor" strokeWidth="1" opacity="0.2" fill="none" strokeLinecap="round" />
-    <path d="M200 10 Q205 20 200 30" stroke="currentColor" strokeWidth="1" opacity="0.2" fill="none" strokeLinecap="round" />
-    <path d="M250 10 Q255 20 250 30" stroke="currentColor" strokeWidth="1" opacity="0.2" fill="none" strokeLinecap="round" />
-  </svg>
+// ─── Linocut Waves Border (Borde de olas linograbado cian como en la foto) ───
+const LinocutWaveBorder = ({ className = "h-4 w-full" }: { className?: string }) => (
+  <div className={`overflow-hidden flex items-center justify-between text-[#00e5ff] select-none ${className}`}>
+    <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 22" fill="none">
+      {Array.from({ length: 55 }).map((_, i) => (
+        <path
+          key={i}
+          d={`M${i * 18 + 2} 19 L${i * 18 + 12} 3`}
+          stroke="currentColor"
+          strokeWidth="2.8"
+          strokeLinecap="round"
+          opacity="0.85"
+        />
+      ))}
+    </svg>
+  </div>
 );
 
-const DecorativeBorder = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 400 60" fill="none">
-    <g opacity="0.25">
-      <path d="M10 30 L30 20 L50 30 L70 20 L90 30 L110 20 L130 30 L150 20 L170 30 L190 20 L210 30 L230 20 L250 30 L270 20 L290 30 L310 20 L330 30 L350 20 L370 30 L390 20"
-            stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" />
-    </g>
-  </svg>
+// ─── Listón / Ribbon Plegado Cian (Idéntico a los encabezados de la foto) ───
+const CyanRibbonBanner = ({ title, subtitle }: { title: string; subtitle?: string }) => (
+  <div className="relative flex items-center mb-6 mt-3">
+    {/* Cuerpo principal del listón en cian eléctrico */}
+    <div
+      className="relative inline-flex items-center bg-[#00e5ff] text-[#0a0c10] px-5 sm:px-8 py-2 font-black tracking-widest uppercase shadow-[0_4px_16px_rgba(0,229,255,0.3)] z-10"
+      style={{ fontFamily: "'Oswald', sans-serif", fontSize: '15px' }}
+    >
+      <span className="flex items-center gap-2">
+        <span className="w-2 h-2 bg-[#0a0c10] rotate-45 inline-block" />
+        {title}
+      </span>
+      {subtitle && (
+        <span className="ml-3 text-[11px] font-semibold normal-case opacity-75 border-l border-[#0a0c10]/30 pl-2">
+          {subtitle}
+        </span>
+      )}
+
+      {/* Doblez 3D del listón en el extremo derecho */}
+      <div
+        className="absolute -right-3.5 top-0 bottom-0 w-3.5 bg-[#0092a8]"
+        style={{
+          clipPath: 'polygon(0 0, 100% 50%, 0 100%)',
+        }}
+      />
+    </div>
+
+    {/* Línea punteada de extensión hacia la derecha */}
+    <div className="flex-1 h-[2px] ml-5 border-b-2 border-dashed border-[#00e5ff]/40" />
+  </div>
 );
 
-const StarIcon = () => (
-  <svg className="h-3 w-3 inline" fill="currentColor" viewBox="0 0 20 20">
-    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-  </svg>
-);
-
-// ─── CSS ──────────────────────────────────────────────────────────────────────
-
+// ─── Estilos y Fuentes Google ────────────────────────────────────────────────
 const STYLES = `
+  @import url('https://fonts.googleapis.com/css2?family=Playball&family=Oswald:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=Caveat:wght@600;700&family=Cinzel:wght@700;900&display=swap');
+
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
@@ -48,7 +71,6 @@ const STYLES = `
     animation: fadeUp 0.4s ease-out forwards;
   }
 
-  /* Ocultar barra de scroll para un look más limpio y minimalista */
   .cat-scroll::-webkit-scrollbar {
     display: none;
   }
@@ -57,28 +79,43 @@ const STYLES = `
     scrollbar-width: none;
   }
 
-  /* Efecto Hover garantizado para los platillos */
-  .product-card {
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
+  /* Pizarra con sutil textura de gis / linograbado */
+  .chalkboard-bg {
+    background-color: #121316;
+    background-image: 
+      radial-gradient(ellipse at 50% 12%, rgba(28, 32, 42, 0.7) 0%, rgba(18, 19, 22, 0.95) 70%, #0d0e11 100%),
+      radial-gradient(circle at 10% 50%, rgba(0, 229, 255, 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(0, 229, 255, 0.03) 0%, transparent 40%);
   }
-  .product-card:hover {
-    background-color: #222;
-    border-color: #333;
+
+  /* Filtro cian eléctrico para bocetos como el pulpo del encabezado */
+  .sketch-cyan {
+    filter: invert(75%) sepia(85%) saturate(1476%) hue-rotate(143deg) brightness(105%) contrast(105%) drop-shadow(0 0 10px rgba(0, 229, 255, 0.45));
   }
-  .product-title, .product-price, .product-line {
-    transition: all 0.3s ease;
+
+  /* Filtro gis blanco para bocetos de apoyo */
+  .sketch-chalk {
+    filter: invert(1) brightness(1.2) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
   }
-  .product-card:hover .product-title,
-  .product-card:hover .product-price {
+
+  /* Hover interactivo para platillos */
+  .dish-row {
+    transition: all 0.25s ease;
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin: -6px -10px;
+  }
+  .dish-row:hover {
+    background-color: rgba(0, 229, 255, 0.05);
+  }
+  .dish-row:hover .dish-name,
+  .dish-row:hover .dish-price {
     color: #00e5ff !important;
   }
-  .product-card:hover .product-line {
-    border-color: #00e5ff !important;
+  .dish-row:hover .dish-dots {
+    border-color: rgba(0, 229, 255, 0.7) !important;
   }
 `;
-
-// ─── Componente ────────────────────────────────────────────────────────────────
 
 export default function CandymarMenu() {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
@@ -89,7 +126,8 @@ export default function CandymarMenu() {
   const filteredProducts = useMemo(
     () => PRODUCTS.filter(p => {
       const matchCat = selectedCategory === 'Todos' || p.category === selectedCategory;
-      const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          p.description.toLowerCase().includes(searchQuery.toLowerCase());
       return matchCat && matchSearch;
     }),
     [selectedCategory, searchQuery],
@@ -116,13 +154,12 @@ export default function CandymarMenu() {
 
       const opt = {
         margin:       0,
-        filename:     'Menu_Candymar.pdf',
+        filename:     'Menu_Candymar_Seafood.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      // Manejar la importación en Vite (puede exportarse bajo .default)
       const pdfGenerator = html2pdf.default ? html2pdf.default : html2pdf;
 
       pdfGenerator().set(opt).from(element).save().then(() => {
@@ -138,17 +175,14 @@ export default function CandymarMenu() {
     }
   };
 
-  const formatPrice = (p: number) =>
-    new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 }).format(p);
-
   useEffect(() => {
-    const onScroll = () => setShowScrollTop(window.scrollY > 500);
+    const onScroll = () => setShowScrollTop(window.scrollY > 400);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
-    <div className="font-sans" style={{ backgroundColor: '#1c1c1c', color: '#aaa' }}>
+    <div className="chalkboard-bg text-zinc-300 min-h-screen font-sans selection:bg-[#00e5ff] selection:text-black">
       <style>{STYLES}</style>
 
       {/* ─── PLANTILLA DE IMPRESIÓN (OCULTA) ─── */}
@@ -156,204 +190,387 @@ export default function CandymarMenu() {
         <CandymarPrintTemplate ref={printRef} />
       </div>
 
-      {/* ─── HEADER ─── */}
-      <header 
-        className="text-center pt-10 pb-8 px-4 relative overflow-hidden" 
-        style={{ 
-          borderBottom: '1px solid #333',
-          backgroundImage: `linear-gradient(rgba(28, 28, 28, 0.4), rgba(28, 28, 28, 0.4)), url(${fondoHero})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      >
+      {/* ─── BORDE DE OLAS SUPERIOR LINOGRABADO ─── */}
+      <LinocutWaveBorder className="h-5 opacity-90" />
 
-        <div className="flex justify-center mb-5 relative z-10">
-          <div className="h-16 w-16 rounded-full overflow-hidden border-2" style={{ borderColor: '#00e5ff' }}>
-            <img src={logo} alt="Candymar Logo" className="h-full w-full object-cover" />
-          </div>
+      {/* ─── ENCABEZADO PRINCIPAL (Estilo Portada & Menú de la imagen) ─── */}
+      <header className="relative pt-6 pb-10 px-4 overflow-hidden border-b border-zinc-800">
+        {/* Pulpo Gigante Cian en la esquina superior (como en la página de menú de la foto) */}
+        <div className="absolute -top-10 -right-12 md:right-10 w-72 md:w-96 pointer-events-none select-none z-0 opacity-40 md:opacity-65 sketch-cyan">
+          <img src={pulpoReal} alt="Octopus sketch" className="w-full h-auto" />
         </div>
 
-        <div className="relative z-10 inline-block border-2 px-8 sm:px-14 py-4 sm:py-5" style={{ borderColor: '#00e5ff' }}>
-          <h1 className="text-3xl sm:text-4xl italic mb-0.5" style={{ color: '#fff', fontFamily: 'Georgia, serif' }}>
-            Candymar
-          </h1>
-          <h2 className="text-4xl sm:text-6xl font-black uppercase tracking-wide leading-none"
-            style={{ color: '#fff', fontFamily: 'Impact, Arial Black, sans-serif', textShadow: '2px 2px 0 rgba(0,0,0,0.8)' }}>
-            MENU
-          </h2>
-          <div className="mt-4 flex items-center justify-center gap-2">
-            <span className="h-px w-8" style={{ backgroundColor: 'rgba(255,255,255,0.12)' }} />
-            <span className="text-gray-500 text-[11px] italic tracking-widest">Premium Quality</span>
-            <span className="h-px w-8" style={{ backgroundColor: 'rgba(255,255,255,0.12)' }} />
-          </div>
+        {/* Pulpo de apoyo tenue en la esquina izquierda inferior */}
+        <div className="absolute -bottom-16 -left-12 w-64 pointer-events-none select-none z-0 opacity-20 sketch-chalk hidden sm:block">
+          <img src={cangrejoReal} alt="Crab sketch" className="w-full h-auto" />
         </div>
 
+        <div className="max-w-4xl mx-auto relative z-10 text-center">
+          {/* Badge Superior "SEA FOOD / Sketch" */}
+          <div className="inline-flex flex-col items-center mb-6">
+            <div className="inline-flex flex-col items-center bg-[#00e5ff] text-[#0a0c10] px-7 py-2 shadow-[0_0_25px_rgba(0,229,255,0.4)] border border-[#00d0e7]">
+              <span className="text-xs font-black tracking-[0.25em] uppercase" style={{ fontFamily: "'Oswald', sans-serif" }}>
+                SEA FOOD
+              </span>
+              <span className="text-sm italic font-serif -mt-1 text-[#050709]" style={{ fontFamily: "'Playball', 'Caveat', cursive" }}>
+                Sketch & Sabor
+              </span>
+            </div>
+            {/* Olas decorativas miniatura bajo el badge */}
+            <div className="w-28 text-[#00e5ff] opacity-70 mt-1">
+              <svg viewBox="0 0 100 8" fill="none" className="w-full h-2">
+                <path d="M0 4 Q12.5 0 25 4 T50 4 T75 4 T100 4" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Marco Doble Cian de la Portada */}
+          <div className="relative border-2 border-[#00e5ff] px-6 sm:px-14 py-7 sm:py-9 bg-[#14161c]/90 backdrop-blur-md max-w-xl mx-auto shadow-[0_0_40px_rgba(0,229,255,0.18)]">
+            {/* Esquinas decorativas dobles */}
+            <div className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-[#00e5ff]" />
+            <div className="absolute -top-1.5 -right-1.5 w-3 h-3 border-t-2 border-r-2 border-[#00e5ff]" />
+            <div className="absolute -bottom-1.5 -left-1.5 w-3 h-3 border-b-2 border-l-2 border-[#00e5ff]" />
+            <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-[#00e5ff]" />
+
+            {/* Logo de Candymar */}
+            <div className="flex justify-center -mt-16 sm:-mt-20 mb-3">
+              <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden border-2 border-[#00e5ff] p-1 bg-[#121316] shadow-[0_0_25px_rgba(0,229,255,0.45)]">
+                <img src={logo} alt="Candymar Logo" className="h-full w-full object-cover rounded-full" />
+              </div>
+            </div>
+
+            {/* Título "Candymar" en tipografía Script */}
+            <h1 className="text-3xl sm:text-4xl italic text-white mb-0.5 tracking-wide" style={{ fontFamily: "'Playball', 'Georgia', serif" }}>
+              Candymar
+            </h1>
+
+            {/* Título "MENU" en bloque 3D vintage con sombra */}
+            <h2
+              className="text-5xl sm:text-7xl font-black uppercase tracking-wider text-white leading-none mb-3"
+              style={{
+                fontFamily: "'Impact', 'Oswald', sans-serif",
+                textShadow: '3px 4px 0 #000, 0 0 25px rgba(0,229,255,0.3)',
+              }}
+            >
+              MENU
+            </h2>
+
+            {/* Listón / Banner Vintage "Premium Quality" */}
+            <div className="inline-flex items-center gap-3 px-5 py-1 border border-[#00e5ff]/50 bg-[#181a21] text-[#00e5ff] text-[11px] sm:text-xs uppercase font-bold tracking-[0.25em] shadow-inner">
+              <span className="text-[#00e5ff]">★</span>
+              <span>PREMIUM QUALITY SEAFOOD</span>
+              <span className="text-[#00e5ff]">★</span>
+            </div>
+
+            {/* Anotaciones estilo tiza a mano como en la foto */}
+            <div className="mt-4 flex items-center justify-between text-xs text-zinc-400 font-serif italic px-2">
+              <span className="flex items-center gap-1 text-[#00e5ff]">
+                <span>~</span> Receta Colima & Sinaloa
+              </span>
+              <span className="text-[#00e5ff]">✦</span>
+              <span className="flex items-center gap-1 text-zinc-400">
+                100% Fresco de Temporada <span>~</span>
+              </span>
+            </div>
+          </div>
+        </div>
       </header>
 
-      {/* ─── CATEGORÍAS ─── */}
-      <div className="py-3" style={{ backgroundColor: '#1c1c1c', borderBottom: '1px solid #333' }}>
-        <div className="max-w-3xl mx-auto px-4 flex flex-nowrap gap-2 sm:gap-3 overflow-x-auto cat-scroll">
-          {CATEGORIES.map(cat => {
-            const active = selectedCategory === cat.name;
-            return (
-              <button key={cat.name} onClick={() => setSelectedCategory(cat.name)}
-                className="whitespace-nowrap px-5 py-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest transition-all duration-300 rounded-full"
-                style={{ 
-                  color: active ? '#000' : '#888', 
-                  backgroundColor: active ? '#00e5ff' : '#222', 
-                  border: `1px solid ${active ? '#00e5ff' : '#333'}`,
-                  boxShadow: active ? '0 0 10px rgba(0, 229, 255, 0.2)' : 'none'
-                }}>
-                {cat.name}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      {/* ─── BARRA STICKY DE CATEGORÍAS (Estilo Pizarra con Listones) ─── */}
+      <nav className="sticky top-0 z-40 bg-[#121316]/95 backdrop-blur-md border-b border-zinc-800 shadow-xl py-3 px-4">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 overflow-x-auto cat-scroll py-1 flex-1">
+            {CATEGORIES.map(cat => {
+              const active = selectedCategory === cat.name;
+              return (
+                <button
+                  key={cat.name}
+                  onClick={() => setSelectedCategory(cat.name)}
+                  className={`whitespace-nowrap px-4 sm:px-5 py-1.5 text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-all duration-200 rounded-sm relative ${
+                    active
+                      ? 'bg-[#00e5ff] text-[#0b0d10] shadow-[0_0_15px_rgba(0,229,255,0.4)] border border-[#00d0e7]'
+                      : 'bg-[#181a20] text-zinc-400 border border-zinc-700/60 hover:border-[#00e5ff]/50 hover:text-white'
+                  }`}
+                  style={{ fontFamily: "'Oswald', sans-serif" }}
+                >
+                  {cat.name}
+                  {active && (
+                    <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#00e5ff] rotate-45" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
 
-      {/* ─── BUSCADOR ─── */}
-      <div className="px-6 sm:px-10 pt-8 max-w-3xl mx-auto w-full">
-        <div className="relative">
+          {/* Botón rápido PDF */}
+          <button
+            onClick={handleDownloadPDF}
+            className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-[#00e5ff] border border-[#00e5ff]/40 bg-[#161820] hover:bg-[#00e5ff] hover:text-black transition-all rounded-sm shrink-0"
+            title="Descargar Menú PDF estilo Pizarra"
+          >
+            <Download size={14} />
+            <span>Descargar PDF</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* ─── BUSCADOR ESTILO PIZARRA CON DETALLES CIAN ─── */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-7">
+        <div className="relative max-w-lg mx-auto">
+          <Search className="w-5 h-5 text-[#00e5ff] absolute left-4 top-3.5 opacity-80" />
           <input
             type="text"
-            placeholder="Buscar platillo..."
+            placeholder="Buscar ceviche, taco, camarones, aguachile..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#111] border border-[#333] text-[#eee] px-4 py-3 pl-11 focus:outline-none focus:border-[#00e5ff] rounded-sm transition-colors"
+            className="w-full bg-[#161820] border-2 border-zinc-700 focus:border-[#00e5ff] text-white text-sm px-4 py-3 pl-11 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#00e5ff]/20 placeholder-zinc-500 transition-all font-sans"
           />
-          <svg className="w-5 h-5 text-[#666] absolute left-4 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-3 text-xs text-zinc-400 hover:text-white px-2 py-1 bg-zinc-800 rounded"
+            >
+              Borrar
+            </button>
+          )}
         </div>
       </div>
 
-      {/* ─── MENÚ ─── */}
-      <main className="max-w-3xl mx-auto px-6 sm:px-10 pt-8 pb-24 w-full">
+      {/* ─── CONTENIDO PRINCIPAL: LAYOUT SPLIT CON "CHOICE OF THE DAY" ─── */}
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-24">
         {Object.keys(groupedProducts).length === 0 ? (
-          <p className="text-center py-20 text-gray-500 text-lg">No se encontraron productos</p>
+          <div className="text-center py-24 border border-dashed border-zinc-800 rounded-lg max-w-md mx-auto my-10">
+            <p className="text-zinc-500 text-lg mb-2">No encontramos platillos con "{searchQuery}"</p>
+            <button
+              onClick={() => { setSearchQuery(''); setSelectedCategory('Todos'); }}
+              className="text-[#00e5ff] underline text-sm hover:text-white"
+            >
+              Ver todo el menú
+            </button>
+          </div>
         ) : (
-          <div className="flex flex-col gap-14">
-            {Object.entries(groupedProducts).map(([category, products], catIndex) => (
-              <section key={category}>
-                {catIndex > 0 && (
-                  <OrnamentalDivider className="w-64 mx-auto mb-10 text-[#00e5ff] opacity-40" />
-                )}
-                <div className="flex items-center justify-center gap-4 mb-8">
-                  <div className="w-12 h-[1px] bg-gray-700"></div>
-                  <h3 className="font-black uppercase tracking-widest text-base px-6 py-2" style={{ backgroundColor: '#00e5ff', color: '#111' }}>
-                    {category}
-                  </h3>
-                  <div className="w-12 h-[1px] bg-gray-700"></div>
-                </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            {/* Columna Izquierda / Principal: Categorías y Platillos */}
+            <div className="lg:col-span-8 flex flex-col gap-12">
+              {Object.entries(groupedProducts).map(([category, products]) => (
+                <section key={category} className="relative">
+                  {/* Listón Cian de Categoría (Idéntico a la imagen) */}
+                  <CyanRibbonBanner title={category} />
 
-                <div className="flex flex-col gap-7">
-                  {products.map((product, i) => (
-                    <article key={product.id} className="fade-item product-card p-3 sm:p-4 -mx-3 sm:-mx-4 rounded-xl cursor-default" style={{ animationDelay: `${i * 70}ms` }}>
-                      <div className="flex items-end gap-3">
-                        <h4 className="product-title font-bold text-lg sm:text-xl shrink-0 text-white" style={{ fontFamily: 'Georgia, serif' }}>
-                          {product.name}
-                        </h4>
-                        <span className="product-line flex-1 mb-1.5 opacity-60 border-b-2 border-dotted border-[#777]" />
-                        <span className="product-price font-bold text-lg sm:text-xl shrink-0 text-white" style={{ fontFamily: 'Georgia, serif' }}>
-                          ${product.price.toFixed(2)}
-                        </span>
-                      </div>
+                  {/* Lista de Platillos con línea punteada */}
+                  <div className="flex flex-col gap-6 pl-1 sm:pl-2">
+                    {products.map((product, i) => (
+                      <article
+                        key={product.id}
+                        className="fade-item dish-row group cursor-default"
+                        style={{ animationDelay: `${i * 60}ms` }}
+                      >
+                        {/* Fila: Nombre .......... Precio */}
+                        <div className="flex items-end justify-between gap-2">
+                          <h3
+                            className="dish-name font-bold text-lg sm:text-xl text-white shrink-0 tracking-wide"
+                            style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}
+                          >
+                            {product.name}
+                          </h3>
 
-                      <div className="flex justify-between items-start mt-1.5">
-                        <p className="text-gray-400 text-sm leading-snug italic">
-                          {product.description}
-                        </p>
-                        {product.featured && (
-                          <span className="text-[10px] uppercase font-bold tracking-[0.15em] px-2 py-0.5 ml-3 shrink-0 flex items-center gap-1" style={{ color: '#00e5ff', border: '1px solid rgba(0,229,255,0.4)' }}>
-                            <StarIcon /> Especial
+                          {/* Línea punteada de tiza que conecta nombre y precio */}
+                          <span className="dish-dots flex-1 mx-2 mb-1.5 border-b-2 border-dotted border-zinc-700" />
+
+                          <span
+                            className="dish-price font-bold text-lg sm:text-xl text-white shrink-0 tracking-tight"
+                            style={{ fontFamily: "'Oswald', sans-serif" }}
+                          >
+                            ${product.price.toFixed(2)}
                           </span>
-                        )}
-                      </div>
-                    </article>
-                  ))}
+                        </div>
+
+                        {/* Descripción y Badge Especial */}
+                        <div className="flex justify-between items-start mt-1 gap-4">
+                          <p className="text-zinc-400 text-xs sm:text-sm italic leading-relaxed font-serif">
+                            {product.description}
+                          </p>
+                          {product.featured && (
+                            <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#00e5ff] bg-[#00e5ff]/10 border border-[#00e5ff]/40 px-2 py-0.5 rounded-sm">
+                              <Sparkles size={11} className="text-[#00e5ff]" />
+                              Especial
+                            </span>
+                          )}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+
+            {/* Columna Derecha: "CHOICE OF THE DAY" con bocetos estilo gis (Exacto a la foto) */}
+            <aside className="lg:col-span-4 hidden lg:flex flex-col gap-8 border-l border-dashed border-zinc-700/80 pl-8">
+              {/* Tarjeta 1: Choice of the Day - Pulpo */}
+              <div className="border border-zinc-800 bg-[#161820]/60 p-5 rounded-sm text-center relative overflow-hidden">
+                <div className="inline-block border-b border-[#00e5ff] pb-1 mb-3">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#00e5ff]" style={{ fontFamily: "'Oswald', sans-serif" }}>
+                    CHOICE OF THE DAY
+                  </span>
                 </div>
-              </section>
-            ))}
+                <h4 className="text-white text-xl font-bold font-serif mb-2">
+                  Especialidad de la Casa
+                </h4>
+                <div className="w-48 h-48 mx-auto my-2 sketch-chalk opacity-90">
+                  <img src={pulpoReal} alt="Octopus sketch" className="w-full h-full object-contain" />
+                </div>
+                <p className="text-xs text-zinc-400 italic font-serif leading-relaxed">
+                  "Mariscos preparados al momento con ingredientes frescos, salsas artesanales y el toque tradicional de la costa."
+                </p>
+                <div className="mt-4 pt-3 border-t border-zinc-800 text-[11px] text-[#00e5ff] uppercase tracking-wider font-bold">
+                  ✦ Garantía de Calidad
+                </div>
+              </div>
+
+              {/* Tarjeta 2: Choice of the Day - Cangrejo */}
+              <div className="border border-zinc-800 bg-[#161820]/60 p-5 rounded-sm text-center relative overflow-hidden">
+                <div className="inline-block border-b border-[#00e5ff] pb-1 mb-3">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#00e5ff]" style={{ fontFamily: "'Oswald', sans-serif" }}>
+                    RECOMENDACIÓN DEL CHEF
+                  </span>
+                </div>
+                <h4 className="text-white text-xl font-bold font-serif mb-2">
+                  Sabor Tradicional
+                </h4>
+                <div className="w-44 h-44 mx-auto my-2 sketch-chalk opacity-90">
+                  <img src={cangrejoReal} alt="Crab sketch" className="w-full h-full object-contain" />
+                </div>
+                <p className="text-xs text-zinc-400 italic font-serif leading-relaxed">
+                  "Prueba nuestros aguachiles negros y verdes marinados en limón persa con chile serrano y guajillo."
+                </p>
+                <div className="mt-4 pt-3 border-t border-zinc-800 text-[11px] text-[#00e5ff] uppercase tracking-wider font-bold">
+                  ✦ Estilo Colima & Sinaloa
+                </div>
+              </div>
+
+              {/* Horario y Servicio */}
+              <div className="border border-[#00e5ff]/30 bg-[#00e5ff]/5 p-5 text-center">
+                <p className="text-xs font-bold uppercase tracking-widest text-[#00e5ff] mb-1">
+                  HORARIO DE SERVICIO
+                </p>
+                <p className="text-white text-sm font-serif">Miércoles a Lunes</p>
+                <p className="text-zinc-400 text-xs mt-0.5">11:00 AM – 7:00 PM</p>
+                <p className="text-[11px] text-[#00e5ff] mt-3 font-semibold">
+                  Servicio para comer aquí & para llevar
+                </p>
+              </div>
+            </aside>
           </div>
         )}
-
-        <div className="my-16">
-          <OrnamentalDivider className="w-80 mx-auto text-[#00e5ff]" />
-        </div>
       </main>
 
-      {/* ─── FOOTER ─── */}
-      <footer className="py-12 mt-auto" style={{ backgroundColor: '#111', borderTop: '1px solid #333' }}>
-         <div className="max-w-5xl mx-auto px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10 text-left">
-               {/* Columna 1: Candymar */}
-               <div>
-                  <h3 className="text-[#00e5ff] font-bold text-xl mb-4 font-serif">Candymar</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">
-                     Los mariscos más frescos de la región, preparados con recetas tradicionales de Colima y Sinaloa. Calidad y sabor que nos distinguen.
-                  </p>
-               </div>
-               
-               {/* Columna 2: Contacto */}
-               <div>
-                  <h3 className="text-[#00e5ff] font-bold text-xl mb-4 font-serif">Contacto</h3>
-                  <ul className="space-y-4 text-gray-400 text-sm">
-                     <li className="flex items-center gap-3">
-                        <svg className="w-5 h-5 text-[#00e5ff] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <span>Av. Ignacio Sandoval #1401</span>
-                     </li>
-                     <li className="flex items-center gap-3">
-                        <svg className="w-5 h-5 text-[#00e5ff] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                        <span>(312) 123-4567</span>
-                     </li>
-                     <li className="flex items-center gap-3">
-                        <svg className="w-5 h-5 text-[#00e5ff] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                        <span>contacto@candymar.com</span>
-                     </li>
-                  </ul>
-               </div>
+      {/* ─── BORDE DE OLAS INFERIOR LINOGRABADO ─── */}
+      <LinocutWaveBorder className="h-5 opacity-90 rotate-180" />
 
-               {/* Columna 3: Síguenos */}
-               <div>
-                  <h3 className="text-[#00e5ff] font-bold text-xl mb-4 font-serif">Síguenos</h3>
-                  <div className="flex gap-4">
-                     <a href="#" className="w-10 h-10 rounded-full bg-[#1a1a1a] flex items-center justify-center text-[#00e5ff] hover:bg-[#00e5ff] hover:text-black transition-colors border border-[#00e5ff]/30">
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                     </a>
-                     <a href="#" className="w-10 h-10 rounded-full bg-[#1a1a1a] flex items-center justify-center text-[#00e5ff] hover:bg-[#00e5ff] hover:text-black transition-colors border border-[#00e5ff]/30">
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                     </a>
-                  </div>
-               </div>
+      {/* ─── FOOTER ESTILO PIZARRA CON DETALLES CIAN ─── */}
+      <footer className="bg-[#0e0f12] border-t border-zinc-800 pt-12 pb-8 px-4 text-zinc-400">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10 text-left">
+            {/* Columna 1: Candymar */}
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full border border-[#00e5ff] p-0.5 bg-black overflow-hidden">
+                  <img src={logo} alt="Candymar Logo" className="w-full h-full object-cover rounded-full" />
+                </div>
+                <h3 className="text-[#00e5ff] font-bold text-2xl font-serif" style={{ fontFamily: "'Playball', 'Georgia', serif" }}>
+                  Candymar
+                </h3>
+              </div>
+              <p className="text-zinc-400 text-xs leading-relaxed font-serif">
+                Los mariscos más frescos preparados con recetas tradicionales de Colima y Sinaloa. Ceviches, tacos dorados, camarones y aguachiles con sazón inigualable.
+              </p>
+              <div className="mt-4 inline-flex items-center gap-2 text-[11px] text-[#00e5ff] border border-[#00e5ff]/30 bg-[#00e5ff]/5 px-3 py-1">
+                <span>✦</span>
+                <span>Calidad & Frescura Garantizada</span>
+              </div>
             </div>
 
-            {/* Créditos IMAGINE & STAMP y botón secreto de descarga */}
-            <div className="mt-12 pt-6 border-t border-[#333] flex justify-between items-center px-4">
-               <button 
-                 onClick={handleDownloadPDF}
-                 className="p-2 text-[#222] hover:text-[#555] transition-colors"
-                 title="Descargar Menú PDF (Uso Interno)"
-               >
-                 <Download size={14} />
-               </button>
-               <p className="text-gray-500 text-xs">
-                  Diseñado por <span className="text-gray-300 font-bold">IMAGINE & STAMP</span>
-               </p>
-               <div className="w-8"></div> {/* Spacer for centering the text */}
+            {/* Columna 2: Contacto & Ubicación */}
+            <div>
+              <h4 className="text-[#00e5ff] font-bold text-sm uppercase tracking-widest mb-4" style={{ fontFamily: "'Oswald', sans-serif" }}>
+                Contacto & Visítanos
+              </h4>
+              <ul className="space-y-3 text-xs text-zinc-300">
+                <li className="flex items-start gap-2.5">
+                  <MapPin size={16} className="text-[#00e5ff] shrink-0 mt-0.5" />
+                  <span>Av. Ignacio Sandoval #1401, Colima</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <Phone size={16} className="text-[#00e5ff] shrink-0" />
+                  <span>(312) 123-4567</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <Mail size={16} className="text-[#00e5ff] shrink-0" />
+                  <span>contacto@candymar.com</span>
+                </li>
+              </ul>
             </div>
-         </div>
+
+            {/* Columna 3: Síguenos & PDF */}
+            <div>
+              <h4 className="text-[#00e5ff] font-bold text-sm uppercase tracking-widest mb-4" style={{ fontFamily: "'Oswald', sans-serif" }}>
+                Síguenos & Descarga
+              </h4>
+              <p className="text-xs text-zinc-400 mb-4">
+                Consulta nuestras novedades y platillos del día en nuestras redes sociales oficiales.
+              </p>
+              <div className="flex items-center gap-3 mb-5">
+                <a
+                  href="#facebook"
+                  onClick={(e) => e.preventDefault()}
+                  className="w-9 h-9 rounded-full bg-zinc-900 border border-[#00e5ff]/40 flex items-center justify-center text-[#00e5ff] hover:bg-[#00e5ff] hover:text-black transition-colors"
+                  aria-label="Facebook"
+                >
+                  <Facebook size={16} />
+                </a>
+                <a
+                  href="#instagram"
+                  onClick={(e) => e.preventDefault()}
+                  className="w-9 h-9 rounded-full bg-zinc-900 border border-[#00e5ff]/40 flex items-center justify-center text-[#00e5ff] hover:bg-[#00e5ff] hover:text-black transition-colors"
+                  aria-label="Instagram"
+                >
+                  <Instagram size={16} />
+                </a>
+              </div>
+              <button
+                onClick={handleDownloadPDF}
+                className="w-full py-2.5 px-4 bg-[#00e5ff] text-black font-bold uppercase tracking-wider text-xs rounded-sm hover:bg-[#00cbe3] transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(0,229,255,0.3)]"
+                style={{ fontFamily: "'Oswald', sans-serif" }}
+              >
+                <Download size={14} />
+                <span>Descargar Menú PDF (Pizarra)</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Créditos de Imagine & Stamp */}
+          <div className="pt-6 border-t border-zinc-800 text-center text-xs text-zinc-500 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p>© {new Date().getFullYear()} Candymar. Todos los derechos reservados.</p>
+            <p>
+              Menú Digital interactivo diseñado por{' '}
+              <a href="https://imagineandstamp.site" target="_blank" rel="noreferrer" className="text-[#00e5ff] font-bold hover:underline">
+                IMAGINE & STAMP
+              </a>
+            </p>
+          </div>
+        </div>
       </footer>
 
-      {/* ─── VOLVER ARRIBA ─── */}
+      {/* ─── BOTÓN VOLVER ARRIBA ─── */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={`fixed bottom-0 right-0 z-50 h-12 w-12 sm:h-14 sm:w-14 flex items-center justify-center transition-all duration-300 shadow-[0_0_15px_rgba(0,0,0,0.5)] hover:bg-cyan-400 ${showScrollTop ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'}`}
+        className={`fixed bottom-6 right-6 z-50 h-11 w-11 sm:h-12 sm:w-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_0_20px_rgba(0,229,255,0.4)] ${
+          showScrollTop ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'
+        }`}
         style={{ backgroundColor: '#00e5ff', color: '#000' }}
-        aria-label="Volver arriba">
-        <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" />
-        </svg>
+        aria-label="Volver arriba"
+      >
+        <ChevronUp size={24} strokeWidth={2.5} />
       </button>
     </div>
   );
