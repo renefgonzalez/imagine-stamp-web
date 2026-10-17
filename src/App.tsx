@@ -27,6 +27,7 @@ const AaahCarbonMenu = React.lazy(() => import('./modules/aaah-carbon/pages/Aaah
 const PincheCheMenu = React.lazy(() => import('./modules/pinche-che/pages/PincheCheMenu'));
 const MesaJarochaMenu = React.lazy(() => import('./modules/mesa-jarocha/pages/MesaJarochaMenu'));
 const LaCuevaDelLoboMenu = React.lazy(() => import('./modules/la-cueva-del-lobo/pages/LaCuevaDelLoboMenu'));
+const CandymarMenu = React.lazy(() => import('./modules/candymar/pages/CandymarMenu'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -836,6 +837,10 @@ export default function App() {
         <Route path="/la-cueva-del-lobo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0E0D0B]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E08722]" /></div>}><LaCuevaDelLoboMenu /></Suspense></ErrorBoundary>} />
         <Route path="/lacuevadellobo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0E0D0B]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E08722]" /></div>}><LaCuevaDelLoboMenu /></Suspense></ErrorBoundary>} />
         <Route path="/cueva-del-lobo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0E0D0B]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E08722]" /></div>}><LaCuevaDelLoboMenu /></Suspense></ErrorBoundary>} />
+
+        <Route path="/candymar" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#1c1c1c]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00e5ff]" /></div>}><CandymarMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/candymarmenu" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#1c1c1c]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00e5ff]" /></div>}><CandymarMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/candymar-menu" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#1c1c1c]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00e5ff]" /></div>}><CandymarMenu /></Suspense></ErrorBoundary>} />
 
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
