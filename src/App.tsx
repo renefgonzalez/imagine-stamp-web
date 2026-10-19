@@ -29,6 +29,7 @@ const MesaJarochaMenu = React.lazy(() => import('./modules/mesa-jarocha/pages/Me
 const LaCuevaDelLoboMenu = React.lazy(() => import('./modules/la-cueva-del-lobo/pages/LaCuevaDelLoboMenu'));
 const CandymarMenu = React.lazy(() => import('./modules/candymar/pages/CandymarMenu'));
 const StrongGymMenu = React.lazy(() => import('./modules/strong-gym/pages/StrongGymMenu'));
+const IronPlan = React.lazy(() => import('./modules/iron-plan/pages/IronPlan'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -846,6 +847,8 @@ export default function App() {
         <Route path="/strong-gym" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><StrongGymMenu /></Suspense></ErrorBoundary>} />
         <Route path="/stronggym" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><StrongGymMenu /></Suspense></ErrorBoundary>} />
         <Route path="/strong-gym-ironcity" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><StrongGymMenu /></Suspense></ErrorBoundary>} />
+          <Route path="/iron-plan" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><IronPlan /></Suspense></ErrorBoundary>} />
+          <Route path="/strong-gym-rutinas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><IronPlan /></Suspense></ErrorBoundary>} />
 
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
