@@ -3,6 +3,7 @@
 
 export type GymCategoryId =
   | 'todos'
+  | 'ofertas-mes'
   | 'membresias'
   | 'shakes-barra'
   | 'proteinas'
@@ -15,6 +16,7 @@ export interface SizeOption {
   id: string;
   label: string; // ej. '2 lbs (907g)' | '5 lbs (2.27kg)' | '1 Mes' | '1 Litro'
   price: number;
+  originalPrice?: number; // Para mostrar descuento tachado
   sublabel?: string;
 }
 
@@ -35,10 +37,13 @@ export interface Product {
   name: string;
   description: string;
   price: number;
+  originalPrice?: number; // Precio regular tachado para ofertas especiales
+  discountBadge?: string; // ej. '-20%', 'AHORRA $350'
   category: GymCategoryId;
   image?: string;
   featured?: boolean;
-  badge?: 'mas-vendido' | 'recomendado' | 'promo' | 'barra-shake' | 'nuevo';
+  isMonthlyOffer?: boolean; // Destacado en carrusel de Ofertas del Mes
+  badge?: 'mas-vendido' | 'recomendado' | 'promo' | 'barra-shake' | 'nuevo' | 'oferta';
   badgeText?: string;
   sizes?: SizeOption[];
   variants?: VariantOption[]; // Sabores o presentaciones
@@ -55,6 +60,7 @@ export interface CartItem {
   category: GymCategoryId;
   detail: string; // Resumen legible de sabor, tamaño, extras
   unitPrice: number;
+  originalPrice?: number;
   quantity: number;
   image?: string;
 }

@@ -8,7 +8,7 @@ import {
   Dumbbell, Flame, Sparkles, Search, ShoppingBag, MapPin,
   Clock, Phone, MessageCircle, ShieldCheck, ChevronRight,
   Heart, X, Check, Star, Info, ArrowUp, Trophy, Zap,
-  Facebook, Instagram, ExternalLink, ShieldAlert
+  Facebook, Instagram, ExternalLink, ShieldAlert, Tag, Percent
 } from 'lucide-react';
 
 import { Product, GymCategoryId, CartItem } from '../types';
@@ -64,6 +64,12 @@ export default function StrongGymMenu() {
   const cartTotal = useMemo(
     () => cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0),
     [cart]
+  );
+
+  // Ofertas del Mes (para la sección especial destacada)
+  const monthlyOffers = useMemo(
+    () => PRODUCTS.filter((p) => p.isMonthlyOffer || p.category === 'ofertas-mes'),
+    []
   );
 
   // Filtrado de productos por categoría y búsqueda
@@ -275,6 +281,118 @@ export default function StrongGymMenu() {
         </div>
       </section>
 
+      {/* ── SECCIÓN DESTACADA: 🔥 OFERTAS ESPECIALES DEL MES ── */}
+      {selectedCategory === 'todos' && searchQuery === '' && monthlyOffers.length > 0 && (
+        <section className="border-b border-white/10 bg-gradient-to-b from-red-950/20 via-[#0E0E0E] to-[#0A0A0A] py-8">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-xl bg-red-600 flex items-center justify-center shadow-lg shadow-red-600/50">
+                  <Flame size={18} className="text-white animate-pulse" />
+                </span>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-black uppercase text-white tracking-wide">
+                    Ofertas Especiales del Mes
+                  </h3>
+                  <p className="text-xs text-red-400 font-semibold">
+                    Precios rebajados por tiempo limitado · ¡Ahorra antes de que se agoten!
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setSelectedCategory('ofertas-mes')}
+                className="text-xs text-gray-400 hover:text-white font-bold flex items-center gap-1 hidden sm:flex"
+              >
+                Ver todas las ofertas <ChevronRight size={14} />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {monthlyOffers.map((product) => (
+                <div
+                  key={`monthly-${product.id}`}
+                  className="rounded-2xl bg-[#141414] border-2 border-red-600/40 hover:border-red-500 p-4 flex flex-col justify-between shadow-xl shadow-red-950/30 group transition-all"
+                >
+                  <div>
+                    {/* Badge de Ahorro y Descuento */}
+                    <div className="flex items-center justify-between mb-2">
+                      {product.discountBadge ? (
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-600 text-white shadow-md shadow-red-600/40">
+                          {product.discountBadge}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-600/20 text-red-400 border border-red-500/30">
+                          OFERTA
+                        </span>
+                      )}
+                      <span className="text-[10px] font-bold text-gray-400">
+                        Solo este mes
+                      </span>
+                    </div>
+
+                    {/* Imagen del Producto en Oferta */}
+                    {product.image && (
+                      <div className="w-full h-36 rounded-xl bg-white/[0.02] border border-white/5 p-2 flex items-center justify-center overflow-hidden mb-3 group-hover:border-red-500/30 transition-all">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          loading="lazy"
+                          className="max-h-full max-w-full object-contain transform group-hover:scale-110 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+
+                    <h4 className="text-sm font-black text-white group-hover:text-red-400 uppercase leading-snug line-clamp-2">
+                      {product.name}
+                    </h4>
+
+                    <p className="text-[11px] text-gray-400 mt-1 leading-relaxed line-clamp-2">
+                      {product.description}
+                    </p>
+                  </div>
+
+                  <div className="pt-3 mt-3 border-t border-white/5 flex items-center justify-between">
+                    <div>
+                      {product.originalPrice && (
+                        <span className="text-[11px] line-through text-gray-500 font-bold block">
+                          ${product.originalPrice} MXN
+                        </span>
+                      )}
+                      <span className="text-base font-black text-red-400">
+                        ${product.price} <span className="text-[10px] text-white">MXN</span>
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        if (product.isCustomizable) {
+                          setCustomizingProduct(product);
+                        } else {
+                          handleAddToCart({
+                            productId: product.id,
+                            name: product.name,
+                            category: product.category,
+                            detail: product.servingInfo || 'Oferta Especial del Mes',
+                            unitPrice: product.price,
+                            originalPrice: product.originalPrice,
+                            quantity: 1,
+                            image: product.image,
+                          });
+                        }
+                      }}
+                      className="py-2 px-3 bg-red-600 hover:bg-red-500 text-white font-black text-[11px] uppercase rounded-xl shadow-md shadow-red-950/40 active:scale-95 transition-all"
+                    >
+                      Aprovechar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ── BARRA DE BÚSQUEDA Y CATEGORÍAS (STICKY) ── */}
       <section className="sticky top-16 sm:top-20 z-30 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/10 py-3">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-3">
@@ -283,7 +401,7 @@ export default function StrongGymMenu() {
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
             <input
               type="text"
-              placeholder="Buscar proteínas, creatinas, shakes al momento, pases o ropa..."
+              placeholder="Buscar proteínas, creatinas, shakes al momento, pases o suplementos..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-red-500 transition-colors"
@@ -302,6 +420,7 @@ export default function StrongGymMenu() {
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth snap-x">
             {CATEGORIES.map((cat) => {
               const isActive = selectedCategory === cat.id;
+              const isOffers = cat.id === 'ofertas-mes';
               return (
                 <button
                   key={cat.id}
@@ -309,13 +428,16 @@ export default function StrongGymMenu() {
                     setSelectedCategory(cat.id as GymCategoryId);
                     setSearchQuery('');
                   }}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap snap-start transition-all ${
+                  className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap snap-start transition-all flex items-center gap-1.5 ${
                     isActive
                       ? 'bg-red-600 text-white shadow-lg shadow-red-950/50'
+                      : isOffers
+                      ? 'bg-red-950/40 text-red-400 border border-red-500/40 hover:bg-red-600 hover:text-white'
                       : 'bg-white/[0.03] text-gray-400 hover:text-white hover:bg-white/[0.08] border border-white/5'
                   }`}
                 >
-                  {cat.label}
+                  {isOffers && <Flame size={13} className="text-red-500" />}
+                  <span>{cat.label}</span>
                 </button>
               );
             })}
@@ -323,16 +445,17 @@ export default function StrongGymMenu() {
         </div>
       </section>
 
-      {/* ── LISTADO DE PRODUCTOS ── */}
+      {/* ── LISTADO GENERAL DE PRODUCTOS CON IMÁGENES ── */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* Encabezado de Sección */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl sm:text-2xl font-black uppercase tracking-wide text-white">
-              {CATEGORIES.find((c) => c.id === selectedCategory)?.label || 'Catálogo'}
+            <h2 className="text-xl sm:text-2xl font-black uppercase tracking-wide text-white flex items-center gap-2">
+              {selectedCategory === 'ofertas-mes' && <Flame className="text-red-500" />}
+              <span>{CATEGORIES.find((c) => c.id === selectedCategory)?.label || 'Catálogo'}</span>
             </h2>
             <p className="text-xs text-gray-400 mt-0.5">
-              Mostrando {filteredProducts.length} producto{filteredProducts.length === 1 ? '' : 's'} disponibles
+              Mostrando {filteredProducts.length} producto{filteredProducts.length === 1 ? '' : 's'} disponibles con precios transparentes
             </p>
           </div>
 
@@ -346,7 +469,7 @@ export default function StrongGymMenu() {
           )}
         </div>
 
-        {/* Grid de Productos */}
+        {/* Grid de Productos con Imágenes */}
         {filteredProducts.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
             <Dumbbell size={40} className="mx-auto text-gray-600 mb-3" />
@@ -371,14 +494,35 @@ export default function StrongGymMenu() {
                   layout
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="group relative rounded-2xl bg-[#141414] border border-white/5 hover:border-red-600/40 hover:shadow-xl hover:shadow-red-950/20 p-5 flex flex-col justify-between transition-all duration-300"
+                  className={`group relative rounded-2xl bg-[#141414] border p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 ${
+                    product.category === 'ofertas-mes' || product.originalPrice
+                      ? 'border-red-600/40 hover:border-red-500 hover:shadow-xl hover:shadow-red-950/30'
+                      : 'border-white/5 hover:border-red-600/40 hover:shadow-xl hover:shadow-red-950/20'
+                  }`}
                 >
-                  {/* Top: Badges y Título */}
+                  {/* Imagen y Badges */}
                   <div>
-                    <div className="flex items-center justify-between gap-2 mb-2.5">
+                    {product.image && (
+                      <div className="w-full h-44 rounded-xl bg-white/[0.02] border border-white/5 p-3 flex items-center justify-center overflow-hidden mb-3.5 relative group-hover:border-red-500/30 transition-all">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          loading="lazy"
+                          className="max-h-full max-w-full object-contain transform group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {product.discountBadge && (
+                          <span className="absolute top-2.5 left-2.5 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-600 text-white shadow-md shadow-red-950/50">
+                            {product.discountBadge}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Badges de Categoría y Serving */}
+                    <div className="flex items-center justify-between gap-2 mb-2">
                       {product.badgeText ? (
                         <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-red-600/20 text-red-400 border border-red-500/30 flex items-center gap-1">
-                          <Flame size={12} className="text-red-500" />
+                          <Flame size={11} className="text-red-500" />
                           {product.badgeText}
                         </span>
                       ) : (
@@ -403,15 +547,28 @@ export default function StrongGymMenu() {
                     </p>
                   </div>
 
-                  {/* Bottom: Precio y Botón Agregar / Personalizar */}
-                  <div className="pt-5 mt-4 border-t border-white/5 flex items-center justify-between">
+                  {/* Precios (Normal y Descuento) y Botón */}
+                  <div className="pt-4 mt-4 border-t border-white/5 flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-gray-500 block">
-                        {product.sizes ? 'Desde' : 'Precio'}
-                      </span>
-                      <span className="text-lg font-black text-white tracking-tight">
-                        ${product.price} <span className="text-xs font-bold text-red-500">MXN</span>
-                      </span>
+                      {product.originalPrice ? (
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="text-xs line-through text-gray-500 font-bold">
+                            ${product.originalPrice}
+                          </span>
+                          <span className="text-lg font-black text-red-400 tracking-tight">
+                            ${product.price} <span className="text-xs font-bold text-white">MXN</span>
+                          </span>
+                        </div>
+                      ) : (
+                        <div>
+                          <span className="text-[10px] uppercase font-bold text-gray-500 block">
+                            {product.sizes ? 'Desde' : 'Precio Fijo'}
+                          </span>
+                          <span className="text-lg font-black text-white tracking-tight">
+                            ${product.price} <span className="text-xs font-bold text-red-500">MXN</span>
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     <button
@@ -423,9 +580,11 @@ export default function StrongGymMenu() {
                             productId: product.id,
                             name: product.name,
                             category: product.category,
-                            detail: product.servingInfo || 'Presentación estándar',
+                            detail: product.servingInfo || 'Presentación oficial',
                             unitPrice: product.price,
+                            originalPrice: product.originalPrice,
                             quantity: 1,
+                            image: product.image,
                           });
                         }
                       }}

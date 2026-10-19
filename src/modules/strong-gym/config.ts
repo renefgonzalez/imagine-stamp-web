@@ -4,6 +4,24 @@
 
 import { Product } from './types';
 
+// Importación de imágenes de productos locales optimizadas en WebP
+import imgGoldStandard from './assets/products/gold-standard-whey.webp';
+import imgIso100 from './assets/products/dymatize-iso-100.webp';
+import imgMutantMass from './assets/products/mutant-mass.webp';
+import imgCreatineGat from './assets/products/creatine-gat.webp';
+import imgCreatineRonnie from './assets/products/creatine-ronnie.webp';
+import imgC4 from './assets/products/c4-original.webp';
+import imgPsychotic from './assets/products/psychotic.webp';
+import imgPsychoticGold from './assets/products/psychotic-gold.webp';
+import imgXtendBcaa from './assets/products/xtend-bcaa.webp';
+import imgCarnitina from './assets/products/carnitina-3000.webp';
+import imgLipo6 from './assets/products/lipo-6-black.webp';
+import imgAnimalPak from './assets/products/animal-pak.webp';
+import imgStraps from './assets/products/straps-gym.webp';
+import imgCinturon from './assets/products/cinturon-cuero.webp';
+import imgShake from './assets/products/shake-proteina.webp';
+import imgMembresia from './assets/products/membresia-vip.webp';
+
 export const clientConfig = {
   businessName: 'Strong Gym Iron City',
   shortName: 'Strong Gym',
@@ -85,7 +103,8 @@ export const bankInfo = {
 
 // ── Categorías con Identidad Deportiva ───────────────────────────────────────
 export const CATEGORIES = [
-  { id: 'todos', label: '🔥 Todo el Catálogo', shortLabel: 'Todos' },
+  { id: 'todos', label: '⚡ Todo el Catálogo', shortLabel: 'Todos' },
+  { id: 'ofertas-mes', label: '🔥 OFERTAS DEL MES', shortLabel: 'Ofertas' },
   { id: 'membresias', label: '🏆 Membresías & Pases', shortLabel: 'Membresías' },
   { id: 'shakes-barra', label: '🥤 Shakes & Barra de Proteína', shortLabel: 'Shakes' },
   { id: 'proteinas', label: '⚡ Proteínas & Gainers', shortLabel: 'Proteínas' },
@@ -97,6 +116,90 @@ export const CATEGORIES = [
 
 // ── Catálogo Maestro de Productos y Servicios ────────────────────────────────
 export const PRODUCTS: Product[] = [
+  // ── 🔥 OFERTAS ESPECIALES DEL MES (PRECIOS REBAJADOS VS REGULARES)
+  {
+    id: 'combo-volumen-extremo',
+    name: 'Combo Volumen Extremo: Mutant Mass 5lb + Creatina GAT 300g',
+    description:
+      '¡OFERTA DEL MES! Paquete completo para subir masa muscular magra y fuerza sin rodeos. Incluye 5lb de ganador calórico + 60 servicios de creatina monohidratada.',
+    price: 1650,
+    originalPrice: 1980,
+    discountBadge: 'AHORRA $330',
+    category: 'ofertas-mes',
+    image: imgMutantMass,
+    featured: true,
+    isMonthlyOffer: true,
+    badge: 'oferta',
+    badgeText: '🔥 OFERTA DEL MES',
+    servingInfo: 'Ahorro Especial · 2 Productos Líderes',
+    isCustomizable: true,
+    variantTitle: 'Elige Sabor del Gainer',
+    variants: [
+      { id: 'combo-vol-choc', name: 'Mutant Mass Triple Chocolate + Creatina GAT' },
+      { id: 'combo-vol-vainilla', name: 'Mutant Mass Vainilla + Creatina GAT' },
+    ],
+  },
+  {
+    id: 'oferta-dymatize-iso-100-5lb',
+    name: 'Dymatize ISO 100 Hidrolizada 5 Lbs (Bote Grande)',
+    description:
+      '¡PRECIO ESPECIAL DEL MES! La reina de las proteínas aisladas hidrolizadas con descuento por tiempo limitado. Cero grasa, cero azúcar y máxima absorción muscular.',
+    price: 2299,
+    originalPrice: 2650,
+    discountBadge: '-15% OFF',
+    category: 'ofertas-mes',
+    image: imgIso100,
+    featured: true,
+    isMonthlyOffer: true,
+    badge: 'oferta',
+    badgeText: '🔥 OFERTA DEL MES',
+    servingInfo: '71 Servicios · Grado Competición',
+    isCustomizable: true,
+    variantTitle: 'Sabor en Oferta',
+    variants: [
+      { id: 'iso-of-fudge', name: 'Fudge Brownie' },
+      { id: 'iso-of-gourmet', name: 'Gourmet Chocolate' },
+      { id: 'iso-of-birthday', name: 'Birthday Cake' },
+    ],
+  },
+  {
+    id: 'pack-definicion-fuego',
+    name: 'Pack Definición Fuego: L-Carnitina 3000 + Lipo-6 Black Ultra',
+    description:
+      'Dúo termogénico para acelerar la quema calórica en tus sesiones de pesas y spinning. Convierte la grasa en energía mitocondrial y suprime los antojos.',
+    price: 990,
+    originalPrice: 1189,
+    discountBadge: 'AHORRA $199',
+    category: 'ofertas-mes',
+    image: imgCarnitina,
+    featured: true,
+    isMonthlyOffer: true,
+    badge: 'oferta',
+    badgeText: '🔥 OFERTA DEL MES',
+    servingInfo: 'Quemador Líquido 473ml + 60 Cápsulas Termogénicas',
+  },
+  {
+    id: 'oferta-psychotic-gold',
+    name: 'Insane Labz Psychotic Gold 200g (Energía + Bombeo)',
+    description:
+      'Edición dorada de Psychotic que combina estimulantes extremos con agmatina sulfato para bombeo vascular sin bajones de energía.',
+    price: 780,
+    originalPrice: 890,
+    discountBadge: '-12% OFF',
+    category: 'ofertas-mes',
+    image: imgPsychoticGold,
+    isMonthlyOffer: true,
+    badge: 'oferta',
+    badgeText: '🔥 OFERTA DEL MES',
+    servingInfo: '35 Tomas · Enfoque Láser',
+    isCustomizable: true,
+    variantTitle: 'Sabor',
+    variants: [
+      { id: 'gold-fruit-punch', name: 'Fruit Punch' },
+      { id: 'gold-gummy-candy', name: 'Gummy Candy' },
+    ],
+  },
+
   // ── 🏆 MEMBRESÍAS & PASES
   {
     id: 'membresia-trimestral-promo',
@@ -104,7 +207,10 @@ export const PRODUCTS: Product[] = [
     description:
       'La suscripción más popular de Strong Gym. Acceso ilimitado a todas las áreas de aparatos, zona de peso libre y cardio. ¡Ahorra y asegura tu transformación!',
     price: 1500,
+    originalPrice: 1650,
+    discountBadge: 'PROMO BUEN FIN',
     category: 'membresias',
+    image: imgMembresia,
     featured: true,
     badge: 'promo',
     badgeText: '🔥 $500 / MES',
@@ -124,8 +230,9 @@ export const PRODUCTS: Product[] = [
       '1 mes de entrenamiento completo en Iron City. Uso ilimitado de máquinas de discos, barras olímpicas, mancuernas hasta 120 lbs y zona funcional.',
     price: 550,
     category: 'membresias',
+    image: imgMembresia,
     badge: 'mas-vendido',
-    badgeText: 'POPULAR',
+    badgeText: 'PRECIO FIJO',
     servingInfo: 'Vigencia de 30 días naturales',
     isCustomizable: true,
     variantTitle: 'Disciplina Principal',
@@ -142,15 +249,20 @@ export const PRODUCTS: Product[] = [
       '¿Vienes de paso o quieres probar las instalaciones? Entrena todo el día sin límite de tiempo y comprueba por qué somos el gimnasio más pesado de Neza.',
     price: 60,
     category: 'membresias',
+    image: imgMembresia,
+    badgeText: 'PRECIO FIJO',
     servingInfo: 'Pase de 1 día de entrenamiento',
   },
   {
     id: 'anualidad-black-iron',
     name: 'Membresía Anual Black Iron (12 Meses)',
     description:
-      'Para los verdaderos disciplinados. 12 meses completos con descuento exclusivo, casillero con candado de cortesía y 1 Shaker oficial de Strong Gym de regalo.',
+      'Para los verdaderos disciplinados. 12 meses completos con descuento exclusivo, casillero de cortesía y 1 Shaker oficial de Strong Gym de regalo.',
     price: 5200,
+    originalPrice: 6600,
+    discountBadge: 'AHORRA $1,400',
     category: 'membresias',
+    image: imgMembresia,
     badge: 'recomendado',
     badgeText: '⭐ MEJOR PRECIO ANUAL',
     servingInfo: '365 días de entrenamiento + Shaker de Regalo',
@@ -164,6 +276,7 @@ export const PRODUCTS: Product[] = [
       'Recupérate saliendo de entrenar. Preparado al momento en recepción con 1 scoop colmado de 25g de proteína Whey, hielo frappé y la base que prefieras.',
     price: 55,
     category: 'shakes-barra',
+    image: imgShake,
     featured: true,
     badge: 'barra-shake',
     badgeText: '🥤 PREPARADO AL MOMENTO',
@@ -189,9 +302,10 @@ export const PRODUCTS: Product[] = [
     id: 'shake-monster-mass',
     name: 'Shake Mass Gainer Hipercalórico (750ml)',
     description:
-      'Bomba de volumen y ganancia muscular. Doble scoop de proteína, avena entera, crema de cacahuate, plátano y miel. Ideal para ectomorfos y etapa de volumen.',
+      'Bomba de volumen y ganancia muscular. Doble scoop de proteína, avena entera, crema de cacahuate, plátano y miel. Ideal para etapa de volumen pesado.',
     price: 85,
     category: 'shakes-barra',
+    image: imgShake,
     badge: 'mas-vendido',
     badgeText: '💪 GANADOR DE MASA',
     servingInfo: '55g Proteína · 780 kcal · Energía Pura',
@@ -213,6 +327,8 @@ export const PRODUCTS: Product[] = [
       '¿Llegaste cansado de la chamba o la escuela? Pídelo en recepción bien frío antes de tocar los fierros: 200mg cafeína, beta-alanina y citrulina malato para bombeo extremo.',
     price: 35,
     category: 'shakes-barra',
+    image: imgShake,
+    badgeText: 'PRECIO FIJO',
     servingInfo: 'Efecto en 15 min · Bombeo y Enfoque Mental',
     isCustomizable: true,
     variantTitle: 'Sabor del Shot',
@@ -222,24 +338,16 @@ export const PRODUCTS: Product[] = [
       { id: 'shot-sandia', name: 'Sandía Fuego' },
     ],
   },
-  {
-    id: 'bebida-isotonica-fria',
-    name: 'Bebida de Electrolitos Fría 600ml',
-    description:
-      'Hidratación celular inmediata durante tu rutina pesada de pierna o tu clase de spinning. Sodio, potasio y magnesio para evitar calambres.',
-    price: 28,
-    category: 'shakes-barra',
-    servingInfo: 'Cero Calorías · Electrolitos Completos',
-  },
 
-  // ── ⚡ PROTEÍNAS & GAINERS (LÍDERES EN MERCADO)
+  // ── ⚡ PROTEÍNAS & GAINERS
   {
     id: 'on-gold-standard-whey',
     name: 'Optimum Nutrition Gold Standard 100% Whey',
     description:
-      'La proteína de suero de leche más vendida y respetada a nivel mundial. Contiene aislado de suero de rápida absorción, ideal para el desarrollo de masa magra sin grasa.',
+      'La proteína de suero de leche más vendida y respetada a nivel mundial. Contiene aislado de suero de rápida absorción para masa magra limpia.',
     price: 1399,
     category: 'proteinas',
+    image: imgGoldStandard,
     featured: true,
     badge: 'mas-vendido',
     badgeText: '⭐ N°1 MUNDIAL',
@@ -261,32 +369,33 @@ export const PRODUCTS: Product[] = [
     id: 'dymatize-iso-100',
     name: 'Dymatize ISO 100 Hidrolizada 100% Isolate',
     description:
-      'Pureza suprema. Aislado de proteína hidrolizada ultra-rápida, cero azúcar, menos de 1g de carbohidratos y prácticamente libre de lactosa. Calidad grado concurso.',
-    price: 1849,
+      'Pureza suprema. Aislado de proteína hidrolizada ultra-rápida, cero azúcar, menos de 1g de carbohidratos y prácticamente libre de lactosa.',
+    price: 1380,
     category: 'proteinas',
+    image: imgIso100,
     badge: 'recomendado',
     badgeText: '🏆 GRADO COMPETICIÓN',
     servingInfo: '25g Proteína Hidrolizada · Cero Grasa',
     isCustomizable: true,
     sizes: [
       { id: 'iso-1.6lb', label: '1.6 lbs (~24 servicios)', price: 1380 },
-      { id: 'iso-5lb', label: '5 lbs (~71 servicios)', price: 2650 },
+      { id: 'iso-5lb', label: '5 lbs (~71 servicios)', price: 2299, originalPrice: 2650 },
     ],
     variantTitle: 'Elige el Sabor',
     variants: [
       { id: 'iso-gourmet-choc', name: 'Gourmet Chocolate' },
       { id: 'iso-fudge-brownie', name: 'Fudge Brownie' },
       { id: 'iso-birthday-cake', name: 'Birthday Cake' },
-      { id: 'iso-fruity-pebbles', name: 'Fruity Pebbles (Cereal Clásico)' },
     ],
   },
   {
     id: 'mutant-mass-gainer',
     name: 'Mutant Mass Gainer Extremo',
     description:
-      'Diseñado específicamente para los atletas que les cuesta subir de peso. Matriz de carbohidratos limpios, avena, camote y 56g de proteína de múltiples fuentes.',
+      'Matriz de carbohidratos limpios, avena, camote y 56g de proteína de múltiples fuentes para romper estancamientos de peso.',
     price: 1250,
     category: 'proteinas',
+    image: imgMutantMass,
     servingInfo: '56g Proteína · 1,100 kcal · BCAA y EAA',
     isCustomizable: true,
     sizes: [
@@ -300,74 +409,35 @@ export const PRODUCTS: Product[] = [
       { id: 'mutant-vainilla', name: 'Vanilla Ice Cream' },
     ],
   },
-  {
-    id: 'birdman-falcon-vegana',
-    name: 'Birdman Falcon Proteína Vegana Orgánica',
-    description:
-      'Proteína a base de plantas (chícharo, arroz, amaranto y quinua). De fácil digestión, adicionada con enzimas y probióticos, libre de lácteos y soya.',
-    price: 990,
-    category: 'proteinas',
-    servingInfo: '24g Proteína Vegana · Con Probióticos y Enzimas',
-    isCustomizable: true,
-    sizes: [
-      { id: 'falcon-1kg', label: 'Bote 1.08 kg (~36 servicios)', price: 990 },
-    ],
-    variantTitle: 'Sabor',
-    variants: [
-      { id: 'falcon-choc', name: 'Chocolate Orgánico' },
-      { id: 'falcon-vainilla', name: 'Vainilla Suave' },
-      { id: 'falcon-chai', name: 'Chai Especiado' },
-    ],
-  },
 
   // ── 💥 CREATINAS & FUERZA
   {
     id: 'creatina-creapure-birdman',
-    name: 'Creatina Creapure® Monohidratada 100% Pura 300g',
+    name: 'Creatina GAT Sport Monohidratada 100% Pura 300g / 1kg',
     description:
-      'El suplemento con mayor respaldo científico del mundo para fuerza, potencia y volumen muscular. Sello original Creapure® fabricada en Alemania, ultra-micronizada.',
-    price: 680,
+      'Incrementa la fuerza explosiva, retrasa la fatiga y promueve la voluminización muscular. Micronizada para máxima absorción sin sabor.',
+    price: 620,
     category: 'creatinas-fuerza',
+    image: imgCreatineGat,
     featured: true,
     badge: 'mas-vendido',
     badgeText: '🔥 FUERZA PURA',
     servingInfo: '60 Servicios (5g por scoop) · Cero Sabor',
     isCustomizable: true,
-    variantTitle: 'Presentación',
-    variants: [
-      { id: 'creapure-300g', name: 'Bote 300g (60 Tomas)' },
-      { id: 'creapure-500g', name: 'Bote 500g (100 Tomas)', price: 920 },
-    ],
-  },
-  {
-    id: 'dymatize-micronized-creatine',
-    name: 'Dymatize Micronized Creatine 300g / 500g',
-    description:
-      'Creatina monohidratada micronizada para disolución instantánea en agua o jugo sin asentamientos. Incrementa la recuperación entre series pesadas.',
-    price: 620,
-    category: 'creatinas-fuerza',
-    servingInfo: '5g Creatina Pura por toma · Sin gluten',
-    isCustomizable: true,
     sizes: [
-      { id: 'dy-creatine-300', label: '300g (60 Servicios)', price: 620 },
-      { id: 'dy-creatine-500', label: '500g (100 Servicios)', price: 890 },
+      { id: 'gat-300g', label: 'Bote 300g (60 Tomas)', price: 620 },
+      { id: 'gat-1kg', label: 'Bote 1 kg (200 Tomas) [Ahorro]', price: 1290 },
     ],
   },
   {
-    id: 'beast-creature-powder',
-    name: 'Beast Creature Complejo 5 Creatinas',
+    id: 'creatine-ronnie-coleman',
+    name: 'Ronnie Coleman Signature Creatine-XS 300g',
     description:
-      'Fórmula avanzada con 5 tipos de creatinas de absorción escalonada + agentes de captación celular para evitar la retención hídrica subcutánea.',
-    price: 790,
+      'La creatina del 8 veces Mr. Olympia. Calidad farmacéutica que repone los niveles de ATP en tus fibras musculares serie tras serie.',
+    price: 580,
     category: 'creatinas-fuerza',
-    servingInfo: '60 Servicios · Sabores Frutales Explosivos',
-    isCustomizable: true,
-    variantTitle: 'Sabor Frutal',
-    variants: [
-      { id: 'beast-blue-citrus', name: 'Blue Citrus' },
-      { id: 'beast-pink-lemonade', name: 'Pink Lemonade' },
-      { id: 'beast-unflavored', name: 'Natural Sin Sabor' },
-    ],
+    image: imgCreatineRonnie,
+    servingInfo: '60 Servicios · Sin Retención Subcutánea',
   },
 
   // ── 🚀 PRE-ENTRENOS & ENERGÍA
@@ -375,16 +445,19 @@ export const PRODUCTS: Product[] = [
     id: 'cellucor-c4-original',
     name: 'Cellucor C4 Original Pre-Workout (30 / 60 Serv)',
     description:
-      'El rey clásico de los pre-entrenamientos. Explosión de energía limpia, enfoque mental nítido y bombeo vascular con CarnoSyn® Beta-Alanina y Nitrato de Creatina.',
+      'El pre-entreno más popular del mundo. Explosión de energía limpia, enfoque mental nítido y bombeo vascular con Beta-Alanina y Arginina.',
     price: 749,
+    originalPrice: 850,
+    discountBadge: 'OFERTA',
     category: 'pre-entrenos',
+    image: imgC4,
     featured: true,
     badge: 'mas-vendido',
     badgeText: '⚡ ENERGÍA EXPLOSIVA',
     servingInfo: '150mg Cafeína · 1.6g Beta-Alanina · 1g Arginina',
     isCustomizable: true,
     sizes: [
-      { id: 'c4-30serv', label: 'Bote 30 Servicios', price: 749 },
+      { id: 'c4-30serv', label: 'Bote 30 Servicios', price: 749, originalPrice: 850 },
       { id: 'c4-60serv', label: 'Bote 60 Servicios [Ahorro]', price: 1290 },
     ],
     variantTitle: 'Sabor Explosivo',
@@ -392,19 +465,19 @@ export const PRODUCTS: Product[] = [
       { id: 'c4-fruit-punch', name: 'Fruit Punch Clásico' },
       { id: 'c4-icy-blue-razz', name: 'Icy Blue Razz' },
       { id: 'c4-watermelon', name: 'Watermelon Explosive' },
-      { id: 'c4-orange-burst', name: 'Orange Burst' },
     ],
   },
   {
     id: 'insane-labz-psychotic',
-    name: 'Insane Labz Psychotic High Stimulant',
+    name: 'Insane Labz Psychotic High Stimulant 35 Serv',
     description:
-      '¡SOLO PARA ATLETAS EXPERIMENTADOS! Fórmula con AMPiberry® y cafeína anhidra extrema. Enfoque psicótico y energía que dura hasta 3 horas continuas de entrenamiento.',
+      '¡SOLO PARA ATLETAS EXPERIMENTADOS! Fórmula con AMPiberry® y cafeína anhidra extrema. Enfoque psicótico y energía que dura hasta 3 horas.',
     price: 860,
     category: 'pre-entrenos',
+    image: imgPsychotic,
     badge: 'recomendado',
     badgeText: '⚠️ ESTIMULANTE EXTREMO',
-    servingInfo: '35 Servicios · 400mg Complejo de Cafeína y Estimulantes',
+    servingInfo: '35 Servicios · 400mg Complejo de Estimulantes',
     isCustomizable: true,
     variantTitle: 'Elige tu Sabor',
     variants: [
@@ -413,31 +486,16 @@ export const PRODUCTS: Product[] = [
       { id: 'psychotic-cotton-candy', name: 'Cotton Candy' },
     ],
   },
-  {
-    id: 'redcon1-total-war',
-    name: 'Redcon1 Total War Pre-Workout Militar',
-    description:
-      'Formulado con dosis clínicas reales: 6g de L-Citrulina Malato para vascularización y bombeos gigantescos que hinchan las venas.',
-    price: 890,
-    category: 'pre-entrenos',
-    servingInfo: '30 Dosis Clínicas · 6g Citrulina Malato',
-    isCustomizable: true,
-    variantTitle: 'Sabor Militar',
-    variants: [
-      { id: 'totalwar-blue-lemonade', name: 'Blue Lemonade' },
-      { id: 'totalwar-strawberry-kiwi', name: 'Strawberry Kiwi' },
-      { id: 'totalwar-tiger-blood', name: 'Tiger\'s Blood (Coco Fresa)' },
-    ],
-  },
 
   // ── 🩸 AMINOÁCIDOS, QUEMADORES & SALUD
   {
     id: 'scivation-xtend-bcaas',
     name: 'Scivation XTEND 7g BCAAs + Electrolitos (30 Serv)',
     description:
-      'El intra-entreno definitivo. 7 gramos de aminoácidos ramificados en ratio 2:1:1 probado, glutamina y electrolitos para beber sorbo a sorbo entre series.',
+      'El intra-entreno definitivo. 7 gramos de aminoácidos ramificados en ratio 2:1:1 probado, glutamina y electrolitos para beber entre series.',
     price: 680,
     category: 'aminoacidos-salud',
+    image: imgXtendBcaa,
     featured: true,
     badge: 'mas-vendido',
     badgeText: '💧 INTRA-ENTRENO',
@@ -448,16 +506,16 @@ export const PRODUCTS: Product[] = [
       { id: 'xtend-watermelon-madness', name: 'Watermelon Madness' },
       { id: 'xtend-mango-madness', name: 'Mango Madness' },
       { id: 'xtend-blue-raspberry', name: 'Blue Raspberry Ice' },
-      { id: 'xtend-lemon-lime', name: 'Lemon Lime Squeeze' },
     ],
   },
   {
     id: 'l-carnitina-3000-liquida',
-    name: 'L-Carnitina 3000 Líquida Ultra Concentrada 473ml',
+    name: 'L-Carnitina 3000 Líquida Ronnie Coleman 473ml',
     description:
       'Convierte los ácidos grasos en energía mitocondrial durante tu sesión de cardio y spinning. Rápida asimilación sin alterar el sistema nervioso.',
     price: 490,
     category: 'aminoacidos-salud',
+    image: imgCarnitina,
     servingInfo: '3,000 mg de L-Carnitina por cucharada · 31 Tomas',
     isCustomizable: true,
     variantTitle: 'Sabor Líquido',
@@ -469,11 +527,12 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'lipo-6-black-ultra',
-    name: 'Nutrex Lipo-6 Black Ultra Concentrate (60 Caps)',
+    name: 'Nutrex Lipo-6 Hardcore Ultra Concentrate (60 Caps)',
     description:
       'Termogénico de máxima potencia en cápsulas líquidas de rápida acción. Acelera el metabolismo basal, suprime el apetito y eleva la temperatura corporal.',
     price: 699,
     category: 'aminoacidos-salud',
+    image: imgLipo6,
     badge: 'recomendado',
     badgeText: '🔥 TERMOGÉNICO',
     servingInfo: '60 Cápsulas · 1 Sola Cápsula por Dosis',
@@ -482,10 +541,11 @@ export const PRODUCTS: Product[] = [
     id: 'universal-animal-pak',
     name: 'Universal Nutrition Animal Pak 44 Packs',
     description:
-      'El multivitamínico de culto para atletas de halterofilia y fisicoculturismo. Paquetes completos con vitaminas, minerales, aminoácidos y enzimas digestivas.',
+      'El multivitamínico de culto para atletas de halterofilia y fisicoculturismo. Paquetes completos con vitaminas, minerales, aminoácidos y enzimas.',
     price: 990,
     category: 'aminoacidos-salud',
-    servingInfo: '44 Packs Individuales · Fórmula Hardcore desde 1983',
+    image: imgAnimalPak,
+    servingInfo: '44 Packs Individuales · Fórmula Hardcore',
   },
 
   // ── 🥊 GEAR & ACCESORIOS DE ENTRENAMIENTO
@@ -493,9 +553,10 @@ export const PRODUCTS: Product[] = [
     id: 'straps-profesionales-strong-gym',
     name: 'Straps Profesionales de Levantamiento Strong Gym',
     description:
-      'Correas de algodón reforzado de uso pesado con almohadilla de neopreno en la muñeca. Levanta más peso en peso muerto, jalones de espalda y remos sin que falle tu agarre.',
+      'Correas de algodón reforzado de uso pesado con almohadilla de neopreno en la muñeca. Levanta más peso en peso muerto y remos sin que falle tu agarre.',
     price: 199,
     category: 'gear-accesorios',
+    image: imgStraps,
     featured: true,
     badge: 'mas-vendido',
     badgeText: '🏋️‍♂️ OFICIAL IRON CITY',
@@ -514,6 +575,7 @@ export const PRODUCTS: Product[] = [
       'Protección intra-abdominal esencial para sentadillas y peso muerto pesado. Cuero genuino de 10mm de espesor con doble hebilla de acero inoxidable.',
     price: 650,
     category: 'gear-accesorios',
+    image: imgCinturon,
     servingInfo: 'Cuero Genuino 10mm · Hebilla Doble Perno',
     isCustomizable: true,
     variantTitle: 'Talla de Cintura',
@@ -523,29 +585,5 @@ export const PRODUCTS: Product[] = [
       { id: 'cinturon-grande', name: 'Talla Grande (36 - 40)' },
       { id: 'cinturon-xl', name: 'Talla XL (40 - 44)' },
     ],
-  },
-  {
-    id: 'shaker-antiderrames-strong',
-    name: 'Shaker Mezclador Antiderrames 700ml con Rejilla',
-    description:
-      'Vaso batidor de plástico libre de BPA con escala medidora en onzas y mililitros, tapa hermética con cierre de click y rejilla anti-grumos.',
-    price: 140,
-    category: 'gear-accesorios',
-    servingInfo: '700 ml / 24 oz · Libre de BPA · Fácil Lavado',
-    isCustomizable: true,
-    variantTitle: 'Color del Vaso',
-    variants: [
-      { id: 'shaker-negro-humo', name: 'Negro Humo con Tapa Roja' },
-      { id: 'shaker-rojo-transparente', name: 'Rojo Rubí con Tapa Negra' },
-    ],
-  },
-  {
-    id: 'munequeras-soporte-pesado',
-    name: 'Muñequeras Elásticas de Fuerza (Wrist Wraps)',
-    description:
-      'Máxima estabilidad en la articulación de la muñeca para press de banca, militar con barra y press con mancuernas pesadas. Cierre con velcro grado militar.',
-    price: 180,
-    category: 'gear-accesorios',
-    servingInfo: 'Par de Muñequeras con Bucle de Pulgar',
   },
 ];
