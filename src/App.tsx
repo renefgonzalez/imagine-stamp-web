@@ -28,6 +28,7 @@ const PincheCheMenu = React.lazy(() => import('./modules/pinche-che/pages/Pinche
 const MesaJarochaMenu = React.lazy(() => import('./modules/mesa-jarocha/pages/MesaJarochaMenu'));
 const LaCuevaDelLoboMenu = React.lazy(() => import('./modules/la-cueva-del-lobo/pages/LaCuevaDelLoboMenu'));
 const CandymarMenu = React.lazy(() => import('./modules/candymar/pages/CandymarMenu'));
+const StrongGymMenu = React.lazy(() => import('./modules/strong-gym/pages/StrongGymMenu'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -841,6 +842,10 @@ export default function App() {
         <Route path="/candymar" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#1c1c1c]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00e5ff]" /></div>}><CandymarMenu /></Suspense></ErrorBoundary>} />
         <Route path="/candymarmenu" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#1c1c1c]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00e5ff]" /></div>}><CandymarMenu /></Suspense></ErrorBoundary>} />
         <Route path="/candymar-menu" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#1c1c1c]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00e5ff]" /></div>}><CandymarMenu /></Suspense></ErrorBoundary>} />
+
+        <Route path="/strong-gym" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><StrongGymMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/stronggym" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><StrongGymMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/strong-gym-ironcity" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><StrongGymMenu /></Suspense></ErrorBoundary>} />
 
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
       </Routes>
