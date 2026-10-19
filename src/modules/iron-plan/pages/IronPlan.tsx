@@ -152,8 +152,8 @@ export default function IronPlan() {
   const routine = useMemo(() => (params ? generateRoutine(params) : null), [params]);
   const client = clients.find((c) => c.id === clientId) ?? null;
 
-  const shareLink = (p: RoutineParams) =>
-    `${window.location.origin}${window.location.pathname}#${C.routePath}?r=${encodeParams(p)}`;
+  // Liga sin "#" (puente public/iron-plan/) para que WhatsApp muestre la vista previa de IRON PLAN
+  const shareLink = (p: RoutineParams) => `${window.location.origin}${C.routePath}/?r=${encodeParams(p)}`;
 
   const openWhatsApp = (phone: string, text: string) => {
     const ph = waPhone(phone);
@@ -1103,7 +1103,7 @@ function RoutineView({ routine, mode, client, onBack, onChange, onRegenerate, on
             </label>
             <div className="mt-4 rounded-2xl bg-[#0b141a] border border-white/10 p-3 max-h-56 overflow-y-auto">
               <div className="bg-[#005c4b] rounded-xl rounded-tr-sm p-3 text-[13px] leading-relaxed text-white/95 whitespace-pre-wrap">
-                {routineWhatsApp(routine, 'https://imagineandstamp.site/#/iron-plan?r=…', C.shortName)}
+                {routineWhatsApp(routine, 'https://imagineandstamp.site/iron-plan/?r=…', C.shortName)}
               </div>
             </div>
             <button onClick={() => onSend(phone)} className="mt-4 w-full h-14 rounded-2xl bg-[#25D366] text-black font-black text-lg flex items-center justify-center gap-2 active:scale-[0.98] transition">
