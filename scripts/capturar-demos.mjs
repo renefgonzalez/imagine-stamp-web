@@ -1,15 +1,18 @@
 // scripts/capturar-demos.mjs
 // Captura en celular y desktop los demos para ilustrar las páginas SEO
-// Uso: node scripts/capturar-demos.mjs
+// Uso: node scripts/capturar-demos.mjs [demo-name]
+import http from 'node:http';
+import fs, { mkdirSync, existsSync } from 'node:fs';
+import path, { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer';
 import sharp from 'sharp';
-import { mkdirSync, existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT_DIR = join(ROOT, 'public', 'img-servicios');
 mkdirSync(OUT_DIR, { recursive: true });
+
+const targetDemo = process.argv[2]; // opcional: 'strong-gym'
 
 const DEMOS = {
   candymar: '/#/candymar',
@@ -25,6 +28,46 @@ const DEMOS = {
 
 const chromePath = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 
+// Servidor local sirviendo dist/
+const distDir = join(ROOT, 'dist');
+const mimeTypes = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css',
+  '.js': 'application/javascript',
+  '.webp': 'image/webp',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.svg': 'image/svg+xml',
+  '.mp4': 'video/mp4',
+};
+
+const server = http.createServer((req, res) => {
+  let reqPath = decodeURI(req.url.split('?')[0]);
+  if (reqPath.endsWith('/')) reqPath += 'index.html';
+  let filePath = join(distDir, reqPath);
+  if (!fs.existsSync(filePath) && !path.extname(filePath)) {
+    filePath = join(distDir, reqPath, 'index.html');
+  }
+  if (!fs.existsSync(filePath)) {
+    filePath = join(distDir, 'index.html');
+  }
+
+  if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+    const ext = path.extname(filePath).toLowerCase();
+    res.writeHead(200, { 'Content-Type': mimeTypes[ext] || 'application/octet-stream' });
+    fs.createReadStream(filePath).pipe(res);
+  } else {
+    res.writeHead(404);
+    res.end('Not found');
+  }
+});
+
+const PORT = 4175;
+await new Promise(resolve => server.listen(PORT, resolve));
+console.log(`Servidor de captura corriendo en http://localhost:${PORT}`);
+
+const BASE_URL = `http://localhost:${PORT}`;
+
 console.log('Iniciando captura de demos con Puppeteer...');
 const browser = await puppeteer.launch({
   headless: 'new',
@@ -33,12 +76,11 @@ const browser = await puppeteer.launch({
 });
 
 const page = await browser.newPage();
-
-// 1. Demos en vista móvil (390 x 844)
 await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
 
 for (const [name, route] of Object.entries(DEMOS)) {
-  const url = 'https://imagineandstamp.site' + route;
+  if (targetDemo && name !== targetDemo) continue;
+  const url = BASE_URL + route;
   console.log(`Capturando ${name} desde ${url}...`);
   try {
     await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
@@ -53,20 +95,23 @@ for (const [name, route] of Object.entries(DEMOS)) {
 }
 
 // 2. Vicma Laser en Desktop (1366 x 800)
-console.log('Capturando vicma-laser en desktop...');
-await page.setViewport({ width: 1366, height: 800, deviceScaleFactor: 1 });
-try {
-  await page.goto('https://imagineandstamp.site/#/vicma-laser', { waitUntil: 'networkidle0', timeout: 30000 });
-  await new Promise((ok) => setTimeout(ok, 2500));
-  const pngDesk = await page.screenshot();
-  const destDesk = join(OUT_DIR, 'vicma-laser-desktop.webp');
-  await sharp(pngDesk).resize(900).webp({ quality: 72 }).toFile(destDesk);
-  console.log('✓ vicma-laser-desktop.webp guardado');
-} catch (err) {
-  console.error('Error capturando vicma-laser desktop:', err.message);
+if (!targetDemo || targetDemo === 'vicma-laser') {
+  console.log('Capturando vicma-laser en desktop...');
+  await page.setViewport({ width: 1366, height: 800, deviceScaleFactor: 1 });
+  try {
+    await page.goto(`${BASE_URL}/#/vicma-laser`, { waitUntil: 'networkidle0', timeout: 30000 });
+    await new Promise((ok) => setTimeout(ok, 2500));
+    const pngDesk = await page.screenshot();
+    const destDesk = join(OUT_DIR, 'vicma-laser-desktop.webp');
+    await sharp(pngDesk).resize(900).webp({ quality: 72 }).toFile(destDesk);
+    console.log('✓ vicma-laser-desktop.webp guardado');
+  } catch (err) {
+    console.error('Error capturando vicma-laser desktop:', err.message);
+  }
 }
 
 await browser.close();
+server.close();
 
 // 3. Procesar foto de invitaciones
 const srcInv = join(ROOT, 'public', 'videoinvitaciones', 'assets', 'carrusel_1.jpg');

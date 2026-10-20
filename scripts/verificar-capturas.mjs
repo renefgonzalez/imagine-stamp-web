@@ -62,6 +62,26 @@ const pages = [
 
 let allOk = true;
 
+async function triggerLazyLoad(page) {
+  await page.evaluate(async () => {
+    await new Promise((resolve) => {
+      let totalHeight = 0;
+      const distance = 400;
+      const timer = setInterval(() => {
+        const scrollHeight = document.body.scrollHeight;
+        window.scrollBy(0, distance);
+        totalHeight += distance;
+        if (totalHeight >= scrollHeight) {
+          clearInterval(timer);
+          window.scrollTo(0, 0);
+          resolve();
+        }
+      }, 50);
+    });
+  });
+  await new Promise(r => setTimeout(r, 600));
+}
+
 for (const slug of pages) {
   const url = `http://localhost:4173/${slug}/`;
   
@@ -74,6 +94,8 @@ for (const slug of pages) {
   const mobileHasOverflow = mobileScrollWidth > 390;
   console.log(`[Mobile 390px] /${slug}/ - scrollWidth: ${mobileScrollWidth}px ${mobileHasOverflow ? '❌ OVERFLOW' : '✅ OK'}`);
   if (mobileHasOverflow) allOk = false;
+
+  await triggerLazyLoad(mobilePage);
 
   const mobileShotPath = path.join(artifactsDir, `screenshot_${slug}_mobile.png`);
   await mobilePage.screenshot({ path: mobileShotPath, fullPage: true });
@@ -88,6 +110,8 @@ for (const slug of pages) {
   const desktopHasOverflow = desktopScrollWidth > 1366;
   console.log(`[Desktop 1366px] /${slug}/ - scrollWidth: ${desktopScrollWidth}px ${desktopHasOverflow ? '❌ OVERFLOW' : '✅ OK'}`);
   if (desktopHasOverflow) allOk = false;
+
+  await triggerLazyLoad(desktopPage);
 
   const desktopShotPath = path.join(artifactsDir, `screenshot_${slug}_desktop.png`);
   await desktopPage.screenshot({ path: desktopShotPath, fullPage: true });

@@ -56,11 +56,8 @@ export const clientConfig = {
   instagramHandle: '@strong_gym_ironcity',
 
   // Prueba social
-  rating: {
-    score: '4.9',
-    reviewsCount: 210,
-    recommendationRate: '90% recomendado',
-  },
+  // Solo poner la calificación REAL de Google Maps del gimnasio (René la confirma). Si es null, no se muestra.
+  rating: null as { score: string; reviewsCount: number; recommendationRate?: string } | null,
 
   // Paleta de marca de alta fidelidad: Rojo Hierro Vivo y Negro Mate Deportivo
   colors: {

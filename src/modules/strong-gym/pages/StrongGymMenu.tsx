@@ -227,9 +227,11 @@ export default function StrongGymMenu() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-red-600/20 text-red-400 border border-red-500/30">
               <Trophy size={14} className="text-red-500" /> EL GIMNASIO MÁS PESADO DE NEZA
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-gray-300 border border-white/10">
-              <Star size={13} className="text-amber-400 fill-amber-400" /> {clientConfig.rating.score} (210 Opiniones)
-            </span>
+            {clientConfig.rating && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-gray-300 border border-white/10">
+                <Star size={13} className="text-amber-400 fill-amber-400" /> {clientConfig.rating.score} ({clientConfig.rating.reviewsCount} Opiniones)
+              </span>
+            )}
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-gray-300 border border-white/10">
               <ShieldCheck size={13} className="text-emerald-400" /> Suplementos 100% Originales
             </span>
