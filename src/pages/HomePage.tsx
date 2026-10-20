@@ -4,7 +4,8 @@ import {
   Sparkles, MessageCircle, ArrowRight, Smartphone, Globe, Video, 
   CreditCard, CheckCircle2, ChevronRight, Star, ExternalLink, ShieldCheck, 
   Zap, Clock, Heart, Search, Plus, X, Layers, Printer, Award, HelpCircle,
-  Menu, UtensilsCrossed, Scissors, Stethoscope, Dumbbell, Flame, Building2
+  Menu, UtensilsCrossed, Scissors, Stethoscope, Dumbbell, Flame, Building2,
+  Server, Mail
 } from 'lucide-react';
 import logo from '../logo.png';
 import { CartButton } from '../components/common/CartButton';
@@ -81,6 +82,14 @@ export default function HomePage({
     {
       q: '¿También hacen los códigos QR impresos y stickers físicos?',
       a: '¡Sí! A diferencia de agencias que solo programan, tenemos taller propio de impresión, vinil de uso rudo y sublimación. Te entregamos tus stickers laminados para mesa resistentes al agua y displays para barra.'
+    },
+    {
+      q: '¿La página web incluye hospedaje (hosting), dominio y correos corporativos?',
+      a: '¡Sí! Nos encargamos de todo el ecosistema técnico: tu dominio (.com), tu hospedaje en servidores de alta velocidad, certificado de seguridad SSL y tus cuentas de correo corporativo profesionales (ej. contacto@tunegocio.com) para que tu negocio proyecte total formalidad desde el día uno.'
+    },
+    {
+      q: '¿Puedo mudar una página web que ya tengo con otro proveedor?',
+      a: '¡Claro que sí! Si tu sitio actual se cae seguido, es lento o te cobran mensualidades abusivas, realizamos la migración completa a nuestros servidores de alto rendimiento, te configuramos tus correos y te damos soporte técnico directo por WhatsApp.'
     }
   ];
 
@@ -1105,6 +1114,30 @@ export default function HomePage({
             </div>
           </div>
         </section>
+
+        {/* Enlaces a las páginas de servicio estáticas (public/<slug>/, generadas con scripts/generar-paginas-seo.mjs) */}
+        <nav aria-label="Servicios" className="pt-16 sm:pt-24 px-4 sm:px-6 max-w-5xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-headline font-black text-primary tracking-tight text-center mb-6">
+            Conoce cada servicio a detalle
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            {[
+              ['Páginas web', '/paginas-web/'],
+              ['Menús digitales QR', '/menu-digital/'],
+              ['Invitaciones digitales', '/invitaciones-digitales/'],
+              ['Tarjetas digitales', '/tarjetas-digitales/'],
+              ['Hosting y dominio', '/hosting-y-dominio/'],
+            ].map(([label, href]) => (
+              <a
+                key={href}
+                href={href}
+                className="px-4 py-4 rounded-2xl bg-white border border-primary/10 text-center font-headline font-bold text-sm text-primary hover:border-secondary hover:text-secondary transition-colors"
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+        </nav>
 
         {/* ═══════════════════════════════════════════════════════════════
             BLOQUE 7: LLAMADO A LA ACCIÓN FINAL (CRO)
