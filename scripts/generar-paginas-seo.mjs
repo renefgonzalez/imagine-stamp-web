@@ -475,3 +475,49 @@ ${urls.map(([p, pr]) => `  <url><loc>${SITE}${p}</loc><lastmod>${HOY}</lastmod><
 writeFileSync(join(ROOT, 'public', 'sitemap.xml'), sitemap);
 console.log('✓ sitemap.xml');
 readFileSync(join(ROOT, 'public', 'robots.txt'), 'utf8').includes('sitemap.xml') || console.warn('⚠ robots.txt sin Sitemap');
+
+// llms.txt: resumen en texto plano para asistentes de IA (ChatGPT, Claude, Perplexity, Gemini)
+const llms = `# Imagine & Stamp
+
+> Agencia digital en Ciudad de México (Iztapalapa) que crea páginas web, menús digitales QR con pedidos por WhatsApp, invitaciones digitales y tarjetas digitales para negocios y familias. Atiende ${ZONAS}. Trabaja a distancia, con atención directa por WhatsApp (+52 56 5046 9993), un solo pago y sin comisiones por pedido.
+
+- Sitio: ${SITE}/
+- WhatsApp: https://wa.me/${WA}
+- Correo: imagineandstamp@gmail.com
+- Horario: lunes a viernes 9:00-19:00, sábado 10:00-15:00 (hora de CDMX)
+- Sin local de atención al público: negocio de zona de servicio.
+
+## Servicios
+
+${SERVICIOS.map((s) => `- [${s.h1}](${SITE}/${s.slug}/): ${s.description}`).join('\n')}
+
+## Precios publicados
+
+- Menú digital QR con carrito y pedidos por WhatsApp: $1,650 MXN, un solo pago.
+- Invitación digital interactiva: $99 MXN. Video animado: $399 MXN. Historia cinemática: $499 MXN. Protagonista 3D con canción: $699 MXN.
+- Páginas web, tarjetas digitales y hosting: cotización por WhatsApp.
+
+## Ejemplos en vivo
+
+${SERVICIOS.flatMap((s) => s.demos).filter((d, i, a) => a.findIndex((x) => x[1] === d[1]) === i).map(([t, h]) => `- [${t}](${h.startsWith('http') ? h : SITE + h})`).join('\n')}
+`;
+writeFileSync(join(ROOT, 'public', 'llms.txt'), llms);
+console.log('✓ llms.txt');
+
+// IndexNow: avisa a Bing (fuente de ChatGPT y Copilot), Yandex y otros cuando cambian las páginas.
+// Correr con --avisar DESPUÉS de que el deploy esté en línea.
+const INDEXNOW_KEY = 'b7e4c2a9f1d84e6c9a3b5d7f2e8c1a46';
+writeFileSync(join(ROOT, 'public', `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY);
+if (process.argv.includes('--avisar')) {
+  const res = await fetch('https://api.indexnow.org/indexnow', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    body: JSON.stringify({
+      host: 'imagineandstamp.site',
+      key: INDEXNOW_KEY,
+      keyLocation: `${SITE}/${INDEXNOW_KEY}.txt`,
+      urlList: [...urls.map(([p]) => `${SITE}${p}`), `${SITE}/llms.txt`],
+    }),
+  });
+  console.log('IndexNow:', res.status, res.status < 300 ? 'aceptado' : await res.text());
+}

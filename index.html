@@ -119,8 +119,10 @@
           },
           "sameAs": [
             "https://www.instagram.com/personalizadosimagineandstamp",
-            "https://www.facebook.com/share/1CFhhieFeV/?mibextid=wwXIfr"
+            "https://www.facebook.com/share/1CFhhieFeV/?mibextid=wwXIfr",
+            "https://maps.app.goo.gl/bSuw4zRaLAUdcnM27"
           ],
+          "knowsAbout": ["Diseño de páginas web", "Menús digitales QR", "Invitaciones digitales", "Tarjetas digitales", "Hosting y dominios", "Pedidos por WhatsApp", "SEO local"],
           "hasOfferCatalog": {
             "@type": "OfferCatalog",
             "name": "Servicios Digitales y Creativos",
@@ -197,7 +199,35 @@
     <!-- Meta Pixel se inicializa dinámicamente desde el bundle de React (ver src/components/MetaPixelInit.tsx) -->
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Contenido estático para robots que no ejecutan JavaScript (ChatGPT, Claude, Perplexity, Bing).
+         React lo reemplaza al cargar (createRoot). Mantenerlo igual a lo que dice la portada. -->
+    <div id="root">
+      <main style="max-width:860px;margin:0 auto;padding:32px 16px;font-family:Inter,system-ui,sans-serif;color:#1A1C1C;background:#F9F7F2;line-height:1.6">
+        <h1 style="color:#002E5D">Imagine &amp; Stamp: páginas web, menús digitales, invitaciones digitales y tarjetas digitales en CDMX</h1>
+        <p>Agencia digital en Ciudad de México (Iztapalapa) que atiende a distancia en CDMX, Estado de México y todo México. Hacemos que los negocios vendan por WhatsApp con un solo pago y sin comisiones. Atención directa por WhatsApp al 56 5046 9993.</p>
+        <h2>Servicios</h2>
+        <ul>
+          <li><a href="/paginas-web/">Creación de páginas web y landing pages</a>: rápidas, hechas para celular, con botón a WhatsApp, dominio y publicación incluidos.</li>
+          <li><a href="/menu-digital/">Menú digital QR para restaurantes</a>: carrito y pedidos directo a WhatsApp, sin comisiones por pedido. Un solo pago de $1,650 MXN.</li>
+          <li><a href="/invitaciones-digitales/">Invitaciones digitales y video invitaciones</a>: interactiva $99, video animado $399, historia cinemática $499 y protagonista 3D con canción $699 MXN.</li>
+          <li><a href="/tarjetas-digitales/">Tarjetas digitales de presentación</a>: servicios, citas por WhatsApp, llamada, Google Maps y redes en una sola liga con QR.</li>
+          <li><a href="/hosting-y-dominio/">Hosting y dominio</a>: registro de dominio a tu nombre, https, correo con tu marca y migraciones.</li>
+          <li>Impresión de apoyo: stickers QR en vinil para mesas, displays acrílicos, sublimación y DTF textil.</li>
+        </ul>
+        <h2>Preguntas frecuentes</h2>
+        <h3>¿Tengo que pagar mensualidades?</h3>
+        <p>No. Pagas un solo costo por tu menú digital o página web y no hay comisiones por pedido.</p>
+        <h3>¿Cuánto tardan en entregar?</h3>
+        <p>Menús y tarjetas digitales: de 24 a 48 horas después de recibir tu información. Páginas web completas: de 3 a 7 días hábiles.</p>
+        <h3>¿Necesito tener un local?</h3>
+        <p>No. Trabajamos a distancia por WhatsApp y nuestros productos funcionan también para negocios a domicilio.</p>
+        <p><a href="https://wa.me/525650469993">Escríbenos por WhatsApp</a> · imagineandstamp@gmail.com</p>
+      </main>
+    </div>
+    <script>
+      // En demos de clientes (/#/candymar...) no mostrar ni un instante el texto de Imagine & Stamp
+      if (location.hash.length > 2) document.querySelector('#root > main').style.display = 'none';
+    </script>
 
     <script type="module" src="./src/main.tsx"></script>
   </body>
