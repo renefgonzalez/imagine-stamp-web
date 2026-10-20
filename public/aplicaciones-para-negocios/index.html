@@ -38,7 +38,10 @@ header{position:sticky;top:0;z-index:30;background:rgba(249,247,242,.92);backdro
 
 /* Menú dropdown accesible con details/summary */
 .menu-wrap{display:flex;align-items:center;gap:14px;position:relative}
-.menu-drop{position:relative}
+.brand,.menu-sum{white-space:nowrap}
+@media(max-width:420px){.brand{font-size:16px}.bar{gap:8px}.menu-sum{padding:7px 12px}.bar>.btn-sm{padding:8px 12px}}
+@media(max-width:370px){.brand{font-size:15px}.menu-sum{padding:6px 10px}}
+.menu-drop{position:relative;background:none!important;border:0!important;padding:0!important;margin:0!important}
 .menu-sum{cursor:pointer;list-style:none;border:1px solid var(--line);border-radius:999px;padding:8px 16px;background:#fff;font-weight:700;font-size:13px;color:var(--navy);display:inline-flex;align-items:center;gap:4px;user-select:none;transition:background .2s}
 .menu-sum::-webkit-details-marker{display:none}
 .menu-sum:hover{background:rgba(0,46,93,.04)}
