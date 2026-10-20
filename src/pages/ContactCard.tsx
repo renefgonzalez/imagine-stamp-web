@@ -14,7 +14,7 @@ const DATA = {
   whatsapp: '525650469993',
   email: 'imagineandstamp@gmail.com',
   instagram: 'https://www.instagram.com/personalizadosimagineandstamp',
-  facebook: 'https://www.facebook.com/share/1CFhhieFeV/',
+  facebook: 'https://www.facebook.com/638565032669305',
   website: 'https://imagineandstamp.site',
   address: 'Ciudad de México (CDMX) — Zona Iztapalapa / Tláhuac',
   hours: 'Lun - Vie: 9:00 AM - 6:00 PM\nSáb: 10:00 AM - 2:00 PM',
