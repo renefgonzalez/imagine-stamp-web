@@ -59,6 +59,18 @@ export default function HomePage({
     }
   };
 
+  React.useEffect(() => {
+    const raw = window.location.hash || window.location.pathname;
+    const cleanId = raw.replace(/^#\/?/, '').replace(/\/$/, '').toLowerCase();
+    if (cleanId && ['menus', 'webs', 'tarjetas', 'invitaciones', 'taller', 'faq', 'preguntas'].includes(cleanId)) {
+      const targetId = cleanId === 'preguntas' ? 'faq' : cleanId;
+      setTimeout(() => {
+        const el = document.getElementById(targetId);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 400);
+    }
+  }, []);
+
   const whatsappLink = (msg: string) => 
     `https://wa.me/525650469993?text=${encodeURIComponent(msg)}`;
 

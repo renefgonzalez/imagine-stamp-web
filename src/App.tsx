@@ -282,139 +282,147 @@ export default function App() {
     window.history.replaceState({}, '', window.location.pathname + window.location.hash);
   }, []);
 
+  const homeElement = (
+    <ErrorBoundary>
+      <div className="min-h-screen flex flex-col bg-background">
+        <HomePage 
+          products={products}
+          categories={categories}
+          favorites={favorites}
+          toggleFavorite={toggleFavorite}
+          addToCart={addToCart}
+        />
+
+        {/* TOAST: Producto agregado */}
+        <AnimatePresence>
+          {cartToast && (
+            <motion.div
+              initial={{ opacity: 0, y: 80, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 80, scale: 0.9 }}
+              className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[60] w-[90vw] max-w-sm"
+            >
+              <div className="bg-primary text-white rounded-2xl shadow-2xl px-5 py-4 flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                    <Plus size={16} className="text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/60">¡Agregado al carrito!</p>
+                    <p className="text-sm font-bold truncate">{cartToast.name}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => { setCartToast(null); openCart(); }}
+                    className="flex-1 py-2 bg-secondary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-500 transition-all"
+                  >
+                    Ver carrito
+                  </button>
+                  <button
+                    onClick={() => setCartToast(null)}
+                    className="flex-1 py-2 bg-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all"
+                  >
+                    Seguir comprando
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Botón flotante WhatsApp */}
+        <div className="fixed bottom-8 right-6 z-50 flex flex-col gap-4 items-end">
+          <motion.a
+            href="https://wa.me/525650469993?text=Hola,%20vengo%20de%20la%20página%20web%20y%20quiero%20cotizar" target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }}
+            onClick={() => trackMetaEvent('Contact')}
+            className="flex items-center gap-3 bg-[#25D366] text-white px-5 py-3.5 rounded-full shadow-2xl hover:bg-[#1EBE5D] transition-all"
+          >
+            <span className="font-bold text-xs uppercase tracking-wider hidden sm:inline">¡Cotizar por WhatsApp!</span>
+            <MessageCircle size={26} fill="currentColor" />
+          </motion.a>
+        </div>
+
+        <CartDrawer bankInfo={bankInfo} />
+
+        {/* MODAL RESULTADO DE PAGO (regreso de Mercado Pago) */}
+        <AnimatePresence>
+          {paymentResult && (
+            <div className="fixed inset-0 z-[95] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                className="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full border border-primary/10 shadow-2xl relative text-center"
+              >
+                {paymentResult.status === 'exito' ? (
+                  <>
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-green-600">
+                      <Check size={32} />
+                    </div>
+                    <h3 className="text-primary text-xl font-black uppercase mb-2">¡Pago Aprobado!</h3>
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 mt-2">
+                      <p className="text-amber-600 font-bold text-xs mb-1 uppercase tracking-wider flex items-center justify-center gap-1">
+                        ⚠️ Paso Final Obligatorio
+                      </p>
+                      <p className="text-primary/70 text-xs">Para que preparemos tu pedido, <strong className="text-primary">DEBES ENVIARLO</strong> haciendo clic en el botón verde de WhatsApp aquí abajo.</p>
+                    </div>
+                  </>
+                ) : paymentResult.status === 'pendiente' ? (
+                  <>
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-500">
+                      <ShoppingBag size={32} />
+                    </div>
+                    <h3 className="text-primary text-xl font-black uppercase mb-2">Pago Pendiente</h3>
+                    <p className="text-primary/60 text-sm mb-6">Tu pago está siendo procesado. Avísanos por WhatsApp para darle seguimiento.</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 border border-red-200 flex items-center justify-center text-red-500">
+                      <X size={32} />
+                    </div>
+                    <h3 className="text-primary text-xl font-black uppercase mb-2">Pago no completado</h3>
+                    <p className="text-primary/60 text-sm mb-6">No pudimos procesar tu pago. Puedes intentarlo de nuevo o contactarnos por WhatsApp.</p>
+                  </>
+                )}
+
+                <div className="flex flex-col gap-3">
+                  {paymentResult.whatsappMessage && (
+                    <a
+                      href={`https://wa.me/525650469993?text=${paymentResult.whatsappMessage}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={() => setPaymentResult(null)}
+                      className="w-full py-4 bg-[#25D366] text-white font-black uppercase tracking-wider text-xs rounded-2xl shadow-lg shadow-[#25D366]/30 hover:bg-[#1EBE5D] transition-colors flex items-center justify-center gap-2"
+                    >
+                      <MessageCircle size={18} /> Enviar pedido por WhatsApp
+                    </a>
+                  )}
+                  <button
+                    onClick={() => setPaymentResult(null)}
+                    className="w-full py-3 bg-primary/5 text-primary font-bold uppercase tracking-wider text-xs rounded-xl hover:bg-primary/10 transition-colors"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      </div>
+    </ErrorBoundary>
+  );
+
   return (
     <HashRouter>
       <Routes>
-        <Route path="/" element={
-          <ErrorBoundary>
-            <div className="min-h-screen flex flex-col bg-background">
-              <HomePage 
-                products={products}
-                categories={categories}
-                favorites={favorites}
-                toggleFavorite={toggleFavorite}
-                addToCart={addToCart}
-              />
-
-              {/* TOAST: Producto agregado */}
-              <AnimatePresence>
-                {cartToast && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 80, scale: 0.9 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 80, scale: 0.9 }}
-                    className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[60] w-[90vw] max-w-sm"
-                  >
-                    <div className="bg-primary text-white rounded-2xl shadow-2xl px-5 py-4 flex flex-col gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                          <Plus size={16} className="text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[10px] font-black uppercase tracking-widest text-white/60">¡Agregado al carrito!</p>
-                          <p className="text-sm font-bold truncate">{cartToast.name}</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => { setCartToast(null); openCart(); }}
-                          className="flex-1 py-2 bg-secondary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-500 transition-all"
-                        >
-                          Ver carrito
-                        </button>
-                        <button
-                          onClick={() => setCartToast(null)}
-                          className="flex-1 py-2 bg-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all"
-                        >
-                          Seguir comprando
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Botón flotante WhatsApp */}
-              <div className="fixed bottom-8 right-6 z-50 flex flex-col gap-4 items-end">
-                <motion.a
-                  href="https://wa.me/525650469993?text=Hola,%20vengo%20de%20la%20página%20web%20y%20quiero%20cotizar" target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }}
-                  onClick={() => trackMetaEvent('Contact')}
-                  className="flex items-center gap-3 bg-[#25D366] text-white px-5 py-3.5 rounded-full shadow-2xl hover:bg-[#1EBE5D] transition-all"
-                >
-                  <span className="font-bold text-xs uppercase tracking-wider hidden sm:inline">¡Cotizar por WhatsApp!</span>
-                  <MessageCircle size={26} fill="currentColor" />
-                </motion.a>
-              </div>
-
-              <CartDrawer bankInfo={bankInfo} />
-
-              {/* MODAL RESULTADO DE PAGO (regreso de Mercado Pago) */}
-              <AnimatePresence>
-                {paymentResult && (
-                  <div className="fixed inset-0 z-[95] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                    <motion.div
-                      initial={{ scale: 0.95, opacity: 0, y: 20 }}
-                      animate={{ scale: 1, opacity: 1, y: 0 }}
-                      exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                      className="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full border border-primary/10 shadow-2xl relative text-center"
-                    >
-                      {paymentResult.status === 'exito' ? (
-                        <>
-                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-green-600">
-                            <Check size={32} />
-                          </div>
-                          <h3 className="text-primary text-xl font-black uppercase mb-2">¡Pago Aprobado!</h3>
-                          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 mt-2">
-                            <p className="text-amber-600 font-bold text-xs mb-1 uppercase tracking-wider flex items-center justify-center gap-1">
-                              ⚠️ Paso Final Obligatorio
-                            </p>
-                            <p className="text-primary/70 text-xs">Para que preparemos tu pedido, <strong className="text-primary">DEBES ENVIARLO</strong> haciendo clic en el botón verde de WhatsApp aquí abajo.</p>
-                          </div>
-                        </>
-                      ) : paymentResult.status === 'pendiente' ? (
-                        <>
-                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-500">
-                            <ShoppingBag size={32} />
-                          </div>
-                          <h3 className="text-primary text-xl font-black uppercase mb-2">Pago Pendiente</h3>
-                          <p className="text-primary/60 text-sm mb-6">Tu pago está siendo procesado. Avísanos por WhatsApp para darle seguimiento.</p>
-                        </>
-                      ) : (
-                        <>
-                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 border border-red-200 flex items-center justify-center text-red-500">
-                            <X size={32} />
-                          </div>
-                          <h3 className="text-primary text-xl font-black uppercase mb-2">Pago no completado</h3>
-                          <p className="text-primary/60 text-sm mb-6">No pudimos procesar tu pago. Puedes intentarlo de nuevo o contactarnos por WhatsApp.</p>
-                        </>
-                      )}
-
-                      <div className="flex flex-col gap-3">
-                        {paymentResult.whatsappMessage && (
-                          <a
-                            href={`https://wa.me/525650469993?text=${paymentResult.whatsappMessage}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={() => setPaymentResult(null)}
-                            className="w-full py-4 bg-[#25D366] text-white font-black uppercase tracking-wider text-xs rounded-2xl shadow-lg shadow-[#25D366]/30 hover:bg-[#1EBE5D] transition-colors flex items-center justify-center gap-2"
-                          >
-                            <MessageCircle size={18} /> Enviar pedido por WhatsApp
-                          </a>
-                        )}
-                        <button
-                          onClick={() => setPaymentResult(null)}
-                          className="w-full py-3 bg-primary/5 text-primary font-bold uppercase tracking-wider text-xs rounded-xl hover:bg-primary/10 transition-colors"
-                        >
-                          Cerrar
-                        </button>
-                      </div>
-                    </motion.div>
-                  </div>
-                )}
-              </AnimatePresence>
-            </div>
-          </ErrorBoundary>
-        } />
+        <Route path="/" element={homeElement} />
+        <Route path="/webs" element={homeElement} />
+        <Route path="/menus" element={homeElement} />
+        <Route path="/tarjetas" element={homeElement} />
+        <Route path="/taller" element={homeElement} />
+        <Route path="/faq" element={homeElement} />
+        <Route path="/preguntas" element={homeElement} />
         <Route path="/demo-menu" element={<DemoMenu />} />
         <Route path="/contacto" element={<ContactCard />} />
         <Route path="/tarjeta" element={<ContactCard />} />
@@ -468,6 +476,8 @@ export default function App() {
           <Route path="/strong-gym-rutinas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><IronPlan /></Suspense></ErrorBoundary>} />
 
         <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
+        {/* Fallback universal: previene cualquier pantalla en blanco */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HashRouter>
   );
