@@ -61,6 +61,52 @@ const SERVICIOS = [
     ],
   },
   {
+    slug: 'aplicaciones-para-negocios',
+    menu: 'Apps para negocios',
+    title: 'Creación de Apps para Negocios en CDMX: Restaurantes, Gyms y Más | Imagine & Stamp',
+    description: 'Creamos la app de tu negocio: menú, catálogo o agenda que tus clientes abren con un QR o un link y agregan a su pantalla de inicio. Pedidos y citas directo a tu WhatsApp, sin tiendas de apps y sin comisiones. Desde $1,650 MXN.',
+    h1: 'Creación de apps para negocios, sin pasar por tiendas de apps',
+    lead: 'Tu negocio en el celular de tus clientes: abren tu app con un QR o un link, la agregan a su pantalla de inicio y te mandan pedidos o citas directo a tu WhatsApp. Sin pagar cuotas a Apple o Google, sin esperar aprobaciones y lista en días.',
+    msg: 'Hola René, quiero una app para mi negocio',
+    cta: 'Cotizar mi app',
+    og: 'og-menu-demo.jpg',
+    serviceType: 'Desarrollo de aplicaciones web para negocios',
+    price: '1650',
+    precioTexto: 'Desde $1,650 MXN, un solo pago',
+    beneficios: [
+      ['Sin tiendas de apps', 'No dependes de la aprobación de Apple o Google ni pagas sus cuotas anuales. Tu app está lista en días.'],
+      ['Sin descargas pesadas', 'Tus clientes la abren al instante desde un QR o un link y la agregan a su pantalla de inicio.'],
+      ['Pedidos y citas a tu WhatsApp', 'Carrito o agenda que te manda todo ordenado, sin comisiones por pedido.'],
+      ['Con tu marca', 'Tus colores, tu logo y tus fotos. Se ve y se siente como la app de tu negocio.'],
+    ],
+    secciones: [
+      ['Planes', [
+        'Básico, desde $1,650 MXN: app de menú, catálogo o tarjeta con pedidos o citas a WhatsApp y código QR.',
+        'Profesional, desde $3,490 MXN: además, panel para cambiar precios y productos tú mismo, historial de pedidos, ícono de tu negocio, dominio propio el primer año y display acrílico QR.',
+        'A tu medida, por cotización: varias sucursales, cobros con tarjeta y SPEI, cupones y funciones especiales.',
+      ]],
+      ['Para qué negocios', [
+        'Restaurantes, taquerías, bares y cafeterías: menú con carrito y pedidos.',
+        'Gimnasios: catálogo de suplementos y rutinas.',
+        'Barberías, estéticas, clínicas y veterinarias: servicios y agenda de citas.',
+        'Tiendas y distribuidores: catálogo de productos con pedido por WhatsApp.',
+      ]],
+    ],
+    demos: [
+      ['Candymar · restaurante', '/#/candymar'],
+      ['Strong Gym · catálogo', '/#/strong-gym'],
+      ['Barbería Gentleman\'s Cut', '/#/tarjeta-barberia'],
+      ['Veterinaria Vita Vet', '/#/tarjeta-veterinaria'],
+    ],
+    faqs: [
+      ['¿Es una app de la Play Store o App Store?', 'No. Es una app web: tus clientes la abren desde un QR o un link y la agregan a su pantalla de inicio. Así te ahorras las cuotas y aprobaciones de las tiendas, y la tienes lista en días.'],
+      ['¿Funciona en iPhone y Android?', 'Sí. En Android el celular ofrece agregarla a la pantalla de inicio; en iPhone se agrega desde Safari con Compartir y luego "Agregar a inicio".'],
+      ['¿Cuánto cuesta?', 'El plan Básico es desde $1,650 MXN y el Profesional desde $3,490 MXN, en un solo pago. Lo que lleve a la medida se cotiza por WhatsApp.'],
+      ['¿Cuánto tardan en entregarla?', 'Una app básica suele quedar en 2 o 3 días después de recibir tu información; la Profesional toma un poco más. Te damos la fecha antes de empezar.'],
+      ['¿Puedo cambiar precios y productos yo mismo?', 'Sí, con el plan Profesional tienes un panel para hacerlo desde tu celular. En el Básico nos mandas los cambios por WhatsApp.'],
+    ],
+  },
+  {
     slug: 'hosting-y-dominio',
     menu: 'Hosting y dominio',
     title: 'Hosting y Dominio para tu Página Web en México | Imagine & Stamp',
@@ -495,6 +541,7 @@ ${SERVICIOS.map((s) => `- [${s.h1}](${SITE}/${s.slug}/): ${s.description}`).join
 ## Precios publicados
 
 - Menú digital QR con carrito y pedidos por WhatsApp: $1,650 MXN, un solo pago.
+- Apps para negocios (app web): Básico desde $1,650 MXN; Profesional con panel de administración desde $3,490 MXN; a la medida por cotización.
 - Invitación digital interactiva: $99 MXN. Video animado: $399 MXN. Historia cinemática: $499 MXN. Protagonista 3D con canción: $699 MXN.
 - Páginas web, tarjetas digitales y hosting: cotización por WhatsApp.
 

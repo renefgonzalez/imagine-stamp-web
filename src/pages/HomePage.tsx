@@ -81,7 +81,7 @@ export default function HomePage({
     },
     {
       q: '¿Qué es una Web App (PWA) y por qué le conviene a mi negocio?',
-      a: 'Es una aplicación moderna que tus clientes abren al instante desde un link o código QR y pueden agregar a la pantalla de inicio de su celular (iPhone o Android) con su propio ícono. Funciona a pantalla completa, no les pide descargar 80 MB de la tienda ni crear cuentas, y todos los pedidos o citas te llegan directo a tu WhatsApp sin pagar el 30% de comisión a plataformas.'
+      a: 'Es una app que tus clientes abren al instante desde un link o código QR, sin descargar nada de una tienda de apps ni crear cuentas. La pueden agregar a la pantalla de inicio de su celular (iPhone o Android) para abrirla como cualquier app, y los pedidos o citas te llegan directo a tu WhatsApp, sin comisiones por pedido.'
     },
     {
       q: '¿Cómo me llegan los pedidos de mis clientes?',
@@ -658,8 +658,8 @@ export default function HomePage({
                 <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center mb-3">
                   <Smartphone size={20} />
                 </div>
-                <h4 className="font-headline font-black text-base text-white mb-1">Instalable en 1 Toque</h4>
-                <p className="text-xs text-blue-200/70">Funciona en iPhone y Android sin descargas pesadas de 100 MB.</p>
+                <h4 className="font-headline font-black text-base text-white mb-1">Como una app en su celular</h4>
+                <p className="text-xs text-blue-200/70">Tus clientes la agregan a la pantalla de inicio en iPhone o Android, sin descargar nada de una tienda.</p>
               </div>
 
               <div className="p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
@@ -794,9 +794,9 @@ export default function HomePage({
                   <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 inline-block mb-4">
                     Ideal Emprendedores
                   </span>
-                  <h4 className="text-xl font-headline font-black text-white mb-1">App Menú / Tarjeta</h4>
+                  <h4 className="text-xl font-headline font-black text-white mb-1">App Menú, Catálogo o Tarjeta</h4>
                   <div className="text-3xl font-headline font-black text-white mb-4">
-                    $1,650 <span className="text-xs font-normal text-blue-200/60">MXN / pago único</span>
+                    Desde $1,650 <span className="text-xs font-normal text-blue-200/60">MXN / pago único</span>
                   </div>
                   <ul className="space-y-3 text-xs text-blue-100/80 mb-8">
                     <li className="flex items-center gap-2">
@@ -822,7 +822,7 @@ export default function HomePage({
                   </ul>
                 </div>
                 <a
-                  href={whatsappLink('Hola René, me interesa el Plan Básico de App Web ($1,650 MXN) para mi negocio')}
+                  href={whatsappLink('Hola René, me interesa el Plan Básico de App para mi negocio')}
                   target="_blank"
                   rel="noreferrer"
                   className="w-full py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-headline font-bold text-xs uppercase tracking-wider text-center transition-all border border-white/20"
@@ -834,45 +834,45 @@ export default function HomePage({
               {/* Plan Profesional (Destacado) */}
               <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-b from-secondary/20 to-secondary/5 border-2 border-secondary shadow-2xl relative flex flex-col justify-between">
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-secondary text-white font-headline font-black text-[10px] uppercase tracking-wider shadow-md">
-                  👑 Más Popular
+                  Recomendado
                 </div>
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-secondary/30 text-amber-200 inline-block mb-4 mt-2">
                     Negocios en Crecimiento
                   </span>
-                  <h4 className="text-xl font-headline font-black text-white mb-1">Web App PWA Instalable</h4>
+                  <h4 className="text-xl font-headline font-black text-white mb-1">App con Panel de Administración</h4>
                   <div className="text-3xl font-headline font-black text-secondary mb-4">
-                    $2,850 <span className="text-xs font-normal text-blue-200/60">MXN / pago único</span>
+                    Desde $3,490 <span className="text-xs font-normal text-blue-200/60">MXN / pago único</span>
                   </div>
                   <ul className="space-y-3 text-xs text-blue-100/90 mb-8">
                     <li className="flex items-center gap-2">
                       <CheckCircle2 size={16} className="text-secondary shrink-0" />
-                      <span><strong>Instalable en celular (PWA)</strong> con ícono propio</span>
+                      <span><strong>Panel para cambiar precios y productos</strong> tú mismo</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 size={16} className="text-secondary shrink-0" />
-                      <span>Abre a pantalla completa sin barra de navegador</span>
+                      <span>Historial de pedidos de tus clientes</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 size={16} className="text-secondary shrink-0" />
-                      <span>Carrito interactivo con modificadores y notas</span>
+                      <span>Se agrega a la pantalla de inicio con el ícono de tu negocio</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 size={16} className="text-secondary shrink-0" />
-                      <span><strong>Display físico acrílico QR</strong> para tu mostrador</span>
+                      <span>Carrito con opciones, extras y notas</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 size={16} className="text-secondary shrink-0" />
-                      <span>Hospedaje de alta velocidad por 1 año incluido</span>
+                      <span><strong>Dominio propio</strong> (tunegocio.com) el primer año</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 size={16} className="text-secondary shrink-0" />
-                      <span>Actualizaciones ágiles y soporte prioritario</span>
+                      <span>Display acrílico QR para tu mostrador</span>
                     </li>
                   </ul>
                 </div>
                 <a
-                  href={whatsappLink('Hola René, me interesa el Plan Profesional de Web App PWA ($2,850 MXN) para mi negocio')}
+                  href={whatsappLink('Hola René, me interesa el Plan Profesional de App con Panel de Administración para mi negocio')}
                   target="_blank"
                   rel="noreferrer"
                   className="w-full py-3.5 rounded-full bg-secondary hover:bg-amber-500 text-primary font-headline font-black text-xs uppercase tracking-wider text-center shadow-lg transition-all"
@@ -1510,9 +1510,10 @@ export default function HomePage({
           <h2 className="text-2xl sm:text-3xl font-headline font-black text-primary tracking-tight text-center mb-6">
             Conoce cada servicio a detalle
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
               ['Páginas web', '/paginas-web/'],
+              ['Apps para negocios', '/aplicaciones-para-negocios/'],
               ['Menús digitales QR', '/menu-digital/'],
               ['Invitaciones digitales', '/invitaciones-digitales/'],
               ['Tarjetas digitales', '/tarjetas-digitales/'],
