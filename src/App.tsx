@@ -417,6 +417,8 @@ export default function App() {
     <HashRouter>
       <Routes>
         <Route path="/" element={homeElement} />
+        <Route path="/apps" element={homeElement} />
+        <Route path="/aplicaciones" element={homeElement} />
         <Route path="/webs" element={homeElement} />
         <Route path="/menus" element={homeElement} />
         <Route path="/tarjetas" element={homeElement} />

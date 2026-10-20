@@ -5,7 +5,7 @@ import {
   CreditCard, CheckCircle2, ChevronRight, Star, ExternalLink, ShieldCheck, 
   Zap, Clock, Heart, Search, Plus, X, Layers, Printer, Award, HelpCircle,
   Menu, UtensilsCrossed, Scissors, Stethoscope, Dumbbell, Flame, Building2,
-  Server, Mail
+  Server, Mail, TrendingUp, Coins, ShoppingBag, Store
 } from 'lucide-react';
 import logo from '../logo.png';
 import { CartButton } from '../components/common/CartButton';
@@ -62,8 +62,8 @@ export default function HomePage({
   React.useEffect(() => {
     const raw = window.location.hash || window.location.pathname;
     const cleanId = raw.replace(/^#\/?/, '').replace(/\/$/, '').toLowerCase();
-    if (cleanId && ['menus', 'webs', 'tarjetas', 'invitaciones', 'taller', 'faq', 'preguntas'].includes(cleanId)) {
-      const targetId = cleanId === 'preguntas' ? 'faq' : cleanId;
+    if (cleanId && ['apps', 'aplicaciones', 'menus', 'webs', 'tarjetas', 'invitaciones', 'taller', 'faq', 'preguntas'].includes(cleanId)) {
+      const targetId = cleanId === 'preguntas' ? 'faq' : (cleanId === 'aplicaciones' ? 'apps' : cleanId);
       setTimeout(() => {
         const el = document.getElementById(targetId);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -77,7 +77,11 @@ export default function HomePage({
   const faqs = [
     {
       q: '¿Tengo que pagar mensualidades o rentas de por vida?',
-      a: 'No. En Imagine & Stamp creemos en la propiedad real: pagas un solo costo de configuración por tu menú digital o página web y es tuyo para siempre, sin comisiones obligatorias por pedido ni rentas forzosas.'
+      a: 'No. En Imagine & Stamp creemos en la propiedad real: pagas un solo costo de configuración por tu menú digital, web app o página web y es tuyo para siempre, sin comisiones obligatorias por pedido ni rentas forzosas.'
+    },
+    {
+      q: '¿Qué es una Web App (PWA) y por qué le conviene a mi negocio?',
+      a: 'Es una aplicación moderna que tus clientes abren al instante desde un link o código QR y pueden agregar a la pantalla de inicio de su celular (iPhone o Android) con su propio ícono. Funciona a pantalla completa, no les pide descargar 80 MB de la tienda ni crear cuentas, y todos los pedidos o citas te llegan directo a tu WhatsApp sin pagar el 30% de comisión a plataformas.'
     },
     {
       q: '¿Cómo me llegan los pedidos de mis clientes?',
@@ -130,14 +134,21 @@ export default function HomePage({
           {/* Navegación Desktop */}
           <nav className="hidden lg:flex items-center gap-1 bg-primary/5 p-1.5 rounded-full border border-primary/5">
             <button 
+              onClick={() => scrollToSection('apps')} 
+              className="px-3.5 py-2 rounded-full text-xs font-bold text-secondary hover:text-secondary hover:bg-white transition-all flex items-center gap-1.5"
+            >
+              <Smartphone size={13} />
+              <span>Apps Móviles</span>
+            </button>
+            <button 
               onClick={() => scrollToSection('menus')} 
-              className="px-4 py-2 rounded-full text-xs font-bold text-primary/70 hover:text-primary hover:bg-white transition-all"
+              className="px-3.5 py-2 rounded-full text-xs font-bold text-primary/70 hover:text-primary hover:bg-white transition-all"
             >
               Menús QR
             </button>
             <button 
               onClick={() => scrollToSection('webs')} 
-              className="px-4 py-2 rounded-full text-xs font-bold text-primary/70 hover:text-primary hover:bg-white transition-all"
+              className="px-3.5 py-2 rounded-full text-xs font-bold text-primary/70 hover:text-primary hover:bg-white transition-all"
             >
               Páginas Web
             </button>
@@ -203,6 +214,13 @@ export default function HomePage({
               exit={{ opacity: 0, height: 0 }}
               className="lg:hidden border-t border-primary/5 bg-white/95 backdrop-blur-2xl px-6 py-6 space-y-3"
             >
+              <button 
+                onClick={() => scrollToSection('apps')} 
+                className="w-full text-left py-3 px-4 rounded-xl text-sm font-bold text-secondary bg-secondary/10 flex items-center justify-between"
+              >
+                <span>📱 Apps Móviles para Empresas</span>
+                <ChevronRight size={16} className="text-secondary" />
+              </button>
               <button 
                 onClick={() => scrollToSection('menus')} 
                 className="w-full text-left py-3 px-4 rounded-xl text-sm font-bold text-primary hover:bg-primary/5 flex items-center justify-between"
@@ -592,6 +610,336 @@ export default function HomePage({
                   <ExternalLink size={14} />
                 </a>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════════
+            BLOQUE: CREACIÓN DE APLICACIONES MÓVILES PARA EMPRESAS (PWA)
+        ═══════════════════════════════════════════════════════════════ */}
+        <section id="apps" className="py-16 sm:py-24 bg-gradient-to-b from-[#001833] to-[#002E5D] text-white scroll-mt-24 relative overflow-hidden">
+          <div className="absolute top-0 right-1/4 w-96 h-96 bg-secondary/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+            {/* Header de la sección */}
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary/20 text-secondary text-[11px] font-black uppercase tracking-[0.2em] mb-4 border border-secondary/30">
+                <Smartphone size={14} />
+                <span>Soluciones Digitales Móviles · Web Apps &amp; PWAs</span>
+              </div>
+              <h2 className="text-3xl sm:text-5xl font-headline font-black tracking-tight leading-tight text-white mb-4">
+                Creación de Aplicaciones Móviles para Empresas
+              </h2>
+              <p className="text-blue-100/80 text-base sm:text-lg leading-relaxed">
+                Tu negocio en la palma de la mano de tus clientes. Conquista más ventas, recibe pedidos directos a tu WhatsApp y fideliza clientes con tu propia app, sin pagar comisiones del 30% a plataformas ni gastar miles de pesos en tiendas de aplicaciones.
+              </p>
+            </div>
+
+            {/* 4 Pilares de Beneficio */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-3">
+                  <TrendingUp size={20} />
+                </div>
+                <h4 className="font-headline font-black text-base text-white mb-1">Más Ventas</h4>
+                <p className="text-xs text-blue-200/70">Tu marca visible todos los días en la pantalla de inicio del cliente.</p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                <div className="w-10 h-10 rounded-xl bg-secondary/20 text-secondary flex items-center justify-center mb-3">
+                  <Coins size={20} />
+                </div>
+                <h4 className="font-headline font-black text-base text-white mb-1">Cero Comisiones</h4>
+                <p className="text-xs text-blue-200/70">Olvídate del 30% que cobran plataformas; el 100% de la venta es tuyo.</p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center mb-3">
+                  <Smartphone size={20} />
+                </div>
+                <h4 className="font-headline font-black text-base text-white mb-1">Instalable en 1 Toque</h4>
+                <p className="text-xs text-blue-200/70">Funciona en iPhone y Android sin descargas pesadas de 100 MB.</p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                <div className="w-10 h-10 rounded-xl bg-[#25D366]/20 text-[#25D366] flex items-center justify-center mb-3">
+                  <MessageCircle size={20} />
+                </div>
+                <h4 className="font-headline font-black text-base text-white mb-1">Pedidos a WhatsApp</h4>
+                <p className="text-xs text-blue-200/70">Carrito automatizado y agendador que manda comandas y citas listas.</p>
+              </div>
+            </div>
+
+            {/* Nichos Listos para Entrega Inmediata */}
+            <div className="mb-16">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary block">Adaptado a tu Giro</span>
+                  <h3 className="font-headline font-black text-xl sm:text-2xl text-white">Ideal para todo tipo de negocios</h3>
+                </div>
+                <span className="hidden sm:inline-block text-xs text-blue-200/60 font-bold">Entrega en 48 a 72 horas</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                {/* Nicho 1: Restaurantes */}
+                <div className="p-5 rounded-2xl bg-white/10 border border-white/15 hover:border-secondary transition-all flex flex-col justify-between">
+                  <div>
+                    <div className="w-9 h-9 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center mb-3 text-lg">
+                      🍔
+                    </div>
+                    <h4 className="font-headline font-black text-base text-white mb-1">Restaurantes &amp; Bares</h4>
+                    <p className="text-xs text-blue-100/70 mb-4">
+                      Menú con fotos apetitosas, salsas, combos y pedido directo con dirección y método de pago.
+                    </p>
+                  </div>
+                  <a
+                    href="#menus"
+                    onClick={(e) => { e.preventDefault(); scrollToSection('menus'); }}
+                    className="text-xs font-bold text-secondary hover:text-white flex items-center gap-1.5 transition-colors"
+                  >
+                    <span>Ver demos de comida</span>
+                    <ChevronRight size={14} />
+                  </a>
+                </div>
+
+                {/* Nicho 2: Gym & Fitness */}
+                <div className="p-5 rounded-2xl bg-white/10 border border-white/15 hover:border-red-500 transition-all flex flex-col justify-between">
+                  <div>
+                    <div className="w-9 h-9 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center mb-3 text-lg">
+                      🏋️
+                    </div>
+                    <h4 className="font-headline font-black text-base text-white mb-1">Gimnasios &amp; Fitness</h4>
+                    <p className="text-xs text-blue-100/70 mb-4">
+                      Venta de membresías, catálogo de suplementos, barra de batidos y planificador de rutinas.
+                    </p>
+                  </div>
+                  <a
+                    href="#/strong-gym"
+                    className="text-xs font-bold text-red-400 hover:text-white flex items-center gap-1.5 transition-colors"
+                  >
+                    <span>Ver demo Strong Gym</span>
+                    <ChevronRight size={14} />
+                  </a>
+                </div>
+
+                {/* Nicho 3: Clínicas & Veterinarias */}
+                <div className="p-5 rounded-2xl bg-white/10 border border-white/15 hover:border-teal-400 transition-all flex flex-col justify-between">
+                  <div>
+                    <div className="w-9 h-9 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center mb-3 text-lg">
+                      🐾
+                    </div>
+                    <h4 className="font-headline font-black text-base text-white mb-1">Clínicas &amp; Mascotas</h4>
+                    <p className="text-xs text-blue-100/70 mb-4">
+                      Agendador de consultas, selector de especie, servicios clínicos y botón pulsante de urgencias.
+                    </p>
+                  </div>
+                  <a
+                    href="#/tarjeta-veterinaria"
+                    className="text-xs font-bold text-teal-300 hover:text-white flex items-center gap-1.5 transition-colors"
+                  >
+                    <span>Ver demo Vita Vet</span>
+                    <ChevronRight size={14} />
+                  </a>
+                </div>
+
+                {/* Nicho 4: Barberías & Belleza */}
+                <div className="p-5 rounded-2xl bg-white/10 border border-white/15 hover:border-amber-400 transition-all flex flex-col justify-between">
+                  <div>
+                    <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center mb-3 text-lg">
+                      💈
+                    </div>
+                    <h4 className="font-headline font-black text-base text-white mb-1">Barberías &amp; Salones</h4>
+                    <p className="text-xs text-blue-100/70 mb-4">
+                      Catálogo de servicios, precios por corte o barba, galería de trabajos y reserva en 1 toque.
+                    </p>
+                  </div>
+                  <a
+                    href="#/tarjeta-barberia"
+                    className="text-xs font-bold text-amber-300 hover:text-white flex items-center gap-1.5 transition-colors"
+                  >
+                    <span>Ver demo Barbería</span>
+                    <ChevronRight size={14} />
+                  </a>
+                </div>
+
+                {/* Nicho 5: Tiendas & Catálogos */}
+                <div className="p-5 rounded-2xl bg-white/10 border border-white/15 hover:border-purple-400 transition-all flex flex-col justify-between">
+                  <div>
+                    <div className="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center mb-3 text-lg">
+                      🛍️
+                    </div>
+                    <h4 className="font-headline font-black text-base text-white mb-1">Tiendas &amp; Catálogos</h4>
+                    <p className="text-xs text-blue-100/70 mb-4">
+                      Ropa, calzado, regalos o refacciones con selector de tallas/colores y carrito directo a WhatsApp.
+                    </p>
+                  </div>
+                  <a
+                    href="#taller"
+                    onClick={(e) => { e.preventDefault(); scrollToSection('taller'); }}
+                    className="text-xs font-bold text-purple-300 hover:text-white flex items-center gap-1.5 transition-colors"
+                  >
+                    <span>Ver catálogo tienda</span>
+                    <ChevronRight size={14} />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* 3 Planes de Aplicaciones Móviles */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+              {/* Plan Básico */}
+              <div className="rounded-3xl p-6 sm:p-8 bg-white/5 border border-white/10 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 inline-block mb-4">
+                    Ideal Emprendedores
+                  </span>
+                  <h4 className="text-xl font-headline font-black text-white mb-1">App Menú / Tarjeta</h4>
+                  <div className="text-3xl font-headline font-black text-white mb-4">
+                    $1,650 <span className="text-xs font-normal text-blue-200/60">MXN / pago único</span>
+                  </div>
+                  <ul className="space-y-3 text-xs text-blue-100/80 mb-8">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                      <span>Web App interactiva de alta velocidad</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                      <span>Hasta 5 secciones o categorías completas</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                      <span>Pedidos o citas directas a tu WhatsApp</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                      <span>Código QR en alta resolución listo</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                      <span>Soporte y asesoría técnica por WhatsApp</span>
+                    </li>
+                  </ul>
+                </div>
+                <a
+                  href={whatsappLink('Hola René, me interesa el Plan Básico de App Web ($1,650 MXN) para mi negocio')}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-headline font-bold text-xs uppercase tracking-wider text-center transition-all border border-white/20"
+                >
+                  Solicitar Plan Básico
+                </a>
+              </div>
+
+              {/* Plan Profesional (Destacado) */}
+              <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-b from-secondary/20 to-secondary/5 border-2 border-secondary shadow-2xl relative flex flex-col justify-between">
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-secondary text-white font-headline font-black text-[10px] uppercase tracking-wider shadow-md">
+                  👑 Más Popular
+                </div>
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-secondary/30 text-amber-200 inline-block mb-4 mt-2">
+                    Negocios en Crecimiento
+                  </span>
+                  <h4 className="text-xl font-headline font-black text-white mb-1">Web App PWA Instalable</h4>
+                  <div className="text-3xl font-headline font-black text-secondary mb-4">
+                    $2,850 <span className="text-xs font-normal text-blue-200/60">MXN / pago único</span>
+                  </div>
+                  <ul className="space-y-3 text-xs text-blue-100/90 mb-8">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-secondary shrink-0" />
+                      <span><strong>Instalable en celular (PWA)</strong> con ícono propio</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-secondary shrink-0" />
+                      <span>Abre a pantalla completa sin barra de navegador</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-secondary shrink-0" />
+                      <span>Carrito interactivo con modificadores y notas</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-secondary shrink-0" />
+                      <span><strong>Display físico acrílico QR</strong> para tu mostrador</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-secondary shrink-0" />
+                      <span>Hospedaje de alta velocidad por 1 año incluido</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-secondary shrink-0" />
+                      <span>Actualizaciones ágiles y soporte prioritario</span>
+                    </li>
+                  </ul>
+                </div>
+                <a
+                  href={whatsappLink('Hola René, me interesa el Plan Profesional de Web App PWA ($2,850 MXN) para mi negocio')}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-3.5 rounded-full bg-secondary hover:bg-amber-500 text-primary font-headline font-black text-xs uppercase tracking-wider text-center shadow-lg transition-all"
+                >
+                  Solicitar Plan Profesional
+                </a>
+              </div>
+
+              {/* Plan Premium / A Medida */}
+              <div className="rounded-3xl p-6 sm:p-8 bg-white/5 border border-white/10 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 inline-block mb-4">
+                    Solución Completa
+                  </span>
+                  <h4 className="text-xl font-headline font-black text-white mb-1">App a tu Medida</h4>
+                  <div className="text-2xl font-headline font-black text-white mb-4">
+                    Cotización <span className="text-xs font-normal text-blue-200/60">según proyecto</span>
+                  </div>
+                  <ul className="space-y-3 text-xs text-blue-100/80 mb-8">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-purple-400 shrink-0" />
+                      <span>Múltiples sucursales y puntos de venta</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-purple-400 shrink-0" />
+                      <span>Integración de cobros con tarjeta y SPEI</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-purple-400 shrink-0" />
+                      <span>Módulos de fidelización o cupones de descuento</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-purple-400 shrink-0" />
+                      <span>Pack de displays físicos y stickers para mesas</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 size={16} className="text-purple-400 shrink-0" />
+                      <span>Capacitación y asesoría continua personalizada</span>
+                    </li>
+                  </ul>
+                </div>
+                <a
+                  href={whatsappLink('Hola René, me interesa cotizar una Aplicación Móvil a la Medida para mi empresa')}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-headline font-bold text-xs uppercase tracking-wider text-center transition-all border border-white/20"
+                >
+                  Cotizar Proyecto a Medida
+                </a>
+              </div>
+            </div>
+
+            {/* Banner CTA WhatsApp */}
+            <div className="mt-12 p-6 rounded-2xl bg-white/10 border border-white/15 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+              <div>
+                <h4 className="font-headline font-black text-lg text-white">¿Tienes dudas de cómo funcionaría para tu negocio?</h4>
+                <p className="text-xs text-blue-200/80 mt-1">Platícanos qué vendes y te mostramos un demo en vivo funcionando en tu celular sin compromiso.</p>
+              </div>
+              <a
+                href={whatsappLink('Hola René, quiero ver un demo de cómo funcionaría una App Móvil para mi giro de negocio')}
+                target="_blank"
+                rel="noreferrer"
+                className="px-6 py-3 rounded-full bg-[#25D366] hover:bg-[#1EBE5D] text-white font-headline font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all shrink-0"
+              >
+                <MessageCircle size={16} fill="currentColor" />
+                <span>Hablemos de tu App</span>
+              </a>
             </div>
           </div>
         </section>
