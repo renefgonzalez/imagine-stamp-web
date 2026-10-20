@@ -23,7 +23,7 @@ export const GlobalFooter: React.FC<FooterProps> = ({
   phoneNumber = '',
   email = 'imagineandstamp@gmail.com',
   instagramUrl = 'https://www.instagram.com/personalizadosimagineandstamp',
-  facebookUrl = 'https://www.facebook.com/share/1CFhhieFeV/?mibextid=wwXIfr',
+  facebookUrl = 'https://www.facebook.com/638565032669305',
   tiktokUrl = 'https://www.tiktok.com/@TU_USUARIO_AQUI',
   address = 'Ciudad de México (CDMX)',
   hours = 'Lun - Vie: 9:00 - 18:00 | Sáb: 10:00 - 14:00'
