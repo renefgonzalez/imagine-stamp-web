@@ -618,6 +618,26 @@ export default function HomePage({
                       <CheckCircle2 size={16} />
                     </div>
                     <div>
+                      <h4 className="font-bold text-sm text-primary">Hospedaje Web de Alta Velocidad y Dominio Incluido</h4>
+                      <p className="text-xs text-primary/60">Servidor seguro con certificado SSL y dominio propio. Cero trámites técnicos por tu cuenta; nosotros lo dejamos listo.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                      <CheckCircle2 size={16} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-primary">Correos Corporativos con Tu Marca</h4>
+                      <p className="text-xs text-primary/60">Cuentas profesionales como <strong>contacto@tunegocio.com</strong> o <strong>ventas@tunegocio.com</strong> para proyectar máxima formalidad y confianza.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                      <CheckCircle2 size={16} />
+                    </div>
+                    <div>
                       <h4 className="font-bold text-sm text-primary">100% Optimizadas para Móvil (iPhone y Android)</h4>
                       <p className="text-xs text-primary/60">El 90% de tus visitas entra desde un smartphone. Tu página se verá impecable con botones de 1 toque.</p>
                     </div>
@@ -630,6 +650,16 @@ export default function HomePage({
                     <div>
                       <h4 className="font-bold text-sm text-primary">SEO Local y Google Maps Ready</h4>
                       <p className="text-xs text-primary/60">Estructura Schema Markup y palabras clave pensadas para que los clientes de tu zona te encuentren.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-blue-100 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                      <Server size={16} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-primary">¿Ya tienes web vieja? Migración &amp; Mantenimiento</h4>
+                      <p className="text-xs text-primary/60">Mudamos tu página actual a nuestros servidores estables, te ahorramos costos y te damos soporte directo por WhatsApp.</p>
                     </div>
                   </div>
                 </div>
