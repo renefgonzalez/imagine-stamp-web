@@ -17,6 +17,7 @@ User-agent: Perplexity-User
 User-agent: ClaudeBot
 User-agent: Claude-SearchBot
 User-agent: Claude-User
+User-agent: Applebot
 User-agent: Applebot-Extended
 User-agent: Bingbot
 User-agent: DuckAssistBot
