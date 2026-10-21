@@ -68,7 +68,7 @@ const SERVICIOS = [
   },
   {
     slug: 'aplicaciones-para-negocios',
-    menu: 'Apps para negocios',
+    menu: 'Aplicaciones para negocios',
     title: 'Creación de Apps para Negocios en CDMX: Restaurantes, Gyms y Más | Imagine & Stamp',
     description: 'Creamos la app de tu negocio: menú, catálogo o agenda que tus clientes abren con un QR o un link y agregan a su pantalla de inicio. Pedidos y citas directo a tu WhatsApp, sin tiendas de apps y sin comisiones. Desde $1,650 MXN.',
     h1: 'Creación de apps para negocios, sin pasar por tiendas de apps',

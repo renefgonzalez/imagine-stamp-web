@@ -138,7 +138,7 @@ export default function HomePage({
               className="px-3.5 py-2 rounded-full text-xs font-bold text-secondary hover:text-secondary hover:bg-white transition-all flex items-center gap-1.5"
             >
               <Smartphone size={13} />
-              <span>Apps Móviles</span>
+              <span>Apps para Negocios</span>
             </button>
             <button 
               onClick={() => scrollToSection('menus')} 
@@ -218,7 +218,7 @@ export default function HomePage({
                 onClick={() => scrollToSection('apps')} 
                 className="w-full text-left py-3 px-4 rounded-xl text-sm font-bold text-secondary bg-secondary/10 flex items-center justify-between"
               >
-                <span>📱 Apps Móviles para Empresas</span>
+                <span>📱 Aplicaciones para Negocios</span>
                 <ChevronRight size={16} className="text-secondary" />
               </button>
               <button 
@@ -354,6 +354,51 @@ export default function HomePage({
                 <MessageCircle size={16} className="text-[#25D366]" fill="currentColor" />
                 <span>Hablar por WhatsApp</span>
               </a>
+            </motion.div>
+
+            {/* Accesos rápidos a servicios / categorías */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              className="mt-8 flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto"
+            >
+              <button
+                onClick={() => scrollToSection('apps')}
+                className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/90 hover:bg-white border border-primary/10 hover:border-secondary/40 text-primary hover:text-secondary shadow-2xs hover:shadow-xs transition-all flex items-center gap-1.5"
+              >
+                <span>📱 Apps para Negocios</span>
+              </button>
+              <button
+                onClick={() => scrollToSection('menus')}
+                className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/90 hover:bg-white border border-primary/10 hover:border-secondary/40 text-primary hover:text-secondary shadow-2xs hover:shadow-xs transition-all flex items-center gap-1.5"
+              >
+                <span>🍔 Menús QR</span>
+              </button>
+              <button
+                onClick={() => scrollToSection('webs')}
+                className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/90 hover:bg-white border border-primary/10 hover:border-secondary/40 text-primary hover:text-secondary shadow-2xs hover:shadow-xs transition-all flex items-center gap-1.5"
+              >
+                <span>🌐 Páginas Web</span>
+              </button>
+              <button
+                onClick={() => scrollToSection('tarjetas')}
+                className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/90 hover:bg-white border border-primary/10 hover:border-secondary/40 text-primary hover:text-secondary shadow-2xs hover:shadow-xs transition-all flex items-center gap-1.5"
+              >
+                <span>📇 Tarjetas Digitales</span>
+              </button>
+              <button
+                onClick={() => scrollToSection('invitaciones')}
+                className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/90 hover:bg-white border border-primary/10 hover:border-secondary/40 text-primary hover:text-secondary shadow-2xs hover:shadow-xs transition-all flex items-center gap-1.5"
+              >
+                <span>🎬 Video 3D &amp; Invitaciones</span>
+              </button>
+              <button
+                onClick={() => scrollToSection('taller')}
+                className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/90 hover:bg-white border border-primary/10 hover:border-secondary/40 text-primary hover:text-secondary shadow-2xs hover:shadow-xs transition-all flex items-center gap-1.5"
+              >
+                <span>🖨️ Taller Físico</span>
+              </button>
             </motion.div>
           </div>
 
@@ -615,7 +660,7 @@ export default function HomePage({
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════
-            BLOQUE: CREACIÓN DE APLICACIONES MÓVILES PARA EMPRESAS (PWA)
+            BLOQUE: CREACIÓN DE APLICACIONES PARA NEGOCIOS (PWA)
         ═══════════════════════════════════════════════════════════════ */}
         <section id="apps" className="py-16 sm:py-24 bg-gradient-to-b from-[#001833] to-[#002E5D] text-white scroll-mt-24 relative overflow-hidden">
           <div className="absolute top-0 right-1/4 w-96 h-96 bg-secondary/15 rounded-full blur-3xl pointer-events-none" />
@@ -626,10 +671,10 @@ export default function HomePage({
             <div className="text-center max-w-3xl mx-auto mb-16">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary/20 text-secondary text-[11px] font-black uppercase tracking-[0.2em] mb-4 border border-secondary/30">
                 <Smartphone size={14} />
-                <span>Soluciones Digitales Móviles · Web Apps &amp; PWAs</span>
+                <span>Soluciones para Empresas · Web Apps &amp; PWAs</span>
               </div>
               <h2 className="text-3xl sm:text-5xl font-headline font-black tracking-tight leading-tight text-white mb-4">
-                Creación de Aplicaciones Móviles para Empresas
+                Creación de Aplicaciones para Negocios
               </h2>
               <p className="text-blue-100/80 text-base sm:text-lg leading-relaxed">
                 Tu negocio en la palma de la mano de tus clientes. Conquista más ventas, recibe pedidos directos a tu WhatsApp y fideliza clientes con tu propia app, sin pagar comisiones del 30% a plataformas ni gastar miles de pesos en tiendas de aplicaciones.
