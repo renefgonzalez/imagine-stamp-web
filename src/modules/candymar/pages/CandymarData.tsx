@@ -1,282 +1,843 @@
+// ─── CandymarData.tsx ────────────────────────────────────────────────────────
+// Menú oficial y completo de Candymar Seafood & Grill (Colima / Sinaloa)
+
 export const CATEGORIES = [
   { name: 'Todos' },
-  { name: "Pa' Que Empieces" },
-  { name: 'Tacos' },
+  { name: 'Entradas & Ceviches' },
+  { name: 'Tacos & Tostadas' },
+  { name: 'Tostitos c/ Marisco' },
+  { name: 'Botanas Frías' },
   { name: 'Camarones' },
-  { name: 'Aguachile' },
-  { name: 'Bebidas' },
+  { name: 'Pescados & Filetes' },
+  { name: 'Sushis' },
+  { name: 'Cocteles & Caldos' },
+  { name: 'Hamburguesas' },
+  { name: 'Bebidas & Micheladas' },
+  { name: 'Cervezas & Licores' },
+  { name: 'Extras' },
 ];
 
 export const PRODUCTS = [
-  // Pa' Que Empieces
-  { id: 1, name: 'Ceviche de Camarón', description: 'Estilo Colima y Sinaloa.', price: 195, category: "Pa' Que Empieces", featured: true },
-  { id: 2, name: 'Ceviche de Pescado', description: 'Fresco, con limón y especias.', price: 175, category: "Pa' Que Empieces" },
-  { id: 3, name: 'Aguachile de Camarón', description: 'Camarón crudo marinado en limón con chile.', price: 185, category: "Pa' Que Empieces" },
-  // Tacos
-  { id: 4, name: 'Taco Gobernador', description: 'Con costra de queso dorada.', price: 70, category: 'Tacos', featured: true },
-  { id: 5, name: 'Taco de Marlin', description: 'Marlin ahumado con pico de gallo.', price: 65, category: 'Tacos' },
-  { id: 6, name: 'Taco de Camarón', description: 'Empanizado con repollo y aderezo.', price: 68, category: 'Tacos' },
-  { id: 7, name: 'Quesadilla de Camarón', description: 'Tortilla de harina con queso gratinado.', price: 75, category: 'Tacos' },
-  // Camarones
-  { id: 8, name: 'Camarones Empanizados', description: 'Acompañados de arroz y ensalada.', price: 200, category: 'Camarones' },
-  { id: 9, name: 'Camarones al Mojo de Ajo', description: 'Salteados con ajo, mantequilla y limón.', price: 210, category: 'Camarones' },
-  { id: 10, name: 'Camarones a la Diabla', description: 'Con salsa picante de chile y especias.', price: 205, category: 'Camarones' },
-  { id: 11, name: 'Brocheta de Camarón', description: 'Al grill con verduras y adobo cítrico.', price: 195, category: 'Camarones' },
-  // Aguachile
-  { id: 12, name: 'Aguachile Negro', description: 'Con salsa de soya, chile y limón.', price: 200, category: 'Aguachile' },
-  { id: 13, name: 'Aguachile Verde', description: 'Hierbas frescas, chile serrano y pepino.', price: 195, category: 'Aguachile', featured: true },
-  { id: 14, name: 'Aguachile Rojo', description: 'Chile guajillo, ajo y camarón fresco.', price: 200, category: 'Aguachile' },
-  // Bebidas
-  { id: 15, name: 'Agua Fresca del Día', description: 'Jarra de 1 Litro.', price: 50, category: 'Bebidas' },
-  { id: 16, name: 'Limonada Mineral', description: 'Con agua mineral y hierbabuena.', price: 55, category: 'Bebidas' },
-  { id: 17, name: 'Michelada', description: 'Cerveza con limón, sal y especias.', price: 80, category: 'Bebidas' },
-  { id: 18, name: 'Refresco', description: 'Coca-Cola, Sprite, Fanta o Sidral.', price: 35, category: 'Bebidas' },
+  // ─── 1. ENTRADAS & CEVICHES ──────────────────────────────────────────────
+  {
+    id: 1,
+    name: 'Orden Ceviche de Camarón',
+    description: 'Camarón fresco marinado en limón con pepino, cebolla y cilantro. Servido con tostadas.',
+    price: 225,
+    category: 'Entradas & Ceviches',
+    featured: true,
+  },
+  {
+    id: 2,
+    name: 'Orden Ceviche de Pescado (Colima)',
+    description: 'Receta tradicional estilo Colima con zanahoria rallada, limón persa y especias.',
+    price: 195,
+    category: 'Entradas & Ceviches',
+  },
+  {
+    id: 3,
+    name: 'Orden Ceviche de Pescado (Sinaloa)',
+    description: 'Estilo Sinaloa picado a cuchillo con pepino, cebolla morada y clamato.',
+    price: 210,
+    category: 'Entradas & Ceviches',
+  },
+  {
+    id: 4,
+    name: 'Orden Ceviche Especial',
+    description: 'Combinación fresca de surimi, atún fresco y camarón, acompañado de piña y mango en cubitos.',
+    price: 320,
+    category: 'Entradas & Ceviches',
+    featured: true,
+  },
+  {
+    id: 5,
+    name: 'Orden Ceviche de Atún',
+    description: 'Cubos de atún fresco marinados al momento con soya cítrica, aguacate y ajonjolí.',
+    price: 195,
+    category: 'Entradas & Ceviches',
+  },
+  {
+    id: 6,
+    name: 'Curricanes',
+    description: 'Finas láminas de atún fresco rellenas de ensalada de surimi cremoso, bañadas en salsa de la casa.',
+    price: 300,
+    category: 'Entradas & Ceviches',
+    featured: true,
+  },
+  {
+    id: 7,
+    name: 'Empanadas de Camarón',
+    description: 'Orden de empanadas crujientes de maíz rellenas de guisado de camarón con queso fundido.',
+    price: 280,
+    category: 'Entradas & Ceviches',
+  },
+  {
+    id: 8,
+    name: 'Guacamole con Chicharrón de Pescado',
+    description: 'Guacamole fresco martajado coronado con crujientes chicharrones de pescado frito.',
+    price: 200,
+    category: 'Entradas & Ceviches',
+    featured: true,
+  },
+  {
+    id: 9,
+    name: 'Guacamole Sencillo',
+    description: 'Aguacate fresco machacado con pico de gallo, limón y totopos crujientes.',
+    price: 120,
+    category: 'Entradas & Ceviches',
+  },
+  {
+    id: 10,
+    name: 'Ensalada de Marlin',
+    description: 'Marlin ahumado deshebrado con verduras tiernas, cebolla curtida y mayonesa al gusto.',
+    price: 200,
+    category: 'Entradas & Ceviches',
+  },
+  {
+    id: 11,
+    name: 'Tártara de Atún (Tartam)',
+    description: 'Fresco tartar de atún con aguacate en cubos, aderezo ponzu cítrico y tostadas deshidratadas.',
+    price: 210,
+    category: 'Entradas & Ceviches',
+  },
+  {
+    id: 12,
+    name: 'Orden Tacos de Frijol',
+    description: 'Tacos doraditos rellenos de frijol refrito, coronados con queso fresco y salsa casera.',
+    price: 85,
+    category: 'Entradas & Ceviches',
+  },
+
+  // ─── 2. TACOS & TOSTADAS ──────────────────────────────────────────────────
+  {
+    id: 13,
+    name: 'Taco Gobernador',
+    description: 'Camarón salteado con pimientos y cebolla sobre costra dorada de queso derretido.',
+    price: 70,
+    category: 'Tacos & Tostadas',
+    featured: true,
+  },
+  {
+    id: 14,
+    name: 'Taco Estilo Baja',
+    description: 'Pescado o camarón en capeado crujiente con ensalada de col y aderezo de chipotle.',
+    price: 65,
+    category: 'Tacos & Tostadas',
+  },
+  {
+    id: 15,
+    name: 'Taco Candymar Especial',
+    description: 'Taco especial de la casa con mariscos mixtos salteados a la mantequilla y queso fundido.',
+    price: 120,
+    category: 'Tacos & Tostadas',
+    featured: true,
+  },
+  {
+    id: 16,
+    name: 'Taco de Pulpo',
+    description: 'Trozos de pulpo tierno salteados al ajillo con queso gratinado en tortilla dorada.',
+    price: 85,
+    category: 'Tacos & Tostadas',
+  },
+  {
+    id: 17,
+    name: 'Taco de Camarón al Gusto',
+    description: 'Preparado al ajo, ajillo o mantequilla sobre tortilla caliente.',
+    price: 75,
+    category: 'Tacos & Tostadas',
+  },
+  {
+    id: 18,
+    name: 'Taco de Pescado al Gusto',
+    description: 'Filete fresco preparado a la plancha, ajo o mantequilla.',
+    price: 60,
+    category: 'Tacos & Tostadas',
+  },
+  {
+    id: 19,
+    name: 'Tacos Dorados con Marlin',
+    description: 'Tacos doraditos rellenos de marlin ahumado tradicional.',
+    price: 60,
+    category: 'Tacos & Tostadas',
+  },
+  {
+    id: 20,
+    name: 'Tacos Dorados con Aguachile',
+    description: 'Tacos dorados bañados con aguachile picante y camarón fresco.',
+    price: 65,
+    category: 'Tacos & Tostadas',
+  },
+  {
+    id: 21,
+    name: 'Tostada Especial Candymar',
+    description: 'Torre de mariscos: pulpo tierno, camarón cocido, atún fresco y callo de almeja.',
+    price: 220,
+    category: 'Tacos & Tostadas',
+    featured: true,
+  },
+  {
+    id: 22,
+    name: 'Tostada de Callo de Hacha',
+    description: 'Callo de hacha fresco seleccionado con aguacate y salsas negras.',
+    price: 175,
+    category: 'Tacos & Tostadas',
+  },
+  {
+    id: 23,
+    name: 'Tostada de Pulpo',
+    description: 'Trozos de pulpo tierno cocido con pepino, cebolla morada y aguacate.',
+    price: 120,
+    category: 'Tacos & Tostadas',
+  },
+  {
+    id: 24,
+    name: 'Tostada de Atún Fresco',
+    description: 'Cubos de atún fresco marinados con aderezo oriental y láminas de aguacate.',
+    price: 100,
+    category: 'Tacos & Tostadas',
+  },
+  {
+    id: 25,
+    name: 'Tostada de Aguachile',
+    description: 'Camarón crudo marinado en limón con chile serrano verde, rojo o negro.',
+    price: 95,
+    category: 'Tacos & Tostadas',
+  },
+  {
+    id: 26,
+    name: 'Tostada de Callo de Almeja',
+    description: 'Callo de almeja fresca con limón, sal de grano y cebolla morada.',
+    price: 90,
+    category: 'Tacos & Tostadas',
+  },
+  {
+    id: 27,
+    name: 'Tostada de Camarón Cocido',
+    description: 'Camarones cocidos enteros con pepino, cebolla y aguacate.',
+    price: 85,
+    category: 'Tacos & Tostadas',
+  },
+  {
+    id: 28,
+    name: 'Tostada de Ceviche de Camarón',
+    description: 'Ceviche fresco de camarón picado con limón persa.',
+    price: 85,
+    category: 'Tacos & Tostadas',
+  },
+  {
+    id: 29,
+    name: 'Tostada de Ceviche de Pescado',
+    description: 'Ceviche fresco de pescado molido con zanahoria y limón.',
+    price: 60,
+    category: 'Tacos & Tostadas',
+  },
+
+  // ─── 3. TOSTITOS C/ MARISCO ───────────────────────────────────────────────
+  {
+    id: 30,
+    name: 'Tostitos Candymar Especial',
+    description: 'Bolsa de Tostitos abierta y preparada con camarón crudo, camarón cocido, pulpo, atún y callo de almeja.',
+    price: 375,
+    category: 'Tostitos c/ Marisco',
+    featured: true,
+  },
+  {
+    id: 31,
+    name: 'Tostitos con Aguachile',
+    description: 'Con camarón crudo curtido en salsa de aguachile rojo, negro o verde, pepino y clamato.',
+    price: 250,
+    category: 'Tostitos c/ Marisco',
+  },
+  {
+    id: 32,
+    name: 'Tostitos con Ceviche de Camarón',
+    description: 'Tostitos crujientes con ceviche de camarón fresco, salsas negras y aguacate.',
+    price: 250,
+    category: 'Tostitos c/ Marisco',
+  },
+  {
+    id: 33,
+    name: 'Tostitos de Atún',
+    description: 'Tostitos preparados con láminas de atún fresco y salsa especial de la casa.',
+    price: 270,
+    category: 'Tostitos c/ Marisco',
+  },
+  {
+    id: 34,
+    name: 'Tostitos con Ceviche de Pescado',
+    description: 'Con ceviche fresco de pescado estilo Colima o Sinaloa, pepino y salsas.',
+    price: 220,
+    category: 'Tostitos c/ Marisco',
+  },
+
+  // ─── 4. BOTANAS FRÍAS ─────────────────────────────────────────────────────
+  {
+    id: 35,
+    name: 'Botana de Callo de Hacha',
+    description: 'Platón estelar con callo de hacha fresco, camarón crudo, camarón cocido y pulpo.',
+    price: 700,
+    category: 'Botanas Frías',
+    featured: true,
+  },
+  {
+    id: 36,
+    name: 'Botana Candymar',
+    description: 'Camarón crudo, camarón cocido, pulpo tierno y atún fresco bañados en salsas negras de la casa.',
+    price: 320,
+    category: 'Botanas Frías',
+    featured: true,
+  },
+  {
+    id: 37,
+    name: 'Botana Pulpo y Camarón',
+    description: 'Trozos de pulpo y camarón acompañados de trocitos de mango dulce, pepino y clamato especial.',
+    price: 280,
+    category: 'Botanas Frías',
+  },
+  {
+    id: 38,
+    name: 'Sashimi de Atún',
+    description: 'Láminas de atún fresco bañadas en nuestra salsa especial con chile serrano y ajonjolí.',
+    price: 250,
+    category: 'Botanas Frías',
+  },
+  {
+    id: 39,
+    name: 'Aguachile Tradicional (Rojo, Negro o Verde)',
+    description: 'Camarones crudos mariposeados, marinados en limón con chile chiltepín (rojo), serrano (verde) o soya habanero (negro).',
+    price: 225,
+    category: 'Botanas Frías',
+    featured: true,
+  },
+  {
+    id: 40,
+    name: 'Botana Callo por Peso (100g)',
+    description: 'Callo fresco seleccionado de primera calidad servido al natural con limón y sal de grano.',
+    price: 500,
+    category: 'Botanas Frías',
+  },
+
+  // ─── 5. CAMARONES ─────────────────────────────────────────────────────────
+  {
+    id: 41,
+    name: 'Camarones Momia',
+    description: 'Deliciosos camarones crujientes envueltos en tocino doradito y bañados en quesos derretidos.',
+    price: 250,
+    category: 'Camarones',
+    featured: true,
+  },
+  {
+    id: 42,
+    name: 'Camarones Philadelphia Coco',
+    description: 'Perfecta combinación donde el coco crujiente y el queso philadelphia hacen lo suyo.',
+    price: 260,
+    category: 'Camarones',
+    featured: true,
+  },
+  {
+    id: 43,
+    name: 'Camarones Philadelphia',
+    description: 'Camarones empanizados rellenos de queso philadelphia cremoso.',
+    price: 250,
+    category: 'Camarones',
+  },
+  {
+    id: 44,
+    name: 'Camarones al Coco',
+    description: 'Crujientes camarones cubiertos con coco rallado, servidos con dip de mango y habanero.',
+    price: 235,
+    category: 'Camarones',
+  },
+  {
+    id: 45,
+    name: 'Camarones Cucaracha',
+    description: 'Camarones dorados crujientes con cáscara, sazonados con salsa botanera picante y limón.',
+    price: 235,
+    category: 'Camarones',
+  },
+  {
+    id: 46,
+    name: 'Camarones Roka',
+    description: 'Camarones crujientes bañados en una cremosa salsa agridulce estilo chipotle.',
+    price: 230,
+    category: 'Camarones',
+  },
+  {
+    id: 47,
+    name: 'Camarones al Gusto',
+    description: 'Preparados al mojo de ajo, al ajillo, a la mantequilla o a la diabla con arroz y ensalada.',
+    price: 225,
+    category: 'Camarones',
+  },
+  {
+    id: 48,
+    name: 'Camarones Empanizados',
+    description: 'Dorados y crujientes con pan molido especial, acompañados de papas y aderezo tártara.',
+    price: 225,
+    category: 'Camarones',
+  },
+
+  // ─── 6. PESCADOS & FILETES ────────────────────────────────────────────────
+  {
+    id: 49,
+    name: 'Filete Relleno Candymar',
+    description: 'Filete de pescado relleno de camarón, pulpo tierno, piña, pimiento morrón y queso derretido.',
+    price: 350,
+    category: 'Pescados & Filetes',
+    featured: true,
+  },
+  {
+    id: 50,
+    name: 'Pulpo al Gusto',
+    description: 'Pulpo suave y tierno preparado a la diabla, a la mantequilla, al mojo de ajo o estilo chicharrón crujiente.',
+    price: 350,
+    category: 'Pescados & Filetes',
+    featured: true,
+  },
+  {
+    id: 51,
+    name: 'Pescado Frito Entero (500 a 600g)',
+    description: 'Pescado entero dorado y crujiente al mojo de ajo, al ajillo, a la diabla o frito natural.',
+    price: 285,
+    category: 'Pescados & Filetes',
+  },
+  {
+    id: 52,
+    name: 'Filete Empapelado',
+    description: 'Cocido al vapor en aluminio con mantequilla fina, jitomate, cebolla y verduras selectas.',
+    price: 260,
+    category: 'Pescados & Filetes',
+  },
+  {
+    id: 53,
+    name: 'Filete Empanizado',
+    description: 'Crujiente filete dorado acompañado de arroz blanco, ensalada fresca y aderezo.',
+    price: 220,
+    category: 'Pescados & Filetes',
+  },
+  {
+    id: 54,
+    name: 'Filete al Gusto',
+    description: 'Preparado a la diabla, al ajo, al ajillo o a la mantequilla.',
+    price: 190,
+    category: 'Pescados & Filetes',
+  },
+
+  // ─── 7. SUSHIS ────────────────────────────────────────────────────────────
+  {
+    id: 55,
+    name: 'Sushi Empanizado con Aguachile',
+    description: 'Rollo empanizado crujiente bañado completamente con aguachile rojo, negro o verde.',
+    price: 350,
+    category: 'Sushis',
+    featured: true,
+  },
+  {
+    id: 56,
+    name: 'Sushi Empanizado Especial',
+    description: 'Rollo empanizado coronado con ensalada kani cremosa y trozos de camarones empanizados crujientes.',
+    price: 350,
+    category: 'Sushis',
+    featured: true,
+  },
+  {
+    id: 57,
+    name: 'Pepino Roll con Aguachile',
+    description: 'Rollo envuelto en finas láminas de pepino fresco sin arroz, relleno de mariscos y bañado en aguachile.',
+    price: 350,
+    category: 'Sushis',
+  },
+  {
+    id: 58,
+    name: 'Avocado Roll',
+    description: 'Rollo cubierto con aguacate tierno y cremoso, coronado con camarones al gusto.',
+    price: 350,
+    category: 'Sushis',
+  },
+  {
+    id: 59,
+    name: 'Sushi Zarandeado',
+    description: 'Rollo flameado con adobo zarandeado sinaloense y trozos de marisco a las brasas.',
+    price: 350,
+    category: 'Sushis',
+  },
+  {
+    id: 60,
+    name: 'Sushi Cucaracha',
+    description: 'Coronado con camarones estilo cucaracha dorados en salsa botanera brava.',
+    price: 350,
+    category: 'Sushis',
+  },
+  {
+    id: 61,
+    name: 'Sushi Sencillo',
+    description: 'Rollo empanizado relleno de surimi, coronado con ensalada kani.',
+    price: 190,
+    category: 'Sushis',
+  },
+
+  // ─── 8. COCTELES & CALDOS ─────────────────────────────────────────────────
+  {
+    id: 62,
+    name: 'Chacales al Gusto',
+    description: 'Chacales / langostinos de río preparados al ajo, al ajillo, a la diabla o a la mantequilla.',
+    price: 550,
+    category: 'Cocteles & Caldos',
+    featured: true,
+  },
+  {
+    id: 63,
+    name: 'Sopa de Mariscos',
+    description: 'Sopa caliente y sustanciosa con pulpo, camarón, pescado, conchas y sazón costero.',
+    price: 320,
+    category: 'Cocteles & Caldos',
+  },
+  {
+    id: 64,
+    name: 'Coctel Especial Candymar',
+    description: 'Copa coctelera grande con callo de hacha, pulpo y camarón con caldillo frío de la casa.',
+    price: 280,
+    category: 'Cocteles & Caldos',
+    featured: true,
+  },
+  {
+    id: 65,
+    name: 'Caldo de Caguamanta',
+    description: 'Tradicional y reconfortante caldo norteño preparado con manta y camarones.',
+    price: 250,
+    category: 'Cocteles & Caldos',
+  },
+  {
+    id: 66,
+    name: 'Coctel de Pulpo',
+    description: 'Pulpo tierno cocido servido en su jugo con pepino, cebolla, jitomate y aguacate.',
+    price: 250,
+    category: 'Cocteles & Caldos',
+  },
+  {
+    id: 67,
+    name: 'Coctel Mixto',
+    description: 'Combinación clásica de camarón y pulpo con salsa coctelera preparada.',
+    price: 250,
+    category: 'Cocteles & Caldos',
+  },
+  {
+    id: 68,
+    name: 'Coctel de Camarón',
+    description: 'Camarones frescos con caldillo sazonado, cebolla morada, cilantro y aguacate.',
+    price: 220,
+    category: 'Cocteles & Caldos',
+  },
+  {
+    id: 69,
+    name: 'Caldillo de Camarón Seco',
+    description: 'Caldo tradicional preparado con camarón seco, verduras y hierbas de olor.',
+    price: 190,
+    category: 'Cocteles & Caldos',
+  },
+
+  // ─── 9. HAMBURGUESAS ──────────────────────────────────────────────────────
+  {
+    id: 70,
+    name: 'Hamburguesa Mixta',
+    description: 'Jugosa carne de res y camarones a la plancha con queso derretido y papas a la francesa.',
+    price: 285,
+    category: 'Hamburguesas',
+    featured: true,
+  },
+  {
+    id: 71,
+    name: 'Hamburguesa de Camarón',
+    description: 'Camarones salteados con aderezo especial, queso gratinado y papas fritas.',
+    price: 250,
+    category: 'Hamburguesas',
+  },
+  {
+    id: 72,
+    name: 'Hamburguesa de Res',
+    description: 'Carne 100% de res a la parrilla con queso, lechuga, jitomate y papas.',
+    price: 220,
+    category: 'Hamburguesas',
+  },
+
+  // ─── 10. BEBIDAS & MICHELADAS ─────────────────────────────────────────────
+  {
+    id: 73,
+    name: 'Miche Especial Candymar',
+    description: 'Michelada monumental con cerveza bien fría y todos los mariscos (camarón, pulpo, salsas negras).',
+    price: 225,
+    category: 'Bebidas & Micheladas',
+    featured: true,
+  },
+  {
+    id: 74,
+    name: 'Michelada con Camarón',
+    description: 'Escarchada con limón y chile piquín, coronada con camarones frescos cocidos.',
+    price: 170,
+    category: 'Bebidas & Micheladas',
+  },
+  {
+    id: 75,
+    name: 'Michelada Camarón Seco y Aceituna',
+    description: 'Con camarón seco botanero y aceitunas sobre tarro helado.',
+    price: 150,
+    category: 'Bebidas & Micheladas',
+  },
+  {
+    id: 76,
+    name: 'Michelada Tradicional',
+    description: 'Preparada con limón persa, salsas negras inglesas y sal de grano.',
+    price: 120,
+    category: 'Bebidas & Micheladas',
+  },
+  {
+    id: 77,
+    name: 'Naranjada (Natural o Mineral)',
+    description: 'Jugo de naranja natural servido con agua natural o mineralizada.',
+    price: 95,
+    category: 'Bebidas & Micheladas',
+  },
+  {
+    id: 78,
+    name: 'Limonada (Natural o Mineral)',
+    description: 'Refrescante limonada con toque de hierbabuena.',
+    price: 95,
+    category: 'Bebidas & Micheladas',
+  },
+  {
+    id: 79,
+    name: 'Agua Fresca del Día (1 Litro)',
+    description: 'Jarra de 1 litro de fruta natural de temporada.',
+    price: 85,
+    category: 'Bebidas & Micheladas',
+  },
+  {
+    id: 80,
+    name: 'Agua de Coco Natural',
+    description: 'Agua de coco 100% fresca y natural.',
+    price: 85,
+    category: 'Bebidas & Micheladas',
+  },
+  {
+    id: 81,
+    name: 'Clamato Preparado (500 ml)',
+    description: 'Con salsas de la casa, limón, pimienta y apio.',
+    price: 55,
+    category: 'Bebidas & Micheladas',
+  },
+  {
+    id: 82,
+    name: 'Vaso Clamato',
+    description: 'Vaso escarchado con clamato y salsas negras.',
+    price: 40,
+    category: 'Bebidas & Micheladas',
+  },
+  {
+    id: 83,
+    name: 'Refresco',
+    description: 'Coca-Cola, Coca sin azúcar, Sprite, Fanta, Fresca o Sidral Mundet.',
+    price: 40,
+    category: 'Bebidas & Micheladas',
+  },
+  {
+    id: 84,
+    name: 'Botella de Agua',
+    description: 'Agua purificada natural 600 ml.',
+    price: 30,
+    category: 'Bebidas & Micheladas',
+  },
+  {
+    id: 85,
+    name: 'Vaso Chelado',
+    description: 'Vaso escarchado con limón y sal.',
+    price: 25,
+    category: 'Bebidas & Micheladas',
+  },
+
+  // ─── 11. CERVEZAS, COCTELES & DESTILADOS ──────────────────────────────────
+  {
+    id: 86,
+    name: 'Caguama Familiar Corona',
+    description: 'Caguama familiar bien helada.',
+    price: 110,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 87,
+    name: 'Caguama Familiar Victoria',
+    description: 'Caguama familiar bien helada.',
+    price: 110,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 88,
+    name: 'Caguama Pacífico Familiar',
+    description: 'Caguama familiar clara bien helada.',
+    price: 110,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 89,
+    name: 'Cerveza Modelo Especial',
+    description: 'Botella de media.',
+    price: 60,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 90,
+    name: 'Cerveza Corona / Victoria / Pacífico',
+    description: 'Cerveza de media bien helada.',
+    price: 55,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 91,
+    name: 'Carajillo',
+    description: 'Licor 43 batido con café espresso concentrado.',
+    price: 130,
+    category: 'Cervezas & Licores',
+    featured: true,
+  },
+  {
+    id: 92,
+    name: 'Mezcalitas de Fruta',
+    description: 'Mezcal artesanal con pulpa de fruta natural y sal de gusano.',
+    price: 110,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 93,
+    name: 'Daiquirí',
+    description: 'Coctel frozen con ron, limón y sabor a elegir.',
+    price: 110,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 94,
+    name: 'Piña Colada',
+    description: 'Ron, crema de coco y jugo de piña batido con hielo.',
+    price: 100,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 95,
+    name: 'Mojito Tradicional',
+    description: 'Ron blanco, hierbabuena fresca, azúcar y agua mineral.',
+    price: 100,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 96,
+    name: 'Margarita',
+    description: 'Tequila, triple sec y jugo de limón persa escarchada.',
+    price: 100,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 97,
+    name: 'Ruso Blanco / Ruso Negro / Alfonso 13',
+    description: 'Tragos clásicos con licor de café y vodka.',
+    price: 100,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 98,
+    name: 'Copa Whisky Black Label',
+    description: 'Servido en las rocas o con agua mineral (Botella $2,200).',
+    price: 200,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 99,
+    name: 'Copa Tequila 1800 Cristalino',
+    description: 'Tequila 1800 (Botella $1,800).',
+    price: 180,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 100,
+    name: 'Copa Tequila Maestro Dobel',
+    description: 'Tequila Maestro Dobel Diamante (Botella $1,800).',
+    price: 175,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 101,
+    name: 'Copa Whisky Buchanan\'s',
+    description: 'Buchanan\'s 12 años (Botella $1,700).',
+    price: 165,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 102,
+    name: 'Copa Tequila Centenario',
+    description: 'Tequila Centenario Plata o Reposado (Botella $1,400).',
+    price: 120,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 103,
+    name: 'Copa Mezcal de la Casa',
+    description: 'Mezcal artesanal con naranja y sal de gusano (Botella $750).',
+    price: 110,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 104,
+    name: 'Copa Tequila de la Casa',
+    description: 'Tequila tradicional servido con sangrita (Botella $700).',
+    price: 100,
+    category: 'Cervezas & Licores',
+  },
+  {
+    id: 105,
+    name: 'Copa Ron Bacardí Blanco',
+    description: 'Servido con refresco de cola o mineral.',
+    price: 90,
+    category: 'Cervezas & Licores',
+  },
+
+  // ─── 12. EXTRAS ───────────────────────────────────────────────────────────
+  {
+    id: 106,
+    name: 'Extra de Callo de Hacha',
+    description: 'Porción extra de callo de hacha fresco.',
+    price: 500,
+    category: 'Extras',
+  },
+  {
+    id: 107,
+    name: 'Extra de Callo de Almeja',
+    description: 'Porción extra de callo de almeja fresca.',
+    price: 90,
+    category: 'Extras',
+  },
+  {
+    id: 108,
+    name: 'Extra de Pulpo',
+    description: 'Porción extra de pulpo tierno cocido.',
+    price: 80,
+    category: 'Extras',
+  },
+  {
+    id: 109,
+    name: 'Extra de Atún Fresco',
+    description: 'Porción extra de atún en cubos o láminas.',
+    price: 55,
+    category: 'Extras',
+  },
+  {
+    id: 110,
+    name: 'Extra de Camarón',
+    description: 'Porción extra de camarón crudo o cocido.',
+    price: 50,
+    category: 'Extras',
+  },
+  {
+    id: 111,
+    name: 'Extra de Aguacate',
+    description: 'Medio aguacate en rebanadas frescas.',
+    price: 50,
+    category: 'Extras',
+  },
 ];
-
-export const OctopusSVG = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 240 280" fill="none">
-    {/* Cabeza redondeada elegante */}
-    <ellipse cx="120" cy="60" rx="45" ry="55" stroke="currentColor" strokeWidth="1.8" opacity="0.42" />
-    <path d="M90 70 Q85 85 88 100" stroke="currentColor" strokeWidth="0.8" opacity="0.2" />
-    <path d="M150 70 Q155 85 152 100" stroke="currentColor" strokeWidth="0.8" opacity="0.2" />
-
-    {/* Ojos expresivos */}
-    <circle cx="100" cy="50" r="6.5" stroke="currentColor" strokeWidth="1.3" opacity="0.5" fill="none" />
-    <circle cx="140" cy="50" r="6.5" stroke="currentColor" strokeWidth="1.3" opacity="0.5" fill="none" />
-    <circle cx="100" cy="50" r="3" fill="currentColor" opacity="0.7" />
-    <circle cx="140" cy="50" r="3" fill="currentColor" opacity="0.7" />
-
-    {/* Tentáculo 1 - izquierda extrema */}
-    <path d="M85 110 Q65 155 58 210 Q55 235 62 250 Q70 245 75 220 Q82 180 90 130" stroke="currentColor" strokeWidth="2.2" opacity="0.4" strokeLinecap="round" />
-    <circle cx="68" cy="145" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="62" cy="170" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="60" cy="195" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="64" cy="225" r="1.5" fill="currentColor" opacity="0.35" />
-
-    {/* Tentáculo 2 - izquierda centro */}
-    <path d="M100 115 Q95 160 100 200 Q105 240 100 260 Q95 275 88 260 Q80 230 85 190 Q90 150 105 115" stroke="currentColor" strokeWidth="2.2" opacity="0.4" strokeLinecap="round" />
-    <circle cx="95" cy="145" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="92" cy="170" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="94" cy="195" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="98" cy="220" r="1.5" fill="currentColor" opacity="0.35" />
-
-    {/* Tentáculo 3 - derecha centro */}
-    <path d="M140 115 Q145 160 140 200 Q135 240 140 260 Q145 275 152 260 Q160 230 155 190 Q150 150 135 115" stroke="currentColor" strokeWidth="2.2" opacity="0.4" strokeLinecap="round" />
-    <circle cx="145" cy="145" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="148" cy="170" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="146" cy="195" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="142" cy="220" r="1.5" fill="currentColor" opacity="0.35" />
-
-    {/* Tentáculo 4 - derecha extrema */}
-    <path d="M155 110 Q175 155 182 210 Q185 235 178 250 Q170 245 165 220 Q158 180 150 130" stroke="currentColor" strokeWidth="2.2" opacity="0.4" strokeLinecap="round" />
-    <circle cx="172" cy="145" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="178" cy="170" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="180" cy="195" r="1.5" fill="currentColor" opacity="0.35" />
-    <circle cx="176" cy="225" r="1.5" fill="currentColor" opacity="0.35" />
-  </svg>
-);
-
-export const CrabSVG = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 260 200" fill="none">
-    {/* Caparazón principal - más redondo y detallado */}
-    <ellipse cx="130" cy="70" rx="55" ry="48" stroke="currentColor" strokeWidth="2" opacity="0.42" />
-    <path d="M85 70 Q130 50 175 70 Q130 90 85 70" stroke="currentColor" strokeWidth="1" opacity="0.3" fill="none" />
-    <path d="M95 55 Q130 40 165 55" stroke="currentColor" strokeWidth="0.8" opacity="0.2" fill="none" />
-    
-    {/* Detalles del caparazón (textura) */}
-    <circle cx="130" cy="60" r="2" fill="currentColor" opacity="0.4" />
-    <circle cx="115" cy="65" r="1.5" fill="currentColor" opacity="0.3" />
-    <circle cx="145" cy="65" r="1.5" fill="currentColor" opacity="0.3" />
-    <circle cx="120" cy="78" r="1.5" fill="currentColor" opacity="0.3" />
-    <circle cx="140" cy="78" r="1.5" fill="currentColor" opacity="0.3" />
-
-    {/* Ojos saltones característicos */}
-    <path d="M110 22 Q115 10 115 5" stroke="currentColor" strokeWidth="2" opacity="0.5" strokeLinecap="round" />
-    <path d="M150 22 Q145 10 145 5" stroke="currentColor" strokeWidth="2" opacity="0.5" strokeLinecap="round" />
-    <circle cx="115" cy="5" r="4.5" stroke="currentColor" strokeWidth="1.5" opacity="0.6" fill="none" />
-    <circle cx="145" cy="5" r="4.5" stroke="currentColor" strokeWidth="1.5" opacity="0.6" fill="none" />
-    <circle cx="115" cy="5" r="2" fill="currentColor" opacity="0.8" />
-    <circle cx="145" cy="5" r="2" fill="currentColor" opacity="0.8" />
-
-    {/* Tenaza izquierda grande y poderosa */}
-    <path d="M75 60 Q40 40 30 70 Q25 90 45 100 Q65 110 80 85" stroke="currentColor" strokeWidth="2.5" opacity="0.45" strokeLinecap="round" fill="none" />
-    <path d="M45 100 Q20 110 15 130 Q10 150 30 145 Q50 140 55 110" stroke="currentColor" strokeWidth="2.5" opacity="0.45" strokeLinecap="round" fill="none" />
-    {/* Picos de la tenaza izquierda */}
-    <path d="M22 135 L12 130" stroke="currentColor" strokeWidth="1.5" opacity="0.4" />
-    <path d="M28 142 L20 138" stroke="currentColor" strokeWidth="1.5" opacity="0.4" />
-
-    {/* Tenaza derecha grande y poderosa */}
-    <path d="M185 60 Q220 40 230 70 Q235 90 215 100 Q195 110 180 85" stroke="currentColor" strokeWidth="2.5" opacity="0.45" strokeLinecap="round" fill="none" />
-    <path d="M215 100 Q240 110 245 130 Q250 150 230 145 Q210 140 205 110" stroke="currentColor" strokeWidth="2.5" opacity="0.45" strokeLinecap="round" fill="none" />
-    {/* Picos de la tenaza derecha */}
-    <path d="M238 135 L248 130" stroke="currentColor" strokeWidth="1.5" opacity="0.4" />
-    <path d="M232 142 L240 138" stroke="currentColor" strokeWidth="1.5" opacity="0.4" />
-
-    {/* Patas traseras (3 pares) - izquierda */}
-    <path d="M80 95 Q50 120 45 155" stroke="currentColor" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
-    <path d="M85 105 Q65 135 70 170" stroke="currentColor" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
-    <path d="M95 112 Q90 145 105 180" stroke="currentColor" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
-
-    {/* Patas traseras (3 pares) - derecha */}
-    <path d="M180 95 Q210 120 215 155" stroke="currentColor" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
-    <path d="M175 105 Q195 135 190 170" stroke="currentColor" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
-    <path d="M165 112 Q170 145 155 180" stroke="currentColor" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
-  </svg>
-);
-
-// ─── Pescado Grabado (Fish Sketch) ───
-export const FishSVG = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 320 180" fill="none">
-    {/* Contorno del cuerpo */}
-    <path
-      d="M280 90 Q240 60 170 45 Q90 35 30 75 Q15 88 15 95 Q15 102 30 115 Q90 155 170 145 Q240 130 280 100 L305 125 L298 95 L305 65 Z"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    {/* Ojo expresivo */}
-    <circle cx="50" cy="85" r="9" stroke="currentColor" strokeWidth="1.8" />
-    <circle cx="49" cy="84" r="4.5" fill="currentColor" />
-    <circle cx="47" cy="82" r="1.5" fill="#fff" />
-    {/* Boca y hocico */}
-    <path d="M15 95 Q25 96 34 94" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    {/* Branquia */}
-    <path d="M72 65 Q85 90 75 125" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    <path d="M80 72 Q91 93 83 118" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
-    {/* Aleta Dorsal */}
-    <path d="M100 44 Q140 20 190 30 Q175 44 160 46" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    <path d="M115 38 L112 45 M130 32 L128 45 M145 30 L144 46 M160 32 L159 47 M175 35 L174 48" stroke="currentColor" strokeWidth="1" opacity="0.6" />
-    {/* Aleta Pectoral */}
-    <path d="M88 100 Q120 102 135 118 Q115 124 95 112 Z" stroke="currentColor" strokeWidth="1.6" fill="none" />
-    <path d="M96 104 Q116 109 126 116 M100 108 Q112 113 120 119" stroke="currentColor" strokeWidth="0.8" opacity="0.5" />
-    {/* Aleta Ventral / Anal */}
-    <path d="M190 142 Q215 155 230 148 Q218 136 200 137" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    {/* Aleta Caudal (Cola) radios */}
-    <path d="M280 92 L300 75 M282 95 L302 85 M283 97 L304 95 M282 99 L302 105 M280 101 L300 115" stroke="currentColor" strokeWidth="1" opacity="0.7" />
-    {/* Textura de escamas punteadas / semicírculos */}
-    <path d="M110 75 Q115 80 120 75 M125 75 Q130 80 135 75 M140 75 Q145 80 150 75 M155 75 Q160 80 165 75" stroke="currentColor" strokeWidth="1" opacity="0.4" />
-    <path d="M118 85 Q123 90 128 85 M133 85 Q138 90 143 85 M148 85 Q153 90 158 85 M163 85 Q168 90 173 85" stroke="currentColor" strokeWidth="1" opacity="0.4" />
-    <path d="M135 95 Q140 100 145 95 M150 95 Q155 100 160 95 M165 95 Q170 100 175 95 M180 95 Q185 100 190 95" stroke="currentColor" strokeWidth="1" opacity="0.4" />
-    <path d="M155 105 Q160 110 165 105 M170 105 Q175 110 180 105 M185 105 Q190 110 195 105" stroke="currentColor" strokeWidth="1" opacity="0.4" />
-  </svg>
-);
-
-// ─── Camarón Grabado (Shrimp Sketch) ───
-export const ShrimpSVG = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 200 180" fill="none">
-    {/* Curva del cuerpo de camarón */}
-    <path
-      d="M30 50 Q75 15 130 35 Q165 55 170 95 Q172 135 135 155 Q105 168 80 150 Q70 140 75 125 Q85 115 100 120 Q120 128 135 115 Q148 102 142 80 Q135 55 95 45 Q55 40 30 50 Z"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    {/* Segmentos del exoesqueleto */}
-    <path d="M90 42 Q105 55 108 72" stroke="currentColor" strokeWidth="1.4" opacity="0.6" />
-    <path d="M110 46 Q125 62 126 82" stroke="currentColor" strokeWidth="1.4" opacity="0.6" />
-    <path d="M130 55 Q142 75 138 95" stroke="currentColor" strokeWidth="1.4" opacity="0.6" />
-    <path d="M142 70 Q152 92 142 110" stroke="currentColor" strokeWidth="1.4" opacity="0.6" />
-    <path d="M138 100 Q138 120 122 132" stroke="currentColor" strokeWidth="1.4" opacity="0.6" />
-    <path d="M120 122 Q112 138 95 142" stroke="currentColor" strokeWidth="1.4" opacity="0.6" />
-    {/* Cola (Telson & Urópodos) */}
-    <path d="M75 145 Q55 155 45 150 Q48 140 68 135" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    <path d="M72 148 Q50 165 40 162 Q45 150 65 142" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    {/* Ojo de camarón */}
-    <circle cx="45" cy="50" r="3.5" fill="currentColor" />
-    {/* Antenas largas curvadas */}
-    <path d="M30 48 Q10 40 5 20 Q2 5 20 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" opacity="0.75" />
-    <path d="M32 52 Q15 55 8 70 Q4 85 15 95" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" opacity="0.75" />
-    {/* Patitas (Pereiópodos) */}
-    <path d="M70 65 Q65 85 58 95" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
-    <path d="M82 68 Q78 90 70 102" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
-    <path d="M95 72 Q92 95 86 108" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
-  </svg>
-);
-
-// ─── Ostra / Mejillón Grabado (Mussel / Oyster) ───
-export const OysterSVG = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 160 200" fill="none">
-    {/* Concha aperlada en gota */}
-    <path
-      d="M80 185 Q45 170 25 125 Q10 80 35 40 Q60 5 80 5 Q100 5 125 40 Q150 80 135 125 Q115 170 80 185 Z"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    {/* Estrías de crecimiento concéntricas */}
-    <path d="M40 50 Q80 20 120 50" stroke="currentColor" strokeWidth="1.2" opacity="0.5" strokeLinecap="round" />
-    <path d="M30 80 Q80 45 130 80" stroke="currentColor" strokeWidth="1.3" opacity="0.5" strokeLinecap="round" />
-    <path d="M25 110 Q80 75 135 110" stroke="currentColor" strokeWidth="1.4" opacity="0.55" strokeLinecap="round" />
-    <path d="M30 135 Q80 105 130 135" stroke="currentColor" strokeWidth="1.4" opacity="0.55" strokeLinecap="round" />
-    <path d="M45 160 Q80 135 115 160" stroke="currentColor" strokeWidth="1.3" opacity="0.5" strokeLinecap="round" />
-    {/* Líneas radiales */}
-    <path d="M80 10 L80 180" stroke="currentColor" strokeWidth="1" opacity="0.3" strokeDasharray="3 3" />
-    <path d="M60 20 Q55 90 70 175" stroke="currentColor" strokeWidth="0.8" opacity="0.25" />
-    <path d="M100 20 Q105 90 90 175" stroke="currentColor" strokeWidth="0.8" opacity="0.25" />
-  </svg>
-);
-
-// ─── Rodaja de Limón (Lemon Slice) ───
-export const LemonSliceSVG = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 140 140" fill="none">
-    {/* Cáscara exterior */}
-    <circle cx="70" cy="70" r="62" stroke="currentColor" strokeWidth="2.4" />
-    {/* Membrana interior (Albedo) */}
-    <circle cx="70" cy="70" r="54" stroke="currentColor" strokeWidth="1.2" strokeDasharray="2 2" opacity="0.5" />
-    {/* Centro de la rodaja */}
-    <circle cx="70" cy="70" r="6" stroke="currentColor" strokeWidth="1.4" />
-    {/* 8 Gajos triangulares */}
-    {Array.from({ length: 8 }).map((_, i) => {
-      const angle = (i * 45 * Math.PI) / 180;
-      const angleNext = ((i * 45 + 38) * Math.PI) / 180;
-      const rInner = 10;
-      const rOuter = 50;
-      const x1 = 70 + rInner * Math.cos(angle);
-      const y1 = 70 + rInner * Math.sin(angle);
-      const x2 = 70 + rOuter * Math.cos(angle);
-      const y2 = 70 + rOuter * Math.sin(angle);
-      const x3 = 70 + rOuter * Math.cos(angleNext);
-      const y3 = 70 + rOuter * Math.sin(angleNext);
-      const x4 = 70 + rInner * Math.cos(angleNext);
-      const y4 = 70 + rInner * Math.sin(angleNext);
-
-      return (
-        <g key={i}>
-          <path
-            d={`M${x1} ${y1} L${x2} ${y2} A${rOuter} ${rOuter} 0 0 1 ${x3} ${y3} L${x4} ${y4} Z`}
-            stroke="currentColor"
-            strokeWidth="1.2"
-            opacity="0.65"
-          />
-          {/* Pequeños granos de pulpa */}
-          <circle cx={(x2 + x4) / 2} cy={(y2 + y4) / 2} r="1" fill="currentColor" opacity="0.4" />
-        </g>
-      );
-    })}
-  </svg>
-);
-
-// ─── Ramita de Romero / Hierbas (Rosemary Herb) ───
-export const RosemarySVG = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 80 180" fill="none">
-    {/* Tallo central ondulado */}
-    <path d="M40 175 Q42 120 38 70 Q35 30 40 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    {/* Hojas opuestas alargadas */}
-    <path d="M40 160 Q20 150 10 145" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    <path d="M40 160 Q60 150 70 145" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    <path d="M39 135 Q18 122 8 115" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    <path d="M40 135 Q62 122 72 115" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    <path d="M38 110 Q16 95 10 85" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    <path d="M39 110 Q64 95 70 85" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    <path d="M37 80 Q18 65 14 52" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    <path d="M38 80 Q62 65 66 52" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    <path d="M38 50 Q22 35 20 22" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    <path d="M39 50 Q58 35 60 22" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    <path d="M40 25 Q32 15 35 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    <path d="M40 25 Q48 15 45 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-  </svg>
-);
-

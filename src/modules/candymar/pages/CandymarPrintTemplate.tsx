@@ -10,15 +10,29 @@ import limonRomeroGrabado from '../assets/limon-romero-grabado.webp';
 
 const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
   const fishProducts = PRODUCTS.filter(
-    p => p.category === "Pa' Que Empieces" && (p.name.toLowerCase().includes('pescado') || p.name.toLowerCase().includes('ceviche')),
-  );
+    p =>
+      (p.category === 'Entradas & Ceviches' || p.category === 'Pescados & Filetes') &&
+      (p.name.toLowerCase().includes('ceviche') || p.name.toLowerCase().includes('pescado') || p.name.toLowerCase().includes('filete')),
+  ).slice(0, 5);
+
   const musselProducts = PRODUCTS.filter(
-    p => p.category === 'Tacos' || (p.category === "Pa' Que Empieces" && !fishProducts.some(fp => fp.id === p.id)),
-  );
-  const shrimpProducts = PRODUCTS.filter(p => p.category === 'Camarones');
+    p =>
+      p.category === 'Tacos & Tostadas' &&
+      (p.name.toLowerCase().includes('gobernador') ||
+        p.name.toLowerCase().includes('candymar') ||
+        p.name.toLowerCase().includes('baja') ||
+        p.name.toLowerCase().includes('pulpo') ||
+        p.name.toLowerCase().includes('callo')),
+  ).slice(0, 5);
+
+  const shrimpProducts = PRODUCTS.filter(p => p.category === 'Camarones').slice(0, 5);
+
   const lobsterCrabProducts = PRODUCTS.filter(
-    p => p.category === 'Aguachile' || p.category === 'Bebidas',
-  );
+    p =>
+      p.category === 'Botanas Frías' ||
+      p.category === 'Cocteles & Caldos' ||
+      p.name.toLowerCase().includes('chacales'),
+  ).slice(0, 6);
 
   return (
     <div

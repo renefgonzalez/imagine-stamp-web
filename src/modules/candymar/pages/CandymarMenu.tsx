@@ -183,21 +183,44 @@ export default function CandymarMenu() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Productos para el layout por cuadrantes
+  // Productos seleccionados para la lámina de arte de 4 cuadrantes (idéntica a la maqueta)
   const fishProducts = useMemo(
-    () => PRODUCTS.filter(p => p.category === "Pa' Que Empieces" && (p.name.toLowerCase().includes('pescado') || p.name.toLowerCase().includes('ceviche'))),
+    () =>
+      PRODUCTS.filter(
+        p =>
+          (p.category === 'Entradas & Ceviches' || p.category === 'Pescados & Filetes') &&
+          (p.name.toLowerCase().includes('ceviche') || p.name.toLowerCase().includes('pescado') || p.name.toLowerCase().includes('filete')),
+      ).slice(0, 5),
     [],
   );
+
   const musselProducts = useMemo(
-    () => PRODUCTS.filter(p => p.category === 'Tacos' || (p.category === "Pa' Que Empieces" && !fishProducts.some(fp => fp.id === p.id))),
-    [fishProducts],
-  );
-  const shrimpProducts = useMemo(
-    () => PRODUCTS.filter(p => p.category === 'Camarones'),
+    () =>
+      PRODUCTS.filter(
+        p =>
+          p.category === 'Tacos & Tostadas' &&
+          (p.name.toLowerCase().includes('gobernador') ||
+            p.name.toLowerCase().includes('candymar') ||
+            p.name.toLowerCase().includes('baja') ||
+            p.name.toLowerCase().includes('pulpo') ||
+            p.name.toLowerCase().includes('callo')),
+      ).slice(0, 5),
     [],
   );
+
+  const shrimpProducts = useMemo(
+    () => PRODUCTS.filter(p => p.category === 'Camarones').slice(0, 5),
+    [],
+  );
+
   const lobsterCrabProducts = useMemo(
-    () => PRODUCTS.filter(p => p.category === 'Aguachile' || p.category === 'Bebidas'),
+    () =>
+      PRODUCTS.filter(
+        p =>
+          p.category === 'Botanas Frías' ||
+          p.category === 'Cocteles & Caldos' ||
+          p.name.toLowerCase().includes('chacales'),
+      ).slice(0, 6),
     [],
   );
 
@@ -582,6 +605,73 @@ export default function CandymarMenu() {
                     ))}
                   </div>
                 </section>
+              </div>
+
+              {/* ═══════════════════════════════════════════════════════════════
+                  CATÁLOGO COMPLETO ORGANIZADO POR CATEGORÍAS (111 PLATILLOS REALES)
+                  ═══════════════════════════════════════════════════════════════ */}
+              <div className="pt-10 border-t border-sky-200/80">
+                <div className="text-center mb-10">
+                  <span className="text-xs uppercase tracking-[0.25em] text-sky-700 font-bold font-sans-title">
+                    Marisquería de Tradición · Colima & Sinaloa
+                  </span>
+                  <h3 className="text-4xl sm:text-5xl font-bold font-script text-[#0284c7] mt-1">
+                    Menú Completo de la Casa
+                  </h3>
+                  <p className="text-slate-500 text-xs sm:text-sm font-serif italic max-w-lg mx-auto mt-1">
+                    Toca cualquier platillo para ver el detalle y pedirlo directo por WhatsApp.
+                  </p>
+                </div>
+
+                <div className="space-y-12">
+                  {CATEGORIES.filter(c => c.name !== 'Todos').map(category => {
+                    const catProducts = PRODUCTS.filter(p => p.category === category.name);
+                    if (catProducts.length === 0) return null;
+
+                    return (
+                      <section key={category.name} className="relative bg-white/70 backdrop-blur-2xs p-6 sm:p-8 rounded-xl border border-sky-100 shadow-2xs">
+                        <div className="flex items-center justify-between mb-6 pb-2 border-b border-sky-200">
+                          <h4 className="text-3xl sm:text-4xl font-bold font-script text-[#0284c7]">
+                            {category.name}
+                          </h4>
+                          <span className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
+                            {catProducts.length} opciones
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4">
+                          {catProducts.map(p => (
+                            <article
+                              key={p.id}
+                              onClick={() => setSelectedProduct(p)}
+                              className="dish-item group cursor-pointer"
+                            >
+                              <div className="flex items-baseline justify-between text-slate-900">
+                                <span className="dish-title font-display font-bold text-base">
+                                  {p.name}
+                                </span>
+                                <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-slate-300" />
+                                <span className="font-price font-bold text-base shrink-0">
+                                  ${p.price.toFixed(2)}
+                                </span>
+                              </div>
+                              <div className="flex items-start justify-between gap-2 mt-0.5">
+                                <p className="text-slate-500 text-xs italic font-serif leading-tight">
+                                  {p.description}
+                                </p>
+                                {p.featured && (
+                                  <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-sky-800 bg-sky-100 px-2 py-0.5 rounded-full">
+                                    Top
+                                  </span>
+                                )}
+                              </div>
+                            </article>
+                          ))}
+                        </div>
+                      </section>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           ) : (
