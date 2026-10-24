@@ -1,30 +1,84 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Download, Search, Sparkles, ChevronUp, MapPin, Phone, Mail, Instagram, Facebook, MessageCircle, X, Plus } from 'lucide-react';
+import { Download, Search, Sparkles, ChevronUp, MapPin, Phone, Mail, Instagram, Facebook, MessageCircle, X } from 'lucide-react';
 // @ts-ignore
 import html2pdf from 'html2pdf.js';
 import CandymarPrintTemplate from './CandymarPrintTemplate';
-import {
-  CATEGORIES,
-  PRODUCTS,
-  FishSVG,
-  ShrimpSVG,
-  OysterSVG,
-  LemonSliceSVG,
-  RosemarySVG,
-  CrabSVG,
-} from './CandymarData';
+import { CATEGORIES, PRODUCTS } from './CandymarData';
 import logo from '../assets/logo.png';
+import fondoAcuarela from '../assets/fondo-acuarela.webp';
+import pescadoGrabado from '../assets/pescado-grabado.webp';
+import camaronGrabado from '../assets/camaron-grabado.webp';
+import cangrejoGrabado from '../assets/cangrejo-grabado.webp';
+import ostrasGrabado from '../assets/ostras-grabado.webp';
+import limonRomeroGrabado from '../assets/limon-romero-grabado.webp';
+
+// ─── Motas y salpicaduras de acuarela azul (Watercolor Splatter Dots) ─────────
+const WatercolorSplatterDots = ({ className = "" }: { className?: string }) => (
+  <svg className={`pointer-events-none select-none ${className}`} viewBox="0 0 800 300" fill="none">
+    {/* Racimos de salpicaduras en azul cielo y turquesa acuoso */}
+    <circle cx="45" cy="80" r="3.5" fill="#38bdf8" opacity="0.55" />
+    <circle cx="55" cy="95" r="2" fill="#0284c7" opacity="0.6" />
+    <circle cx="70" cy="75" r="5" fill="#06b6d4" opacity="0.4" />
+    <circle cx="85" cy="110" r="2.5" fill="#38bdf8" opacity="0.5" />
+    <circle cx="95" cy="88" r="4" fill="#0284c7" opacity="0.45" />
+    <circle cx="115" cy="120" r="6" fill="#7dd3fc" opacity="0.35" />
+    <circle cx="130" cy="98" r="2" fill="#0ea5e9" opacity="0.6" />
+
+    <circle cx="210" cy="190" r="4.5" fill="#38bdf8" opacity="0.5" />
+    <circle cx="225" cy="210" r="2" fill="#0284c7" opacity="0.55" />
+    <circle cx="240" cy="175" r="5.5" fill="#06b6d4" opacity="0.45" />
+    <circle cx="260" cy="225" r="3" fill="#7dd3fc" opacity="0.5" />
+    <circle cx="280" cy="195" r="2.5" fill="#0284c7" opacity="0.6" />
+    <circle cx="300" cy="235" r="4" fill="#38bdf8" opacity="0.4" />
+
+    <circle cx="420" cy="140" r="3.5" fill="#0ea5e9" opacity="0.55" />
+    <circle cx="435" cy="165" r="5" fill="#06b6d4" opacity="0.4" />
+    <circle cx="450" cy="130" r="2" fill="#0284c7" opacity="0.65" />
+    <circle cx="475" cy="180" r="4" fill="#7dd3fc" opacity="0.45" />
+    <circle cx="490" cy="150" r="2.5" fill="#38bdf8" opacity="0.5" />
+    <circle cx="510" cy="170" r="6" fill="#06b6d4" opacity="0.35" />
+
+    <circle cx="620" cy="70" r="4" fill="#38bdf8" opacity="0.5" />
+    <circle cx="635" cy="95" r="2.5" fill="#0284c7" opacity="0.6" />
+    <circle cx="650" cy="65" r="5" fill="#06b6d4" opacity="0.45" />
+    <circle cx="670" cy="115" r="3" fill="#7dd3fc" opacity="0.5" />
+    <circle cx="690" cy="85" r="6.5" fill="#0ea5e9" opacity="0.4" />
+    <circle cx="710" cy="125" r="2" fill="#0284c7" opacity="0.6" />
+    <circle cx="735" cy="95" r="4.5" fill="#38bdf8" opacity="0.45" />
+
+    <circle cx="340" cy="60" r="3" fill="#06b6d4" opacity="0.5" />
+    <circle cx="355" cy="85" r="2" fill="#0284c7" opacity="0.6" />
+    <circle cx="370" cy="50" r="4.5" fill="#7dd3fc" opacity="0.4" />
+    <circle cx="560" cy="240" r="4" fill="#0ea5e9" opacity="0.5" />
+    <circle cx="580" cy="260" r="2.5" fill="#0284c7" opacity="0.65" />
+    <circle cx="600" cy="230" r="5.5" fill="#38bdf8" opacity="0.4" />
+  </svg>
+);
 
 // ─── Estilos y Fuentes Google ────────────────────────────────────────────────
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=Oswald:wght@500;600;700&family=Montserrat:wght@400;600;700;800;900&family=Caveat:wght@600;700&display=swap');
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+  .font-script {
+    font-family: 'Dancing Script', 'Caveat', cursive;
   }
-  .fade-item {
-    animation: fadeUp 0.35s ease-out forwards;
+
+  .font-display {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  .font-price {
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .font-sans-title {
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  /* Integración de grabado al aguafuerte con papel acuarela */
+  .etching-art {
+    mix-blend-mode: multiply;
+    filter: contrast(1.15) brightness(0.98);
   }
 
   .cat-scroll::-webkit-scrollbar {
@@ -35,42 +89,21 @@ const STYLES = `
     scrollbar-width: none;
   }
 
-  /* Lienzo Acuarela Luminosa (Blanco + manchas suaves celestes y aguamarina) */
-  .watercolor-canvas {
-    background-color: #ffffff;
-    background-image:
-      radial-gradient(ellipse at 12% 10%, rgba(186, 230, 253, 0.45) 0%, rgba(224, 242, 254, 0.25) 35%, transparent 65%),
-      radial-gradient(ellipse at 88% 12%, rgba(165, 243, 252, 0.45) 0%, rgba(207, 250, 254, 0.2) 30%, transparent 60%),
-      radial-gradient(circle at 10% 85%, rgba(165, 243, 252, 0.5) 0%, rgba(207, 250, 254, 0.25) 30%, transparent 60%),
-      radial-gradient(circle at 92% 85%, rgba(186, 230, 253, 0.4) 0%, rgba(224, 242, 254, 0.2) 35%, transparent 65%),
-      radial-gradient(circle at 50% 50%, rgba(240, 249, 255, 0.6) 0%, transparent 70%);
-  }
-
-  /* Pincelada Caligráfica Marina */
-  .font-script-menu {
-    font-family: 'Dancing Script', 'Caveat', cursive;
-  }
-
-  /* Tinta de grabado náutico */
-  .ink-dark {
-    color: #1e293b;
-  }
-
-  /* Hover suave sobre platillos */
-  .dish-row {
-    transition: all 0.2s ease;
+  /* Hover interactivo sobre platillos */
+  .dish-item {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     border-radius: 6px;
-    padding: 4px 6px;
-    margin: -4px -6px;
+    padding: 3px 6px;
+    margin: -3px -6px;
   }
-  .dish-row:hover {
+  .dish-item:hover {
     background-color: rgba(14, 165, 233, 0.08);
   }
-  .dish-row:hover .dish-name {
-    color: #0369a1;
+  .dish-item:hover .dish-title {
+    color: #0284c7 !important;
   }
-  .dish-row:hover .dish-dots {
-    border-color: #0284c7;
+  .dish-item:hover .dish-dots {
+    border-color: #0ea5e9 !important;
   }
 `;
 
@@ -81,7 +114,6 @@ export default function CandymarMenu() {
   const [selectedProduct, setSelectedProduct] = useState<(typeof PRODUCTS)[0] | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
 
-  // Teléfono WhatsApp oficial de Candymar para pedidos
   const candymarPhone = '5215650469993';
 
   const filteredProducts = useMemo(
@@ -109,9 +141,9 @@ export default function CandymarMenu() {
 
       const opt = {
         margin: 0,
-        filename: 'Menu_Candymar_Seafood.pdf',
+        filename: 'Menu_Candymar_Seafood_Acuarela.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: { scale: 2.2, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
       };
 
@@ -148,9 +180,9 @@ export default function CandymarMenu() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Productos categorizados para el layout editorial fiel a la lámina
+  // Productos para el layout por cuadrantes
   const fishProducts = useMemo(
-    () => PRODUCTS.filter(p => p.category === "Pa' Que Empieces" && p.name.toLowerCase().includes('pescado') || p.name.toLowerCase().includes('ceviche')),
+    () => PRODUCTS.filter(p => p.category === "Pa' Que Empieces" && (p.name.toLowerCase().includes('pescado') || p.name.toLowerCase().includes('ceviche'))),
     [],
   );
   const musselProducts = useMemo(
@@ -167,7 +199,15 @@ export default function CandymarMenu() {
   );
 
   return (
-    <div className="watercolor-canvas text-slate-800 min-h-screen font-sans selection:bg-cyan-200 selection:text-sky-950">
+    <div
+      className="min-h-screen font-sans text-slate-800 selection:bg-cyan-200 selection:text-sky-950 relative"
+      style={{
+        backgroundColor: '#f6fbfe',
+        backgroundImage: `url(${fondoAcuarela})`,
+        backgroundRepeat: 'repeat-y',
+        backgroundSize: '100% auto',
+      }}
+    >
       <style>{STYLES}</style>
 
       {/* ─── PLANTILLA DE IMPRESIÓN (OCULTA) ─── */}
@@ -175,8 +215,8 @@ export default function CandymarMenu() {
         <CandymarPrintTemplate ref={printRef} />
       </div>
 
-      {/* ─── BARRA SUPERIOR DE ACCIONES RÁPIDAS ─── */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-sky-100 shadow-2xs py-2.5 px-4">
+      {/* ─── BARRA SUPERIOR FLOTANTE CON LOGO Y ACCIONES ─── */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-sky-100 shadow-2xs py-2 px-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <div className="h-9 w-9 rounded-full overflow-hidden border border-sky-300 shadow-xs bg-white">
@@ -195,8 +235,8 @@ export default function CandymarMenu() {
           <div className="flex items-center gap-2">
             <button
               onClick={handleDownloadPDF}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-sky-800 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-full transition-all shadow-2xs"
-              title="Descargar Menú PDF estilo Acuarela"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-sky-800 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-full transition-all shadow-2xs"
+              title="Descargar Menú en PDF idéntico a la lámina de acuarela"
             >
               <Download size={13} />
               <span className="hidden sm:inline">Descargar PDF</span>
@@ -206,7 +246,7 @@ export default function CandymarMenu() {
               href={`https://wa.me/${candymarPhone}?text=${encodeURIComponent('¡Hola Candymar! Quisiera consultar su menú del día y hacer un pedido.')}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white bg-emerald-600 hover:bg-emerald-700 rounded-full transition-all shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-white bg-emerald-600 hover:bg-emerald-700 rounded-full transition-all shadow-2xs"
             >
               <MessageCircle size={13} />
               <span className="hidden sm:inline">Pedir por WhatsApp</span>
@@ -215,85 +255,44 @@ export default function CandymarMenu() {
         </div>
       </header>
 
-      {/* ─── PORTADA EDITORIAL IDÉNTICA A LA MAQUETA DE REFERENCIA ─── */}
-      <section className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-4 overflow-hidden">
-        {/* Decoraciones de esquina estilo Grabado + Acuarela */}
-        <div className="absolute top-2 left-2 w-16 h-36 opacity-75 pointer-events-none select-none text-slate-700 hidden sm:block">
-          <RosemarySVG className="w-full h-full" />
-        </div>
-        <div className="absolute top-24 left-1 w-14 h-14 opacity-70 pointer-events-none select-none text-slate-600 hidden sm:block">
-          <LemonSliceSVG className="w-full h-full" />
-        </div>
-        <div className="absolute top-4 left-44 w-28 h-20 opacity-75 pointer-events-none select-none text-slate-700 hidden md:block">
-          <CrabSVG className="w-full h-full" />
-        </div>
-        <div className="absolute top-6 left-72 w-12 h-12 opacity-65 pointer-events-none select-none text-slate-600 hidden lg:block">
-          <LemonSliceSVG className="w-full h-full" />
-        </div>
-        <div className="absolute top-2 right-4 w-20 h-28 opacity-80 pointer-events-none select-none text-slate-700 hidden sm:block">
-          <OysterSVG className="w-full h-full" />
-        </div>
-        <div className="absolute top-20 right-2 w-14 h-14 opacity-70 pointer-events-none select-none text-slate-600 hidden sm:block">
-          <LemonSliceSVG className="w-full h-full" />
-        </div>
+      {/* ─── CONTENEDOR PRINCIPAL: LÁMINA EDITORIAL DE ACUARELA ─── */}
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 py-6 pb-20">
+        <div
+          className="relative bg-white/92 rounded-2xl shadow-xl border border-sky-100/80 p-5 sm:p-10 lg:p-14 overflow-hidden"
+          style={{
+            backgroundImage: `url(${fondoAcuarela})`,
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center top',
+            backgroundSize: 'cover',
+          }}
+        >
+          {/* ═══════════════════════════════════════════════════════════════
+              ILUSTRACIONES EN TINTA DE GRABADO AL AGUAFUERTE EN BORDES Y ESQUINAS
+              (Idéntico a la lámina original de referencia)
+              ═══════════════════════════════════════════════════════════════ */}
 
-        {/* Bloque de Identidad Principal: "Menu SEAFOOD • Always Fresh •" */}
-        <div className="relative z-10 flex flex-col md:flex-row md:items-start justify-between gap-6 pt-2 pb-6 border-b border-sky-100">
-          <div className="max-w-md">
-            {/* Título "Menu" en Caligrafía Script Azul Océano */}
-            <h1
-              className="text-6xl sm:text-7xl font-bold font-script-menu text-[#0284c7] leading-none mb-0 drop-shadow-xs"
-              style={{ transform: 'rotate(-4deg)', display: 'inline-block' }}
-            >
-              Menu
-            </h1>
-
-            {/* Título "SEAFOOD" en mayúsculas gruesas negras */}
-            <div className="mt-1">
-              <span
-                className="text-4xl sm:text-5xl font-black uppercase tracking-tight text-slate-900 block"
-                style={{ fontFamily: "'Montserrat', sans-serif" }}
-              >
-                SEAFOOD
-              </span>
-            </div>
-
-            {/* Subtítulo "• Always Fresh •" */}
-            <div className="flex items-center gap-2 mt-1 text-slate-700 font-script-menu text-xl sm:text-2xl italic">
-              <span className="text-[#0284c7] font-bold">•</span>
-              <span>Always Fresh & Delicious</span>
-              <span className="text-[#0284c7] font-bold">•</span>
-            </div>
-
-            {/* Ilustración de Pescado Grabado debajo del título */}
-            <div className="w-64 sm:w-80 text-slate-800 mt-2 opacity-90 drop-shadow-xs">
-              <FishSVG className="w-full h-auto" />
-            </div>
+          {/* Cangrejo en el borde superior centro-izquierdo */}
+          <div className="absolute top-2 left-64 sm:left-80 w-28 sm:w-36 pointer-events-none select-none z-10 opacity-90 hidden md:block">
+            <img src={cangrejoGrabado} alt="Crab engraving" className="w-full h-auto etching-art" />
           </div>
 
-          {/* Buscador y Filtros dinámicos */}
-          <div className="flex-1 max-w-lg md:pt-4">
-            <div className="relative mb-4">
-              <Search className="w-4 h-4 text-sky-600 absolute left-3.5 top-3" />
-              <input
-                type="text"
-                placeholder="Buscar platillo, taco, ceviche, aguachile..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-white/90 border border-sky-200 focus:border-sky-500 text-slate-800 text-sm px-4 py-2 pl-10 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-200 shadow-2xs placeholder-slate-400 transition-all font-sans"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-2 text-xs text-slate-400 hover:text-slate-700 px-1.5 py-0.5"
-                >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
+          {/* Ostras / Mejillones abiertos en la esquina superior derecha */}
+          <div className="absolute -top-4 -right-4 w-40 sm:w-56 pointer-events-none select-none z-10 opacity-90 hidden sm:block">
+            <img src={ostrasGrabado} alt="Oysters engraving" className="w-full h-auto etching-art" />
+          </div>
 
-            {/* Selector de Categorías tipo píldoras claras */}
-            <div className="flex items-center gap-1.5 overflow-x-auto cat-scroll py-1">
+          {/* Rodajas de limón y romero en margen izquierdo superior */}
+          <div className="absolute top-4 -left-2 w-20 sm:w-28 pointer-events-none select-none z-10 opacity-85 hidden sm:block">
+            <img src={limonRomeroGrabado} alt="Lemon and rosemary" className="w-full h-auto etching-art" />
+          </div>
+
+          {/* Salpicaduras de puntitos azules orgánicos en el fondo */}
+          <WatercolorSplatterDots className="absolute top-24 left-0 w-full h-44 opacity-80 z-0" />
+          <WatercolorSplatterDots className="absolute bottom-6 left-0 w-full h-56 opacity-90 z-0" />
+
+          {/* Barra de búsqueda y categorías integradas con delicadeza */}
+          <div className="relative z-20 flex flex-col md:flex-row items-center justify-between gap-4 mb-8 pb-4 border-b border-sky-100">
+            <div className="flex items-center gap-2 overflow-x-auto cat-scroll w-full md:w-auto py-1">
               {CATEGORIES.map(cat => {
                 const active = selectedCategory === cat.name;
                 return (
@@ -303,7 +302,7 @@ export default function CandymarMenu() {
                     className={`whitespace-nowrap px-3.5 py-1 text-xs font-bold uppercase tracking-wider transition-all duration-200 rounded-full ${
                       active
                         ? 'bg-[#0284c7] text-white shadow-xs'
-                        : 'bg-white/80 text-slate-600 border border-sky-100 hover:border-sky-300 hover:text-sky-900'
+                        : 'bg-white/80 text-slate-600 border border-sky-200 hover:border-sky-400 hover:text-sky-900'
                     }`}
                     style={{ fontFamily: "'Montserrat', sans-serif" }}
                   >
@@ -312,259 +311,339 @@ export default function CandymarMenu() {
                 );
               })}
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ─── CONTENIDO DEL MENÚ: LAYOUT EDITORIAL FIEL A LA MAQUETA ─── */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 pb-24">
-        {selectedCategory === 'Todos' && !searchQuery ? (
-          /* VISTA COMPLETA ESTILO MAQUETA DE REFERENCIA (4 CUADRANTES) */
-          <div className="space-y-10">
-            {/* ═══ FILA SUPERIOR: FISH (Izquierda) + MUSSELS (Derecha) ═══ */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-              {/* CUADRANTE 1: FISH */}
-              <section className="relative">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-4xl sm:text-5xl font-bold font-script-menu text-[#0284c7] tracking-wide">
-                    Fish
-                  </h2>
-                  <span className="text-[11px] uppercase tracking-widest text-sky-700 font-semibold border-b border-sky-200 pb-0.5">
-                    Pescados & Ceviches
-                  </span>
-                </div>
-
-                <div className="flex flex-col gap-4">
-                  {fishProducts.map(product => (
-                    <article
-                      key={product.id}
-                      onClick={() => setSelectedProduct(product)}
-                      className="dish-row group cursor-pointer"
-                    >
-                      <div className="flex items-baseline justify-between gap-2">
-                        <h3 className="dish-name font-bold text-base sm:text-lg text-slate-900 shrink-0 font-serif">
-                          {product.name}
-                        </h3>
-                        <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-slate-300 transition-colors" />
-                        <span
-                          className="dish-price font-bold text-base sm:text-lg text-slate-900 shrink-0"
-                          style={{ fontFamily: "'Oswald', sans-serif" }}
-                        >
-                          ${product.price.toFixed(2)}
-                        </span>
-                      </div>
-                      <p className="text-slate-500 text-xs sm:text-sm italic leading-relaxed mt-0.5 font-serif">
-                        {product.description}
-                      </p>
-                    </article>
-                  ))}
-                </div>
-              </section>
-
-              {/* CUADRANTE 2: MUSSELS */}
-              <section className="relative">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-4xl sm:text-5xl font-bold font-script-menu text-[#0284c7] tracking-wide">
-                    Mussels
-                  </h2>
-                  <span className="text-[11px] uppercase tracking-widest text-sky-700 font-semibold border-b border-sky-200 pb-0.5">
-                    Tacos & Entradas
-                  </span>
-                </div>
-
-                <div className="flex flex-col gap-4">
-                  {musselProducts.map(product => (
-                    <article
-                      key={product.id}
-                      onClick={() => setSelectedProduct(product)}
-                      className="dish-row group cursor-pointer"
-                    >
-                      <div className="flex items-baseline justify-between gap-2">
-                        <h3 className="dish-name font-bold text-base sm:text-lg text-slate-900 shrink-0 font-serif">
-                          {product.name}
-                        </h3>
-                        <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-slate-300 transition-colors" />
-                        <span
-                          className="dish-price font-bold text-base sm:text-lg text-slate-900 shrink-0"
-                          style={{ fontFamily: "'Oswald', sans-serif" }}
-                        >
-                          ${product.price.toFixed(2)}
-                        </span>
-                      </div>
-                      <p className="text-slate-500 text-xs sm:text-sm italic leading-relaxed mt-0.5 font-serif">
-                        {product.description}
-                      </p>
-                    </article>
-                  ))}
-                </div>
-              </section>
+            <div className="relative w-full md:w-72">
+              <Search className="w-4 h-4 text-sky-600 absolute left-3 top-2.5" />
+              <input
+                type="text"
+                placeholder="Buscar platillo, taco, aguachile..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="w-full bg-white/90 border border-sky-200 focus:border-sky-500 text-slate-800 text-xs px-3 py-2 pl-9 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-200 placeholder-slate-400 transition-all font-sans"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-2 text-xs text-slate-400 hover:text-slate-700"
+                >
+                  <X size={14} />
+                </button>
+              )}
             </div>
+          </div>
 
-            {/* ═══ FILA INFERIOR: SHRIMPS (Bloque Turquesa) + LOBSTER/CRAB (Marco con Borde Turquesa) ═══ */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-              {/* CUADRANTE 3 (md:col-span-5): SHRIMPS en bloque turquesa suave */}
-              <section className="md:col-span-5 relative bg-gradient-to-br from-cyan-100/90 via-sky-200/80 to-teal-100/70 border border-cyan-300/60 p-6 sm:p-7 shadow-xs rounded-sm overflow-hidden">
-                {/* Camarón nadando en la esquina superior derecha */}
-                <div className="absolute -top-3 -right-3 w-28 h-28 opacity-65 pointer-events-none select-none text-slate-800">
-                  <ShrimpSVG className="w-full h-full" />
-                </div>
-                {/* Camarón en la esquina inferior izquierda */}
-                <div className="absolute -bottom-4 -left-4 w-24 h-24 opacity-55 pointer-events-none select-none text-slate-800">
-                  <ShrimpSVG className="w-full h-full transform -scale-x-100 rotate-45" />
-                </div>
-                {/* Rodaja de limón inferior */}
-                <div className="absolute bottom-2 right-4 w-12 h-12 opacity-60 pointer-events-none select-none text-slate-700">
-                  <LemonSliceSVG className="w-full h-full" />
+          {selectedCategory === 'Todos' && !searchQuery ? (
+            /* ═══════════════════════════════════════════════════════════════
+               LÁMINA EDITORIAL: LOS 4 CUADRANTES DE LA IMAGEN DE REFERENCIA
+               ═══════════════════════════════════════════════════════════════ */
+            <div className="relative z-20 space-y-10 sm:space-y-14">
+              {/* FILA 1: MENU SEAFOOD + FISH + MUSSELS */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+                {/* Cuadrante 1: Header Caligráfico + Pescado Grabado (lg:col-span-4) */}
+                <div className="lg:col-span-4 relative pr-2">
+                  <div className="flex items-center gap-3">
+                    <h1
+                      className="text-6xl sm:text-7xl font-bold font-script text-[#0284c7] leading-none select-none"
+                      style={{
+                        transform: 'rotate(-4deg)',
+                        display: 'inline-block',
+                        textShadow: '0 2px 10px rgba(2,132,199,0.15)',
+                      }}
+                    >
+                      Menu
+                    </h1>
+                  </div>
+
+                  <div className="mt-1">
+                    <span className="text-4xl sm:text-5xl font-black uppercase tracking-tight text-slate-900 block font-sans-title">
+                      SEAFOOD
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-1 text-slate-700 font-script text-xl sm:text-2xl italic select-none">
+                    <span className="text-[#0284c7] font-bold">•</span>
+                    <span>Always Fresh</span>
+                    <span className="text-[#0284c7] font-bold">•</span>
+                  </div>
+
+                  {/* EL GRAN PESCADO GRABADO (Idéntico a la imagen original) */}
+                  <div className="w-64 sm:w-76 mt-2 relative">
+                    <img
+                      src={pescadoGrabado}
+                      alt="Fish engraving"
+                      className="w-full h-auto etching-art drop-shadow-xs transform -scale-x-100"
+                    />
+                  </div>
                 </div>
 
-                <div className="relative z-10">
-                  <h2 className="text-4xl sm:text-5xl font-bold font-script-menu text-[#0369a1] mb-5 tracking-wide">
-                    Shrimps
-                  </h2>
+                {/* Cuadrante 2: FISH (lg:col-span-4) */}
+                <div className="lg:col-span-4">
+                  <div className="flex items-baseline justify-between mb-4 border-b border-sky-100 pb-1">
+                    <h2 className="text-4xl sm:text-5xl font-bold font-script text-[#0284c7]">
+                      Fish
+                    </h2>
+                    <span className="text-[10px] uppercase tracking-widest text-sky-700 font-semibold">
+                      Pescados & Ceviches
+                    </span>
+                  </div>
 
-                  <div className="flex flex-col gap-5">
-                    {shrimpProducts.map(product => (
+                  <div className="space-y-4">
+                    {fishProducts.map(p => (
                       <article
-                        key={product.id}
-                        onClick={() => setSelectedProduct(product)}
-                        className="dish-row group cursor-pointer"
+                        key={p.id}
+                        onClick={() => setSelectedProduct(p)}
+                        className="dish-item group cursor-pointer"
                       >
-                        <div className="flex items-baseline justify-between gap-2">
-                          <h3 className="dish-name font-bold text-base sm:text-lg text-slate-900 shrink-0 font-serif">
-                            {product.name}
-                          </h3>
-                          <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-sky-400/80 transition-colors" />
-                          <span
-                            className="dish-price font-bold text-base sm:text-lg text-slate-900 shrink-0"
-                            style={{ fontFamily: "'Oswald', sans-serif" }}
-                          >
-                            ${product.price.toFixed(2)}
+                        <div className="flex items-baseline justify-between text-slate-900">
+                          <span className="dish-title font-display font-bold text-base sm:text-lg">
+                            {p.name}
+                          </span>
+                          <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-slate-300" />
+                          <span className="font-price font-bold text-base sm:text-lg shrink-0">
+                            ${p.price.toFixed(2)}
                           </span>
                         </div>
-                        <p className="text-slate-700 text-xs sm:text-sm italic leading-relaxed mt-0.5 font-serif">
-                          {product.description}
+                        <p className="text-slate-500 text-xs italic font-serif leading-tight mt-0.5">
+                          {p.description}
                         </p>
                       </article>
                     ))}
                   </div>
                 </div>
-              </section>
 
-              {/* CUADRANTE 4 (md:col-span-7): LOBSTER • CRAB en marco con borde cian de 2px */}
-              <section className="md:col-span-7 relative border-2 border-[#0ea5e9] bg-white/75 backdrop-blur-xs p-6 sm:p-7 shadow-xs rounded-sm">
-                {/* Cangrejo en esquina superior derecha */}
-                <div className="absolute -top-6 -right-6 w-28 h-20 opacity-75 pointer-events-none select-none text-slate-800">
-                  <CrabSVG className="w-full h-full" />
-                </div>
-                {/* Ostras en esquina inferior derecha */}
-                <div className="absolute -bottom-5 -right-3 w-16 h-24 opacity-75 pointer-events-none select-none text-slate-800">
-                  <OysterSVG className="w-full h-full" />
-                </div>
+                {/* Cuadrante 3: MUSSELS (lg:col-span-4) */}
+                <div className="lg:col-span-4">
+                  <div className="flex items-baseline justify-between mb-4 border-b border-sky-100 pb-1">
+                    <h2 className="text-4xl sm:text-5xl font-bold font-script text-[#0284c7]">
+                      Mussels
+                    </h2>
+                    <span className="text-[10px] uppercase tracking-widest text-sky-700 font-semibold">
+                      Tacos & Entradas
+                    </span>
+                  </div>
 
-                {/* Título en Script que interrumpe o encabeza el recuadro */}
-                <div className="flex items-center justify-between mb-5">
-                  <h2 className="text-4xl sm:text-5xl font-bold font-script-menu text-[#0284c7] tracking-wide">
-                    Lobster • Crab
-                  </h2>
-                  <span className="text-[11px] uppercase tracking-widest text-sky-700 font-semibold border-b border-sky-200 pb-0.5">
-                    Aguachiles & Especialidades
-                  </span>
+                  <div className="space-y-4">
+                    {musselProducts.map(p => (
+                      <article
+                        key={p.id}
+                        onClick={() => setSelectedProduct(p)}
+                        className="dish-item group cursor-pointer"
+                      >
+                        <div className="flex items-baseline justify-between text-slate-900">
+                          <span className="dish-title font-display font-bold text-base sm:text-lg">
+                            {p.name}
+                          </span>
+                          <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-slate-300" />
+                          <span className="font-price font-bold text-base sm:text-lg shrink-0">
+                            ${p.price.toFixed(2)}
+                          </span>
+                        </div>
+                        <p className="text-slate-500 text-xs italic font-serif leading-tight mt-0.5">
+                          {p.description}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
                 </div>
+              </div>
 
-                {/* Lista de platillos con líderes punteados */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
-                  {lobsterCrabProducts.map((product, i) => (
-                    <article
-                      key={product.id}
-                      onClick={() => setSelectedProduct(product)}
-                      className={`dish-row group cursor-pointer ${i < 2 ? 'sm:col-span-2' : ''}`}
-                    >
-                      <div className="flex items-baseline justify-between gap-2">
-                        <h3 className="dish-name font-bold text-base text-slate-900 shrink-0 font-serif">
-                          {product.name}
-                        </h3>
-                        <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-slate-300 transition-colors" />
-                        <span
-                          className="dish-price font-bold text-base text-slate-900 shrink-0"
-                          style={{ fontFamily: "'Oswald', sans-serif" }}
+              {/* FILA 2: SHRIMPS (BLOQUE TURQUESA) + LOBSTER • CRAB (MARCO CIAN 2PX) */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+                {/* Cuadrante 4: SHRIMPS en Bloque Turquesa Suave (lg:col-span-5) */}
+                <section
+                  className="lg:col-span-5 relative p-6 sm:p-7 rounded-sm shadow-xs overflow-hidden flex flex-col justify-between"
+                  style={{
+                    backgroundColor: '#86e4f3',
+                    backgroundImage: `
+                      radial-gradient(circle at 10% 20%, rgba(255,255,255,0.4) 0%, transparent 60%),
+                      radial-gradient(circle at 90% 80%, rgba(14,165,233,0.2) 0%, transparent 60%)
+                    `,
+                  }}
+                >
+                  {/* Camarón grabado nadando en esquina superior derecha */}
+                  <div className="absolute -top-3 -right-2 w-28 sm:w-36 pointer-events-none select-none opacity-85 z-0">
+                    <img src={camaronGrabado} alt="Shrimp top" className="w-full h-auto etching-art" />
+                  </div>
+
+                  {/* Camarón grabado en esquina inferior izquierda */}
+                  <div className="absolute -bottom-3 -left-3 w-24 sm:w-32 pointer-events-none select-none opacity-75 z-0">
+                    <img
+                      src={camaronGrabado}
+                      alt="Shrimp bottom"
+                      className="w-full h-auto etching-art transform -scale-x-100 rotate-45"
+                    />
+                  </div>
+
+                  <div className="relative z-10">
+                    <h2 className="text-4xl sm:text-5xl font-bold font-script text-[#0369a1] mb-5 tracking-wide">
+                      Shrimps
+                    </h2>
+
+                    <div className="space-y-4">
+                      {shrimpProducts.map(p => (
+                        <article
+                          key={p.id}
+                          onClick={() => setSelectedProduct(p)}
+                          className="dish-item group cursor-pointer"
                         >
-                          ${product.price.toFixed(2)}
+                          <div className="flex items-baseline justify-between text-slate-900">
+                            <span className="dish-title font-display font-bold text-base sm:text-lg">
+                              {p.name}
+                            </span>
+                            <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-sky-600/60" />
+                            <span className="font-price font-bold text-base sm:text-lg shrink-0">
+                              ${p.price.toFixed(2)}
+                            </span>
+                          </div>
+                          <p className="text-slate-800 text-xs italic font-serif leading-tight mt-0.5">
+                            {p.description}
+                          </p>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="relative z-10 mt-6 pt-3 border-t border-sky-400/40 text-[11px] text-sky-900 font-semibold flex items-center justify-between">
+                    <span>✦ Especialidad de la Casa</span>
+                    <span>Receta Sinaloa</span>
+                  </div>
+                </section>
+
+                {/* Cuadrante 5: LOBSTER • CRAB en Marco con Borde Cian de 2px (lg:col-span-7) */}
+                <section className="lg:col-span-7 relative border-2 border-[#0ea5e9] bg-white/80 backdrop-blur-xs p-6 sm:p-7 rounded-sm shadow-xs flex flex-col justify-between">
+                  {/* Cangrejo grabado asomándose en esquina superior derecha */}
+                  <div className="absolute -top-7 -right-7 w-28 sm:w-36 pointer-events-none select-none opacity-90 z-20">
+                    <img src={cangrejoGrabado} alt="Crab" className="w-full h-auto etching-art" />
+                  </div>
+
+                  {/* Ostras grabadas en esquina inferior derecha */}
+                  <div className="absolute -bottom-6 -right-5 w-24 sm:w-32 pointer-events-none select-none opacity-85 z-20">
+                    <img src={ostrasGrabado} alt="Mussels" className="w-full h-auto etching-art" />
+                  </div>
+
+                  {/* Título en Script que encabeza el recuadro */}
+                  <div className="relative z-10 flex items-center justify-between mb-5">
+                    <h2 className="text-4xl sm:text-5xl font-bold font-script text-[#0284c7]">
+                      Lobster • Crab
+                    </h2>
+                    <span className="text-[10px] uppercase tracking-widest text-sky-700 font-semibold border-b border-sky-200 pb-0.5">
+                      Aguachiles & Especialidades
+                    </span>
+                  </div>
+
+                  {/* 2 Platillos superiores anchos (como en la maqueta original) */}
+                  <div className="relative z-10 space-y-4 mb-4 pb-4 border-b border-sky-100">
+                    {lobsterCrabProducts.slice(0, 2).map(p => (
+                      <article
+                        key={p.id}
+                        onClick={() => setSelectedProduct(p)}
+                        className="dish-item group cursor-pointer"
+                      >
+                        <div className="flex items-baseline justify-between text-slate-900">
+                          <span className="dish-title font-display font-bold text-base sm:text-lg">
+                            {p.name}
+                          </span>
+                          <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-slate-300" />
+                          <span className="font-price font-bold text-base sm:text-lg shrink-0">
+                            ${p.price.toFixed(2)}
+                          </span>
+                        </div>
+                        <p className="text-slate-500 text-xs italic font-serif leading-tight mt-0.5">
+                          {p.description}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+
+                  {/* Dos columnas inferiores divididas */}
+                  <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                    {lobsterCrabProducts.slice(2).map(p => (
+                      <article
+                        key={p.id}
+                        onClick={() => setSelectedProduct(p)}
+                        className="dish-item group cursor-pointer"
+                      >
+                        <div className="flex items-baseline justify-between text-slate-900">
+                          <span className="dish-title font-display font-bold text-sm sm:text-base">
+                            {p.name}
+                          </span>
+                          <span className="dish-dots flex-1 mx-1.5 border-b-2 border-dotted border-slate-300" />
+                          <span className="font-price font-bold text-sm sm:text-base shrink-0">
+                            ${p.price.toFixed(2)}
+                          </span>
+                        </div>
+                        <p className="text-slate-500 text-[11px] italic font-serif leading-tight mt-0.5">
+                          {p.description}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            </div>
+          ) : (
+            /* VISTA FILTRADA POR CATEGORÍA O BÚSQUEDA */
+            <div className="relative z-20">
+              <div className="flex items-center justify-between mb-6 pb-2 border-b border-sky-200">
+                <h2 className="text-3xl sm:text-4xl font-bold font-script text-[#0284c7]">
+                  {selectedCategory === 'Todos' ? `Resultados para "${searchQuery}"` : selectedCategory}
+                </h2>
+                <span className="text-xs text-slate-500">
+                  {filteredProducts.length} platillos encontrados
+                </span>
+              </div>
+
+              {filteredProducts.length === 0 ? (
+                <div className="text-center py-16 border border-dashed border-sky-300 rounded-lg max-w-md mx-auto my-6 bg-white/60">
+                  <p className="text-slate-500 text-sm mb-2">No encontramos platillos con "{searchQuery}"</p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedCategory('Todos');
+                    }}
+                    className="text-sky-700 underline text-xs font-semibold hover:text-sky-900"
+                  >
+                    Ver todo el menú
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {filteredProducts.map(p => (
+                    <article
+                      key={p.id}
+                      onClick={() => setSelectedProduct(p)}
+                      className="dish-item group cursor-pointer bg-white/70 p-4 border border-sky-200/80 rounded-sm hover:border-sky-400 shadow-2xs"
+                    >
+                      <div className="flex items-baseline justify-between text-slate-900">
+                        <span className="dish-title font-display font-bold text-base sm:text-lg">
+                          {p.name}
+                        </span>
+                        <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-slate-300" />
+                        <span className="font-price font-bold text-base sm:text-lg shrink-0">
+                          ${p.price.toFixed(2)}
                         </span>
                       </div>
-                      <p className="text-slate-500 text-xs italic leading-relaxed mt-0.5 font-serif">
-                        {product.description}
-                      </p>
+                      <div className="flex justify-between items-start mt-1 gap-2">
+                        <p className="text-slate-600 text-xs italic font-serif leading-tight">
+                          {p.description}
+                        </p>
+                        {p.featured && (
+                          <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-sky-800 bg-sky-100 px-2 py-0.5 rounded-full">
+                            <Sparkles size={11} className="text-sky-600" />
+                            Especial
+                          </span>
+                        )}
+                      </div>
                     </article>
                   ))}
                 </div>
-              </section>
+              )}
             </div>
-          </div>
-        ) : (
-          /* VISTA FILTRADA POR CATEGORÍA O BÚSQUEDA */
-          <div>
-            <div className="flex items-center justify-between mb-6 pb-2 border-b border-sky-100">
-              <h2 className="text-3xl sm:text-4xl font-bold font-script-menu text-[#0284c7]">
-                {selectedCategory === 'Todos' ? `Resultados para "${searchQuery}"` : selectedCategory}
-              </h2>
-              <span className="text-xs text-slate-500">
-                {filteredProducts.length} platillos encontrados
-              </span>
-            </div>
+          )}
+        </div>
+      </div>
 
-            {filteredProducts.length === 0 ? (
-              <div className="text-center py-20 border border-dashed border-sky-200 rounded-lg max-w-md mx-auto my-8 bg-white/50">
-                <p className="text-slate-500 text-base mb-3">No encontramos platillos con "{searchQuery}"</p>
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedCategory('Todos');
-                  }}
-                  className="text-sky-700 underline text-sm font-semibold hover:text-sky-900"
-                >
-                  Ver todo el menú
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {filteredProducts.map(product => (
-                  <article
-                    key={product.id}
-                    onClick={() => setSelectedProduct(product)}
-                    className="dish-row group cursor-pointer bg-white/60 p-4 border border-sky-100 rounded-sm hover:border-sky-300 shadow-2xs"
-                  >
-                    <div className="flex items-baseline justify-between gap-2">
-                      <h3 className="dish-name font-bold text-lg text-slate-900 shrink-0 font-serif">
-                        {product.name}
-                      </h3>
-                      <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-slate-300 transition-colors" />
-                      <span
-                        className="dish-price font-bold text-lg text-slate-900 shrink-0"
-                        style={{ fontFamily: "'Oswald', sans-serif" }}
-                      >
-                        ${product.price.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-start mt-1 gap-3">
-                      <p className="text-slate-600 text-xs sm:text-sm italic leading-relaxed font-serif">
-                        {product.description}
-                      </p>
-                      {product.featured && (
-                        <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-sky-800 bg-sky-100 px-2 py-0.5 rounded-full">
-                          <Sparkles size={11} className="text-sky-600" />
-                          Especial
-                        </span>
-                      )}
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </main>
-
-      {/* ─── MODAL DETALLE / PEDIDO RÁPIDO WHATSAPP ─── */}
+      {/* ─── MODAL DETALLE / PEDIDO WHATSAPP ─── */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
           <div className="bg-white rounded-lg border border-sky-200 shadow-xl max-w-sm w-full p-6 relative animate-in fade-in zoom-in-95 duration-200">
@@ -580,7 +659,7 @@ export default function CandymarMenu() {
               {selectedProduct.category}
             </span>
 
-            <h3 className="text-2xl font-bold font-serif text-slate-900 mt-3 mb-1">
+            <h3 className="text-2xl font-bold font-display text-slate-900 mt-3 mb-1">
               {selectedProduct.name}
             </h3>
 
@@ -590,10 +669,7 @@ export default function CandymarMenu() {
 
             <div className="flex items-center justify-between py-3 border-t border-b border-sky-100 my-4">
               <span className="text-xs uppercase font-semibold text-slate-500">Precio</span>
-              <span
-                className="text-2xl font-bold text-slate-900"
-                style={{ fontFamily: "'Oswald', sans-serif" }}
-              >
+              <span className="font-price text-2xl font-bold text-slate-900">
                 ${selectedProduct.price.toFixed(2)} MXN
               </span>
             </div>
@@ -617,18 +693,17 @@ export default function CandymarMenu() {
         </div>
       )}
 
-      {/* ─── FOOTER EDITORIAL LUMINOSO CON DETALLES NÁUTICOS ─── */}
-      <footer className="bg-slate-50 border-t border-sky-100 pt-12 pb-8 px-4 text-slate-600">
+      {/* ─── FOOTER EDITORIAL EN TONOS NÁUTICOS CLAROS ─── */}
+      <footer className="bg-slate-50/90 border-t border-sky-200/70 pt-12 pb-8 px-4 text-slate-600">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10 text-left">
-            {/* Columna 1: Candymar */}
             <div>
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-full border border-sky-300 p-0.5 bg-white overflow-hidden shadow-2xs">
                   <img src={logo} alt="Candymar Logo" className="w-full h-full object-cover" />
                 </div>
                 <div>
-                  <h3 className="text-slate-900 font-bold text-2xl font-serif leading-none">
+                  <h3 className="text-slate-900 font-bold text-2xl font-display leading-none">
                     Candymar
                   </h3>
                   <span className="text-[11px] text-sky-700 uppercase tracking-widest font-semibold">
@@ -645,12 +720,8 @@ export default function CandymarMenu() {
               </div>
             </div>
 
-            {/* Columna 2: Contacto & Ubicación */}
             <div>
-              <h4
-                className="text-slate-900 font-bold text-xs uppercase tracking-widest mb-4"
-                style={{ fontFamily: "'Montserrat', sans-serif" }}
-              >
+              <h4 className="text-slate-900 font-bold text-xs uppercase tracking-widest mb-4 font-sans-title">
                 Contacto & Visítanos
               </h4>
               <ul className="space-y-2.5 text-xs text-slate-700">
@@ -672,12 +743,8 @@ export default function CandymarMenu() {
               </div>
             </div>
 
-            {/* Columna 3: Síguenos & Descarga */}
             <div>
-              <h4
-                className="text-slate-900 font-bold text-xs uppercase tracking-widest mb-4"
-                style={{ fontFamily: "'Montserrat', sans-serif" }}
-              >
+              <h4 className="text-slate-900 font-bold text-xs uppercase tracking-widest mb-4 font-sans-title">
                 Síguenos & Descarga
               </h4>
               <p className="text-xs text-slate-600 mb-3 font-serif">
@@ -703,8 +770,7 @@ export default function CandymarMenu() {
               </div>
               <button
                 onClick={handleDownloadPDF}
-                className="w-full py-2 px-3 bg-[#0284c7] hover:bg-[#0369a1] text-white font-bold uppercase tracking-wider text-xs rounded-full transition-colors flex items-center justify-center gap-2 shadow-xs"
-                style={{ fontFamily: "'Montserrat', sans-serif" }}
+                className="w-full py-2 px-3 bg-[#0284c7] hover:bg-[#0369a1] text-white font-bold uppercase tracking-wider text-xs rounded-full transition-colors flex items-center justify-center gap-2 shadow-xs font-sans-title"
               >
                 <Download size={13} />
                 <span>Descargar Menú PDF (Acuarela)</span>
@@ -712,7 +778,6 @@ export default function CandymarMenu() {
             </div>
           </div>
 
-          {/* Créditos de Imagine & Stamp */}
           <div className="pt-6 border-t border-sky-200/60 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p>© {new Date().getFullYear()} Candymar Seafood. Todos los derechos reservados.</p>
             <p>
