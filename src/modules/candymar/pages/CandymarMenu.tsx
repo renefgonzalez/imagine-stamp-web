@@ -1,74 +1,30 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Download, Search, Sparkles, ChevronUp, MapPin, Phone, Mail, Instagram, Facebook } from 'lucide-react';
+import { Download, Search, Sparkles, ChevronUp, MapPin, Phone, Mail, Instagram, Facebook, MessageCircle, X, Plus } from 'lucide-react';
 // @ts-ignore
 import html2pdf from 'html2pdf.js';
 import CandymarPrintTemplate from './CandymarPrintTemplate';
-import { CATEGORIES, PRODUCTS } from './CandymarData';
+import {
+  CATEGORIES,
+  PRODUCTS,
+  FishSVG,
+  ShrimpSVG,
+  OysterSVG,
+  LemonSliceSVG,
+  RosemarySVG,
+  CrabSVG,
+} from './CandymarData';
 import logo from '../assets/logo.png';
-import pulpoReal from '../assets/pulpo-real.png';
-import cangrejoReal from '../assets/cangrejo-real.png';
-
-// ─── Linocut Waves Border (Borde de olas linograbado cian como en la foto) ───
-const LinocutWaveBorder = ({ className = "h-4 w-full" }: { className?: string }) => (
-  <div className={`overflow-hidden flex items-center justify-between text-[#00e5ff] select-none ${className}`}>
-    <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 22" fill="none">
-      {Array.from({ length: 55 }).map((_, i) => (
-        <path
-          key={i}
-          d={`M${i * 18 + 2} 19 L${i * 18 + 12} 3`}
-          stroke="currentColor"
-          strokeWidth="2.8"
-          strokeLinecap="round"
-          opacity="0.85"
-        />
-      ))}
-    </svg>
-  </div>
-);
-
-// ─── Listón / Ribbon Plegado Cian (Idéntico a los encabezados de la foto) ───
-const CyanRibbonBanner = ({ title, subtitle }: { title: string; subtitle?: string }) => (
-  <div className="relative flex items-center mb-6 mt-3">
-    {/* Cuerpo principal del listón en cian eléctrico */}
-    <div
-      className="relative inline-flex items-center bg-[#00e5ff] text-[#0a0c10] px-5 sm:px-8 py-2 font-black tracking-widest uppercase shadow-[0_4px_16px_rgba(0,229,255,0.3)] z-10"
-      style={{ fontFamily: "'Oswald', sans-serif", fontSize: '15px' }}
-    >
-      <span className="flex items-center gap-2">
-        <span className="w-2 h-2 bg-[#0a0c10] rotate-45 inline-block" />
-        {title}
-      </span>
-      {subtitle && (
-        <span className="ml-3 text-[11px] font-semibold normal-case opacity-75 border-l border-[#0a0c10]/30 pl-2">
-          {subtitle}
-        </span>
-      )}
-
-      {/* Doblez 3D del listón en el extremo derecho */}
-      <div
-        className="absolute -right-3.5 top-0 bottom-0 w-3.5 bg-[#0092a8]"
-        style={{
-          clipPath: 'polygon(0 0, 100% 50%, 0 100%)',
-        }}
-      />
-    </div>
-
-    {/* Línea punteada de extensión hacia la derecha */}
-    <div className="flex-1 h-[2px] ml-5 border-b-2 border-dashed border-[#00e5ff]/40" />
-  </div>
-);
 
 // ─── Estilos y Fuentes Google ────────────────────────────────────────────────
 const STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Playball&family=Oswald:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=Caveat:wght@600;700&family=Cinzel:wght@700;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=Oswald:wght@500;600;700&family=Montserrat:wght@400;600;700;800;900&family=Caveat:wght@600;700&display=swap');
 
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
   .fade-item {
-    opacity: 0;
-    animation: fadeUp 0.4s ease-out forwards;
+    animation: fadeUp 0.35s ease-out forwards;
   }
 
   .cat-scroll::-webkit-scrollbar {
@@ -79,41 +35,42 @@ const STYLES = `
     scrollbar-width: none;
   }
 
-  /* Pizarra con sutil textura de gis / linograbado */
-  .chalkboard-bg {
-    background-color: #121316;
-    background-image: 
-      radial-gradient(ellipse at 50% 12%, rgba(28, 32, 42, 0.7) 0%, rgba(18, 19, 22, 0.95) 70%, #0d0e11 100%),
-      radial-gradient(circle at 10% 50%, rgba(0, 229, 255, 0.03) 0%, transparent 40%),
-      radial-gradient(circle at 90% 80%, rgba(0, 229, 255, 0.03) 0%, transparent 40%);
+  /* Lienzo Acuarela Luminosa (Blanco + manchas suaves celestes y aguamarina) */
+  .watercolor-canvas {
+    background-color: #ffffff;
+    background-image:
+      radial-gradient(ellipse at 12% 10%, rgba(186, 230, 253, 0.45) 0%, rgba(224, 242, 254, 0.25) 35%, transparent 65%),
+      radial-gradient(ellipse at 88% 12%, rgba(165, 243, 252, 0.45) 0%, rgba(207, 250, 254, 0.2) 30%, transparent 60%),
+      radial-gradient(circle at 10% 85%, rgba(165, 243, 252, 0.5) 0%, rgba(207, 250, 254, 0.25) 30%, transparent 60%),
+      radial-gradient(circle at 92% 85%, rgba(186, 230, 253, 0.4) 0%, rgba(224, 242, 254, 0.2) 35%, transparent 65%),
+      radial-gradient(circle at 50% 50%, rgba(240, 249, 255, 0.6) 0%, transparent 70%);
   }
 
-  /* Filtro cian eléctrico para bocetos como el pulpo del encabezado */
-  .sketch-cyan {
-    filter: invert(75%) sepia(85%) saturate(1476%) hue-rotate(143deg) brightness(105%) contrast(105%) drop-shadow(0 0 10px rgba(0, 229, 255, 0.45));
+  /* Pincelada Caligráfica Marina */
+  .font-script-menu {
+    font-family: 'Dancing Script', 'Caveat', cursive;
   }
 
-  /* Filtro gis blanco para bocetos de apoyo */
-  .sketch-chalk {
-    filter: invert(1) brightness(1.2) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
+  /* Tinta de grabado náutico */
+  .ink-dark {
+    color: #1e293b;
   }
 
-  /* Hover interactivo para platillos */
+  /* Hover suave sobre platillos */
   .dish-row {
-    transition: all 0.25s ease;
-    border-radius: 8px;
-    padding: 6px 10px;
-    margin: -6px -10px;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    padding: 4px 6px;
+    margin: -4px -6px;
   }
   .dish-row:hover {
-    background-color: rgba(0, 229, 255, 0.05);
+    background-color: rgba(14, 165, 233, 0.08);
   }
-  .dish-row:hover .dish-name,
-  .dish-row:hover .dish-price {
-    color: #00e5ff !important;
+  .dish-row:hover .dish-name {
+    color: #0369a1;
   }
   .dish-row:hover .dish-dots {
-    border-color: rgba(0, 229, 255, 0.7) !important;
+    border-color: #0284c7;
   }
 `;
 
@@ -121,31 +78,29 @@ export default function CandymarMenu() {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [searchQuery, setSearchQuery] = useState('');
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<(typeof PRODUCTS)[0] | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
 
+  // Teléfono WhatsApp oficial de Candymar para pedidos
+  const candymarPhone = '5215650469993';
+
   const filteredProducts = useMemo(
-    () => PRODUCTS.filter(p => {
-      const matchCat = selectedCategory === 'Todos' || p.category === selectedCategory;
-      const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          p.description.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchCat && matchSearch;
-    }),
+    () =>
+      PRODUCTS.filter(p => {
+        const matchCat = selectedCategory === 'Todos' || p.category === selectedCategory;
+        const matchSearch =
+          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.description.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchCat && matchSearch;
+      }),
     [selectedCategory, searchQuery],
   );
-
-  const groupedProducts = useMemo(() => {
-    if (selectedCategory !== 'Todos') return { [selectedCategory]: filteredProducts };
-    return filteredProducts.reduce((acc, p) => {
-      (acc[p.category] ??= []).push(p);
-      return acc;
-    }, {} as Record<string, typeof PRODUCTS>);
-  }, [filteredProducts, selectedCategory]);
 
   const handleDownloadPDF = () => {
     try {
       const element = printRef.current;
       if (!element) {
-        alert("No se encontró el elemento para imprimir.");
+        alert('No se encontró el elemento para imprimir.');
         return;
       }
 
@@ -153,26 +108,38 @@ export default function CandymarMenu() {
       element.classList.add('left-0');
 
       const opt = {
-        margin:       0,
-        filename:     'Menu_Candymar_Seafood.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        margin: 0,
+        filename: 'Menu_Candymar_Seafood.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
       };
 
       const pdfGenerator = html2pdf.default ? html2pdf.default : html2pdf;
 
-      pdfGenerator().set(opt).from(element).save().then(() => {
-        element.classList.remove('left-0');
-        element.classList.add('-left-[9999px]');
-      }).catch((err: any) => {
-        alert("Hubo un error al generar el PDF: " + err);
-        element.classList.remove('left-0');
-        element.classList.add('-left-[9999px]');
-      });
+      pdfGenerator()
+        .set(opt)
+        .from(element)
+        .save()
+        .then(() => {
+          element.classList.remove('left-0');
+          element.classList.add('-left-[9999px]');
+        })
+        .catch((err: any) => {
+          alert('Hubo un error al generar el PDF: ' + err);
+          element.classList.remove('left-0');
+          element.classList.add('-left-[9999px]');
+        });
     } catch (e) {
-      alert("Error fatal al intentar usar la librería de PDF: " + e);
+      alert('Error fatal al intentar usar la librería de PDF: ' + e);
     }
+  };
+
+  const handleOrderWhatsApp = (product: (typeof PRODUCTS)[0]) => {
+    const text = encodeURIComponent(
+      `¡Hola Candymar! Quisiera ordenar:\n• *${product.name}* ($${product.price} MXN)\nCategoría: ${product.category}\n\n¿Tienen disponible para entrega/pasar a recoger?`,
+    );
+    window.location.href = `https://wa.me/${candymarPhone}?text=${text}`;
   };
 
   useEffect(() => {
@@ -181,8 +148,26 @@ export default function CandymarMenu() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Productos categorizados para el layout editorial fiel a la lámina
+  const fishProducts = useMemo(
+    () => PRODUCTS.filter(p => p.category === "Pa' Que Empieces" && p.name.toLowerCase().includes('pescado') || p.name.toLowerCase().includes('ceviche')),
+    [],
+  );
+  const musselProducts = useMemo(
+    () => PRODUCTS.filter(p => p.category === 'Tacos' || (p.category === "Pa' Que Empieces" && !fishProducts.some(fp => fp.id === p.id))),
+    [fishProducts],
+  );
+  const shrimpProducts = useMemo(
+    () => PRODUCTS.filter(p => p.category === 'Camarones'),
+    [],
+  );
+  const lobsterCrabProducts = useMemo(
+    () => PRODUCTS.filter(p => p.category === 'Aguachile' || p.category === 'Bebidas'),
+    [],
+  );
+
   return (
-    <div className="chalkboard-bg text-zinc-300 min-h-screen font-sans selection:bg-[#00e5ff] selection:text-black">
+    <div className="watercolor-canvas text-slate-800 min-h-screen font-sans selection:bg-cyan-200 selection:text-sky-950">
       <style>{STYLES}</style>
 
       {/* ─── PLANTILLA DE IMPRESIÓN (OCULTA) ─── */}
@@ -190,370 +175,554 @@ export default function CandymarMenu() {
         <CandymarPrintTemplate ref={printRef} />
       </div>
 
-      {/* ─── BORDE DE OLAS SUPERIOR LINOGRABADO ─── */}
-      <LinocutWaveBorder className="h-5 opacity-90" />
-
-      {/* ─── ENCABEZADO PRINCIPAL (Estilo Portada & Menú de la imagen) ─── */}
-      <header className="relative pt-6 pb-10 px-4 overflow-hidden border-b border-zinc-800">
-        {/* Pulpo Gigante Cian en la esquina superior (como en la página de menú de la foto) */}
-        <div className="absolute -top-10 -right-12 md:right-10 w-72 md:w-96 pointer-events-none select-none z-0 opacity-40 md:opacity-65 sketch-cyan">
-          <img src={pulpoReal} alt="Octopus sketch" className="w-full h-auto" />
-        </div>
-
-        {/* Pulpo de apoyo tenue en la esquina izquierda inferior */}
-        <div className="absolute -bottom-16 -left-12 w-64 pointer-events-none select-none z-0 opacity-20 sketch-chalk hidden sm:block">
-          <img src={cangrejoReal} alt="Crab sketch" className="w-full h-auto" />
-        </div>
-
-        <div className="max-w-4xl mx-auto relative z-10 text-center">
-          {/* Badge Superior "SEA FOOD / Sketch" */}
-          <div className="inline-flex flex-col items-center mb-6">
-            <div className="inline-flex flex-col items-center bg-[#00e5ff] text-[#0a0c10] px-7 py-2 shadow-[0_0_25px_rgba(0,229,255,0.4)] border border-[#00d0e7]">
-              <span className="text-xs font-black tracking-[0.25em] uppercase" style={{ fontFamily: "'Oswald', sans-serif" }}>
-                SEA FOOD
-              </span>
-              <span className="text-sm italic font-serif -mt-1 text-[#050709]" style={{ fontFamily: "'Playball', 'Caveat', cursive" }}>
-                Sketch & Sabor
-              </span>
+      {/* ─── BARRA SUPERIOR DE ACCIONES RÁPIDAS ─── */}
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-sky-100 shadow-2xs py-2.5 px-4">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="h-9 w-9 rounded-full overflow-hidden border border-sky-300 shadow-xs bg-white">
+              <img src={logo} alt="Candymar Logo" className="h-full w-full object-cover" />
             </div>
-            {/* Olas decorativas miniatura bajo el badge */}
-            <div className="w-28 text-[#00e5ff] opacity-70 mt-1">
-              <svg viewBox="0 0 100 8" fill="none" className="w-full h-2">
-                <path d="M0 4 Q12.5 0 25 4 T50 4 T75 4 T100 4" stroke="currentColor" strokeWidth="1.5" fill="none" />
-              </svg>
+            <div>
+              <span className="font-bold text-base text-slate-900 tracking-tight leading-none block">
+                Candymar
+              </span>
+              <span className="text-[10px] text-sky-700 uppercase tracking-widest font-semibold block">
+                Seafood & Grill
+              </span>
             </div>
           </div>
 
-          {/* Marco Doble Cian de la Portada */}
-          <div className="relative border-2 border-[#00e5ff] px-6 sm:px-14 py-7 sm:py-9 bg-[#14161c]/90 backdrop-blur-md max-w-xl mx-auto shadow-[0_0_40px_rgba(0,229,255,0.18)]">
-            {/* Esquinas decorativas dobles */}
-            <div className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-[#00e5ff]" />
-            <div className="absolute -top-1.5 -right-1.5 w-3 h-3 border-t-2 border-r-2 border-[#00e5ff]" />
-            <div className="absolute -bottom-1.5 -left-1.5 w-3 h-3 border-b-2 border-l-2 border-[#00e5ff]" />
-            <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-[#00e5ff]" />
-
-            {/* Logo de Candymar */}
-            <div className="flex justify-center -mt-16 sm:-mt-20 mb-3">
-              <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden border-2 border-[#00e5ff] p-1 bg-[#121316] shadow-[0_0_25px_rgba(0,229,255,0.45)]">
-                <img src={logo} alt="Candymar Logo" className="h-full w-full object-cover rounded-full" />
-              </div>
-            </div>
-
-            {/* Título "Candymar" en tipografía Script */}
-            <h1 className="text-3xl sm:text-4xl italic text-white mb-0.5 tracking-wide" style={{ fontFamily: "'Playball', 'Georgia', serif" }}>
-              Candymar
-            </h1>
-
-            {/* Título "MENU" en bloque 3D vintage con sombra */}
-            <h2
-              className="text-5xl sm:text-7xl font-black uppercase tracking-wider text-white leading-none mb-3"
-              style={{
-                fontFamily: "'Impact', 'Oswald', sans-serif",
-                textShadow: '3px 4px 0 #000, 0 0 25px rgba(0,229,255,0.3)',
-              }}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleDownloadPDF}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-sky-800 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-full transition-all shadow-2xs"
+              title="Descargar Menú PDF estilo Acuarela"
             >
-              MENU
-            </h2>
+              <Download size={13} />
+              <span className="hidden sm:inline">Descargar PDF</span>
+            </button>
 
-            {/* Listón / Banner Vintage "Premium Quality" */}
-            <div className="inline-flex items-center gap-3 px-5 py-1 border border-[#00e5ff]/50 bg-[#181a21] text-[#00e5ff] text-[11px] sm:text-xs uppercase font-bold tracking-[0.25em] shadow-inner">
-              <span className="text-[#00e5ff]">★</span>
-              <span>PREMIUM QUALITY SEAFOOD</span>
-              <span className="text-[#00e5ff]">★</span>
-            </div>
-
-            {/* Anotaciones estilo tiza a mano como en la foto */}
-            <div className="mt-4 flex items-center justify-between text-xs text-zinc-400 font-serif italic px-2">
-              <span className="flex items-center gap-1 text-[#00e5ff]">
-                <span>~</span> Receta Colima & Sinaloa
-              </span>
-              <span className="text-[#00e5ff]">✦</span>
-              <span className="flex items-center gap-1 text-zinc-400">
-                100% Fresco de Temporada <span>~</span>
-              </span>
-            </div>
+            <a
+              href={`https://wa.me/${candymarPhone}?text=${encodeURIComponent('¡Hola Candymar! Quisiera consultar su menú del día y hacer un pedido.')}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white bg-emerald-600 hover:bg-emerald-700 rounded-full transition-all shadow-2xs"
+            >
+              <MessageCircle size={13} />
+              <span className="hidden sm:inline">Pedir por WhatsApp</span>
+            </a>
           </div>
         </div>
       </header>
 
-      {/* ─── BARRA STICKY DE CATEGORÍAS (Estilo Pizarra con Listones) ─── */}
-      <nav className="sticky top-0 z-40 bg-[#121316]/95 backdrop-blur-md border-b border-zinc-800 shadow-xl py-3 px-4">
-        <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 overflow-x-auto cat-scroll py-1 flex-1">
-            {CATEGORIES.map(cat => {
-              const active = selectedCategory === cat.name;
-              return (
+      {/* ─── PORTADA EDITORIAL IDÉNTICA A LA MAQUETA DE REFERENCIA ─── */}
+      <section className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-4 overflow-hidden">
+        {/* Decoraciones de esquina estilo Grabado + Acuarela */}
+        <div className="absolute top-2 left-2 w-16 h-36 opacity-75 pointer-events-none select-none text-slate-700 hidden sm:block">
+          <RosemarySVG className="w-full h-full" />
+        </div>
+        <div className="absolute top-24 left-1 w-14 h-14 opacity-70 pointer-events-none select-none text-slate-600 hidden sm:block">
+          <LemonSliceSVG className="w-full h-full" />
+        </div>
+        <div className="absolute top-4 left-44 w-28 h-20 opacity-75 pointer-events-none select-none text-slate-700 hidden md:block">
+          <CrabSVG className="w-full h-full" />
+        </div>
+        <div className="absolute top-6 left-72 w-12 h-12 opacity-65 pointer-events-none select-none text-slate-600 hidden lg:block">
+          <LemonSliceSVG className="w-full h-full" />
+        </div>
+        <div className="absolute top-2 right-4 w-20 h-28 opacity-80 pointer-events-none select-none text-slate-700 hidden sm:block">
+          <OysterSVG className="w-full h-full" />
+        </div>
+        <div className="absolute top-20 right-2 w-14 h-14 opacity-70 pointer-events-none select-none text-slate-600 hidden sm:block">
+          <LemonSliceSVG className="w-full h-full" />
+        </div>
+
+        {/* Bloque de Identidad Principal: "Menu SEAFOOD • Always Fresh •" */}
+        <div className="relative z-10 flex flex-col md:flex-row md:items-start justify-between gap-6 pt-2 pb-6 border-b border-sky-100">
+          <div className="max-w-md">
+            {/* Título "Menu" en Caligrafía Script Azul Océano */}
+            <h1
+              className="text-6xl sm:text-7xl font-bold font-script-menu text-[#0284c7] leading-none mb-0 drop-shadow-xs"
+              style={{ transform: 'rotate(-4deg)', display: 'inline-block' }}
+            >
+              Menu
+            </h1>
+
+            {/* Título "SEAFOOD" en mayúsculas gruesas negras */}
+            <div className="mt-1">
+              <span
+                className="text-4xl sm:text-5xl font-black uppercase tracking-tight text-slate-900 block"
+                style={{ fontFamily: "'Montserrat', sans-serif" }}
+              >
+                SEAFOOD
+              </span>
+            </div>
+
+            {/* Subtítulo "• Always Fresh •" */}
+            <div className="flex items-center gap-2 mt-1 text-slate-700 font-script-menu text-xl sm:text-2xl italic">
+              <span className="text-[#0284c7] font-bold">•</span>
+              <span>Always Fresh & Delicious</span>
+              <span className="text-[#0284c7] font-bold">•</span>
+            </div>
+
+            {/* Ilustración de Pescado Grabado debajo del título */}
+            <div className="w-64 sm:w-80 text-slate-800 mt-2 opacity-90 drop-shadow-xs">
+              <FishSVG className="w-full h-auto" />
+            </div>
+          </div>
+
+          {/* Buscador y Filtros dinámicos */}
+          <div className="flex-1 max-w-lg md:pt-4">
+            <div className="relative mb-4">
+              <Search className="w-4 h-4 text-sky-600 absolute left-3.5 top-3" />
+              <input
+                type="text"
+                placeholder="Buscar platillo, taco, ceviche, aguachile..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="w-full bg-white/90 border border-sky-200 focus:border-sky-500 text-slate-800 text-sm px-4 py-2 pl-10 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-200 shadow-2xs placeholder-slate-400 transition-all font-sans"
+              />
+              {searchQuery && (
                 <button
-                  key={cat.name}
-                  onClick={() => setSelectedCategory(cat.name)}
-                  className={`whitespace-nowrap px-4 sm:px-5 py-1.5 text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-all duration-200 rounded-sm relative ${
-                    active
-                      ? 'bg-[#00e5ff] text-[#0b0d10] shadow-[0_0_15px_rgba(0,229,255,0.4)] border border-[#00d0e7]'
-                      : 'bg-[#181a20] text-zinc-400 border border-zinc-700/60 hover:border-[#00e5ff]/50 hover:text-white'
-                  }`}
-                  style={{ fontFamily: "'Oswald', sans-serif" }}
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-2 text-xs text-slate-400 hover:text-slate-700 px-1.5 py-0.5"
                 >
-                  {cat.name}
-                  {active && (
-                    <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#00e5ff] rotate-45" />
-                  )}
+                  <X size={14} />
                 </button>
-              );
-            })}
+              )}
+            </div>
+
+            {/* Selector de Categorías tipo píldoras claras */}
+            <div className="flex items-center gap-1.5 overflow-x-auto cat-scroll py-1">
+              {CATEGORIES.map(cat => {
+                const active = selectedCategory === cat.name;
+                return (
+                  <button
+                    key={cat.name}
+                    onClick={() => setSelectedCategory(cat.name)}
+                    className={`whitespace-nowrap px-3.5 py-1 text-xs font-bold uppercase tracking-wider transition-all duration-200 rounded-full ${
+                      active
+                        ? 'bg-[#0284c7] text-white shadow-xs'
+                        : 'bg-white/80 text-slate-600 border border-sky-100 hover:border-sky-300 hover:text-sky-900'
+                    }`}
+                    style={{ fontFamily: "'Montserrat', sans-serif" }}
+                  >
+                    {cat.name}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-
-          {/* Botón rápido PDF */}
-          <button
-            onClick={handleDownloadPDF}
-            className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-[#00e5ff] border border-[#00e5ff]/40 bg-[#161820] hover:bg-[#00e5ff] hover:text-black transition-all rounded-sm shrink-0"
-            title="Descargar Menú PDF estilo Pizarra"
-          >
-            <Download size={14} />
-            <span>Descargar PDF</span>
-          </button>
         </div>
-      </nav>
+      </section>
 
-      {/* ─── BUSCADOR ESTILO PIZARRA CON DETALLES CIAN ─── */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-7">
-        <div className="relative max-w-lg mx-auto">
-          <Search className="w-5 h-5 text-[#00e5ff] absolute left-4 top-3.5 opacity-80" />
-          <input
-            type="text"
-            placeholder="Buscar ceviche, taco, camarones, aguachile..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#161820] border-2 border-zinc-700 focus:border-[#00e5ff] text-white text-sm px-4 py-3 pl-11 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#00e5ff]/20 placeholder-zinc-500 transition-all font-sans"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-3 text-xs text-zinc-400 hover:text-white px-2 py-1 bg-zinc-800 rounded"
-            >
-              Borrar
-            </button>
-          )}
-        </div>
-      </div>
+      {/* ─── CONTENIDO DEL MENÚ: LAYOUT EDITORIAL FIEL A LA MAQUETA ─── */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 pb-24">
+        {selectedCategory === 'Todos' && !searchQuery ? (
+          /* VISTA COMPLETA ESTILO MAQUETA DE REFERENCIA (4 CUADRANTES) */
+          <div className="space-y-10">
+            {/* ═══ FILA SUPERIOR: FISH (Izquierda) + MUSSELS (Derecha) ═══ */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+              {/* CUADRANTE 1: FISH */}
+              <section className="relative">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-4xl sm:text-5xl font-bold font-script-menu text-[#0284c7] tracking-wide">
+                    Fish
+                  </h2>
+                  <span className="text-[11px] uppercase tracking-widest text-sky-700 font-semibold border-b border-sky-200 pb-0.5">
+                    Pescados & Ceviches
+                  </span>
+                </div>
 
-      {/* ─── CONTENIDO PRINCIPAL: LAYOUT SPLIT CON "CHOICE OF THE DAY" ─── */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-24">
-        {Object.keys(groupedProducts).length === 0 ? (
-          <div className="text-center py-24 border border-dashed border-zinc-800 rounded-lg max-w-md mx-auto my-10">
-            <p className="text-zinc-500 text-lg mb-2">No encontramos platillos con "{searchQuery}"</p>
-            <button
-              onClick={() => { setSearchQuery(''); setSelectedCategory('Todos'); }}
-              className="text-[#00e5ff] underline text-sm hover:text-white"
-            >
-              Ver todo el menú
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            {/* Columna Izquierda / Principal: Categorías y Platillos */}
-            <div className="lg:col-span-8 flex flex-col gap-12">
-              {Object.entries(groupedProducts).map(([category, products]) => (
-                <section key={category} className="relative">
-                  {/* Listón Cian de Categoría (Idéntico a la imagen) */}
-                  <CyanRibbonBanner title={category} />
+                <div className="flex flex-col gap-4">
+                  {fishProducts.map(product => (
+                    <article
+                      key={product.id}
+                      onClick={() => setSelectedProduct(product)}
+                      className="dish-row group cursor-pointer"
+                    >
+                      <div className="flex items-baseline justify-between gap-2">
+                        <h3 className="dish-name font-bold text-base sm:text-lg text-slate-900 shrink-0 font-serif">
+                          {product.name}
+                        </h3>
+                        <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-slate-300 transition-colors" />
+                        <span
+                          className="dish-price font-bold text-base sm:text-lg text-slate-900 shrink-0"
+                          style={{ fontFamily: "'Oswald', sans-serif" }}
+                        >
+                          ${product.price.toFixed(2)}
+                        </span>
+                      </div>
+                      <p className="text-slate-500 text-xs sm:text-sm italic leading-relaxed mt-0.5 font-serif">
+                        {product.description}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              </section>
 
-                  {/* Lista de Platillos con línea punteada */}
-                  <div className="flex flex-col gap-6 pl-1 sm:pl-2">
-                    {products.map((product, i) => (
+              {/* CUADRANTE 2: MUSSELS */}
+              <section className="relative">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-4xl sm:text-5xl font-bold font-script-menu text-[#0284c7] tracking-wide">
+                    Mussels
+                  </h2>
+                  <span className="text-[11px] uppercase tracking-widest text-sky-700 font-semibold border-b border-sky-200 pb-0.5">
+                    Tacos & Entradas
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-4">
+                  {musselProducts.map(product => (
+                    <article
+                      key={product.id}
+                      onClick={() => setSelectedProduct(product)}
+                      className="dish-row group cursor-pointer"
+                    >
+                      <div className="flex items-baseline justify-between gap-2">
+                        <h3 className="dish-name font-bold text-base sm:text-lg text-slate-900 shrink-0 font-serif">
+                          {product.name}
+                        </h3>
+                        <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-slate-300 transition-colors" />
+                        <span
+                          className="dish-price font-bold text-base sm:text-lg text-slate-900 shrink-0"
+                          style={{ fontFamily: "'Oswald', sans-serif" }}
+                        >
+                          ${product.price.toFixed(2)}
+                        </span>
+                      </div>
+                      <p className="text-slate-500 text-xs sm:text-sm italic leading-relaxed mt-0.5 font-serif">
+                        {product.description}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            </div>
+
+            {/* ═══ FILA INFERIOR: SHRIMPS (Bloque Turquesa) + LOBSTER/CRAB (Marco con Borde Turquesa) ═══ */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+              {/* CUADRANTE 3 (md:col-span-5): SHRIMPS en bloque turquesa suave */}
+              <section className="md:col-span-5 relative bg-gradient-to-br from-cyan-100/90 via-sky-200/80 to-teal-100/70 border border-cyan-300/60 p-6 sm:p-7 shadow-xs rounded-sm overflow-hidden">
+                {/* Camarón nadando en la esquina superior derecha */}
+                <div className="absolute -top-3 -right-3 w-28 h-28 opacity-65 pointer-events-none select-none text-slate-800">
+                  <ShrimpSVG className="w-full h-full" />
+                </div>
+                {/* Camarón en la esquina inferior izquierda */}
+                <div className="absolute -bottom-4 -left-4 w-24 h-24 opacity-55 pointer-events-none select-none text-slate-800">
+                  <ShrimpSVG className="w-full h-full transform -scale-x-100 rotate-45" />
+                </div>
+                {/* Rodaja de limón inferior */}
+                <div className="absolute bottom-2 right-4 w-12 h-12 opacity-60 pointer-events-none select-none text-slate-700">
+                  <LemonSliceSVG className="w-full h-full" />
+                </div>
+
+                <div className="relative z-10">
+                  <h2 className="text-4xl sm:text-5xl font-bold font-script-menu text-[#0369a1] mb-5 tracking-wide">
+                    Shrimps
+                  </h2>
+
+                  <div className="flex flex-col gap-5">
+                    {shrimpProducts.map(product => (
                       <article
                         key={product.id}
-                        className="fade-item dish-row group cursor-default"
-                        style={{ animationDelay: `${i * 60}ms` }}
+                        onClick={() => setSelectedProduct(product)}
+                        className="dish-row group cursor-pointer"
                       >
-                        {/* Fila: Nombre .......... Precio */}
-                        <div className="flex items-end justify-between gap-2">
-                          <h3
-                            className="dish-name font-bold text-lg sm:text-xl text-white shrink-0 tracking-wide"
-                            style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}
-                          >
+                        <div className="flex items-baseline justify-between gap-2">
+                          <h3 className="dish-name font-bold text-base sm:text-lg text-slate-900 shrink-0 font-serif">
                             {product.name}
                           </h3>
-
-                          {/* Línea punteada de tiza que conecta nombre y precio */}
-                          <span className="dish-dots flex-1 mx-2 mb-1.5 border-b-2 border-dotted border-zinc-700" />
-
+                          <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-sky-400/80 transition-colors" />
                           <span
-                            className="dish-price font-bold text-lg sm:text-xl text-white shrink-0 tracking-tight"
+                            className="dish-price font-bold text-base sm:text-lg text-slate-900 shrink-0"
                             style={{ fontFamily: "'Oswald', sans-serif" }}
                           >
                             ${product.price.toFixed(2)}
                           </span>
                         </div>
-
-                        {/* Descripción y Badge Especial */}
-                        <div className="flex justify-between items-start mt-1 gap-4">
-                          <p className="text-zinc-400 text-xs sm:text-sm italic leading-relaxed font-serif">
-                            {product.description}
-                          </p>
-                          {product.featured && (
-                            <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#00e5ff] bg-[#00e5ff]/10 border border-[#00e5ff]/40 px-2 py-0.5 rounded-sm">
-                              <Sparkles size={11} className="text-[#00e5ff]" />
-                              Especial
-                            </span>
-                          )}
-                        </div>
+                        <p className="text-slate-700 text-xs sm:text-sm italic leading-relaxed mt-0.5 font-serif">
+                          {product.description}
+                        </p>
                       </article>
                     ))}
                   </div>
-                </section>
-              ))}
+                </div>
+              </section>
+
+              {/* CUADRANTE 4 (md:col-span-7): LOBSTER • CRAB en marco con borde cian de 2px */}
+              <section className="md:col-span-7 relative border-2 border-[#0ea5e9] bg-white/75 backdrop-blur-xs p-6 sm:p-7 shadow-xs rounded-sm">
+                {/* Cangrejo en esquina superior derecha */}
+                <div className="absolute -top-6 -right-6 w-28 h-20 opacity-75 pointer-events-none select-none text-slate-800">
+                  <CrabSVG className="w-full h-full" />
+                </div>
+                {/* Ostras en esquina inferior derecha */}
+                <div className="absolute -bottom-5 -right-3 w-16 h-24 opacity-75 pointer-events-none select-none text-slate-800">
+                  <OysterSVG className="w-full h-full" />
+                </div>
+
+                {/* Título en Script que interrumpe o encabeza el recuadro */}
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="text-4xl sm:text-5xl font-bold font-script-menu text-[#0284c7] tracking-wide">
+                    Lobster • Crab
+                  </h2>
+                  <span className="text-[11px] uppercase tracking-widest text-sky-700 font-semibold border-b border-sky-200 pb-0.5">
+                    Aguachiles & Especialidades
+                  </span>
+                </div>
+
+                {/* Lista de platillos con líderes punteados */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
+                  {lobsterCrabProducts.map((product, i) => (
+                    <article
+                      key={product.id}
+                      onClick={() => setSelectedProduct(product)}
+                      className={`dish-row group cursor-pointer ${i < 2 ? 'sm:col-span-2' : ''}`}
+                    >
+                      <div className="flex items-baseline justify-between gap-2">
+                        <h3 className="dish-name font-bold text-base text-slate-900 shrink-0 font-serif">
+                          {product.name}
+                        </h3>
+                        <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-slate-300 transition-colors" />
+                        <span
+                          className="dish-price font-bold text-base text-slate-900 shrink-0"
+                          style={{ fontFamily: "'Oswald', sans-serif" }}
+                        >
+                          ${product.price.toFixed(2)}
+                        </span>
+                      </div>
+                      <p className="text-slate-500 text-xs italic leading-relaxed mt-0.5 font-serif">
+                        {product.description}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            </div>
+          </div>
+        ) : (
+          /* VISTA FILTRADA POR CATEGORÍA O BÚSQUEDA */
+          <div>
+            <div className="flex items-center justify-between mb-6 pb-2 border-b border-sky-100">
+              <h2 className="text-3xl sm:text-4xl font-bold font-script-menu text-[#0284c7]">
+                {selectedCategory === 'Todos' ? `Resultados para "${searchQuery}"` : selectedCategory}
+              </h2>
+              <span className="text-xs text-slate-500">
+                {filteredProducts.length} platillos encontrados
+              </span>
             </div>
 
-            {/* Columna Derecha: "CHOICE OF THE DAY" con bocetos estilo gis (Exacto a la foto) */}
-            <aside className="lg:col-span-4 hidden lg:flex flex-col gap-8 border-l border-dashed border-zinc-700/80 pl-8">
-              {/* Tarjeta 1: Choice of the Day - Pulpo */}
-              <div className="border border-zinc-800 bg-[#161820]/60 p-5 rounded-sm text-center relative overflow-hidden">
-                <div className="inline-block border-b border-[#00e5ff] pb-1 mb-3">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#00e5ff]" style={{ fontFamily: "'Oswald', sans-serif" }}>
-                    CHOICE OF THE DAY
-                  </span>
-                </div>
-                <h4 className="text-white text-xl font-bold font-serif mb-2">
-                  Especialidad de la Casa
-                </h4>
-                <div className="w-48 h-48 mx-auto my-2 sketch-chalk opacity-90">
-                  <img src={pulpoReal} alt="Octopus sketch" className="w-full h-full object-contain" />
-                </div>
-                <p className="text-xs text-zinc-400 italic font-serif leading-relaxed">
-                  "Mariscos preparados al momento con ingredientes frescos, salsas artesanales y el toque tradicional de la costa."
-                </p>
-                <div className="mt-4 pt-3 border-t border-zinc-800 text-[11px] text-[#00e5ff] uppercase tracking-wider font-bold">
-                  ✦ Garantía de Calidad
-                </div>
+            {filteredProducts.length === 0 ? (
+              <div className="text-center py-20 border border-dashed border-sky-200 rounded-lg max-w-md mx-auto my-8 bg-white/50">
+                <p className="text-slate-500 text-base mb-3">No encontramos platillos con "{searchQuery}"</p>
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedCategory('Todos');
+                  }}
+                  className="text-sky-700 underline text-sm font-semibold hover:text-sky-900"
+                >
+                  Ver todo el menú
+                </button>
               </div>
-
-              {/* Tarjeta 2: Choice of the Day - Cangrejo */}
-              <div className="border border-zinc-800 bg-[#161820]/60 p-5 rounded-sm text-center relative overflow-hidden">
-                <div className="inline-block border-b border-[#00e5ff] pb-1 mb-3">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#00e5ff]" style={{ fontFamily: "'Oswald', sans-serif" }}>
-                    RECOMENDACIÓN DEL CHEF
-                  </span>
-                </div>
-                <h4 className="text-white text-xl font-bold font-serif mb-2">
-                  Sabor Tradicional
-                </h4>
-                <div className="w-44 h-44 mx-auto my-2 sketch-chalk opacity-90">
-                  <img src={cangrejoReal} alt="Crab sketch" className="w-full h-full object-contain" />
-                </div>
-                <p className="text-xs text-zinc-400 italic font-serif leading-relaxed">
-                  "Prueba nuestros aguachiles negros y verdes marinados en limón persa con chile serrano y guajillo."
-                </p>
-                <div className="mt-4 pt-3 border-t border-zinc-800 text-[11px] text-[#00e5ff] uppercase tracking-wider font-bold">
-                  ✦ Estilo Colima & Sinaloa
-                </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {filteredProducts.map(product => (
+                  <article
+                    key={product.id}
+                    onClick={() => setSelectedProduct(product)}
+                    className="dish-row group cursor-pointer bg-white/60 p-4 border border-sky-100 rounded-sm hover:border-sky-300 shadow-2xs"
+                  >
+                    <div className="flex items-baseline justify-between gap-2">
+                      <h3 className="dish-name font-bold text-lg text-slate-900 shrink-0 font-serif">
+                        {product.name}
+                      </h3>
+                      <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-slate-300 transition-colors" />
+                      <span
+                        className="dish-price font-bold text-lg text-slate-900 shrink-0"
+                        style={{ fontFamily: "'Oswald', sans-serif" }}
+                      >
+                        ${product.price.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-start mt-1 gap-3">
+                      <p className="text-slate-600 text-xs sm:text-sm italic leading-relaxed font-serif">
+                        {product.description}
+                      </p>
+                      {product.featured && (
+                        <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-sky-800 bg-sky-100 px-2 py-0.5 rounded-full">
+                          <Sparkles size={11} className="text-sky-600" />
+                          Especial
+                        </span>
+                      )}
+                    </div>
+                  </article>
+                ))}
               </div>
-
-              {/* Horario y Servicio */}
-              <div className="border border-[#00e5ff]/30 bg-[#00e5ff]/5 p-5 text-center">
-                <p className="text-xs font-bold uppercase tracking-widest text-[#00e5ff] mb-1">
-                  HORARIO DE SERVICIO
-                </p>
-                <p className="text-white text-sm font-serif">Miércoles a Lunes</p>
-                <p className="text-zinc-400 text-xs mt-0.5">11:00 AM – 7:00 PM</p>
-                <p className="text-[11px] text-[#00e5ff] mt-3 font-semibold">
-                  Servicio para comer aquí & para llevar
-                </p>
-              </div>
-            </aside>
+            )}
           </div>
         )}
       </main>
 
-      {/* ─── BORDE DE OLAS INFERIOR LINOGRABADO ─── */}
-      <LinocutWaveBorder className="h-5 opacity-90 rotate-180" />
+      {/* ─── MODAL DETALLE / PEDIDO RÁPIDO WHATSAPP ─── */}
+      {selectedProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+          <div className="bg-white rounded-lg border border-sky-200 shadow-xl max-w-sm w-full p-6 relative animate-in fade-in zoom-in-95 duration-200">
+            <button
+              onClick={() => setSelectedProduct(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1"
+              aria-label="Cerrar modal"
+            >
+              <X size={18} />
+            </button>
 
-      {/* ─── FOOTER ESTILO PIZARRA CON DETALLES CIAN ─── */}
-      <footer className="bg-[#0e0f12] border-t border-zinc-800 pt-12 pb-8 px-4 text-zinc-400">
-        <div className="max-w-5xl mx-auto">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-sky-700 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-100">
+              {selectedProduct.category}
+            </span>
+
+            <h3 className="text-2xl font-bold font-serif text-slate-900 mt-3 mb-1">
+              {selectedProduct.name}
+            </h3>
+
+            <p className="text-slate-600 text-sm italic font-serif leading-relaxed mb-4">
+              {selectedProduct.description}
+            </p>
+
+            <div className="flex items-center justify-between py-3 border-t border-b border-sky-100 my-4">
+              <span className="text-xs uppercase font-semibold text-slate-500">Precio</span>
+              <span
+                className="text-2xl font-bold text-slate-900"
+                style={{ fontFamily: "'Oswald', sans-serif" }}
+              >
+                ${selectedProduct.price.toFixed(2)} MXN
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                onClick={() => handleOrderWhatsApp(selectedProduct)}
+                className="flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider rounded-md transition-colors flex items-center justify-center gap-2 shadow-xs"
+              >
+                <MessageCircle size={15} />
+                <span>Pedir por WhatsApp</span>
+              </button>
+              <button
+                onClick={() => setSelectedProduct(null)}
+                className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-md transition-colors"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── FOOTER EDITORIAL LUMINOSO CON DETALLES NÁUTICOS ─── */}
+      <footer className="bg-slate-50 border-t border-sky-100 pt-12 pb-8 px-4 text-slate-600">
+        <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10 text-left">
             {/* Columna 1: Candymar */}
             <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full border border-[#00e5ff] p-0.5 bg-black overflow-hidden">
-                  <img src={logo} alt="Candymar Logo" className="w-full h-full object-cover rounded-full" />
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full border border-sky-300 p-0.5 bg-white overflow-hidden shadow-2xs">
+                  <img src={logo} alt="Candymar Logo" className="w-full h-full object-cover" />
                 </div>
-                <h3 className="text-[#00e5ff] font-bold text-2xl font-serif" style={{ fontFamily: "'Playball', 'Georgia', serif" }}>
-                  Candymar
-                </h3>
+                <div>
+                  <h3 className="text-slate-900 font-bold text-2xl font-serif leading-none">
+                    Candymar
+                  </h3>
+                  <span className="text-[11px] text-sky-700 uppercase tracking-widest font-semibold">
+                    Marisquería de Tradición
+                  </span>
+                </div>
               </div>
-              <p className="text-zinc-400 text-xs leading-relaxed font-serif">
-                Los mariscos más frescos preparados con recetas tradicionales de Colima y Sinaloa. Ceviches, tacos dorados, camarones y aguachiles con sazón inigualable.
+              <p className="text-slate-600 text-xs leading-relaxed font-serif">
+                Los mariscos más frescos con recetas tradicionales de Colima y Sinaloa. Ceviches preparados al momento, tacos dorados, camarones y aguachiles con sazón inigualable.
               </p>
-              <div className="mt-4 inline-flex items-center gap-2 text-[11px] text-[#00e5ff] border border-[#00e5ff]/30 bg-[#00e5ff]/5 px-3 py-1">
+              <div className="mt-3 inline-flex items-center gap-1.5 text-[11px] text-sky-800 bg-sky-100/70 px-2.5 py-1 rounded-full">
                 <span>✦</span>
-                <span>Calidad & Frescura Garantizada</span>
+                <span>100% Fresco de Temporada</span>
               </div>
             </div>
 
             {/* Columna 2: Contacto & Ubicación */}
             <div>
-              <h4 className="text-[#00e5ff] font-bold text-sm uppercase tracking-widest mb-4" style={{ fontFamily: "'Oswald', sans-serif" }}>
+              <h4
+                className="text-slate-900 font-bold text-xs uppercase tracking-widest mb-4"
+                style={{ fontFamily: "'Montserrat', sans-serif" }}
+              >
                 Contacto & Visítanos
               </h4>
-              <ul className="space-y-3 text-xs text-zinc-300">
+              <ul className="space-y-2.5 text-xs text-slate-700">
                 <li className="flex items-start gap-2.5">
-                  <MapPin size={16} className="text-[#00e5ff] shrink-0 mt-0.5" />
-                  <span>Av. Ignacio Sandoval #1401, Colima</span>
+                  <MapPin size={15} className="text-sky-600 shrink-0 mt-0.5" />
+                  <span>Av. Ignacio Sandoval #1401, Colima, Col.</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <Phone size={16} className="text-[#00e5ff] shrink-0" />
+                  <Phone size={15} className="text-sky-600 shrink-0" />
                   <span>(312) 123-4567</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <Mail size={16} className="text-[#00e5ff] shrink-0" />
+                  <Mail size={15} className="text-sky-600 shrink-0" />
                   <span>contacto@candymar.com</span>
                 </li>
               </ul>
+              <div className="mt-4 text-[11px] text-slate-500 font-serif">
+                <strong className="text-slate-700">Horario:</strong> Miércoles a Lunes de 11:00 AM a 7:00 PM
+              </div>
             </div>
 
-            {/* Columna 3: Síguenos & PDF */}
+            {/* Columna 3: Síguenos & Descarga */}
             <div>
-              <h4 className="text-[#00e5ff] font-bold text-sm uppercase tracking-widest mb-4" style={{ fontFamily: "'Oswald', sans-serif" }}>
+              <h4
+                className="text-slate-900 font-bold text-xs uppercase tracking-widest mb-4"
+                style={{ fontFamily: "'Montserrat', sans-serif" }}
+              >
                 Síguenos & Descarga
               </h4>
-              <p className="text-xs text-zinc-400 mb-4">
-                Consulta nuestras novedades y platillos del día en nuestras redes sociales oficiales.
+              <p className="text-xs text-slate-600 mb-3 font-serif">
+                Consulta nuestras promociones y platillos del día en redes sociales.
               </p>
-              <div className="flex items-center gap-3 mb-5">
+              <div className="flex items-center gap-2.5 mb-4">
                 <a
                   href="#facebook"
-                  onClick={(e) => e.preventDefault()}
-                  className="w-9 h-9 rounded-full bg-zinc-900 border border-[#00e5ff]/40 flex items-center justify-center text-[#00e5ff] hover:bg-[#00e5ff] hover:text-black transition-colors"
+                  onClick={e => e.preventDefault()}
+                  className="w-8 h-8 rounded-full bg-white border border-sky-200 flex items-center justify-center text-sky-700 hover:bg-sky-600 hover:text-white transition-colors shadow-2xs"
                   aria-label="Facebook"
                 >
-                  <Facebook size={16} />
+                  <Facebook size={14} />
                 </a>
                 <a
                   href="#instagram"
-                  onClick={(e) => e.preventDefault()}
-                  className="w-9 h-9 rounded-full bg-zinc-900 border border-[#00e5ff]/40 flex items-center justify-center text-[#00e5ff] hover:bg-[#00e5ff] hover:text-black transition-colors"
+                  onClick={e => e.preventDefault()}
+                  className="w-8 h-8 rounded-full bg-white border border-sky-200 flex items-center justify-center text-sky-700 hover:bg-sky-600 hover:text-white transition-colors shadow-2xs"
                   aria-label="Instagram"
                 >
-                  <Instagram size={16} />
+                  <Instagram size={14} />
                 </a>
               </div>
               <button
                 onClick={handleDownloadPDF}
-                className="w-full py-2.5 px-4 bg-[#00e5ff] text-black font-bold uppercase tracking-wider text-xs rounded-sm hover:bg-[#00cbe3] transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(0,229,255,0.3)]"
-                style={{ fontFamily: "'Oswald', sans-serif" }}
+                className="w-full py-2 px-3 bg-[#0284c7] hover:bg-[#0369a1] text-white font-bold uppercase tracking-wider text-xs rounded-full transition-colors flex items-center justify-center gap-2 shadow-xs"
+                style={{ fontFamily: "'Montserrat', sans-serif" }}
               >
-                <Download size={14} />
-                <span>Descargar Menú PDF (Pizarra)</span>
+                <Download size={13} />
+                <span>Descargar Menú PDF (Acuarela)</span>
               </button>
             </div>
           </div>
 
           {/* Créditos de Imagine & Stamp */}
-          <div className="pt-6 border-t border-zinc-800 text-center text-xs text-zinc-500 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p>© {new Date().getFullYear()} Candymar. Todos los derechos reservados.</p>
+          <div className="pt-6 border-t border-sky-200/60 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p>© {new Date().getFullYear()} Candymar Seafood. Todos los derechos reservados.</p>
             <p>
               Menú Digital interactivo diseñado por{' '}
-              <a href="https://imagineandstamp.site" target="_blank" rel="noreferrer" className="text-[#00e5ff] font-bold hover:underline">
+              <a
+                href="https://imagineandstamp.site"
+                target="_blank"
+                rel="noreferrer"
+                className="text-sky-700 font-bold hover:underline"
+              >
                 IMAGINE & STAMP
               </a>
             </p>
@@ -564,13 +733,12 @@ export default function CandymarMenu() {
       {/* ─── BOTÓN VOLVER ARRIBA ─── */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={`fixed bottom-6 right-6 z-50 h-11 w-11 sm:h-12 sm:w-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_0_20px_rgba(0,229,255,0.4)] ${
+        className={`fixed bottom-6 right-6 z-50 h-10 w-10 sm:h-11 sm:w-11 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
           showScrollTop ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'
-        }`}
-        style={{ backgroundColor: '#00e5ff', color: '#000' }}
+        } bg-[#0284c7] text-white hover:bg-[#0369a1]`}
         aria-label="Volver arriba"
       >
-        <ChevronUp size={24} strokeWidth={2.5} />
+        <ChevronUp size={22} strokeWidth={2.5} />
       </button>
     </div>
   );

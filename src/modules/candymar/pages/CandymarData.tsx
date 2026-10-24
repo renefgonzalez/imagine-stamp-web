@@ -123,3 +123,160 @@ export const CrabSVG = ({ className }: { className?: string }) => (
     <path d="M165 112 Q170 145 155 180" stroke="currentColor" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
   </svg>
 );
+
+// ─── Pescado Grabado (Fish Sketch) ───
+export const FishSVG = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 320 180" fill="none">
+    {/* Contorno del cuerpo */}
+    <path
+      d="M280 90 Q240 60 170 45 Q90 35 30 75 Q15 88 15 95 Q15 102 30 115 Q90 155 170 145 Q240 130 280 100 L305 125 L298 95 L305 65 Z"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    {/* Ojo expresivo */}
+    <circle cx="50" cy="85" r="9" stroke="currentColor" strokeWidth="1.8" />
+    <circle cx="49" cy="84" r="4.5" fill="currentColor" />
+    <circle cx="47" cy="82" r="1.5" fill="#fff" />
+    {/* Boca y hocico */}
+    <path d="M15 95 Q25 96 34 94" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    {/* Branquia */}
+    <path d="M72 65 Q85 90 75 125" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <path d="M80 72 Q91 93 83 118" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
+    {/* Aleta Dorsal */}
+    <path d="M100 44 Q140 20 190 30 Q175 44 160 46" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M115 38 L112 45 M130 32 L128 45 M145 30 L144 46 M160 32 L159 47 M175 35 L174 48" stroke="currentColor" strokeWidth="1" opacity="0.6" />
+    {/* Aleta Pectoral */}
+    <path d="M88 100 Q120 102 135 118 Q115 124 95 112 Z" stroke="currentColor" strokeWidth="1.6" fill="none" />
+    <path d="M96 104 Q116 109 126 116 M100 108 Q112 113 120 119" stroke="currentColor" strokeWidth="0.8" opacity="0.5" />
+    {/* Aleta Ventral / Anal */}
+    <path d="M190 142 Q215 155 230 148 Q218 136 200 137" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    {/* Aleta Caudal (Cola) radios */}
+    <path d="M280 92 L300 75 M282 95 L302 85 M283 97 L304 95 M282 99 L302 105 M280 101 L300 115" stroke="currentColor" strokeWidth="1" opacity="0.7" />
+    {/* Textura de escamas punteadas / semicírculos */}
+    <path d="M110 75 Q115 80 120 75 M125 75 Q130 80 135 75 M140 75 Q145 80 150 75 M155 75 Q160 80 165 75" stroke="currentColor" strokeWidth="1" opacity="0.4" />
+    <path d="M118 85 Q123 90 128 85 M133 85 Q138 90 143 85 M148 85 Q153 90 158 85 M163 85 Q168 90 173 85" stroke="currentColor" strokeWidth="1" opacity="0.4" />
+    <path d="M135 95 Q140 100 145 95 M150 95 Q155 100 160 95 M165 95 Q170 100 175 95 M180 95 Q185 100 190 95" stroke="currentColor" strokeWidth="1" opacity="0.4" />
+    <path d="M155 105 Q160 110 165 105 M170 105 Q175 110 180 105 M185 105 Q190 110 195 105" stroke="currentColor" strokeWidth="1" opacity="0.4" />
+  </svg>
+);
+
+// ─── Camarón Grabado (Shrimp Sketch) ───
+export const ShrimpSVG = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 200 180" fill="none">
+    {/* Curva del cuerpo de camarón */}
+    <path
+      d="M30 50 Q75 15 130 35 Q165 55 170 95 Q172 135 135 155 Q105 168 80 150 Q70 140 75 125 Q85 115 100 120 Q120 128 135 115 Q148 102 142 80 Q135 55 95 45 Q55 40 30 50 Z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    {/* Segmentos del exoesqueleto */}
+    <path d="M90 42 Q105 55 108 72" stroke="currentColor" strokeWidth="1.4" opacity="0.6" />
+    <path d="M110 46 Q125 62 126 82" stroke="currentColor" strokeWidth="1.4" opacity="0.6" />
+    <path d="M130 55 Q142 75 138 95" stroke="currentColor" strokeWidth="1.4" opacity="0.6" />
+    <path d="M142 70 Q152 92 142 110" stroke="currentColor" strokeWidth="1.4" opacity="0.6" />
+    <path d="M138 100 Q138 120 122 132" stroke="currentColor" strokeWidth="1.4" opacity="0.6" />
+    <path d="M120 122 Q112 138 95 142" stroke="currentColor" strokeWidth="1.4" opacity="0.6" />
+    {/* Cola (Telson & Urópodos) */}
+    <path d="M75 145 Q55 155 45 150 Q48 140 68 135" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    <path d="M72 148 Q50 165 40 162 Q45 150 65 142" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    {/* Ojo de camarón */}
+    <circle cx="45" cy="50" r="3.5" fill="currentColor" />
+    {/* Antenas largas curvadas */}
+    <path d="M30 48 Q10 40 5 20 Q2 5 20 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" opacity="0.75" />
+    <path d="M32 52 Q15 55 8 70 Q4 85 15 95" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" opacity="0.75" />
+    {/* Patitas (Pereiópodos) */}
+    <path d="M70 65 Q65 85 58 95" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
+    <path d="M82 68 Q78 90 70 102" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
+    <path d="M95 72 Q92 95 86 108" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
+  </svg>
+);
+
+// ─── Ostra / Mejillón Grabado (Mussel / Oyster) ───
+export const OysterSVG = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 160 200" fill="none">
+    {/* Concha aperlada en gota */}
+    <path
+      d="M80 185 Q45 170 25 125 Q10 80 35 40 Q60 5 80 5 Q100 5 125 40 Q150 80 135 125 Q115 170 80 185 Z"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    {/* Estrías de crecimiento concéntricas */}
+    <path d="M40 50 Q80 20 120 50" stroke="currentColor" strokeWidth="1.2" opacity="0.5" strokeLinecap="round" />
+    <path d="M30 80 Q80 45 130 80" stroke="currentColor" strokeWidth="1.3" opacity="0.5" strokeLinecap="round" />
+    <path d="M25 110 Q80 75 135 110" stroke="currentColor" strokeWidth="1.4" opacity="0.55" strokeLinecap="round" />
+    <path d="M30 135 Q80 105 130 135" stroke="currentColor" strokeWidth="1.4" opacity="0.55" strokeLinecap="round" />
+    <path d="M45 160 Q80 135 115 160" stroke="currentColor" strokeWidth="1.3" opacity="0.5" strokeLinecap="round" />
+    {/* Líneas radiales */}
+    <path d="M80 10 L80 180" stroke="currentColor" strokeWidth="1" opacity="0.3" strokeDasharray="3 3" />
+    <path d="M60 20 Q55 90 70 175" stroke="currentColor" strokeWidth="0.8" opacity="0.25" />
+    <path d="M100 20 Q105 90 90 175" stroke="currentColor" strokeWidth="0.8" opacity="0.25" />
+  </svg>
+);
+
+// ─── Rodaja de Limón (Lemon Slice) ───
+export const LemonSliceSVG = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 140 140" fill="none">
+    {/* Cáscara exterior */}
+    <circle cx="70" cy="70" r="62" stroke="currentColor" strokeWidth="2.4" />
+    {/* Membrana interior (Albedo) */}
+    <circle cx="70" cy="70" r="54" stroke="currentColor" strokeWidth="1.2" strokeDasharray="2 2" opacity="0.5" />
+    {/* Centro de la rodaja */}
+    <circle cx="70" cy="70" r="6" stroke="currentColor" strokeWidth="1.4" />
+    {/* 8 Gajos triangulares */}
+    {Array.from({ length: 8 }).map((_, i) => {
+      const angle = (i * 45 * Math.PI) / 180;
+      const angleNext = ((i * 45 + 38) * Math.PI) / 180;
+      const rInner = 10;
+      const rOuter = 50;
+      const x1 = 70 + rInner * Math.cos(angle);
+      const y1 = 70 + rInner * Math.sin(angle);
+      const x2 = 70 + rOuter * Math.cos(angle);
+      const y2 = 70 + rOuter * Math.sin(angle);
+      const x3 = 70 + rOuter * Math.cos(angleNext);
+      const y3 = 70 + rOuter * Math.sin(angleNext);
+      const x4 = 70 + rInner * Math.cos(angleNext);
+      const y4 = 70 + rInner * Math.sin(angleNext);
+
+      return (
+        <g key={i}>
+          <path
+            d={`M${x1} ${y1} L${x2} ${y2} A${rOuter} ${rOuter} 0 0 1 ${x3} ${y3} L${x4} ${y4} Z`}
+            stroke="currentColor"
+            strokeWidth="1.2"
+            opacity="0.65"
+          />
+          {/* Pequeños granos de pulpa */}
+          <circle cx={(x2 + x4) / 2} cy={(y2 + y4) / 2} r="1" fill="currentColor" opacity="0.4" />
+        </g>
+      );
+    })}
+  </svg>
+);
+
+// ─── Ramita de Romero / Hierbas (Rosemary Herb) ───
+export const RosemarySVG = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 80 180" fill="none">
+    {/* Tallo central ondulado */}
+    <path d="M40 175 Q42 120 38 70 Q35 30 40 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    {/* Hojas opuestas alargadas */}
+    <path d="M40 160 Q20 150 10 145" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <path d="M40 160 Q60 150 70 145" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <path d="M39 135 Q18 122 8 115" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <path d="M40 135 Q62 122 72 115" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <path d="M38 110 Q16 95 10 85" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <path d="M39 110 Q64 95 70 85" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <path d="M37 80 Q18 65 14 52" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <path d="M38 80 Q62 65 66 52" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <path d="M38 50 Q22 35 20 22" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <path d="M39 50 Q58 35 60 22" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <path d="M40 25 Q32 15 35 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <path d="M40 25 Q48 15 45 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+  </svg>
+);
+
