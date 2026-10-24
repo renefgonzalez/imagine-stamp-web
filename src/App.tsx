@@ -4,8 +4,9 @@ import {
   Search, Heart, Plus, Sparkles, X, ShoppingBag,
   ChevronRight, Instagram, Facebook, Mail as MailIcon,
   PartyPopper, Gift, Briefcase, LayoutGrid, Lock, MessageCircle,
-  Landmark, Copy, Check, CreditCard
+  Landmark, Copy, Check, CreditCard, RefreshCw
 } from 'lucide-react';
+import { useAutoUpdate } from './hooks/useAutoUpdate';
 import { motion, AnimatePresence } from 'motion/react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Product } from './data/products';
@@ -93,6 +94,7 @@ export default function App() {
   };
 
   const { cartToast, setCartToast, openCart, addToCart } = useCartStore();
+  const { hasUpdate, applyUpdate } = useAutoUpdate();
 
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSubcategory, setSelectedSubcategory] = useState('');
@@ -415,6 +417,34 @@ export default function App() {
 
   return (
     <HashRouter>
+      {/* Banner flotante discreto de Auto-Update si hay pedido en curso */}
+      <AnimatePresence>
+        {hasUpdate && (
+          <motion.div
+            initial={{ y: -60, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -60, opacity: 0 }}
+            className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] max-w-sm w-[92vw]"
+          >
+            <div className="bg-zinc-900/95 backdrop-blur-md text-white border border-white/10 shadow-2xl rounded-2xl p-3 flex items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="flex h-2.5 w-2.5 relative shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                <span className="font-medium truncate text-white/90">Cambios nuevos disponibles</span>
+              </div>
+              <button
+                onClick={applyUpdate}
+                className="bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold px-3 py-1.5 rounded-xl text-[11px] shrink-0 transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+              >
+                <RefreshCw size={13} />
+                Actualizar
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <Routes>
         <Route path="/" element={homeElement} />
         <Route path="/apps" element={homeElement} />

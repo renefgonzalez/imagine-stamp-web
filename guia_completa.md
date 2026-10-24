@@ -26,6 +26,7 @@
 15. [Reglas de Aislamiento para Nuevos Clientes](#15-reglas-de-aislamiento-para-nuevos-clientes)
 16. [Proceso Creativo — Del Menú Impreso al Menú Digital](#16-proceso-creativo--del-menú-impreso-al-menú-digital)
 17. [Creación de Flyers (Flayers Promocionales)](#17-creación-de-flyers-flayers-promocionales)
+18. [Auto-Update y Control de Caché en Menús Digitales](#18-auto-update-y-control-de-caché-en-menús-digitales-solución-a-no-veo-los-cambios)
 
 ---
 
@@ -720,6 +721,7 @@ git remote add origin https://github.com/TU_USUARIO/nuevo-repo-cliente.git
 | No se ve el error real de una Edge Function | El código atrapa cualquier error y devuelve un mensaje genérico | Agregar temporalmente `debug: error?.message` a la respuesta y probar con `curl` directo (ver 12.6), luego quitarlo |
 | Un campo se borra solo al reeditar un producto/registro | El objeto `initial` del formulario de edición no incluye todos los campos de la entidad | Mapear **todos** los campos del tipo/interfaz en el `initial`, no solo los que se usaron al escribir el formulario la primera vez |
 | Una imagen/logo se ve "vieja" o incorrecta después de subir un fix | Caché del navegador (no del servidor) | Verificar con `curl -I` que el archivo en el servidor ya es el correcto; probar en ventana de incógnito antes de asumir que el fix falló |
+| **Cliente no ve los cambios en el menú tras actualizar** | El navegador móvil (Safari/Chrome/WhatsApp) guarda `index.html` en memoria local y no consulta al servidor | Configurar `.htaccess` con `Cache-Control: no-cache` para `.html`, incorporar Auto-Update con `version.json` y enviar links con `?v=2` (ver §18) |
 | Producto digital pagado con tarjeta nunca le llega el link al cliente | El `useEffect` de regreso de Mercado Pago solo muestra un toast genérico; nunca marca `digital_orders` como `paid` ni arma el link | Implementar el patrón de 12.10: guardar `pendingDigitalOrders`/`pendingWhatsappUrl` en `localStorage` antes de redirigir, y completarlo en el regreso |
 | URL de archivo en hosting propio (cPanel) da 404 | Se incluyó `public_html` en la URL pública | `public_html` es la raíz del servidor, no va en la URL: `dominio.com/carpeta/archivo`, no `dominio.com/public_html/carpeta/archivo` |
 | **WhatsApp no abre / Pantalla blanca en celular** al "Enviar Pedido" | Navegadores integrados (FB/IG) bloquean `window.open(..., '_blank')` al considerarlo popup malicioso | Usar `setCartStep(3)` primero, luego hacer `setTimeout` de 500ms y usar `window.location.href = ...` para la redirección. |
@@ -1578,9 +1580,168 @@ node generate-pdf.cjs
 
 ---
 
-*Última actualización: Agosto 2026 — Proyecto base: imagineandstamp.site*
+## 18. Auto-Update y Control de Caché en Menús Digitales (Solución a "No veo los cambios")
+
+> ⚡ **Problema recurrente:** Tras editar platillos, precios o fotos y avisarle al cliente, este responde: *"No veo los cambios, se sigue viendo igual"*. El cliente piensa que el trabajo no se hizo, cuando en realidad su celular tiene el menú viejo pegado en memoria. Esta sección documenta la arquitectura obligatoria de servidor y frontend para eliminar esta fricción de raíz.
+
+### 18.1. Diagnóstico: ¿Por qué ocurre en dispositivos móviles?
+
+En las aplicaciones SPA compiladas con Vite:
+1. Los archivos JS y CSS en `assets/` reciben un hash único (`index-a8f3b.js`), por lo que cambian de nombre en cada build.
+2. Sin embargo, el archivo maestro que los invoca es **`index.html`** (cuyo nombre nunca cambia).
+3. **El culpable real:** Safari (iOS), Chrome móvil y el WebView integrado de WhatsApp/Instagram guardan el `index.html` en su caché agresiva por defecto si el servidor web no les impone lo contrario.
+4. Cuando el cliente o comensal toca el enlace, el teléfono **no consulta al servidor**: abre el `index.html` guardado en memoria local, el cual sigue solicitando los JS y datos anteriores.
+
+---
+
+### 18.2. Nivel 1 — Directivas de Servidor (.htaccess en Apache / cPanel / NEUBOX)
+
+Es la **primera línea de defensa obligatoria**. Todo menú o catálogo en producción debe tener en su archivo `public/.htaccess` la política de expiración diferenciada:
+
+```apache
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-l
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Políticas de expiración y control de caché
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # index.html NUNCA debe guardarse en caché (revalidación inmediata)
+  ExpiresByType text/html "access plus 0 seconds"
+
+  # Assets inmutables con hash único de Vite (1 año en caché)
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# Cabeceras estrictas Anti-Caché para HTML
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </FilesMatch>
+</IfModule>
+```
+
+**Resultado:** Cada vez que el cliente pulsa el enlace o refresca, el celular consulta obligatoriamente al servidor si hay una nueva versión del HTML.
+
+---
+
+### 18.3. Nivel 2 — Sistema de Auto-Update en React (SPA en vivo)
+
+¿Qué ocurre si el comensal o cliente ya tiene la pestaña del menú abierta en su navegador desde horas o días antes? Al no recargar la página, la SPA sigue en memoria RAM.
+
+Para resolverlo sin requerir Service Workers complejos ni recargas abruptas que borren pedidos a medias:
+
+#### 1. Generar `version.json` en cada build (`package.json`)
+En los scripts de compilación de `package.json`, agregar la generación automática de la marca de tiempo:
+
+```json
+"scripts": {
+  "build": "node -e \"require('fs').writeFileSync('public/version.json', JSON.stringify({version: Date.now()}))\" && vite build"
+}
+```
+
+#### 2. Hook de detección (`useAutoUpdate.ts`)
+Crear en `src/hooks/useAutoUpdate.ts`:
+
+```typescript
+import { useEffect, useRef } from 'react';
+import { useCartStore } from '../store/useCartStore';
+
+export function useAutoUpdate(intervalMs = 180000) { // Chequeo cada 3 min
+  const initialVersion = useRef<number | null>(null);
+  const cart = useCartStore((s) => s.cart);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function checkVersion() {
+      try {
+        const res = await fetch(`/version.json?t=${Date.now()}`, { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        
+        if (!initialVersion.current) {
+          initialVersion.current = data.version;
+          return;
+        }
+
+        // Si la versión del servidor es más reciente
+        if (data.version && data.version > initialVersion.current) {
+          // Si el cliente NO tiene productos en su carrito, recargar limpiamente
+          if (cart.length === 0) {
+            window.location.reload();
+          } else {
+            console.log("Nueva versión disponible. Esperando a que el carrito esté libre.");
+          }
+        }
+      } catch (err) {
+        // Silencioso en caso de falla de red
+      }
+    }
+
+    // 1. Chequeo inicial
+    checkVersion();
+
+    // 2. Chequeo periódico
+    const timer = setInterval(checkVersion, intervalMs);
+
+    // 3. Chequeo inmediato cuando el usuario regresa a la pestaña / desbloquea el cel
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkVersion();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    return () => {
+      isMounted = false;
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
+  }, [cart.length, intervalMs]);
+}
+```
+
+---
+
+### 18.4. Protocolo de Envío de Revisiones por WhatsApp
+
+Cuando se le envía un enlace al dueño del negocio para que revise cambios recién subidos:
+
+1. **Añadir parámetro de versión fresca:**
+   - ❌ Enlace normal: `https://imagineandstamp.site/#/candymar`
+   - ✅ Enlace con bypass de caché: `https://imagineandstamp.site/#/candymar?v=2` (o `?v=nuevo`)
+2. **Explicación al cliente:** Si el cliente consulta desde una pestaña previamente abierta, indicarle: *"Ábrelo desde el enlace nuevo que te mandé por WhatsApp para que tu teléfono cargue los cambios al instante"*.
+
+---
+
+### 18.5. Checklist Anti-Caché para Demos y Producción
+
+- [ ] `.htaccess` en `public/` tiene directivas `no-cache, no-store, must-revalidate` para `.html`.
+- [ ] `version.json` se genera en el build con timestamp único.
+- [ ] Los enlaces compartidos para revisión de cambios llevan parámetro `?v=...`.
+- [ ] Antes de reportar "listo", validar en modo incógnito o en celular móvil con red 4G/5G.
+
+---
+
+*Última actualización: Octubre 2026 — Proyecto base: imagineandstamp.site*
 *Base: catálogo, carrito de 2 pasos, favoritos, panel de control y datos bancarios (transferencia).*
 *Complemento opcional con costo extra: pago con tarjeta vía Mercado Pago.*
 *Módulo de Descargas Digitales (sección 13) probado y documentado de punta a punta en Sahumerio Sagrado y Mundo Halloween.*
 *Keepalive Supabase (5.6) implementado en la-maria-rooftop y amelie-patisserie.*
 *Compresión de imágenes + paginación 10x10 (sección 14) probado en amelie-patisserie y Mundo Halloween.*
+*Control de caché y auto-actualización de menús (sección 18) probado y documentado.*
