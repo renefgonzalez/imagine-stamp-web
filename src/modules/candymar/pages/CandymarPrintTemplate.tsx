@@ -41,8 +41,7 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Oswald:wght@600;700&display=swap');
         .etching-art-print {
-          mix-blend-mode: multiply;
-          filter: contrast(1.15) brightness(0.98);
+          filter: drop-shadow(0 1px 3px rgba(2, 132, 199, 0.08));
         }
       `}</style>
 

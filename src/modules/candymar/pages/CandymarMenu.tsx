@@ -75,10 +75,13 @@ const STYLES = `
     font-family: 'Montserrat', sans-serif;
   }
 
-  /* Integración de grabado al aguafuerte con papel acuarela */
+  /* Ilustraciones de grabado náutico con canal alfa transparente */
   .etching-art {
-    mix-blend-mode: multiply;
-    filter: contrast(1.15) brightness(0.98);
+    filter: drop-shadow(0 2px 6px rgba(2, 132, 199, 0.08));
+    transition: transform 0.3s ease;
+  }
+  .etching-art:hover {
+    transform: scale(1.02);
   }
 
   .cat-scroll::-webkit-scrollbar {
@@ -271,18 +274,18 @@ export default function CandymarMenu() {
               (Idéntico a la lámina original de referencia)
               ═══════════════════════════════════════════════════════════════ */}
 
-          {/* Cangrejo en el borde superior centro-izquierdo */}
-          <div className="absolute top-2 left-64 sm:left-80 w-28 sm:w-36 pointer-events-none select-none z-10 opacity-90 hidden md:block">
+          {/* Cangrejo en el borde superior */}
+          <div className="absolute -top-3 left-1/3 w-28 sm:w-36 pointer-events-none select-none z-0 opacity-85 hidden md:block">
             <img src={cangrejoGrabado} alt="Crab engraving" className="w-full h-auto etching-art" />
           </div>
 
           {/* Ostras / Mejillones abiertos en la esquina superior derecha */}
-          <div className="absolute -top-4 -right-4 w-40 sm:w-56 pointer-events-none select-none z-10 opacity-90 hidden sm:block">
+          <div className="absolute -top-6 -right-6 w-36 sm:w-48 pointer-events-none select-none z-0 opacity-85 hidden sm:block">
             <img src={ostrasGrabado} alt="Oysters engraving" className="w-full h-auto etching-art" />
           </div>
 
           {/* Rodajas de limón y romero en margen izquierdo superior */}
-          <div className="absolute top-4 -left-2 w-20 sm:w-28 pointer-events-none select-none z-10 opacity-85 hidden sm:block">
+          <div className="absolute -top-4 -left-4 w-20 sm:w-28 pointer-events-none select-none z-0 opacity-80 hidden sm:block">
             <img src={limonRomeroGrabado} alt="Lemon and rosemary" className="w-full h-auto etching-art" />
           </div>
 
@@ -291,7 +294,7 @@ export default function CandymarMenu() {
           <WatercolorSplatterDots className="absolute bottom-6 left-0 w-full h-56 opacity-90 z-0" />
 
           {/* Barra de búsqueda y categorías integradas con delicadeza */}
-          <div className="relative z-20 flex flex-col md:flex-row items-center justify-between gap-4 mb-8 pb-4 border-b border-sky-100">
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4 mb-8 pb-4 border-b border-sky-100">
             <div className="flex items-center gap-2 overflow-x-auto cat-scroll w-full md:w-auto py-1">
               {CATEGORIES.map(cat => {
                 const active = selectedCategory === cat.name;
@@ -336,7 +339,7 @@ export default function CandymarMenu() {
             /* ═══════════════════════════════════════════════════════════════
                LÁMINA EDITORIAL: LOS 4 CUADRANTES DE LA IMAGEN DE REFERENCIA
                ═══════════════════════════════════════════════════════════════ */
-            <div className="relative z-20 space-y-10 sm:space-y-14">
+            <div className="relative z-10 space-y-10 sm:space-y-14">
               {/* FILA 1: MENU SEAFOOD + FISH + MUSSELS */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
                 {/* Cuadrante 1: Header Caligráfico + Pescado Grabado (lg:col-span-4) */}
@@ -366,12 +369,12 @@ export default function CandymarMenu() {
                     <span className="text-[#0284c7] font-bold">•</span>
                   </div>
 
-                  {/* EL GRAN PESCADO GRABADO (Idéntico a la imagen original) */}
-                  <div className="w-64 sm:w-76 mt-2 relative">
+                  {/* EL GRAN PESCADO GRABADO (Transparente sin fondo blanco) */}
+                  <div className="w-64 sm:w-76 mt-3 relative">
                     <img
                       src={pescadoGrabado}
                       alt="Fish engraving"
-                      className="w-full h-auto etching-art drop-shadow-xs transform -scale-x-100"
+                      className="w-full h-auto etching-art drop-shadow-xs"
                     />
                   </div>
                 </div>
@@ -512,12 +515,12 @@ export default function CandymarMenu() {
                 {/* Cuadrante 5: LOBSTER • CRAB en Marco con Borde Cian de 2px (lg:col-span-7) */}
                 <section className="lg:col-span-7 relative border-2 border-[#0ea5e9] bg-white/80 backdrop-blur-xs p-6 sm:p-7 rounded-sm shadow-xs flex flex-col justify-between">
                   {/* Cangrejo grabado asomándose en esquina superior derecha */}
-                  <div className="absolute -top-7 -right-7 w-28 sm:w-36 pointer-events-none select-none opacity-90 z-20">
+                  <div className="absolute -top-7 -right-7 w-28 sm:w-36 pointer-events-none select-none opacity-85 z-0">
                     <img src={cangrejoGrabado} alt="Crab" className="w-full h-auto etching-art" />
                   </div>
 
                   {/* Ostras grabadas en esquina inferior derecha */}
-                  <div className="absolute -bottom-6 -right-5 w-24 sm:w-32 pointer-events-none select-none opacity-85 z-20">
+                  <div className="absolute -bottom-6 -right-5 w-24 sm:w-32 pointer-events-none select-none opacity-85 z-0">
                     <img src={ostrasGrabado} alt="Mussels" className="w-full h-auto etching-art" />
                   </div>
 
