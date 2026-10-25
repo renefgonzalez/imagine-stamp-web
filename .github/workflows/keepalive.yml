@@ -44,3 +44,13 @@ jobs:
             -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwd2Rnd2VyZWZucGVnYmlzdXlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4MTgzMTgsImV4cCI6MjA4NjM5NDMxOH0._0mxn2wdwDzxLF6uzoqUsVr-3pNMqeRL7pfZ0TEhV3Y" \
             -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwd2Rnd2VyZWZucGVnYmlzdXlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4MTgzMTgsImV4cCI6MjA4NjM5NDMxOH0._0mxn2wdwDzxLF6uzoqUsVr-3pNMqeRL7pfZ0TEhV3Y" \
             || echo "(La Planchita POS ping completado)"
+
+      - name: Ping Tacos Chepe
+        run: |
+          echo "Pinging Tacos Chepe..."
+          curl -s -o /dev/null -w "Tacos Chepe HTTP: %{http_code}\n" \
+            "https://buppnxjmuzdacbaxezeg.supabase.co/rest/v1/configuracion_menu?select=clave&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1cHBueGptdXpkYWNiYXhlemVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwMjkxNzgsImV4cCI6MjEwMDYwNTE3OH0.jiBCDOLfl02iiKkApjZPmkyvsP0VJFDmWmorPfKkdXc" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1cHBueGptdXpkYWNiYXhlemVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwMjkxNzgsImV4cCI6MjEwMDYwNTE3OH0.jiBCDOLfl02iiKkApjZPmkyvsP0VJFDmWmorPfKkdXc" \
+            || echo "(Tacos Chepe ping completado)"
+
