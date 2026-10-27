@@ -37,7 +37,7 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
   return (
     <div
       ref={ref}
-      className="bg-[#faf6ed] text-slate-800 font-sans"
+      className="bg-[#f6fbfe] text-slate-800 font-sans"
       style={{
         width: '297mm', // A4 Landscape
         height: '210mm',
@@ -45,7 +45,7 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
         boxSizing: 'border-box',
         overflow: 'hidden',
         position: 'relative',
-        backgroundColor: '#faf6ed',
+        backgroundColor: '#f6fbfe',
         backgroundImage: `url(${fondoAcuarela})`,
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
@@ -176,12 +176,18 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
           </div>
         </div>
 
-        {/* PARTE INFERIOR (Fila 2: Shrimps bloque arena + Lobster•Crab recuadro cian) */}
+        {/* PARTE INFERIOR (Fila 2: Shrimps bloque turquesa + Lobster•Crab recuadro cian) */}
         <div className="grid grid-cols-12 gap-6 items-end mt-1">
-          {/* Shrimps: Bloque pergamino arena cálido (Col 1-5) */}
+          {/* Shrimps: Bloque turquesa vibrante original (Col 1-5) */}
           <div
-            className="col-span-5 relative p-3.5 border border-amber-900/15 rounded-sm overflow-hidden shadow-xs"
-            style={{ backgroundColor: '#f3ece0' }}
+            className="col-span-5 relative p-3.5 rounded-sm overflow-hidden shadow-xs"
+            style={{
+              backgroundColor: '#86e4f3',
+              backgroundImage: `
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.4) 0%, transparent 60%),
+                radial-gradient(circle at 90% 80%, rgba(2,132,199,0.15) 0%, transparent 60%)
+              `,
+            }}
           >
             <div className="absolute -top-3 -right-2 w-24 pointer-events-none opacity-85">
               <img src={camaronGrabado} alt="Shrimp" className="w-full h-auto etching-art-print" />
@@ -207,7 +213,7 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
                   <div key={p.id}>
                     <div className="flex items-baseline justify-between text-xs font-bold text-slate-900">
                       <span className="font-serif text-[12px]">{p.name}</span>
-                      <span className="flex-1 mx-2 border-b-2 border-dotted border-sky-300" />
+                      <span className="flex-1 mx-2 border-b-2 border-dotted border-sky-400/60" />
                       <span style={{ fontFamily: "'Oswald', sans-serif" }}>${p.price.toFixed(2)}</span>
                     </div>
                     <p className="text-[9.5px] text-slate-800 italic font-serif leading-tight">
@@ -220,7 +226,7 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
           </div>
 
           {/* Lobster • Crab: Gran marco con borde cian náutico de 2px (Col 6-12) */}
-          <div className="col-span-7 relative border-2 border-[#0ea5e9] bg-[#faf6ed]/95 p-3.5 rounded-sm">
+          <div className="col-span-7 relative border-2 border-[#0ea5e9] bg-white/80 p-3.5 rounded-sm">
             <div className="absolute -top-5 -right-5 w-24 pointer-events-none opacity-90">
               <img src={cangrejoGrabado} alt="Crab" className="w-full h-auto etching-art-print" />
             </div>
