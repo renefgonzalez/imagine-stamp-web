@@ -37,7 +37,7 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
   return (
     <div
       ref={ref}
-      className="bg-white text-slate-800 font-sans"
+      className="bg-[#faf6ed] text-slate-800 font-sans"
       style={{
         width: '297mm', // A4 Landscape
         height: '210mm',
@@ -45,7 +45,7 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
         boxSizing: 'border-box',
         overflow: 'hidden',
         position: 'relative',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#faf6ed',
         backgroundImage: `url(${fondoAcuarela})`,
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
@@ -74,7 +74,7 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
       <div className="h-full flex flex-col justify-between relative z-20">
         {/* PARTE SUPERIOR (Fila 1) */}
         <div className="grid grid-cols-12 gap-6 items-start">
-          {/* Col 1-4: Header "Menu SEAFOOD • Always Fresh •" + Pescado */}
+          {/* Col 1-4: Header "Menu SEAFOOD • Always Fresh •" + Logo Candymar */}
           <div className="col-span-4 pl-2 pt-1">
             <div className="flex items-center gap-2 mb-0.5">
               <h1
@@ -87,9 +87,6 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
               >
                 Menu
               </h1>
-              <div className="h-8 w-8 rounded-full overflow-hidden border border-sky-300 shadow-2xs bg-white ml-2">
-                <img src={logo} alt="Candymar Logo" className="h-full w-full object-cover" />
-              </div>
             </div>
 
             <div>
@@ -110,24 +107,34 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
               <span className="text-[#0284c7] font-bold">•</span>
             </div>
 
-            {/* Pescado Grabado al aguafuerte */}
-            <div className="w-56 mt-1">
+            {/* Logo Oficial Candymar (en lugar del pez grande) */}
+            <div className="w-36 mt-2">
               <img
-                src={pescadoGrabado}
-                alt="Fish engraving"
-                className="w-full h-auto etching-art-print transform -scale-x-100"
+                src={logo}
+                alt="Candymar Logo"
+                className="w-full h-auto object-contain drop-shadow-xs"
               />
             </div>
           </div>
 
-          {/* Col 5-8: Sección "Fish" */}
+          {/* Col 5-8: Sección "Fish" con Pescadito Grabado */}
           <div className="col-span-4 pr-3">
-            <h2
-              className="text-4xl font-bold text-[#0284c7] mb-2"
-              style={{ fontFamily: "'Dancing Script', cursive" }}
-            >
-              Fish
-            </h2>
+            <div className="flex items-center justify-between mb-2">
+              <h2
+                className="text-4xl font-bold text-[#0284c7]"
+                style={{ fontFamily: "'Dancing Script', cursive" }}
+              >
+                Fish
+              </h2>
+              {/* Pescadito grabado más pequeño encuadrando */}
+              <div className="w-20 pointer-events-none opacity-90">
+                <img
+                  src={pescadoGrabado}
+                  alt="Fish engraving"
+                  className="w-full h-auto etching-art-print transform -scale-x-100"
+                />
+              </div>
+            </div>
             <div className="space-y-2.5">
               {fishProducts.map(p => (
                 <div key={p.id}>
@@ -213,7 +220,7 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
           </div>
 
           {/* Lobster • Crab: Gran marco con borde cian de 2px (Col 6-12) */}
-          <div className="col-span-7 relative border-2 border-[#0ea5e9] bg-white/80 p-3.5 rounded-sm">
+          <div className="col-span-7 relative border-2 border-[#0ea5e9] bg-[#faf6ed]/95 p-3.5 rounded-sm">
             <div className="absolute -top-5 -right-5 w-24 pointer-events-none opacity-90">
               <img src={cangrejoGrabado} alt="Crab" className="w-full h-auto etching-art-print" />
             </div>
