@@ -606,8 +606,8 @@ export default function CandymarMenu() {
                   </div>
                 </section>
 
-                {/* Cuadrante 5: LOBSTER • CRAB en Marco Cian Náutico de 2px (lg:col-span-7) */}
-                <section className="lg:col-span-7 relative border-2 border-[#0ea5e9] bg-white/80 backdrop-blur-xs p-6 sm:p-7 rounded-sm shadow-xs flex flex-col justify-between">
+                {/* Cuadrante 5: LOBSTER • CRAB en Marco Cian Náutico de 2px con Vidrio Traslúcido (lg:col-span-7) */}
+                <section className="lg:col-span-7 relative border-2 border-[#0ea5e9] bg-white/65 backdrop-blur-md p-6 sm:p-7 rounded-sm shadow-xs flex flex-col justify-between">
                   {/* Cangrejo grabado asomándose en esquina superior derecha */}
                   <div className="absolute -top-7 -right-7 w-28 sm:w-36 pointer-events-none select-none opacity-85 z-0">
                     <img src={cangrejoGrabado} alt="Crab" className="w-full h-auto etching-art" />
@@ -699,12 +699,48 @@ export default function CandymarMenu() {
                     const catProducts = PRODUCTS.filter(p => p.category === category.name);
                     if (catProducts.length === 0) return null;
 
+                    // ─── Estilos de muestra para que René compare las 3 opciones en vivo ───
+                    let cardBgClass = "bg-white/85 backdrop-blur-2xs border-sky-200/70";
+                    let sampleBadge = null;
+
+                    if (category.name === 'Entradas & Ceviches') {
+                      // Opción 1: Vidrio Marino Traslúcido (Glassmorphism al 60% dejando ver la acuarela)
+                      cardBgClass = "bg-white/60 backdrop-blur-md border-sky-300/50 shadow-sm";
+                      sampleBadge = (
+                        <span className="text-[10px] font-bold text-sky-800 bg-sky-100/90 px-2.5 py-0.5 rounded-full border border-sky-300/50 shadow-2xs">
+                          ⭐ Opción 1: Vidrio Marino Traslúcido
+                        </span>
+                      );
+                    } else if (category.name === 'Tacos & Tostadas') {
+                      // Opción 2: Papel Acuarela Algodón Fino / Marfil Suave
+                      cardBgClass = "bg-[#fbf9f4]/92 backdrop-blur-2xs border-amber-900/15 shadow-sm";
+                      sampleBadge = (
+                        <span className="text-[10px] font-bold text-amber-900 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-900/15 shadow-2xs">
+                          Opción 2: Papel Acuarela Algodón (#fbf9f4)
+                        </span>
+                      );
+                    } else if (category.name === 'Tostitos c/ Marisco') {
+                      // Opción 3: Espuma de Mar / Brisa Marina Fría
+                      cardBgClass = "bg-[#edf6fc]/90 backdrop-blur-2xs border-sky-300/60 shadow-sm";
+                      sampleBadge = (
+                        <span className="text-[10px] font-bold text-cyan-900 bg-cyan-100/80 px-2.5 py-0.5 rounded-full border border-cyan-300/40 shadow-2xs">
+                          Opción 3: Espuma de Mar Fría (#edf6fc)
+                        </span>
+                      );
+                    }
+
                     return (
-                      <section key={category.name} className="relative bg-white/85 backdrop-blur-2xs p-6 sm:p-8 rounded-xl border border-sky-200/70 shadow-2xs">
-                        <div className="flex items-center justify-between mb-6 pb-2 border-b border-sky-200">
-                          <h4 className="text-3xl sm:text-4xl font-bold font-script text-[#0284c7]">
-                            {category.name}
-                          </h4>
+                      <section
+                        key={category.name}
+                        className={`relative p-6 sm:p-8 rounded-xl border shadow-2xs transition-all ${cardBgClass}`}
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-6 pb-2 border-b border-sky-200/60">
+                          <div className="flex items-center gap-3">
+                            <h4 className="text-3xl sm:text-4xl font-bold font-script text-[#0284c7]">
+                              {category.name}
+                            </h4>
+                            {sampleBadge}
+                          </div>
                           <span className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
                             {catProducts.length} opciones
                           </span>
