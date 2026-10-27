@@ -423,12 +423,12 @@ export default function CandymarMenu() {
             <div className="relative z-10 space-y-10 sm:space-y-14">
               {/* FILA 1: MENU SEAFOOD + FISH + MUSSELS */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-                {/* Cuadrante 1: Header Caligráfico + Pescado Grabado + Burbujas Acuáticas */}
-                <div className="lg:col-span-4 relative flex flex-col items-center text-center lg:items-start lg:text-left pr-0 lg:pr-2">
+                {/* Cuadrante 1: Header Caligráfico + LOGO CANDYMAR CENTRADO + Burbujas Acuáticas */}
+                <div className="lg:col-span-4 relative flex flex-col items-center text-center pr-0 lg:pr-2">
                   {/* Burbujas celestes y turquesas idénticas a la captura original */}
                   <HeroAquaticBubbles />
 
-                  <div className="flex justify-center lg:justify-start items-center gap-3 w-full relative z-10">
+                  <div className="flex justify-center items-center gap-3 w-full relative z-10">
                     <h1
                       className="text-6xl sm:text-7xl font-bold font-script text-[#0284c7] leading-none select-none"
                       style={{
@@ -447,31 +447,41 @@ export default function CandymarMenu() {
                     </span>
                   </div>
 
-                  <div className="flex justify-center lg:justify-start items-center gap-2 mt-1 text-slate-700 font-script text-xl sm:text-2xl italic select-none w-full relative z-10">
+                  <div className="flex justify-center items-center gap-2 mt-1 text-slate-700 font-script text-xl sm:text-2xl italic select-none w-full relative z-10">
                     <span className="text-[#0284c7] font-bold">•</span>
                     <span>Always Fresh</span>
                     <span className="text-[#0284c7] font-bold">•</span>
                   </div>
 
-                  {/* EL GRAN PESCADO GRABADO (Idéntico a la foto original de referencia) */}
-                  <div className="w-64 sm:w-76 mt-3 relative z-10 flex justify-center mx-auto lg:mx-0">
+                  {/* LOGO DE CANDYMAR EN LUGAR DEL PESCADO (CENTRADO) */}
+                  <div className="w-48 sm:w-60 mt-4 relative z-10 flex justify-center items-center mx-auto">
                     <img
-                      src={pescadoGrabado}
-                      alt="Fish engraving"
-                      className="w-full h-auto etching-art drop-shadow-xs"
+                      src={logo}
+                      alt="Candymar Seafood Logo"
+                      className="w-full h-auto drop-shadow-md hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                 </div>
 
-                {/* Cuadrante 2: FISH (lg:col-span-4) */}
+                {/* Cuadrante 2: FISH con Pescadito Grabado que encuadra (lg:col-span-4) */}
                 <div className="lg:col-span-4">
-                  <div className="flex items-baseline justify-between mb-4 border-b border-sky-200/80 pb-1">
-                    <h2 className="text-4xl sm:text-5xl font-bold font-script text-[#0284c7]">
-                      Fish
-                    </h2>
-                    <span className="text-[10px] uppercase tracking-widest text-sky-700 font-bold">
-                      Pescados & Ceviches
-                    </span>
+                  <div className="flex items-center justify-between mb-4 border-b border-sky-200/80 pb-1 relative">
+                    <div>
+                      <h2 className="text-4xl sm:text-5xl font-bold font-script text-[#0284c7] leading-none">
+                        Fish
+                      </h2>
+                      <span className="text-[10px] uppercase tracking-widest text-sky-700 font-bold block mt-0.5">
+                        Pescados & Ceviches
+                      </span>
+                    </div>
+                    {/* Pescadito grabado más pequeño encuadrando con sutileza */}
+                    <div className="w-20 sm:w-24 shrink-0 pointer-events-none select-none opacity-85 hover:opacity-100 transition-opacity">
+                      <img
+                        src={pescadoGrabado}
+                        alt="Fish engraving"
+                        className="w-full h-auto etching-art transform -scale-x-100 -rotate-2"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-4">
