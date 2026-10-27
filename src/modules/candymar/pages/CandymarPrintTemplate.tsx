@@ -78,7 +78,7 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
           <div className="col-span-4 pl-2 pt-1 flex flex-col items-center text-center">
             <div className="flex items-center justify-center gap-2 mb-0.5 w-full">
               <h1
-                className="text-6xl font-bold text-[#0284c7] leading-none"
+                className="text-6xl font-bold text-[#162660] leading-none"
                 style={{
                   fontFamily: "'Dancing Script', cursive",
                   transform: 'rotate(-3deg)',
@@ -102,9 +102,9 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
               className="flex items-center justify-center gap-2 mt-0.5 text-slate-700 text-lg italic w-full"
               style={{ fontFamily: "'Dancing Script', cursive" }}
             >
-              <span className="text-[#0284c7] font-bold">•</span>
+              <span className="text-[#162660] font-bold">•</span>
               <span>Always Fresh</span>
-              <span className="text-[#0284c7] font-bold">•</span>
+              <span className="text-[#162660] font-bold">•</span>
             </div>
 
             {/* Logo Oficial Candymar Centrado */}
@@ -119,9 +119,9 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
 
           {/* Col 5-8: Sección "Fish" con Pescadito Grabado */}
           <div className="col-span-4 pr-3">
-            <div className="flex items-center justify-between mb-2 border-b border-sky-200/80 pb-1">
+            <div className="flex items-center justify-between mb-2 border-b border-[#162660]/20 pb-1">
               <h2
-                className="text-4xl font-bold text-[#0284c7]"
+                className="text-4xl font-bold text-[#162660]"
                 style={{ fontFamily: "'Dancing Script', cursive" }}
               >
                 Fish
@@ -154,7 +154,7 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
           {/* Col 9-12: Sección "Mussels" */}
           <div className="col-span-4 pr-6">
             <h2
-              className="text-4xl font-bold text-[#0284c7] mb-2"
+              className="text-4xl font-bold text-[#162660] mb-2"
               style={{ fontFamily: "'Dancing Script', cursive" }}
             >
               Mussels
@@ -176,16 +176,16 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
           </div>
         </div>
 
-        {/* PARTE INFERIOR (Fila 2: Shrimps bloque turquesa + Lobster•Crab recuadro cian) */}
+        {/* PARTE INFERIOR (Fila 2: Shrimps bloque powder blue + Lobster•Crab marco azul rey) */}
         <div className="grid grid-cols-12 gap-6 items-end mt-1">
-          {/* Shrimps: Bloque turquesa vibrante original (Col 1-5) */}
+          {/* Shrimps: Bloque Powder Blue suave (Col 1-5) */}
           <div
-            className="col-span-5 relative p-3.5 rounded-sm overflow-hidden shadow-xs"
+            className="col-span-5 relative p-3.5 rounded-sm overflow-hidden shadow-xs border border-[#162660]/15"
             style={{
-              backgroundColor: '#86e4f3',
+              backgroundColor: '#D0E6FD',
               backgroundImage: `
-                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.4) 0%, transparent 60%),
-                radial-gradient(circle at 90% 80%, rgba(2,132,199,0.15) 0%, transparent 60%)
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.6) 0%, transparent 60%),
+                radial-gradient(circle at 90% 80%, rgba(22,38,96,0.08) 0%, transparent 60%)
               `,
             }}
           >
@@ -202,7 +202,7 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
 
             <div className="relative z-10">
               <h2
-                className="text-4xl font-bold text-[#0284c7] mb-2"
+                className="text-4xl font-bold text-[#162660] mb-2"
                 style={{ fontFamily: "'Dancing Script', cursive" }}
               >
                 Shrimps
@@ -213,7 +213,7 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
                   <div key={p.id}>
                     <div className="flex items-baseline justify-between text-xs font-bold text-slate-900">
                       <span className="font-serif text-[12px]">{p.name}</span>
-                      <span className="flex-1 mx-2 border-b-2 border-dotted border-sky-400/60" />
+                      <span className="flex-1 mx-2 border-b-2 border-dotted border-[#162660]/30" />
                       <span style={{ fontFamily: "'Oswald', sans-serif" }}>${p.price.toFixed(2)}</span>
                     </div>
                     <p className="text-[9.5px] text-slate-800 italic font-serif leading-tight">
@@ -225,8 +225,8 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
             </div>
           </div>
 
-          {/* Lobster • Crab: Gran marco con borde cian náutico de 2px (Col 6-12) */}
-          <div className="col-span-7 relative border-2 border-[#0ea5e9] bg-white/80 p-3.5 rounded-sm">
+          {/* Lobster • Crab: Gran marco con borde Azul Rey (#162660) de 2px y fondo crema cálido fino (Col 6-12) */}
+          <div className="col-span-7 relative border-2 border-[#162660] bg-[#FBF8F3]/95 p-3.5 rounded-sm shadow-xs">
             <div className="absolute -top-5 -right-5 w-24 pointer-events-none opacity-90">
               <img src={cangrejoGrabado} alt="Crab" className="w-full h-auto etching-art-print" />
             </div>
@@ -235,7 +235,7 @@ const CandymarPrintTemplate = forwardRef<HTMLDivElement>((_props, ref) => {
             </div>
 
             <h2
-              className="text-4xl font-bold text-[#0284c7] mb-1.5"
+              className="text-4xl font-bold text-[#162660] mb-1.5"
               style={{ fontFamily: "'Dancing Script', cursive" }}
             >
               Lobster • Crab
