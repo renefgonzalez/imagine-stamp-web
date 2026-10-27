@@ -12,46 +12,45 @@ import cangrejoGrabado from '../assets/cangrejo-grabado.webp';
 import ostrasGrabado from '../assets/ostras-grabado.webp';
 import limonRomeroGrabado from '../assets/limon-romero-grabado.webp';
 
-// ─── Motas y salpicaduras de acuarela azul (Watercolor Splatter Dots) ─────────
+// ─── Motas y salpicaduras de acuarela (Tonos arena, terracota y marino sobrio) ─────────
 const WatercolorSplatterDots = ({ className = "" }: { className?: string }) => (
   <svg className={`pointer-events-none select-none ${className}`} viewBox="0 0 800 300" fill="none">
-    {/* Racimos de salpicaduras en azul cielo y turquesa acuoso */}
-    <circle cx="45" cy="80" r="3.5" fill="#38bdf8" opacity="0.55" />
-    <circle cx="55" cy="95" r="2" fill="#0284c7" opacity="0.6" />
-    <circle cx="70" cy="75" r="5" fill="#06b6d4" opacity="0.4" />
-    <circle cx="85" cy="110" r="2.5" fill="#38bdf8" opacity="0.5" />
-    <circle cx="95" cy="88" r="4" fill="#0284c7" opacity="0.45" />
-    <circle cx="115" cy="120" r="6" fill="#7dd3fc" opacity="0.35" />
-    <circle cx="130" cy="98" r="2" fill="#0ea5e9" opacity="0.6" />
+    <circle cx="45" cy="80" r="3.5" fill="#16325c" opacity="0.12" />
+    <circle cx="55" cy="95" r="2" fill="#8b3a2b" opacity="0.15" />
+    <circle cx="70" cy="75" r="5" fill="#d97706" opacity="0.1" />
+    <circle cx="85" cy="110" r="2.5" fill="#16325c" opacity="0.12" />
+    <circle cx="95" cy="88" r="4" fill="#8b3a2b" opacity="0.14" />
+    <circle cx="115" cy="120" r="6" fill="#d97706" opacity="0.08" />
+    <circle cx="130" cy="98" r="2" fill="#16325c" opacity="0.15" />
 
-    <circle cx="210" cy="190" r="4.5" fill="#38bdf8" opacity="0.5" />
-    <circle cx="225" cy="210" r="2" fill="#0284c7" opacity="0.55" />
-    <circle cx="240" cy="175" r="5.5" fill="#06b6d4" opacity="0.45" />
-    <circle cx="260" cy="225" r="3" fill="#7dd3fc" opacity="0.5" />
-    <circle cx="280" cy="195" r="2.5" fill="#0284c7" opacity="0.6" />
-    <circle cx="300" cy="235" r="4" fill="#38bdf8" opacity="0.4" />
+    <circle cx="210" cy="190" r="4.5" fill="#8b3a2b" opacity="0.1" />
+    <circle cx="225" cy="210" r="2" fill="#16325c" opacity="0.12" />
+    <circle cx="240" cy="175" r="5.5" fill="#d97706" opacity="0.08" />
+    <circle cx="260" cy="225" r="3" fill="#16325c" opacity="0.1" />
+    <circle cx="280" cy="195" r="2.5" fill="#8b3a2b" opacity="0.12" />
+    <circle cx="300" cy="235" r="4" fill="#d97706" opacity="0.08" />
 
-    <circle cx="420" cy="140" r="3.5" fill="#0ea5e9" opacity="0.55" />
-    <circle cx="435" cy="165" r="5" fill="#06b6d4" opacity="0.4" />
-    <circle cx="450" cy="130" r="2" fill="#0284c7" opacity="0.65" />
-    <circle cx="475" cy="180" r="4" fill="#7dd3fc" opacity="0.45" />
-    <circle cx="490" cy="150" r="2.5" fill="#38bdf8" opacity="0.5" />
-    <circle cx="510" cy="170" r="6" fill="#06b6d4" opacity="0.35" />
+    <circle cx="420" cy="140" r="3.5" fill="#16325c" opacity="0.12" />
+    <circle cx="435" cy="165" r="5" fill="#8b3a2b" opacity="0.1" />
+    <circle cx="450" cy="130" r="2" fill="#16325c" opacity="0.15" />
+    <circle cx="475" cy="180" r="4" fill="#d97706" opacity="0.1" />
+    <circle cx="490" cy="150" r="2.5" fill="#16325c" opacity="0.12" />
+    <circle cx="510" cy="170" r="6" fill="#8b3a2b" opacity="0.08" />
 
-    <circle cx="620" cy="70" r="4" fill="#38bdf8" opacity="0.5" />
-    <circle cx="635" cy="95" r="2.5" fill="#0284c7" opacity="0.6" />
-    <circle cx="650" cy="65" r="5" fill="#06b6d4" opacity="0.45" />
-    <circle cx="670" cy="115" r="3" fill="#7dd3fc" opacity="0.5" />
-    <circle cx="690" cy="85" r="6.5" fill="#0ea5e9" opacity="0.4" />
-    <circle cx="710" cy="125" r="2" fill="#0284c7" opacity="0.6" />
-    <circle cx="735" cy="95" r="4.5" fill="#38bdf8" opacity="0.45" />
+    <circle cx="620" cy="70" r="4" fill="#16325c" opacity="0.1" />
+    <circle cx="635" cy="95" r="2.5" fill="#8b3a2b" opacity="0.12" />
+    <circle cx="650" cy="65" r="5" fill="#d97706" opacity="0.08" />
+    <circle cx="670" cy="115" r="3" fill="#16325c" opacity="0.1" />
+    <circle cx="690" cy="85" r="6.5" fill="#8b3a2b" opacity="0.08" />
+    <circle cx="710" cy="125" r="2" fill="#16325c" opacity="0.14" />
+    <circle cx="735" cy="95" r="4.5" fill="#d97706" opacity="0.1" />
 
-    <circle cx="340" cy="60" r="3" fill="#06b6d4" opacity="0.5" />
-    <circle cx="355" cy="85" r="2" fill="#0284c7" opacity="0.6" />
-    <circle cx="370" cy="50" r="4.5" fill="#7dd3fc" opacity="0.4" />
-    <circle cx="560" cy="240" r="4" fill="#0ea5e9" opacity="0.5" />
-    <circle cx="580" cy="260" r="2.5" fill="#0284c7" opacity="0.65" />
-    <circle cx="600" cy="230" r="5.5" fill="#38bdf8" opacity="0.4" />
+    <circle cx="340" cy="60" r="3" fill="#8b3a2b" opacity="0.12" />
+    <circle cx="355" cy="85" r="2" fill="#16325c" opacity="0.14" />
+    <circle cx="370" cy="50" r="4.5" fill="#d97706" opacity="0.08" />
+    <circle cx="560" cy="240" r="4" fill="#16325c" opacity="0.1" />
+    <circle cx="580" cy="260" r="2.5" fill="#8b3a2b" opacity="0.12" />
+    <circle cx="600" cy="230" r="5.5" fill="#d97706" opacity="0.08" />
   </svg>
 );
 
@@ -100,13 +99,13 @@ const STYLES = `
     margin: -3px -6px;
   }
   .dish-item:hover {
-    background-color: rgba(14, 165, 233, 0.08);
+    background-color: rgba(22, 50, 92, 0.05);
   }
   .dish-item:hover .dish-title {
-    color: #0284c7 !important;
+    color: #16325c !important;
   }
   .dish-item:hover .dish-dots {
-    border-color: #0ea5e9 !important;
+    border-color: #8b3a2b !important;
   }
 `;
 
@@ -226,12 +225,9 @@ export default function CandymarMenu() {
 
   return (
     <div
-      className="min-h-screen font-sans text-slate-800 selection:bg-cyan-200 selection:text-sky-950 relative"
+      className="min-h-screen font-sans text-slate-800 selection:bg-amber-100 selection:text-slate-900 relative"
       style={{
-        backgroundColor: '#f7f4ec',
-        backgroundImage: `url(${fondoAcuarela})`,
-        backgroundRepeat: 'repeat-y',
-        backgroundSize: '100% auto',
+        backgroundColor: '#f5edd8',
       }}
     >
       <style>{STYLES}</style>
@@ -242,17 +238,17 @@ export default function CandymarMenu() {
       </div>
 
       {/* ─── BARRA SUPERIOR FLOTANTE CON LOGO Y ACCIONES ─── */}
-      <header className="sticky top-0 z-40 bg-[#faf6ed]/95 backdrop-blur-md border-b border-sky-200/80 shadow-2xs py-2 px-4">
+      <header className="sticky top-0 z-40 bg-[#faf6ed]/95 backdrop-blur-md border-b border-amber-900/10 shadow-2xs py-2 px-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-full overflow-hidden border border-sky-300 shadow-xs bg-[#faf6ed]">
+            <div className="h-9 w-9 rounded-full overflow-hidden border border-amber-900/20 shadow-xs bg-[#faf6ed]">
               <img src={logo} alt="Candymar Logo" className="h-full w-full object-cover" />
             </div>
             <div>
               <span className="font-bold text-base text-slate-900 tracking-tight leading-none block">
                 Candymar
               </span>
-              <span className="text-[10px] text-sky-700 uppercase tracking-widest font-semibold block">
+              <span className="text-[10px] text-[#8b3a2b] uppercase tracking-widest font-bold block">
                 Seafood & Grill
               </span>
             </div>
@@ -281,20 +277,22 @@ export default function CandymarMenu() {
         </div>
       </header>
 
-      {/* ─── CONTENEDOR PRINCIPAL: LÁMINA EDITORIAL DE ACUARELA ─── */}
+      {/* ─── CONTENEDOR PRINCIPAL: LÁMINA EDITORIAL EN PAPEL CREMA ARTESANAL ─── */}
       <div className="max-w-6xl mx-auto px-3 sm:px-6 py-6 pb-20">
-        <div
-          className="relative bg-[#faf6ed]/92 rounded-2xl shadow-xl border border-sky-200/70 p-5 sm:p-10 lg:p-14 overflow-hidden"
-          style={{
-            backgroundImage: `url(${fondoAcuarela})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center top',
-            backgroundSize: 'cover',
-          }}
-        >
+        <div className="relative bg-[#faf6ed] rounded-2xl shadow-xl border border-amber-900/10 p-5 sm:p-10 lg:p-14 overflow-hidden">
+          {/* Textura de acuarela marina suave y difuminada (sin blanco y sin exceso de azul) */}
+          <div
+            className="absolute inset-0 pointer-events-none select-none opacity-20 mix-blend-multiply z-0"
+            style={{
+              backgroundImage: `url(${fondoAcuarela})`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center top',
+              backgroundSize: 'cover',
+            }}
+          />
+
           {/* ═══════════════════════════════════════════════════════════════
               ILUSTRACIONES EN TINTA DE GRABADO AL AGUAFUERTE EN BORDES Y ESQUINAS
-              (Idéntico a la lámina original de referencia)
               ═══════════════════════════════════════════════════════════════ */}
 
           {/* Cangrejo en el borde superior */}
@@ -312,12 +310,12 @@ export default function CandymarMenu() {
             <img src={limonRomeroGrabado} alt="Lemon and rosemary" className="w-full h-auto etching-art" />
           </div>
 
-          {/* Salpicaduras de puntitos azules orgánicos en el fondo */}
+          {/* Salpicaduras de puntitos sutiles orgánicos en el fondo */}
           <WatercolorSplatterDots className="absolute top-24 left-0 w-full h-44 opacity-80 z-0" />
           <WatercolorSplatterDots className="absolute bottom-6 left-0 w-full h-56 opacity-90 z-0" />
 
           {/* Barra de búsqueda y categorías integradas con delicadeza */}
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4 mb-8 pb-4 border-b border-sky-100">
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4 mb-8 pb-4 border-b border-amber-900/10">
             <div className="flex items-center gap-2 overflow-x-auto cat-scroll w-full md:w-auto py-1">
               {CATEGORIES.map(cat => {
                 const active = selectedCategory === cat.name;
@@ -327,8 +325,8 @@ export default function CandymarMenu() {
                     onClick={() => setSelectedCategory(cat.name)}
                     className={`whitespace-nowrap px-3.5 py-1 text-xs font-bold uppercase tracking-wider transition-all duration-200 rounded-full ${
                       active
-                        ? 'bg-[#0284c7] text-white shadow-xs'
-                        : 'bg-[#fcf8f1]/90 text-slate-700 border border-sky-200/90 hover:border-sky-400 hover:text-sky-900 shadow-2xs'
+                        ? 'bg-[#16325c] text-white shadow-xs'
+                        : 'bg-[#f4efe4] text-slate-700 border border-amber-900/15 hover:border-[#16325c] hover:text-[#16325c] shadow-2xs'
                     }`}
                     style={{ fontFamily: "'Montserrat', sans-serif" }}
                   >
@@ -339,13 +337,13 @@ export default function CandymarMenu() {
             </div>
 
             <div className="relative w-full md:w-72">
-              <Search className="w-4 h-4 text-sky-600 absolute left-3 top-2.5" />
+              <Search className="w-4 h-4 text-[#16325c] absolute left-3 top-2.5" />
               <input
                 type="text"
                 placeholder="Buscar platillo, taco, aguachile..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-[#fcf8f1]/95 border border-sky-200/90 focus:border-sky-500 text-slate-800 text-xs px-3 py-2 pl-9 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-200 placeholder-slate-400 transition-all font-sans shadow-2xs"
+                className="w-full bg-[#f4efe4] border border-amber-900/15 focus:border-[#16325c] text-slate-800 text-xs px-3 py-2 pl-9 rounded-full focus:outline-none focus:ring-2 focus:ring-[#16325c]/20 placeholder-slate-500 transition-all font-sans shadow-2xs"
               />
               {searchQuery && (
                 <button
@@ -365,35 +363,35 @@ export default function CandymarMenu() {
             <div className="relative z-10 space-y-10 sm:space-y-14">
               {/* FILA 1: MENU SEAFOOD + FISH + MUSSELS */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-                {/* Cuadrante 1: Header Caligráfico + Pescado Grabado (lg:col-span-4) */}
-                <div className="lg:col-span-4 relative pr-2">
-                  <div className="flex items-center gap-3">
+                {/* Cuadrante 1: Header Caligráfico + Logo Candymar CENTRADO EN MODO CELULAR (lg:col-span-4) */}
+                <div className="lg:col-span-4 relative flex flex-col items-center text-center lg:items-start lg:text-left pr-0 lg:pr-2">
+                  <div className="flex justify-center lg:justify-start items-center gap-3 w-full">
                     <h1
-                      className="text-6xl sm:text-7xl font-bold font-script text-[#0284c7] leading-none select-none"
+                      className="text-6xl sm:text-7xl font-bold font-script text-[#16325c] leading-none select-none"
                       style={{
-                        transform: 'rotate(-4deg)',
+                        transform: 'rotate(-3deg)',
                         display: 'inline-block',
-                        textShadow: '0 2px 10px rgba(2,132,199,0.15)',
+                        textShadow: '0 2px 8px rgba(22,50,92,0.12)',
                       }}
                     >
                       Menu
                     </h1>
                   </div>
 
-                  <div className="mt-1">
+                  <div className="mt-1 w-full">
                     <span className="text-4xl sm:text-5xl font-black uppercase tracking-tight text-slate-900 block font-sans-title">
                       SEAFOOD
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 mt-1 text-slate-700 font-script text-xl sm:text-2xl italic select-none">
-                    <span className="text-[#0284c7] font-bold">•</span>
+                  <div className="flex justify-center lg:justify-start items-center gap-2 mt-1 text-slate-700 font-script text-xl sm:text-2xl italic select-none w-full">
+                    <span className="text-[#8b3a2b] font-bold">•</span>
                     <span>Always Fresh</span>
-                    <span className="text-[#0284c7] font-bold">•</span>
+                    <span className="text-[#8b3a2b] font-bold">•</span>
                   </div>
 
-                  {/* LOGO OFICIAL CANDYMAR (En lugar del pez principal) */}
-                  <div className="w-48 sm:w-56 mt-4 relative">
+                  {/* LOGO OFICIAL CANDYMAR CENTRADO EN MODO CELULAR */}
+                  <div className="w-52 sm:w-60 mt-5 relative flex justify-center mx-auto lg:mx-0">
                     <img
                       src={logo}
                       alt="Candymar Seafood Logo"
@@ -404,12 +402,12 @@ export default function CandymarMenu() {
 
                 {/* Cuadrante 2: FISH con Pescadito Grabado que encuadra la cabecera (lg:col-span-4) */}
                 <div className="lg:col-span-4">
-                  <div className="flex items-center justify-between mb-4 border-b border-sky-100 pb-1 relative">
+                  <div className="flex items-center justify-between mb-4 border-b border-amber-900/15 pb-1 relative">
                     <div>
-                      <h2 className="text-4xl sm:text-5xl font-bold font-script text-[#0284c7] leading-none">
+                      <h2 className="text-4xl sm:text-5xl font-bold font-script text-[#16325c] leading-none">
                         Fish
                       </h2>
-                      <span className="text-[10px] uppercase tracking-widest text-sky-700 font-semibold block mt-0.5">
+                      <span className="text-[10px] uppercase tracking-widest text-[#8b3a2b] font-bold block mt-0.5">
                         Pescados & Ceviches
                       </span>
                     </div>
@@ -449,11 +447,11 @@ export default function CandymarMenu() {
 
                 {/* Cuadrante 3: MUSSELS (lg:col-span-4) */}
                 <div className="lg:col-span-4">
-                  <div className="flex items-baseline justify-between mb-4 border-b border-sky-100 pb-1">
-                    <h2 className="text-4xl sm:text-5xl font-bold font-script text-[#0284c7]">
+                  <div className="flex items-baseline justify-between mb-4 border-b border-amber-900/15 pb-1">
+                    <h2 className="text-4xl sm:text-5xl font-bold font-script text-[#16325c]">
                       Mussels
                     </h2>
-                    <span className="text-[10px] uppercase tracking-widest text-sky-700 font-semibold">
+                    <span className="text-[10px] uppercase tracking-widest text-[#8b3a2b] font-bold">
                       Tacos & Entradas
                     </span>
                   </div>
@@ -485,14 +483,14 @@ export default function CandymarMenu() {
 
               {/* FILA 2: SHRIMPS (BLOQUE TURQUESA) + LOBSTER • CRAB (MARCO CIAN 2PX) */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
-                {/* Cuadrante 4: SHRIMPS en Bloque Turquesa Suave (lg:col-span-5) */}
+                {/* Cuadrante 4: SHRIMPS en Bloque Pergamino Arena Cálido (lg:col-span-5) */}
                 <section
-                  className="lg:col-span-5 relative p-6 sm:p-7 rounded-sm shadow-xs overflow-hidden flex flex-col justify-between"
+                  className="lg:col-span-5 relative p-6 sm:p-7 rounded-sm shadow-xs overflow-hidden flex flex-col justify-between border border-amber-900/15"
                   style={{
-                    backgroundColor: '#86e4f3',
+                    backgroundColor: '#f3ece0',
                     backgroundImage: `
-                      radial-gradient(circle at 10% 20%, rgba(255,255,255,0.4) 0%, transparent 60%),
-                      radial-gradient(circle at 90% 80%, rgba(14,165,233,0.2) 0%, transparent 60%)
+                      radial-gradient(circle at 10% 20%, rgba(255,255,255,0.7) 0%, transparent 60%),
+                      radial-gradient(circle at 90% 80%, rgba(139,58,43,0.06) 0%, transparent 60%)
                     `,
                   }}
                 >
@@ -511,7 +509,7 @@ export default function CandymarMenu() {
                   </div>
 
                   <div className="relative z-10">
-                    <h2 className="text-4xl sm:text-5xl font-bold font-script text-[#0369a1] mb-5 tracking-wide">
+                    <h2 className="text-4xl sm:text-5xl font-bold font-script text-[#16325c] mb-5 tracking-wide">
                       Shrimps
                     </h2>
 
@@ -526,7 +524,7 @@ export default function CandymarMenu() {
                             <span className="dish-title font-display font-bold text-base sm:text-lg">
                               {p.name}
                             </span>
-                            <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-sky-600/60" />
+                            <span className="dish-dots flex-1 mx-2 border-b-2 border-dotted border-amber-900/30" />
                             <span className="font-price font-bold text-base sm:text-lg shrink-0">
                               ${p.price.toFixed(2)}
                             </span>
@@ -539,14 +537,14 @@ export default function CandymarMenu() {
                     </div>
                   </div>
 
-                  <div className="relative z-10 mt-6 pt-3 border-t border-sky-400/40 text-[11px] text-sky-900 font-semibold flex items-center justify-between">
+                  <div className="relative z-10 mt-6 pt-3 border-t border-amber-900/20 text-[11px] text-[#8b3a2b] font-semibold flex items-center justify-between">
                     <span>✦ Especialidad de la Casa</span>
                     <span>Receta Sinaloa</span>
                   </div>
                 </section>
 
-                {/* Cuadrante 5: LOBSTER • CRAB en Marco con Borde Cian de 2px (lg:col-span-7) */}
-                <section className="lg:col-span-7 relative border-2 border-[#0ea5e9] bg-[#faf6ed]/95 backdrop-blur-xs p-6 sm:p-7 rounded-sm shadow-xs flex flex-col justify-between">
+                {/* Cuadrante 5: LOBSTER • CRAB en Marco Náutico Clásico (lg:col-span-7) */}
+                <section className="lg:col-span-7 relative border-2 border-[#16325c]/50 bg-[#faf6ed]/95 backdrop-blur-xs p-6 sm:p-7 rounded-sm shadow-xs flex flex-col justify-between">
                   {/* Cangrejo grabado asomándose en esquina superior derecha */}
                   <div className="absolute -top-7 -right-7 w-28 sm:w-36 pointer-events-none select-none opacity-85 z-0">
                     <img src={cangrejoGrabado} alt="Crab" className="w-full h-auto etching-art" />
@@ -559,10 +557,10 @@ export default function CandymarMenu() {
 
                   {/* Título en Script que encabeza el recuadro */}
                   <div className="relative z-10 flex items-center justify-between mb-5">
-                    <h2 className="text-4xl sm:text-5xl font-bold font-script text-[#0284c7]">
+                    <h2 className="text-4xl sm:text-5xl font-bold font-script text-[#16325c]">
                       Lobster • Crab
                     </h2>
-                    <span className="text-[10px] uppercase tracking-widest text-sky-700 font-semibold border-b border-sky-200 pb-0.5">
+                    <span className="text-[10px] uppercase tracking-widest text-[#8b3a2b] font-bold border-b border-amber-900/20 pb-0.5">
                       Aguachiles & Especialidades
                     </span>
                   </div>
@@ -620,12 +618,12 @@ export default function CandymarMenu() {
               {/* ═══════════════════════════════════════════════════════════════
                   CATÁLOGO COMPLETO ORGANIZADO POR CATEGORÍAS (111 PLATILLOS REALES)
                   ═══════════════════════════════════════════════════════════════ */}
-              <div className="pt-10 border-t border-sky-200/80">
+              <div className="pt-10 border-t border-amber-900/15">
                 <div className="text-center mb-10">
-                  <span className="text-xs uppercase tracking-[0.25em] text-sky-700 font-bold font-sans-title">
+                  <span className="text-xs uppercase tracking-[0.25em] text-[#8b3a2b] font-bold font-sans-title">
                     Marisquería de Tradición · Colima & Sinaloa
                   </span>
-                  <h3 className="text-4xl sm:text-5xl font-bold font-script text-[#0284c7] mt-1">
+                  <h3 className="text-4xl sm:text-5xl font-bold font-script text-[#16325c] mt-1">
                     Menú Completo de la Casa
                   </h3>
                   <p className="text-slate-500 text-xs sm:text-sm font-serif italic max-w-lg mx-auto mt-1">
@@ -639,9 +637,9 @@ export default function CandymarMenu() {
                     if (catProducts.length === 0) return null;
 
                     return (
-                      <section key={category.name} className="relative bg-[#faf6ed]/85 backdrop-blur-2xs p-6 sm:p-8 rounded-xl border border-sky-200/70 shadow-2xs">
-                        <div className="flex items-center justify-between mb-6 pb-2 border-b border-sky-200">
-                          <h4 className="text-3xl sm:text-4xl font-bold font-script text-[#0284c7]">
+                      <section key={category.name} className="relative bg-[#faf6ed]/85 backdrop-blur-2xs p-6 sm:p-8 rounded-xl border border-amber-900/15 shadow-2xs">
+                        <div className="flex items-center justify-between mb-6 pb-2 border-b border-amber-900/15">
+                          <h4 className="text-3xl sm:text-4xl font-bold font-script text-[#16325c]">
                             {category.name}
                           </h4>
                           <span className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
@@ -687,8 +685,8 @@ export default function CandymarMenu() {
           ) : (
             /* VISTA FILTRADA POR CATEGORÍA O BÚSQUEDA */
             <div className="relative z-20">
-              <div className="flex items-center justify-between mb-6 pb-2 border-b border-sky-200">
-                <h2 className="text-3xl sm:text-4xl font-bold font-script text-[#0284c7]">
+              <div className="flex items-center justify-between mb-6 pb-2 border-b border-amber-900/15">
+                <h2 className="text-3xl sm:text-4xl font-bold font-script text-[#16325c]">
                   {selectedCategory === 'Todos' ? `Resultados para "${searchQuery}"` : selectedCategory}
                 </h2>
                 <span className="text-xs text-slate-500">
@@ -697,14 +695,14 @@ export default function CandymarMenu() {
               </div>
 
               {filteredProducts.length === 0 ? (
-                <div className="text-center py-16 border border-dashed border-sky-300 rounded-lg max-w-md mx-auto my-6 bg-[#faf6ed]/80">
+                <div className="text-center py-16 border border-dashed border-amber-900/20 rounded-lg max-w-md mx-auto my-6 bg-[#faf6ed]/80">
                   <p className="text-slate-500 text-sm mb-2">No encontramos platillos con "{searchQuery}"</p>
                   <button
                     onClick={() => {
                       setSearchQuery('');
                       setSelectedCategory('Todos');
                     }}
-                    className="text-sky-700 underline text-xs font-semibold hover:text-sky-900"
+                    className="text-[#8b3a2b] underline text-xs font-semibold hover:text-[#16325c]"
                   >
                     Ver todo el menú
                   </button>
@@ -715,7 +713,7 @@ export default function CandymarMenu() {
                     <article
                       key={p.id}
                       onClick={() => setSelectedProduct(p)}
-                      className="dish-item group cursor-pointer bg-[#faf6ed]/85 p-4 border border-sky-200/80 rounded-sm hover:border-sky-400 shadow-2xs"
+                      className="dish-item group cursor-pointer bg-[#faf6ed]/85 p-4 border border-amber-900/15 rounded-sm hover:border-[#16325c] shadow-2xs"
                     >
                       <div className="flex items-baseline justify-between text-slate-900">
                         <span className="dish-title font-display font-bold text-base sm:text-lg">
@@ -731,8 +729,8 @@ export default function CandymarMenu() {
                           {p.description}
                         </p>
                         {p.featured && (
-                          <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-sky-800 bg-sky-100 px-2 py-0.5 rounded-full">
-                            <Sparkles size={11} className="text-sky-600" />
+                          <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[#8b3a2b] bg-amber-100/80 px-2 py-0.5 rounded-full">
+                            <Sparkles size={11} className="text-[#8b3a2b]" />
                             Especial
                           </span>
                         )}
@@ -749,7 +747,7 @@ export default function CandymarMenu() {
       {/* ─── MODAL DETALLE / PEDIDO WHATSAPP ─── */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
-          <div className="bg-[#faf6ed] rounded-lg border border-sky-200 shadow-xl max-w-sm w-full p-6 relative animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-[#faf6ed] rounded-lg border border-amber-900/15 shadow-xl max-w-sm w-full p-6 relative animate-in fade-in zoom-in-95 duration-200">
             <button
               onClick={() => setSelectedProduct(null)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1"
@@ -758,7 +756,7 @@ export default function CandymarMenu() {
               <X size={18} />
             </button>
 
-            <span className="text-[11px] font-bold uppercase tracking-wider text-sky-700 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-100">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#8b3a2b] bg-amber-50 px-2.5 py-1 rounded-full border border-amber-900/10">
               {selectedProduct.category}
             </span>
 
