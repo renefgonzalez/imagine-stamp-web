@@ -1738,10 +1738,88 @@ Cuando se le envía un enlace al dueño del negocio para que revise cambios reci
 
 ---
 
+### 18.6. Cómo integrar la función de Auto-Update en cualquier Menú Digital para que el Cliente vea cambios al instante
+
+Para evitar que el dueño del restaurante o sus comensales se queden con una versión en caché en sus teléfonos móviles tras subir modificaciones (precios, platillos, fotos o logos), cada menú digital (como `CandymarMenu.tsx`, `AmelieMenu.tsx`, etc.) cuenta con el sistema de **Auto-Update Reactivo**:
+
+#### 1. Importar el hook en el menú
+```tsx
+import { useAutoUpdate } from '../../../hooks/useAutoUpdate';
+import { RefreshCw, Sparkles } from 'lucide-react';
+```
+
+#### 2. Invocar el hook en el componente
+```tsx
+export default function MiMenuDigital() {
+  // Chequeo periódico cada 60 segundos y al reactivar o enfocar la pestaña
+  const { hasUpdate, applyUpdate, checkNow } = useAutoUpdate(60000);
+  
+  // ... resto del componente
+```
+
+#### 3. Añadir botón discreto de verificación en el Header flotante
+Permite al cliente o mesero pulsar un toque para sincronizar si sospecha que hay cambios recientes:
+```tsx
+<button
+  onClick={() => {
+    if (hasUpdate) {
+      applyUpdate();
+    } else {
+      checkNow();
+    }
+  }}
+  className="p-1.5 text-slate-500 hover:text-sky-700 hover:bg-sky-100/60 rounded-full transition-colors relative cursor-pointer"
+  title={hasUpdate ? "¡Novedades disponibles! Toca para actualizar" : "Verificar novedades en el menú"}
+  aria-label="Verificar novedades del menú"
+>
+  <RefreshCw size={14} className={hasUpdate ? "animate-spin text-sky-600" : ""} />
+  {hasUpdate && (
+    <span className="absolute top-0 right-0 w-2 h-2 bg-sky-500 rounded-full ring-2 ring-white" />
+  )}
+</button>
+```
+
+#### 4. Añadir el Banner Flotante de Notificación al Comensal/Cliente
+Si el cliente tiene el menú abierto y se publica un cambio en producción, aparecerá este banner flotante en la parte inferior de su pantalla:
+```tsx
+{/* ─── BANNER FLOTANTE DE AUTO-UPDATE (NOVEDADES EN EL MENÚ) ─── */}
+{hasUpdate && (
+  <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 max-w-sm w-[92%] sm:w-auto bg-[#0284c7] text-white px-4 py-2.5 rounded-full shadow-2xl flex items-center justify-between gap-3 border border-white/30 animate-in fade-in slide-in-from-bottom-3 duration-300">
+    <div className="flex items-center gap-2">
+      <Sparkles className="w-4 h-4 text-amber-300 animate-pulse shrink-0" />
+      <span className="text-xs font-semibold leading-tight">
+        ¡Novedades disponibles en el menú!
+      </span>
+    </div>
+    <button
+      onClick={applyUpdate}
+      className="bg-white text-[#0284c7] hover:bg-sky-50 text-xs font-bold px-3 py-1 rounded-full transition-colors shadow-xs shrink-0 cursor-pointer"
+    >
+      Ver cambios
+    </button>
+  </div>
+)}
+```
+
+#### 5. Plantilla de Mensaje de WhatsApp para Enviar al Cliente tras subir cambios
+Cuando René o la agencia le comparte una revisión recién subida al cliente:
+
+> *"¡Hola [Nombre]! Ya quedaron listos los cambios y novedades en tu menú digital 🌊📱.*
+> 
+> *Puedes revisarlo directamente aquí:*
+> *👉 https://imagineandstamp.site/#/candymar?v=nuevo*
+> 
+> *(Tip: Al abrirlo desde este enlace o al pulsar el botoncito de sincronizar en la barra superior, tu celular cargará la versión más reciente al instante sin guardar caché vieja).*
+> 
+> *Cualquier detalle o platillo adicional me dices con toda confianza."*
+
+---
+
 *Última actualización: Octubre 2026 — Proyecto base: imagineandstamp.site*
 *Base: catálogo, carrito de 2 pasos, favoritos, panel de control y datos bancarios (transferencia).*
 *Complemento opcional con costo extra: pago con tarjeta vía Mercado Pago.*
 *Módulo de Descargas Digitales (sección 13) probado y documentado de punta a punta en Sahumerio Sagrado y Mundo Halloween.*
 *Keepalive Supabase (5.6) implementado en la-maria-rooftop y amelie-patisserie.*
 *Compresión de imágenes + paginación 10x10 (sección 14) probado en amelie-patisserie y Mundo Halloween.*
-*Control de caché y auto-actualización de menús (sección 18) probado y documentado.*
+*Control de caché y auto-actualización de menús (sección 18) probado y documentado con banner interactivo en Candymar.*
+
