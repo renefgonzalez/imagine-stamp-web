@@ -791,11 +791,11 @@ for (const s of SERVICIOS) {
   console.log('✓', `/${s.slug}/`);
 }
 
-// Sitemap: portada + páginas de servicio + puentes existentes con contenido propio
+// Sitemap: portada + páginas de servicio. Los puentes de WhatsApp (strong-gym/, iron-plan/...)
+// NO van: redirigen por JS a /#/ruta y Google los marca como "no indexada".
 const urls = [
   ['/', '1.0'],
   ...SERVICIOS.map((s) => [`/${s.slug}/`, '0.9']),
-  ['/strong-gym/', '0.5'],
 ];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
