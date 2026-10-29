@@ -405,6 +405,266 @@ const SERVICIOS = [
   },
 ];
 
+// Páginas de especialidad: búsquedas más específicas (giro o evento) que cuelgan de un servicio.
+// Cada una con contenido propio de su giro; nunca copiar la del padre cambiando una palabra.
+// No salen en el menú "Servicios": se enlazan desde su página padre y van en el sitemap.
+const ESPECIALIDADES = [
+  {
+    slug: 'menu-digital-taquerias',
+    padre: 'menu-digital',
+    menu: 'Menú digital para taquerías',
+    title: 'Menú Digital para Taquerías con Pedidos por WhatsApp | Imagine & Stamp',
+    description: 'Menú digital QR para taquerías: órdenes por pieza o por kilo, salsas, "con todo" o "sin cebolla", paquetes familiares y pedido directo a tu WhatsApp, sin comisiones. Un solo pago de $1,650 MXN.',
+    h1: 'Menú digital para taquerías, con pedidos directo a tu WhatsApp',
+    lead: 'Tus clientes eligen sus tacos por pieza, orden o kilo, marcan si los quieren con todo o sin cebolla, escogen salsas y el pedido te llega completo a tu WhatsApp. Sin apps de reparto y sin comisiones.',
+    msg: 'Hola René, tengo una taquería y quiero un menú digital con pedidos a WhatsApp',
+    cta: 'Quiero el menú de mi taquería',
+    og: 'og-menu-demo.jpg',
+    serviceType: 'Menú digital QR para taquerías',
+    price: '1650',
+    precioTexto: 'Un solo pago de $1,650 MXN',
+    hero: { src: '/img-servicios/takeros.webp', alt: "Menú digital de la taquería Takero's CDMX abierto en un celular con paquetes taqueros", tipo: 'celular', width: 390, height: 844 },
+    beneficios: [
+      ['Pedidos como los piden en la taquería', 'Pastor, suadero, tripa o bistec; por pieza, por orden o por kilo, con todo o sin cebolla y cilantro.'],
+      ['Paquetes que se venden solos', 'Arma paquetes para 2, 4 o más personas con tortillas, salsas y verdura incluidas, y muéstralos hasta arriba.'],
+      ['La comanda llega clara', 'El pedido llega a tu WhatsApp ordenado por platillo, con notas, dirección y forma de pago. Menos errores en la plancha.'],
+      ['Marca lo que se acabó', 'Si se terminó el suadero, lo marcas como agotado en un minuto y nadie lo pide.'],
+    ],
+    secciones: [
+      ['Pensado para cómo vende una taquería', [
+        'Opciones por taco: tipo de tortilla, con queso, con todo o sin verdura.',
+        'Salsas a elegir y cobro de extras (queso, piña, costra) sumados automáticamente.',
+        'Costo de empaque o envío calculado en el total.',
+        'Pago en efectivo con cálculo de cambio o por transferencia.',
+        'Código QR para mesas y mostrador, y liga para tus redes y Google Maps.',
+      ]],
+      ['Funciona igual para', [
+        'Taquerías de local, puestos y negocios que solo venden a domicilio.',
+        'Antojitos: gringas, quesadillas, gorditas, volcanes y alambres.',
+        'Taquerías con varias sucursales, cada una con su WhatsApp.',
+      ]],
+    ],
+    demos: [
+      ["Takero's CDMX · taquería", 'https://takeros-cdmx.imagineandstamp.site', '/img-servicios/takeros.webp'],
+      ['La Cueva del Lobo · antojitos', '/#/la-cueva-del-lobo', '/img-servicios/la-cueva-del-lobo.webp'],
+      ['AAAH! Carbón · parrilla', '/#/aaah-carbon', '/img-servicios/aaah-carbon.webp'],
+    ],
+    faqs: [
+      ['¿Cuánto cuesta el menú digital para mi taquería?', 'Un solo pago de $1,650 MXN. No cobramos comisión por pedido ni mensualidad obligatoria.'],
+      ['¿Puedo vender por kilo y por pieza?', 'Sí. Cada producto puede tener presentaciones (pieza, orden, medio kilo, kilo) con su propio precio.'],
+      ['¿Sirve si tengo puesto y no local?', 'Sí. Tus clientes te hacen el pedido por WhatsApp para pasar por él o para envío, y en el puesto pegas el QR.'],
+      ['¿Qué necesito mandar para empezar?', 'Una foto de tu menú o lista de precios, tu logo si tienes, fotos de tus tacos y el WhatsApp donde quieres recibir pedidos.'],
+    ],
+  },
+  {
+    slug: 'menu-digital-pizzerias',
+    padre: 'menu-digital',
+    menu: 'Menú digital para pizzerías',
+    title: 'Menú Digital para Pizzerías: Tamaños, Ingredientes y Pedidos por WhatsApp | Imagine & Stamp',
+    description: 'Menú digital QR para pizzerías: tamaños, mitad y mitad, ingredientes extra y orillas, con el total calculado y el pedido directo a tu WhatsApp. Sin comisiones, un solo pago de $1,650 MXN.',
+    h1: 'Menú digital para pizzerías: tamaños, ingredientes y pedido a WhatsApp',
+    lead: 'Tu cliente elige tamaño, ingredientes extra, orilla rellena o mitad y mitad, ve el total al momento y te manda el pedido completo por WhatsApp. Tú solo hornea.',
+    msg: 'Hola René, tengo una pizzería y quiero un menú digital con pedidos a WhatsApp',
+    cta: 'Quiero el menú de mi pizzería',
+    og: 'og-menu-demo.jpg',
+    serviceType: 'Menú digital QR para pizzerías',
+    price: '1650',
+    precioTexto: 'Un solo pago de $1,650 MXN',
+    hero: { src: '/img-servicios/brothers-pizza.webp', alt: 'Menú digital de Brothers Pizza abierto en un celular con opciones de pizza', tipo: 'celular', width: 390, height: 844 },
+    beneficios: [
+      ['Tamaños y precios sin confusión', 'Chica, mediana, grande o familiar, cada una con su precio. El total se calcula solo.'],
+      ['Ingredientes extra cobrados bien', 'Cada extra suma al precio y aparece en el pedido, para que no se te escape ninguno.'],
+      ['Promociones visibles', 'Pon tus paquetes con refresco o tus 2x1 hasta arriba del menú.'],
+      ['Pedido directo, sin comisiones', 'El pedido y el dinero son tuyos: no pagas porcentaje a apps de reparto.'],
+    ],
+    secciones: [
+      ['Lo que una pizzería necesita en su menú', [
+        'Tamaños con precio distinto por pizza.',
+        'Ingredientes extra, orilla rellena y mitad y mitad.',
+        'Complementos: alitas, papas, bebidas y postres en el mismo pedido.',
+        'Dirección de entrega, forma de pago y cálculo de cambio.',
+        'Código QR para mesas y para los volantes que repartes.',
+      ]],
+    ],
+    demos: [
+      ['Brothers Pizza · pizzería', '/#/brothers-pizza', '/img-servicios/brothers-pizza.webp'],
+      ['Candymar · mariscos', '/#/candymar', '/img-servicios/candymar.webp'],
+    ],
+    faqs: [
+      ['¿Se puede pedir mitad y mitad?', 'Sí. Configuramos la opción para que el cliente elija dos especialidades y el precio se ajuste.'],
+      ['¿Cuánto cuesta?', 'Un solo pago de $1,650 MXN, sin comisión por pedido.'],
+      ['¿Puedo cambiar precios cuando sube el queso?', 'Sí, en un minuto, sin volver a imprimir menús ni volantes.'],
+    ],
+  },
+  {
+    slug: 'pagina-web-para-gimnasio',
+    padre: 'paginas-web',
+    menu: 'Página web para gimnasio',
+    title: 'Página Web y App para Gimnasio: Membresías, Suplementos y Rutinas | Imagine & Stamp',
+    description: 'Página web para gimnasio con membresías y promociones, catálogo de suplementos con pedido por WhatsApp y planificador de rutinas para tus coaches. Hecha para celular, en CDMX y todo México.',
+    h1: 'Página web para gimnasio: membresías, suplementos y rutinas en el celular',
+    lead: 'Que tus socios y prospectos vean tus planes, horarios y promociones, aparten su membresía y pidan suplementos por WhatsApp. Y si quieres, un planificador de rutinas para tus coaches.',
+    msg: 'Hola René, tengo un gimnasio y quiero una página web',
+    cta: 'Cotizar la página de mi gym',
+    og: 'og-menu-demo.jpg',
+    serviceType: 'Diseño de página web para gimnasios',
+    hero: { src: '/img-servicios/strong-gym.webp', alt: 'Página de Strong Gym Iron City abierta en un celular con promociones de membresía', tipo: 'celular', width: 390, height: 844 },
+    beneficios: [
+      ['Membresías claras', 'Visita, mensualidad, trimestre o anualidad, con botón para apartar por WhatsApp.'],
+      ['Vende suplementos', 'Catálogo con fotos, precios y carrito; el pedido llega a tu WhatsApp.'],
+      ['Promociones del mes', 'Cambias la promoción en un minuto y la compartes en estados y grupos.'],
+      ['Rutinas para tus coaches', 'Opcional: planificador que arma rutinas según objetivo, nivel y días de entrenamiento.'],
+    ],
+    secciones: [
+      ['Qué puede llevar la página de tu gimnasio', [
+        'Planes y precios de membresía con promociones.',
+        'Horarios, clases y disciplinas (pesas, spinning, crossfit, funcional).',
+        'Catálogo de suplementos y ropa con pedido por WhatsApp.',
+        'Galería de instalaciones y ubicación en Google Maps.',
+        'Dominio propio y lista para aparecer en Google.',
+      ]],
+    ],
+    demos: [
+      ['Strong Gym · catálogo y membresías', '/#/strong-gym', '/img-servicios/strong-gym.webp'],
+    ],
+    faqs: [
+      ['¿Cuánto cuesta la página de un gimnasio?', 'Depende de las secciones (membresías, catálogo, rutinas). Escríbenos por WhatsApp y te cotizamos con un solo pago.'],
+      ['¿Mis socios necesitan descargar algo?', 'No. Abren la liga o el QR y la pueden agregar a la pantalla de inicio de su celular como una app.'],
+      ['¿Puedo vender suplementos en la misma página?', 'Sí, con catálogo, carrito y pedido directo a tu WhatsApp.'],
+    ],
+  },
+  {
+    slug: 'tarjeta-digital-barberia',
+    padre: 'tarjetas-digitales',
+    menu: 'Tarjeta digital para barberías',
+    title: 'Tarjeta Digital para Barberías y Estéticas con Citas por WhatsApp | Imagine & Stamp',
+    description: 'Tarjeta digital para barberías, estéticas y salones de uñas: servicios con precio, citas por WhatsApp, galería de cortes, ubicación y redes en una sola liga con código QR.',
+    h1: 'Tarjeta digital para barberías y estéticas, con citas por WhatsApp',
+    lead: 'Tu cliente ve tus cortes y precios, elige el servicio y te escribe por WhatsApp para apartar su cita. Una liga para tu Instagram, tus estados y un QR en el espejo.',
+    msg: 'Hola René, tengo una barbería y quiero una tarjeta digital',
+    cta: 'Quiero la tarjeta de mi barbería',
+    og: 'og-menu-demo.jpg',
+    serviceType: 'Tarjeta digital para barberías',
+    hero: { src: '/img-servicios/tarjeta-barberia.webp', alt: "Tarjeta digital de la barbería Gentleman's Cut abierta en un celular con lista de servicios", tipo: 'celular', width: 390, height: 844 },
+    beneficios: [
+      ['Precios a la vista', 'Corte, barba, perfilado, tinte o paquetes: el cliente sabe cuánto cuesta antes de llegar.'],
+      ['Citas sin llamadas', 'Elige el servicio y te escribe por WhatsApp con el mensaje listo para apartar.'],
+      ['Tus mejores cortes', 'Galería para presumir tu trabajo, que es lo que más convence.'],
+      ['Siempre actualizada', 'Cambias precios u horario sin reimprimir tarjetas.'],
+    ],
+    secciones: [
+      ['Qué lleva la tarjeta de tu barbería o estética', [
+        'Logo, foto del local y descripción.',
+        'Lista de servicios con precio y duración.',
+        'Botones de WhatsApp, llamada, ubicación en Google Maps y redes.',
+        'Galería de trabajos y horario.',
+        'Código QR para tu espejo, mostrador o tarjetas de lealtad.',
+      ]],
+      ['También para', [
+        'Estéticas, salones de uñas, pestañas y cejas.',
+        'Spas, masajistas y tatuadores.',
+        'Barberos independientes que atienden a domicilio.',
+      ]],
+    ],
+    demos: [
+      ["Barbería Gentleman's Cut", '/#/tarjeta-barberia', '/img-servicios/tarjeta-barberia.webp'],
+      ['Veterinaria Vita Vet', '/#/tarjeta-veterinaria', '/img-servicios/tarjeta-veterinaria.webp'],
+    ],
+    faqs: [
+      ['¿Cómo apartan cita mis clientes?', 'Eligen el servicio en tu tarjeta y se abre tu WhatsApp con el mensaje listo; tú confirmas el horario.'],
+      ['¿Cuánto cuesta?', 'Depende de las secciones. Escríbenos y te cotizamos con un solo pago.'],
+      ['¿La puedo poner en mi Instagram?', 'Sí, es una liga que va en tu bio, en tus estados de WhatsApp y en tu perfil de Google.'],
+    ],
+  },
+  {
+    slug: 'invitaciones-digitales-xv-anos',
+    padre: 'invitaciones-digitales',
+    menu: 'Invitaciones digitales para XV años',
+    title: 'Invitaciones Digitales para XV Años por WhatsApp desde $99 | Imagine & Stamp',
+    description: 'Invitación digital para XV años: fecha, misa y recepción, padrinos, código de vestimenta, ubicación en Google Maps y confirmación de asistencia por WhatsApp. Desde $99 MXN; también en video.',
+    h1: 'Invitaciones digitales para XV años, con confirmación por WhatsApp',
+    lead: 'Todo lo de la fiesta en una invitación que se abre en el celular: misa y recepción con su ubicación, padrinos, código de vestimenta y un botón para confirmar asistencia por WhatsApp.',
+    msg: 'Hola René, quiero una invitación digital para XV años',
+    cta: 'Pedir mi invitación de XV',
+    og: 'og-menu-demo.jpg',
+    serviceType: 'Invitaciones digitales para XV años',
+    price: '99',
+    precioTexto: 'Desde $99 MXN',
+    beneficios: [
+      ['Misa y recepción, cada una con su mapa', 'Dos botones de Google Maps para que nadie se pierda entre la iglesia y el salón.'],
+      ['Confirmación ordenada', 'Tus invitados confirman por WhatsApp y llevas la cuenta de cuántos van.'],
+      ['Con el estilo de la quinceañera', 'Colores, tipografía y fotos según la temática de la fiesta.'],
+      ['Se manda a todos en segundos', 'Sin imprimir ni repartir: la mandas a tus contactos y grupos.'],
+    ],
+    secciones: [
+      ['Qué puede llevar la invitación de XV años', [
+        'Nombre de la quinceañera, fecha y cuenta regresiva.',
+        'Horario y ubicación de misa y recepción.',
+        'Padres y padrinos.',
+        'Código de vestimenta y mesa de regalos.',
+        'Fotos o sesión de la quinceañera.',
+        'Botón para confirmar asistencia por WhatsApp.',
+      ]],
+      ['Precios', [
+        'Invitación interactiva: $99 MXN.',
+        'Video animado: $399 MXN.',
+        'Historia cinemática: $499 MXN.',
+      ]],
+    ],
+    demos: [
+      ['Ver ejemplos de invitaciones', '/#/videoinvitaciones', '/img-servicios/videoinvitaciones.webp'],
+    ],
+    faqs: [
+      ['¿Cuánto cuesta la invitación de XV años?', 'La invitación interactiva cuesta $99 MXN. En video va de $399 a $499 MXN.'],
+      ['¿Qué necesito mandar?', 'Nombre, fecha, horarios y direcciones de misa y recepción, nombres de padres y padrinos, código de vestimenta y fotos si quieres.'],
+      ['¿Cuánto tardan?', 'La interactiva suele quedar en uno o dos días; los videos tardan un poco más. Te confirmamos al pedirla.'],
+    ],
+  },
+  {
+    slug: 'video-invitaciones-infantiles',
+    padre: 'invitaciones-digitales',
+    menu: 'Video invitaciones infantiles',
+    title: 'Video Invitaciones Infantiles Personalizadas: tu Hijo como Personaje 3D | Imagine & Stamp',
+    description: 'Video invitación infantil personalizada: convertimos a tu hijo en personaje animado 3D que invita a su fiesta, con canción original opcional. Video animado $399, historia cinemática $499 y protagonista 3D $699 MXN.',
+    h1: 'Video invitaciones infantiles: tu hijo es el protagonista de su fiesta',
+    lead: 'Mándanos una foto y lo convertimos en un personaje animado que invita a sus amigos a la fiesta. Un video para compartir por WhatsApp que los papás guardan de recuerdo.',
+    msg: 'Hola René, quiero una video invitación para el cumpleaños de mi hijo',
+    cta: 'Pedir su video invitación',
+    og: 'videoinvitaciones/assets/og_videoinvitaciones.jpg',
+    serviceType: 'Video invitaciones infantiles personalizadas',
+    price: '399',
+    precioTexto: 'Desde $399 MXN',
+    hero: { src: '/img-servicios/videoinvitaciones.webp', alt: 'Ejemplo de video invitación infantil con personaje animado en un celular', tipo: 'celular', width: 390, height: 844 },
+    beneficios: [
+      ['Tu hijo, en versión animada', 'A partir de una foto clara creamos su personaje con la temática de la fiesta.'],
+      ['Con su nombre y su edad', 'El personaje dice su nombre, la fecha y el lugar de la fiesta.'],
+      ['Canción original opcional', 'En la versión protagonista 3D incluimos una canción personalizada.'],
+      ['Lista para WhatsApp', 'Formato vertical para estados y grupos, con los datos de la fiesta al final.'],
+    ],
+    secciones: [
+      ['Versiones y precios', [
+        'Video animado: $399 MXN. Video corto con la temática de la fiesta.',
+        'Historia cinemática: $499 MXN. Escenas tipo película.',
+        'Protagonista 3D con canción original: $699 MXN. Tu hijo como personaje animado, con canción personalizada.',
+        '¿Solo necesitas algo sencillo? La invitación interactiva cuesta $99 MXN.',
+      ]],
+      ['Qué necesitamos', [
+        'Una foto clara de frente del festejado.',
+        'Nombre, edad, fecha, hora y dirección de la fiesta.',
+        'La temática o los colores que quieres.',
+      ]],
+    ],
+    demos: [
+      ['Ver ejemplos de video invitaciones', '/#/videoinvitaciones', '/img-servicios/videoinvitaciones.webp'],
+    ],
+    faqs: [
+      ['¿Cuánto cuesta una video invitación infantil?', 'Desde $399 MXN el video animado; $499 la historia cinemática y $699 el protagonista 3D con canción.'],
+      ['¿Cuánto tardan en entregarla?', 'Depende de la versión; te confirmamos la fecha de entrega al hacer tu pedido. Pídela con tiempo antes de la fiesta.'],
+      ['¿Cómo la recibo?', 'Te la mandamos por WhatsApp en video vertical, lista para reenviar.'],
+    ],
+  },
+];
+
 const css = `
 :root{--navy:#002E5D;--orange:#FF8C00;--cream:#F9F7F2;--ink:#1A1C1C;--muted:#4b5563;--card:#fff;--line:rgba(0,46,93,.09)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -569,7 +829,10 @@ function renderHeroMedia(s) {
 
 function pagina(s) {
   const url = `${SITE}/${s.slug}/`;
-  const otros = SERVICIOS.filter((o) => o.slug !== s.slug);
+  const padre = s.padre ? SERVICIOS.find((o) => o.slug === s.padre) : null;
+  const hijos = ESPECIALIDADES.filter((e) => e.padre === s.slug);
+  const actual = padre ? padre.slug : s.slug;
+  const otros = SERVICIOS.filter((o) => o.slug !== actual);
   const heroImg = s.hero ? (Array.isArray(s.hero.src) ? s.hero.src[0] : s.hero.src) : `/${s.og}`;
   const schema = {
     '@context': 'https://schema.org',
@@ -606,7 +869,8 @@ function pagina(s) {
         '@type': 'BreadcrumbList',
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${SITE}/` },
-          { '@type': 'ListItem', position: 2, name: s.menu, item: url },
+          ...(padre ? [{ '@type': 'ListItem', position: 2, name: padre.menu, item: `${SITE}/${padre.slug}/` }] : []),
+          { '@type': 'ListItem', position: padre ? 3 : 2, name: s.menu, item: url },
         ],
       },
       {
@@ -655,7 +919,7 @@ function pagina(s) {
       <div class="menu-pop">
         <a href="/" class="menu-home">🏠 Ir al Inicio</a>
         <hr class="menu-sep" />
-${SERVICIOS.map((o) => `        <a href="/${o.slug}/"${o.slug === s.slug ? ' aria-current="page"' : ''}>${o.menu}</a>`).join('\n')}
+${SERVICIOS.map((o) => `        <a href="/${o.slug}/"${o.slug === actual ? ' aria-current="page"' : ''}>${o.menu}</a>`).join('\n')}
       </div>
     </details>
     <a href="/" class="link-home-desk">Inicio</a>
@@ -664,7 +928,7 @@ ${SERVICIOS.map((o) => `        <a href="/${o.slug}/"${o.slug === s.slug ? ' ari
 </div></header>
 
 <main class="wrap">
-  <p class="crumbs"><a href="/">Inicio</a> › ${s.menu}</p>
+  <p class="crumbs"><a href="/">Inicio</a> › ${padre ? `<a href="/${padre.slug}/">${padre.menu}</a> › ` : ''}${s.menu}</p>
 
   <div class="hero">
     <div class="hero-grid">
@@ -750,7 +1014,18 @@ ${s.faqs.map(([q, a]) => `    <details><summary>${q}</summary><p>${a}</p></detai
     </div>
   </section>
 
-  <section aria-labelledby="otros">
+${hijos.length ? `  <section aria-labelledby="especialidades">
+    <h2 id="especialidades">Especialidades</h2>
+    <div class="others">
+${hijos.map((e) => `      <a href="/${e.slug}/">${e.menu}</a>`).join('\n')}
+    </div>
+  </section>
+
+` : ''}${padre ? `  <section>
+    <p style="font-size:15px;color:var(--muted)">¿Buscas otro giro? Mira todo sobre <a href="/${padre.slug}/" style="color:var(--navy);font-weight:700">${padre.menu.toLowerCase()}</a>.</p>
+  </section>
+
+` : ''}  <section aria-labelledby="otros">
     <h2 id="otros">Otros servicios</h2>
     <div class="others">
 ${otros.map((o) => `      <a href="/${o.slug}/">${o.menu}</a>`).join('\n')}
@@ -784,7 +1059,7 @@ ${SERVICIOS.map((o) => `    <p><a href="/${o.slug}/">${o.menu}</a></p>`).join('\
 `;
 }
 
-for (const s of SERVICIOS) {
+for (const s of [...SERVICIOS, ...ESPECIALIDADES]) {
   const out = join(ROOT, 'public', s.slug, 'index.html');
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, pagina(s));
@@ -796,6 +1071,7 @@ for (const s of SERVICIOS) {
 const urls = [
   ['/', '1.0'],
   ...SERVICIOS.map((s) => [`/${s.slug}/`, '0.9']),
+  ...ESPECIALIDADES.map((s) => [`/${s.slug}/`, '0.8']),
 ];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -820,6 +1096,10 @@ const llms = `# Imagine & Stamp
 ## Servicios
 
 ${SERVICIOS.map((s) => `- [${s.h1}](${SITE}/${s.slug}/): ${s.description}`).join('\n')}
+
+## Especialidades
+
+${ESPECIALIDADES.map((s) => `- [${s.h1}](${SITE}/${s.slug}/): ${s.description}`).join('\n')}
 
 ## Precios publicados
 
