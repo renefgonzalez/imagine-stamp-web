@@ -34,6 +34,7 @@ const CandymarMenu = React.lazy(() => import('./modules/candymar/pages/CandymarM
 const StrongGymMenu = React.lazy(() => import('./modules/strong-gym/pages/StrongGymMenu'));
 const IronPlan = React.lazy(() => import('./modules/iron-plan/pages/IronPlan'));
 const SalonUnas = React.lazy(() => import('./modules/salon-unas/pages/SalonUnas'));
+const Lavanderia = React.lazy(() => import('./modules/lavanderia/pages/Lavanderia'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -511,6 +512,9 @@ export default function App() {
 
         <Route path="/salon-unas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#FAF6F7]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D47A94]" /></div>}><SalonUnas /></Suspense></ErrorBoundary>} />
         <Route path="/unas-rose" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#FAF6F7]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D47A94]" /></div>}><SalonUnas /></Suspense></ErrorBoundary>} />
+
+        <Route path="/lavanderia" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#F0F9FF]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0284C7]" /></div>}><Lavanderia /></Suspense></ErrorBoundary>} />
+        <Route path="/lavanderia-burbuja" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#F0F9FF]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0284C7]" /></div>}><Lavanderia /></Suspense></ErrorBoundary>} />
 
         <Route path="/admin" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" /></div>}><AdminPanel /></Suspense></ErrorBoundary>} />
         {/* Fallback universal: previene cualquier pantalla en blanco */}
