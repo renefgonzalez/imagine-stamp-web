@@ -10,10 +10,11 @@ import { useAutoUpdate } from './hooks/useAutoUpdate';
 import { motion, AnimatePresence } from 'motion/react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Product } from './data/products';
-import logo from './logo.png';
-import DemoMenu from './modules/demo-menu/pages/DemoMenu';
-import ContactCard from './pages/ContactCard';
-import AdminPanel from './AdminPanel';
+import logo from './logo.webp';
+// Carga diferida: la portada no los necesita al abrir (velocidad en celular)
+const DemoMenu = React.lazy(() => import('./modules/demo-menu/pages/DemoMenu'));
+const ContactCard = React.lazy(() => import('./pages/ContactCard'));
+const AdminPanel = React.lazy(() => import('./AdminPanel'));
 import HomePage from './pages/HomePage';
 
 const CatalogoEtiquetas = React.lazy(() => import('./modules/etiquetas-escolares/pages/CatalogoEtiquetas'));
@@ -455,9 +456,9 @@ export default function App() {
         <Route path="/taller" element={homeElement} />
         <Route path="/faq" element={homeElement} />
         <Route path="/preguntas" element={homeElement} />
-        <Route path="/demo-menu" element={<DemoMenu />} />
-        <Route path="/contacto" element={<ContactCard />} />
-        <Route path="/tarjeta" element={<ContactCard />} />
+        <Route path="/demo-menu" element={<Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" /></div>}><DemoMenu /></Suspense>} />
+        <Route path="/contacto" element={<Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" /></div>}><ContactCard /></Suspense>} />
+        <Route path="/tarjeta" element={<Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" /></div>}><ContactCard /></Suspense>} />
 
         <Route path="/etiquetas-escolares" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" /></div>}><CatalogoEtiquetas /></Suspense></ErrorBoundary>} />
         <Route path="/tarjeta-barberia" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#f59e0b' }} /></div>}><TarjetaBarberia /></Suspense></ErrorBoundary>} />
@@ -507,7 +508,7 @@ export default function App() {
           <Route path="/iron-plan" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><IronPlan /></Suspense></ErrorBoundary>} />
           <Route path="/strong-gym-rutinas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><IronPlan /></Suspense></ErrorBoundary>} />
 
-        <Route path="/admin" element={<ErrorBoundary><AdminPanel /></ErrorBoundary>} />
+        <Route path="/admin" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" /></div>}><AdminPanel /></Suspense></ErrorBoundary>} />
         {/* Fallback universal: previene cualquier pantalla en blanco */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

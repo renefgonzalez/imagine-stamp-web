@@ -4,7 +4,7 @@ import {
   Phone, Mail, MapPin, Clock, Instagram, Facebook,
   MessageCircle, ExternalLink, ArrowRight, Copy, Check, Flag,
 } from 'lucide-react';
-import logo from '../logo.png';
+import logo from '../logo.webp';
 
 const DATA = {
   businessName: 'IMAGINE & STAMP',

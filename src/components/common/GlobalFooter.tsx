@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageCircle, Mail, MapPin, Clock, Phone, Instagram, Facebook, Lock, X, ExternalLink, Sparkles, Shield } from 'lucide-react';
-import logo from '../../logo.png';
+import logo from '../../logo.webp';
 
 interface FooterProps {
   companyName?: string;

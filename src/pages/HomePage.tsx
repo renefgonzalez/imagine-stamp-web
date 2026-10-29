@@ -7,7 +7,7 @@ import {
   Menu, UtensilsCrossed, Scissors, Stethoscope, Dumbbell, Flame, Building2,
   Server, Mail, TrendingUp, Coins, ShoppingBag, Store
 } from 'lucide-react';
-import logo from '../logo.png';
+import logo from '../logo.webp';
 import { CartButton } from '../components/common/CartButton';
 import { GlobalFooter } from '../components/common/GlobalFooter';
 import { trackMetaEvent } from '../utils/metaPixel';
