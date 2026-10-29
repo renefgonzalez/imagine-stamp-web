@@ -10,7 +10,7 @@ export const clientConfig = {
   
   // WhatsApp oficial del demo (René) con prefijo obligatorio [DEMO salón de uñas]
   phone: '5215650469993',
-  phoneNumber: '55 6504 6999',
+  phoneNumber: '56 5046 9993',
   email: 'citas@unasrose.mx',
   
   // Ubicación ficticia y genérica según reglas (solo alcaldía/ciudad)
@@ -274,13 +274,14 @@ export const clientConfig = {
 
   // Galería de diseños reales con lightbox
   gallery: [
-    { id: 'g1', title: 'French Rosé con Glitter', category: 'Gel', imageKey: 'diseno-1' },
-    { id: 'g2', title: 'Almendra Nude Minimalista', category: 'Gel', imageKey: 'diseno-2' },
-    { id: 'g3', title: 'Aura & Ojo de Gato', category: 'Acrílico', imageKey: 'diseno-3' },
-    { id: 'g4', title: 'Baby Boomer Escultural', category: 'Acrílico', imageKey: 'diseno-4' },
-    { id: 'g5', title: 'Flores Mano Alzada', category: 'Nail Art', imageKey: 'diseno-5' },
-    { id: 'g6', title: 'Pedicure Spa & Esmalte', category: 'Pedicure', imageKey: 'diseno-6' },
-    { id: 'g7', title: 'Lifting & Mirada Abierta', category: 'Lash & Brow', imageKey: 'diseno-7' },
-    { id: 'g8', title: 'Foil Dorado & Acabado Mate', category: 'Diseño', imageKey: 'diseno-8' },
+    { id: 'g1', title: 'Abstracto Multicolor', category: 'Nail Art', imageKey: 'diseno-1' },
+    { id: 'g2', title: 'Almendra Nude', category: 'Gel', imageKey: 'diseno-2' },
+    { id: 'g3', title: 'Pastel con Glitter', category: 'Gel', imageKey: 'diseno-3' },
+    { id: 'g4', title: 'Rosa Natural', category: 'Gel', imageKey: 'diseno-4' },
+    { id: 'g5', title: 'Lila Lechoso', category: 'Acrílico', imageKey: 'diseno-5' },
+    { id: 'g6', title: 'Pedicure con Esmalte', category: 'Pedicure', imageKey: 'diseno-6' },
+    { id: 'g7', title: 'Puntas Aqua', category: 'Nail Art', imageKey: 'diseno-7' },
+    { id: 'g8', title: 'Taupe Brillante', category: 'Acrílico', imageKey: 'diseno-8' },
   ]
 };
+

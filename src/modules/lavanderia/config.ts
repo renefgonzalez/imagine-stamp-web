@@ -15,7 +15,7 @@ export const clientConfig = {
 
   // WhatsApp oficial del demo (René) con prefijo obligatorio [DEMO lavandería]
   phone: '5215650469993',
-  phoneNumber: '55 6504 6999',
+  phoneNumber: '56 5046 9993',
   email: 'hola@lavanderiaburbuja.mx',
 
   // Ubicación ficticia y genérica según reglas
@@ -237,3 +237,4 @@ export const clientConfig = {
     },
   ]
 };
+

@@ -46,16 +46,7 @@ interface CartItem {
 
 export default function Lavanderia() {
   const [selectedCategory, setSelectedCategory] = useState('kilo');
-  const [cart, setCart] = useState<CartItem[]>([
-    {
-      id: 'kilo-5',
-      name: 'Lavado por Kilo (5 kg aprox)',
-      price: 150,
-      quantity: 1,
-      imageKey: 'lavado-kilo',
-      unit: '5 kg'
-    }
-  ]);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartStep, setCartStep] = useState(1);
   const [toastMessage, setToastMessage] = useState('');
@@ -1279,3 +1270,4 @@ export default function Lavanderia() {
     </div>
   );
 }
+
