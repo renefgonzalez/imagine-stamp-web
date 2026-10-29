@@ -33,6 +33,7 @@ const LaCuevaDelLoboMenu = React.lazy(() => import('./modules/la-cueva-del-lobo/
 const CandymarMenu = React.lazy(() => import('./modules/candymar/pages/CandymarMenu'));
 const StrongGymMenu = React.lazy(() => import('./modules/strong-gym/pages/StrongGymMenu'));
 const IronPlan = React.lazy(() => import('./modules/iron-plan/pages/IronPlan'));
+const SalonUnas = React.lazy(() => import('./modules/salon-unas/pages/SalonUnas'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -507,6 +508,9 @@ export default function App() {
         <Route path="/strong-gym-ironcity" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><StrongGymMenu /></Suspense></ErrorBoundary>} />
           <Route path="/iron-plan" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><IronPlan /></Suspense></ErrorBoundary>} />
           <Route path="/strong-gym-rutinas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><IronPlan /></Suspense></ErrorBoundary>} />
+
+        <Route path="/salon-unas" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#FAF6F7]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D47A94]" /></div>}><SalonUnas /></Suspense></ErrorBoundary>} />
+        <Route path="/unas-rose" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#FAF6F7]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D47A94]" /></div>}><SalonUnas /></Suspense></ErrorBoundary>} />
 
         <Route path="/admin" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" /></div>}><AdminPanel /></Suspense></ErrorBoundary>} />
         {/* Fallback universal: previene cualquier pantalla en blanco */}

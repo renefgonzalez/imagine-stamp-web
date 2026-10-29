@@ -22,6 +22,9 @@ const DEMOS = {
   'strong-gym': '/#/strong-gym',
   'tarjeta-barberia': '/#/tarjeta-barberia',
   'tarjeta-veterinaria': '/#/tarjeta-veterinaria',
+  'salon-unas': '/#/salon-unas',
+  lavanderia: '/#/lavanderia',
+  'consultorio-dental': '/#/consultorio-dental',
   'vicma-laser': '/#/vicma-laser',
   videoinvitaciones: '/#/videoinvitaciones',
 };
