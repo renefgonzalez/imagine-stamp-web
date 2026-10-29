@@ -663,6 +663,156 @@ const ESPECIALIDADES = [
       ['¿Cómo la recibo?', 'Te la mandamos por WhatsApp en video vertical, lista para reenviar.'],
     ],
   },
+  // Guías: responden preguntas que la gente hace a Google y a las IAs. Schema Article (guia: true).
+  {
+    slug: 'cuanto-cuesta-un-menu-digital',
+    padre: 'menu-digital',
+    guia: true,
+    fecha: '2026-10-29',
+    menu: '¿Cuánto cuesta un menú digital?',
+    title: '¿Cuánto Cuesta un Menú Digital en México? Opciones y Qué Revisar (2026) | Imagine & Stamp',
+    description: 'Cuánto cuesta un menú digital con QR en México: PDF gratis, plataformas con mensualidad, apps de reparto con comisión y menús de pago único. Qué incluye cada opción y qué revisar antes de pagar.',
+    h1: '¿Cuánto cuesta un menú digital? Las opciones y qué revisar antes de pagar',
+    lead: 'Un menú digital puede costarte desde nada hasta un porcentaje de cada venta, según cómo lo hagas. La pregunta útil no es solo cuánto cuesta, sino cuánto te cuesta al año y si te trae pedidos.',
+    msg: 'Hola René, leí su guía y quiero saber cuánto costaría el menú digital de mi negocio',
+    cta: 'Cotizar mi menú digital',
+    og: 'og-menu-demo.jpg',
+    tituloBeneficios: 'Las 4 formas de tener un menú digital',
+    tituloEjemplos: 'Así se ve un menú digital con pedidos',
+    beneficios: [
+      ['PDF con código QR', 'Lo más barato: subes tu carta en PDF y generas un QR. Pero se ve pequeño en el celular, no recibe pedidos y cada cambio de precio es rehacer el archivo.'],
+      ['Plataforma con mensualidad', 'Armas tu menú en una plataforma y pagas cada mes mientras lo uses. Revisa cuánto suma al año y qué pasa con tu menú si dejas de pagar.'],
+      ['Apps de reparto', 'No cobran por tener tu menú, pero se quedan con un porcentaje de cada pedido y el cliente es de la app, no tuyo.'],
+      ['Menú a la medida, pago único', 'Pagas una vez por un menú con tu marca y pedidos a tu WhatsApp. El nuestro cuesta $1,650 MXN, sin comisión por pedido ni mensualidad obligatoria.'],
+    ],
+    secciones: [
+      ['Qué revisar antes de pagar cualquier menú digital', [
+        '¿Cobra comisión por pedido? Con muchos pedidos al mes, es lo que más pesa.',
+        '¿Hay mensualidad? Multiplícala por 12 y compárala contra un pago único.',
+        '¿Recibe pedidos o solo muestra la carta? Un menú que solo se ve no te trae ventas.',
+        '¿Puedes cambiar precios tú mismo y al momento?',
+        '¿Funciona sin descargar una app? Si el cliente tiene que instalar algo, muchos se van.',
+        '¿Los datos y la liga son tuyos o de la plataforma?',
+      ]],
+      ['Cuándo conviene cada opción', [
+        'PDF con QR: si solo quieres que vean la carta en la mesa y casi no cambias precios.',
+        'Apps de reparto: si necesitas que te encuentren clientes nuevos y aceptas pagar comisión por eso.',
+        'Menú propio con pedidos a WhatsApp: si ya tienes clientes que te piden por teléfono o redes y quieres que el pedido llegue ordenado y sin comisión.',
+        'Muchos negocios combinan: apps de reparto para clientes nuevos y menú propio para los que ya los conocen.',
+      ]],
+    ],
+    demos: [
+      ['Candymar · mariscos', '/#/candymar', '/img-servicios/candymar.webp'],
+      ["Takero's CDMX · taquería", 'https://takeros-cdmx.imagineandstamp.site', '/img-servicios/takeros.webp'],
+    ],
+    faqs: [
+      ['¿Hay menús digitales gratis?', 'Sí: subir tu carta en PDF y generar un QR puede no costarte nada. La desventaja es que no recibe pedidos y se ve pequeño en el celular.'],
+      ['¿Cuánto cuesta el menú digital de Imagine & Stamp?', 'Un solo pago de $1,650 MXN, con carrito, pedidos a tu WhatsApp y código QR. Sin comisión por pedido.'],
+      ['¿Qué es mejor, mensualidad o pago único?', 'Depende de cuánto tiempo lo vayas a usar. Si piensas usarlo más de un año, suma las mensualidades y compáralas con el pago único.'],
+    ],
+  },
+  {
+    slug: 'que-debe-llevar-una-invitacion-digital',
+    padre: 'invitaciones-digitales',
+    guia: true,
+    fecha: '2026-10-29',
+    menu: '¿Qué debe llevar una invitación digital?',
+    title: '¿Qué Debe Llevar una Invitación Digital? Lista Completa y Consejos | Imagine & Stamp',
+    description: 'Qué debe llevar una invitación digital para cumpleaños, XV años, boda o bautizo: datos esenciales, ubicación en Google Maps, confirmación por WhatsApp, cuándo enviarla y errores que conviene evitar.',
+    h1: '¿Qué debe llevar una invitación digital? Lista completa y consejos',
+    lead: 'Una buena invitación digital no solo se ve bonita: le resuelve al invitado cuándo, dónde y cómo confirmar en un solo vistazo desde su celular. Esta es la lista para que no se te olvide nada.',
+    msg: 'Hola René, leí su guía y quiero una invitación digital',
+    cta: 'Pedir mi invitación',
+    og: 'videoinvitaciones/assets/og_videoinvitaciones.jpg',
+    tituloBeneficios: 'Lo que nunca debe faltar',
+    tituloEjemplos: 'Ejemplos de invitaciones digitales',
+    hero: { src: '/img-servicios/videoinvitaciones.webp', alt: 'Ejemplo de invitación digital abierta en un celular', tipo: 'celular', width: 390, height: 844 },
+    beneficios: [
+      ['Quién y qué se celebra', 'Nombre del festejado o los novios y el motivo: cumpleaños, XV años, boda, bautizo.'],
+      ['Fecha y hora', 'Día, hora de inicio y, si aplica, hora de la ceremonia y de la recepción por separado.'],
+      ['Lugar con mapa', 'Dirección escrita y un botón que abra Google Maps. Es lo que más preguntan los invitados.'],
+      ['Cómo confirmar', 'Un botón para confirmar por WhatsApp y una fecha límite para hacerlo.'],
+    ],
+    secciones: [
+      ['Lo que conviene agregar según el evento', [
+        'Código de vestimenta, sobre todo en bodas y XV años.',
+        'Mesa de regalos o datos para regalo en efectivo.',
+        'Padrinos e itinerario (ceremonia, recepción, vals).',
+        'Si es solo para adultos o si los niños son bienvenidos.',
+        'Un teléfono de contacto para dudas.',
+      ]],
+      ['Cuándo y cómo enviarla', [
+        'Para fiestas grandes, con varias semanas de anticipación; para cumpleaños sencillos, una o dos semanas antes suele bastar.',
+        'Un recordatorio unos días antes del evento ayuda a que nadie lo olvide.',
+        'Mándala por WhatsApp de forma personal o en grupos pequeños; se siente más cercano que en un grupo enorme.',
+      ]],
+      ['Errores comunes', [
+        'Mandar solo una imagen sin la dirección escrita ni el mapa.',
+        'No poner fecha límite para confirmar y no saber cuántos van.',
+        'Videos muy pesados que no cargan con datos móviles.',
+        'Texto pequeño que no se lee en el celular.',
+      ]],
+    ],
+    demos: [
+      ['Ver ejemplos de invitaciones', '/#/videoinvitaciones', '/img-servicios/videoinvitaciones.webp'],
+    ],
+    faqs: [
+      ['¿Una invitación digital puede ser elegante?', 'Sí. Con buen diseño, tipografía y fotos, una invitación digital puede verse tan elegante como una impresa, y además trae mapa y confirmación.'],
+      ['¿Cuánto cuesta una invitación digital?', 'En Imagine & Stamp la invitación interactiva cuesta $99 MXN; los videos van de $399 a $699 MXN.'],
+      ['¿Es mejor imagen, video o página?', 'La página interactiva es la más práctica porque trae botones de mapa y confirmación. El video emociona más; muchos mandan las dos.'],
+    ],
+  },
+  {
+    slug: 'necesito-pagina-web-si-tengo-facebook',
+    padre: 'paginas-web',
+    guia: true,
+    fecha: '2026-10-29',
+    menu: '¿Necesito página web si ya tengo Facebook?',
+    title: '¿Necesito una Página Web si Ya Tengo Facebook? Respuesta Honesta | Imagine & Stamp',
+    description: 'Si tu negocio ya tiene Facebook, ¿todavía necesitas página web? Diferencias reales, cuándo basta con redes sociales y perfil de Google, y cuándo una página web te trae más clientes.',
+    h1: '¿Necesito una página web si ya tengo Facebook?',
+    lead: 'Respuesta corta: si estás empezando, Facebook más tu perfil gratis de Google pueden bastarte por un tiempo. Pero hay razones claras por las que una página propia te trae clientes que las redes no.',
+    msg: 'Hola René, leí su guía y quiero saber si me conviene una página web',
+    cta: 'Preguntar si me conviene',
+    og: 'og-menu-demo.jpg',
+    tituloBeneficios: 'Lo que una página web hace y Facebook no',
+    tituloEjemplos: 'Ejemplos de páginas para negocios',
+    hero: { src: '/img-servicios/vicma-laser-desktop.webp', alt: 'Página web de Vicma Laser en computadora', tipo: 'foto', width: 900, height: 527 },
+    beneficios: [
+      ['Aparece en Google', 'Cuando alguien busca tu servicio en Google, una página con tus servicios y tu zona tiene más oportunidad de salir que una publicación de Facebook.'],
+      ['Es tuya', 'Las reglas y el alcance de las redes cambian sin aviso. Tu página y tu dominio no dependen de eso.'],
+      ['Todo ordenado en un lugar', 'Servicios, precios, fotos, preguntas y contacto, sin que el cliente tenga que buscar entre publicaciones viejas.'],
+      ['Llega a quien no usa Facebook', 'No todos tus clientes tienen cuenta o la usan para buscar negocios.'],
+    ],
+    secciones: [
+      ['Cuándo basta con Facebook (por ahora)', [
+        'Estás empezando y aún validas qué vender.',
+        'Casi todos tus clientes ya te conocen y te escriben directo.',
+        'Tienes tu perfil gratis de Google bien llenado, con fotos y reseñas.',
+      ]],
+      ['Cuándo sí te conviene una página web', [
+        'Quieres clientes nuevos que te busquen en Google.',
+        'Vendes servicios que requieren confianza: la gente revisa antes de escribir.',
+        'Tienes catálogo o menú y quieres recibir pedidos ordenados.',
+        'Haces publicidad y necesitas a dónde mandar a la gente.',
+        'Quieres un correo con tu marca (contacto@tunegocio.com).',
+      ]],
+      ['Lo mejor: que trabajen juntas', [
+        'Facebook e Instagram para mostrar el día a día y conversar.',
+        'Tu perfil de Google para que te encuentren en Maps.',
+        'Tu página web como el lugar donde todo se explica y el cliente te escribe.',
+      ]],
+    ],
+    demos: [
+      ['Vicma Laser · corte láser industrial', '/#/vicma-laser', '/img-servicios/vicma-laser.webp'],
+      ['Strong Gym · catálogo con pedidos', '/#/strong-gym', '/img-servicios/strong-gym.webp'],
+    ],
+    faqs: [
+      ['¿Una página web es cara?', 'Depende de lo que lleve. Una landing sencilla cuesta mucho menos que un sitio grande; pide cotización con lo que realmente necesitas.'],
+      ['¿El perfil de Google sustituye a la página web?', 'Te ayuda muchísimo en Maps y es gratis, pero tiene espacio limitado. Lo ideal es tener los dos y que el perfil enlace a tu página.'],
+      ['¿Cuánto tarda en aparecer en Google?', 'Una página nueva puede tardar desde días hasta semanas en mostrarse, y subir de posición toma más tiempo, reseñas y enlaces.'],
+    ],
+  },
 ];
 
 const css = `
@@ -837,7 +987,19 @@ function pagina(s) {
   const schema = {
     '@context': 'https://schema.org',
     '@graph': [
-      {
+      s.guia ? {
+        '@type': 'Article',
+        '@id': `${url}#articulo`,
+        headline: s.h1,
+        description: s.description,
+        url,
+        image: `${SITE}${heroImg}`,
+        inLanguage: 'es-MX',
+        datePublished: s.fecha,
+        dateModified: s.fecha,
+        author: { '@id': `${SITE}/#business` },
+        publisher: { '@id': `${SITE}/#business` },
+      } : {
         '@type': 'Service',
         '@id': `${url}#servicio`,
         name: s.h1,
@@ -946,14 +1108,14 @@ ${s.precioTexto ? `        <p class="price">${s.precioTexto}</p>\n` : ''}       
   </div>
 
   <section aria-labelledby="por-que">
-    <h2 id="por-que">Por qué funciona</h2>
+    <h2 id="por-que">${s.tituloBeneficios || 'Por qué funciona'}</h2>
     <div class="grid">
 ${s.beneficios.map(([t, d]) => `      <div class="card"><h3>${t}</h3><p>${d}</p></div>`).join('\n')}
     </div>
   </section>
 
   <section id="ejemplos">
-    <h2>Ejemplos reales: pruébalos desde tu celular</h2>
+    <h2>${s.tituloEjemplos || 'Ejemplos reales: pruébalos desde tu celular'}</h2>
     <div class="grid-demos">
 ${s.demos.map(([t, h, img]) => `      <a href="${link(h)}" class="demo-card">
         ${img ? `<div class="demo-thumb"><img src="${img}" alt="${esc(t)}" loading="lazy" decoding="async" width="390" height="488" /></div>` : `<div class="demo-thumb-placeholder"><span>🌐 Ver demo</span></div>`}
@@ -1014,15 +1176,22 @@ ${s.faqs.map(([q, a]) => `    <details><summary>${q}</summary><p>${a}</p></detai
     </div>
   </section>
 
-${hijos.length ? `  <section aria-labelledby="especialidades">
+${hijos.filter((e) => !e.guia).length ? `  <section aria-labelledby="especialidades">
     <h2 id="especialidades">Especialidades</h2>
     <div class="others">
-${hijos.map((e) => `      <a href="/${e.slug}/">${e.menu}</a>`).join('\n')}
+${hijos.filter((e) => !e.guia).map((e) => `      <a href="/${e.slug}/">${e.menu}</a>`).join('\n')}
+    </div>
+  </section>
+
+` : ''}${hijos.filter((e) => e.guia).length ? `  <section aria-labelledby="guias">
+    <h2 id="guias">Guías y preguntas</h2>
+    <div class="others">
+${hijos.filter((e) => e.guia).map((e) => `      <a href="/${e.slug}/">${e.menu}</a>`).join('\n')}
     </div>
   </section>
 
 ` : ''}${padre ? `  <section>
-    <p style="font-size:15px;color:var(--muted)">¿Buscas otro giro? Mira todo sobre <a href="/${padre.slug}/" style="color:var(--navy);font-weight:700">${padre.menu.toLowerCase()}</a>.</p>
+    <p style="font-size:15px;color:var(--muted)">${s.guia ? '¿Quieres verlo funcionando?' : '¿Buscas otro giro?'} Mira todo sobre <a href="/${padre.slug}/" style="color:var(--navy);font-weight:700">${padre.menu.toLowerCase()}</a>.</p>
   </section>
 
 ` : ''}  <section aria-labelledby="otros">
