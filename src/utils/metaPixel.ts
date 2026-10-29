@@ -22,12 +22,15 @@ export const trackMetaEvent = async (eventName: string, customData?: Record<stri
   }
 
   // 2. Send via Server (Conversions API)
+  // Cookies del Pixel (_fbp, _fbc): ayudan a Meta a relacionar el evento con la persona del anuncio
+  const cookie = (name: string) => document.cookie.split('; ').find((c) => c.startsWith(name + '='))?.split('=')[1];
   try {
     const { data, error } = await supabase.functions.invoke('meta-capi', {
       body: {
         event_name: eventName,
         event_id: eventId,
         event_source_url: window.location.href,
+        user_data: { fbp: cookie('_fbp'), fbc: cookie('_fbc') },
         custom_data: customData,
       }
     });

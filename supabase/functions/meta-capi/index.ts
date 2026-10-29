@@ -22,20 +22,25 @@ serve(async (req) => {
       throw new Error('Missing Meta credentials in environment')
     }
 
+    // x-forwarded-for puede traer varias IPs ("cliente, proxy"); Meta necesita solo la del cliente.
+    const clientIp = (req.headers.get("x-forwarded-for") || '').split(',')[0].trim() || undefined
+
     const event = {
       event_name,
       event_time: event_time || Math.floor(Date.now() / 1000),
       event_id,
       event_source_url: event_source_url || req.headers.get("referer"),
       action_source: "website",
-      user_data: user_data || { 
-        client_ip_address: req.headers.get("x-forwarded-for"), 
-        client_user_agent: req.headers.get("user-agent") 
+      // IP y navegador siempre del servidor; fbp/fbc (cookies del Pixel) los manda el navegador
+      user_data: {
+        ...(user_data || {}),
+        client_ip_address: clientIp,
+        client_user_agent: req.headers.get("user-agent"),
       },
       custom_data: custom_data || {}
     }
 
-    const response = await fetch(`https://graph.facebook.com/v19.0/${pixelId}/events?access_token=${accessToken}`, {
+    const response = await fetch(`https://graph.facebook.com/v21.0/${pixelId}/events?access_token=${accessToken}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
