@@ -35,6 +35,7 @@ const StrongGymMenu = React.lazy(() => import('./modules/strong-gym/pages/Strong
 const IronPlan = React.lazy(() => import('./modules/iron-plan/pages/IronPlan'));
 const SalonUnas = React.lazy(() => import('./modules/salon-unas/pages/SalonUnas'));
 const Lavanderia = React.lazy(() => import('./modules/lavanderia/pages/Lavanderia'));
+const ConsultorioDental = React.lazy(() => import('./modules/consultorio-dental/pages/ConsultorioDental'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -515,6 +516,9 @@ export default function App() {
 
         <Route path="/lavanderia" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#F0F9FF]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0284C7]" /></div>}><Lavanderia /></Suspense></ErrorBoundary>} />
         <Route path="/lavanderia-burbuja" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#F0F9FF]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0284C7]" /></div>}><Lavanderia /></Suspense></ErrorBoundary>} />
+
+        <Route path="/consultorio-dental" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#F8FAFC]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0D9488]" /></div>}><ConsultorioDental /></Suspense></ErrorBoundary>} />
+        <Route path="/sonrisa-clara" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#F8FAFC]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0D9488]" /></div>}><ConsultorioDental /></Suspense></ErrorBoundary>} />
 
         <Route path="/admin" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" /></div>}><AdminPanel /></Suspense></ErrorBoundary>} />
         {/* Fallback universal: previene cualquier pantalla en blanco */}
