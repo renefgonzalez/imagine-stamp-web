@@ -57,7 +57,7 @@ const linkItems = [
 const socialItems = [
   { id: 'instagram', label: 'Instagram', icon: Instagram, href: clientConfig.instagramUrl },
   { id: 'facebook', label: 'Facebook', icon: Facebook, href: clientConfig.facebookUrl },
-  { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, href: `https://wa.me/${clientConfig.phone}` },
+  { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, href: `https://wa.me/${clientConfig.phone}?text=${encodeURIComponent(clientConfig.demoTag)}` },
 ];
 
 const C = clientConfig.colors;
@@ -90,7 +90,7 @@ export default function TarjetaBarberia({ className = '' }: TarjetaBarberiaProps
       message = `Hola ${clientConfig.businessName}, quiero agendar una cita. ¿Qué horarios tienen disponibles hoy o mañana?`;
     }
 
-    window.location.href = `https://wa.me/${clientConfig.phone}?text=${encodeURIComponent(message)}`;
+    window.location.href = `https://wa.me/${clientConfig.phone}?text=${encodeURIComponent(clientConfig.demoTag + message)}`;
   };
 
   const renderIcon = (iconName: string, size = 20) => {

@@ -36,7 +36,7 @@ const linkItems = [
     label: 'Urgencias Médicas 24/7',
     sublabel: 'Guardia médica sin cita previa',
     icon: AlertTriangle,
-    href: `https://wa.me/${clientConfig.phone}?text=${encodeURIComponent('🚨 URGENCIA: Necesito atención veterinaria inmediata para mi mascota.')}`,
+    href: `https://wa.me/${clientConfig.phone}?text=${encodeURIComponent(clientConfig.demoTag + '🚨 URGENCIA: Necesito atención veterinaria inmediata para mi mascota.')}`,
     external: true,
     featured: true,
     emergency: true,
@@ -73,7 +73,7 @@ const linkItems = [
 const socialItems = [
   { id: 'instagram', label: 'Instagram', icon: Instagram, href: clientConfig.instagramUrl },
   { id: 'facebook', label: 'Facebook', icon: Facebook, href: clientConfig.facebookUrl },
-  { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, href: `https://wa.me/${clientConfig.phone}` },
+  { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, href: `https://wa.me/${clientConfig.phone}?text=${encodeURIComponent(clientConfig.demoTag)}` },
 ];
 
 const C = clientConfig.colors;
@@ -112,7 +112,7 @@ export default function TarjetaVeterinaria({ className = '' }: TarjetaVeterinari
       message = `Hola ${clientConfig.businessName}, quiero agendar una cita para mi ${petLabel}${namePart}. ¿Qué horarios tienen disponibles hoy o mañana?`;
     }
 
-    window.location.href = `https://wa.me/${clientConfig.phone}?text=${encodeURIComponent(message)}`;
+    window.location.href = `https://wa.me/${clientConfig.phone}?text=${encodeURIComponent(clientConfig.demoTag + message)}`;
   };
 
   const renderIcon = (iconName: string, size = 20) => {

@@ -7,8 +7,10 @@ export const clientConfig = {
   tagline: 'Clínica Veterinaria Integral',
   description:
     'Cuidado experto para tu mejor amigo. Consultas, cirugía, vacunación, urgencias 24/7 y estética canina/felina.',
-  phone: '5215551234567', // ⚠️ REEMPLAZAR por el WhatsApp real (formato wa.me)
-  phoneNumber: '55 5123 4567',
+  // DEMO: llega al WhatsApp de René con etiqueta. Con cliente real: su número y demoTag: ''.
+  phone: '5215650469993',
+  phoneNumber: '56 5046 9993',
+  demoTag: '[DEMO veterinaria] ',
   email: 'hola@vitavet.mx',
 
   address: 'Av. Insurgentes Sur 845, Col. Del Valle, 03100 CDMX',

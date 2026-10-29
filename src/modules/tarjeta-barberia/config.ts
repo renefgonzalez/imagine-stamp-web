@@ -7,8 +7,10 @@ export const clientConfig = {
   tagline: 'Barbería Premium & Grooming',
   description:
     'Cortes de precisión, perfilado de barba y grooming de alta gama. Vive la experiencia de una barbería premium.',
-  phone: '521234567890', // ⚠️ REEMPLAZAR por el WhatsApp real (formato wa.me)
-  phoneNumber: '55 1234 5678',
+  // DEMO: llega al WhatsApp de René con etiqueta. Con cliente real: su número y demoTag: ''.
+  phone: '5215650469993',
+  phoneNumber: '56 5046 9993',
+  demoTag: '[DEMO barbería] ',
   email: 'hola@gentlemanscut.mx',
 
   address: 'Av. Reforma 123, Col. Centro, 06600 CDMX',
