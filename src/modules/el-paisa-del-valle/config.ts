@@ -1,5 +1,5 @@
 // ── Configuración: TAQUERÍA EL PAISA DEL VALLE ──────────────────────────────
-// Menú digital interactivo de alta conversión (Imagine & Stamp)
+// Menú digital interactivo fiel a la carta física del cliente (Imagine & Stamp)
 // Suadero estilo Arandas, Cecina 100% Yecapixtla, Arrachera Prime,
 // Gringas, Costras, Burritos, Alambres, Ramen con Suadero y Tepache.
 
@@ -8,36 +8,29 @@ export const clientConfig = {
   shortName: 'El Paisa del Valle',
   tagline: '¡Donde hay TACOS hay ALEGRÍA! 🌮',
   description:
-    'Auténticos tacos de suadero estilo Arandas marinado en jugo de carne, cecina 100% de Yecapixtla con longaniza almendrada, arrachera prime, gringas, costras, alambres, ramen con suadero y tepache artesanal.',
+    'Auténticos tacos de suadero estilo Arandas en jugo de carne, cecina 100% de Yecapixtla y longaniza almendrada.',
 
   // WhatsApp oficial para pedidos (Demo dirigido con prefijo de prueba)
   phonePrimary: '525650469993',
   phonePrimaryFormatted: '56 5046 9993',
 
   // Ubicación y horarios
-  address: 'Col. Del Valle / Benito Juárez, CDMX · Servicio en Sala, Pickup y Domicilio',
+  address: 'Col. Del Valle / Benito Juárez, CDMX · Servicio en Sala y para Llevar',
   hours: 'Lun–Dom: 1:00 PM – 12:00 AM',
   badgeQuality: '🥩 Carne 100% Fresca · 🌮 Receta Tradicional · 🌶️ Salsas Caseras',
-  sauceSpecialty: 'Salsa Verde Taquera, Roja de Chile de Árbol & Habanero 🌶️',
 
-  // Redes y plataformas de delivery
-  deliveryPlatforms: [
-    { name: 'Uber Eats', color: '#06C167', label: 'Disponible' },
-    { name: 'DiDi Food', color: '#FF7D41', label: 'Disponible' },
-    { name: 'Rappi', color: '#FF441F', label: 'Disponible' },
-  ],
-
-  // Paleta de colores gastronómica premium (Carbón, Fuego, Maíz y Chile)
+  // Paleta de colores inspirada 100% en la carta física (Amarillo Maíz, Naranja y Rojo Cómic)
   colors: {
-    bg: '#12100E',                  // Fondo carbón tostado profundo
-    bgElevated: '#1A1613',          // Barras y modales
-    cardBg: '#221D18',              // Tarjetas de productos
-    cardBorder: 'rgba(255, 90, 0, 0.22)', // Resplandor naranja suave
-    flameOrange: '#FF5E00',         // Naranja vivo de la marca
-    amberGold: '#FFB703',           // Amarillo maíz y queso dorado
-    chileRed: '#E63946',            // Rojo picante
-    creamWhite: '#FFFDF9',          // Crema nixtamal de alta legibilidad
-    textMuted: '#AFA498',           // Texto secundario
+    bg: '#FFF8E7',                  // Amarillo maíz suave / crema de alto contraste
+    bgCard: '#FFFFFF',              // Tarjetas blancas limpias
+    cardBorder: '#F2DFB8',          // Borde sutil cálido
+    textPrimary: '#2B1A0E',         // Café oscuro intenso (legibilidad AA)
+    textMuted: '#6E5846',           // Texto descriptivo suave pero legible
+    pillRed: '#E8261F',             // Rojo cómic para títulos de categorías
+    flameOrange: '#FF7A00',         // Naranja fuego taquero
+    amberGold: '#FFB800',           // Dorado tostado
+    stampBg: '#FFE358',             // Sello amarillo
+    stampText: '#D0140D',           // Texto rojo del sello ¡100!
     waGreen: '#25D366',             // Verde WhatsApp oficial
   },
 };
