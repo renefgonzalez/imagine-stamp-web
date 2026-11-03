@@ -16,20 +16,19 @@ import { clientConfig, bankInfo } from '../config';
 
 // ── Assets WebP Optimizados (<40 KB cada uno, logo <60 KB) ──
 import paisaLogo from '../assets/logo.webp';
-import heroBg from '../assets/hero-bg.webp';
 import fotoSuadero from '../assets/foto-suadero.webp';
 import fotoPastor from '../assets/foto-pastor.webp';
 import fotoBistec from '../assets/foto-bistec.webp';
 import fotoCecina from '../assets/foto-cecina.webp';
 import fotoArrachera from '../assets/foto-arrachera.webp';
 import fotoGringa from '../assets/foto-gringa.webp';
-import fotoCostras from '../assets/foto-costras.webp';
 import fotoBurrito from '../assets/foto-burrito.webp';
 import fotoAlambre from '../assets/foto-alambre.webp';
 import fotoRamen from '../assets/foto-ramen.webp';
 import fotoChicharron from '../assets/foto-chicharron.webp';
 import fotoQuesoFundido from '../assets/foto-queso-fundido.webp';
 import fotoCervezas from '../assets/foto-cervezas.webp';
+import fotoJugo from '../assets/foto-jugo.webp';
 
 const C = clientConfig.colors;
 
@@ -54,7 +53,7 @@ interface Product {
   category: CategoryId;
   portion?: string;
   stamp?: string;
-  image: string;
+  image?: string;
   featured?: boolean;
   canCustomize?: boolean;
   customType?: 'suadero' | 'taco' | 'cecina' | 'gringa' | 'costra' | 'burrito' | 'alambre' | 'ramen' | 'queso' | 'gordita' | 'cerveza' | 'refresco';
@@ -74,7 +73,7 @@ interface CartItem {
   quantity: number;
   category: CategoryId;
   portion?: string;
-  image: string;
+  image?: string;
   selectedSauce?: string;
   selectedVeggie?: string;
   extras?: CustomOption[];
@@ -295,7 +294,7 @@ const PRODUCTS: Product[] = [
     price: 30,
     category: 'arrachera-pechuga',
     portion: '60g',
-    image: fotoArrachera,
+    image: '',
     canCustomize: true,
     customType: 'taco',
   },
@@ -306,7 +305,7 @@ const PRODUCTS: Product[] = [
     price: 30,
     category: 'arrachera-pechuga',
     portion: '60g',
-    image: fotoArrachera,
+    image: '',
     canCustomize: true,
     customType: 'taco',
   },
@@ -411,7 +410,7 @@ const PRODUCTS: Product[] = [
     price: 80,
     category: 'costras',
     portion: '120g',
-    image: fotoCostras,
+    image: '',
     canCustomize: true,
     customType: 'costra',
   },
@@ -422,7 +421,7 @@ const PRODUCTS: Product[] = [
     price: 80,
     category: 'costras',
     portion: '120g',
-    image: fotoCostras,
+    image: '',
     canCustomize: true,
     customType: 'costra',
   },
@@ -433,7 +432,7 @@ const PRODUCTS: Product[] = [
     price: 90,
     category: 'costras',
     portion: '120g',
-    image: fotoCostras,
+    image: '',
     canCustomize: true,
     customType: 'costra',
   },
@@ -445,7 +444,7 @@ const PRODUCTS: Product[] = [
     category: 'costras',
     portion: '120g',
     stamp: 'YECAPIXTLA ¡100!',
-    image: fotoCostras,
+    image: '',
     canCustomize: true,
     customType: 'costra',
   },
@@ -456,7 +455,7 @@ const PRODUCTS: Product[] = [
     price: 85,
     category: 'costras',
     portion: '120g',
-    image: fotoCostras,
+    image: '',
     canCustomize: true,
     customType: 'costra',
   },
@@ -468,7 +467,7 @@ const PRODUCTS: Product[] = [
     category: 'costras',
     portion: '120g',
     stamp: 'CALIDAD PRIME ¡100!',
-    image: fotoCostras,
+    image: '',
     canCustomize: true,
     customType: 'costra',
   },
@@ -479,7 +478,7 @@ const PRODUCTS: Product[] = [
     price: 75,
     category: 'costras',
     portion: '120g',
-    image: fotoCostras,
+    image: '',
     canCustomize: true,
     customType: 'costra',
   },
@@ -490,7 +489,7 @@ const PRODUCTS: Product[] = [
     price: 75,
     category: 'costras',
     portion: '120g',
-    image: fotoCostras,
+    image: '',
     canCustomize: true,
     customType: 'costra',
   },
@@ -499,7 +498,7 @@ const PRODUCTS: Product[] = [
   {
     id: 'burrito-pastor',
     name: 'Burrito de Pastor',
-    description: 'Gran porción de 200g en tortilla de harina con frijoles, queso y pastor.',
+    description: 'Gran porción de 200g en tortilla de harina con abundante queso y pastor.',
     price: 110,
     category: 'burritos',
     portion: '200g',
@@ -511,7 +510,7 @@ const PRODUCTS: Product[] = [
   {
     id: 'burrito-suadero',
     name: 'Burrito de Suadero',
-    description: '200g de suadero en jugo de carne con queso y frijoles.',
+    description: '200g de suadero en jugo de carne con queso fundido.',
     price: 115,
     category: 'burritos',
     portion: '200g',
@@ -523,7 +522,7 @@ const PRODUCTS: Product[] = [
   {
     id: 'burrito-bistec',
     name: 'Burrito de Bistec',
-    description: 'Bistec centro de res, frijoles y queso en tortilla norteña.',
+    description: 'Bistec centro de res y queso fundido en tortilla norteña.',
     price: 130,
     category: 'burritos',
     portion: '200g',
@@ -535,7 +534,7 @@ const PRODUCTS: Product[] = [
   {
     id: 'burrito-cecina',
     name: 'Burrito de Cecina de Yecapixtla',
-    description: 'Auténtica cecina de Yecapixtla con frijoles y queso.',
+    description: 'Auténtica cecina de Yecapixtla con queso fundido.',
     price: 190,
     category: 'burritos',
     portion: '200g',
@@ -547,7 +546,7 @@ const PRODUCTS: Product[] = [
   {
     id: 'burrito-enchilada',
     name: 'Burrito de Cecina Enchilada',
-    description: 'Cecina enchilada adobada, queso y frijoles en tortilla norteña.',
+    description: 'Cecina enchilada adobada y queso en tortilla norteña.',
     price: 130,
     category: 'burritos',
     portion: '200g',
@@ -559,7 +558,7 @@ const PRODUCTS: Product[] = [
   {
     id: 'burrito-arrachera',
     name: 'Burrito de Arrachera Prime',
-    description: 'Arrachera prime importada, frijoles y queso fundido.',
+    description: 'Arrachera prime importada y queso fundido.',
     price: 160,
     category: 'burritos',
     portion: '200g',
@@ -571,7 +570,7 @@ const PRODUCTS: Product[] = [
   {
     id: 'burrito-longaniza',
     name: 'Burrito de Longaniza Almendrada',
-    description: 'Longaniza almendrada, frijoles y queso fundido.',
+    description: 'Longaniza almendrada dorada y queso fundido.',
     price: 100,
     category: 'burritos',
     portion: '200g',
@@ -583,7 +582,7 @@ const PRODUCTS: Product[] = [
   {
     id: 'burrito-pechuga',
     name: 'Burrito de Pechuga',
-    description: 'Pechuga marinada a la plancha con frijoles y queso.',
+    description: 'Pechuga marinada a la plancha con queso fundido.',
     price: 100,
     category: 'burritos',
     portion: '200g',
@@ -796,7 +795,7 @@ const PRODUCTS: Product[] = [
     price: 50,
     category: 'gorditas',
     portion: 'Pieza',
-    image: fotoQuesoFundido,
+    image: '',
     canCustomize: true,
     customType: 'gordita',
   },
@@ -807,7 +806,7 @@ const PRODUCTS: Product[] = [
     price: 60,
     category: 'gorditas',
     portion: 'Pieza',
-    image: fotoQuesoFundido,
+    image: '',
     canCustomize: true,
     customType: 'gordita',
   },
@@ -819,7 +818,7 @@ const PRODUCTS: Product[] = [
     category: 'gorditas',
     portion: 'Pieza',
     stamp: 'YECAPIXTLA ¡100!',
-    image: fotoQuesoFundido,
+    image: '',
     canCustomize: true,
     customType: 'gordita',
   },
@@ -830,7 +829,7 @@ const PRODUCTS: Product[] = [
     price: 55,
     category: 'gorditas',
     portion: 'Pieza',
-    image: fotoQuesoFundido,
+    image: '',
     canCustomize: true,
     customType: 'gordita',
   },
@@ -841,7 +840,7 @@ const PRODUCTS: Product[] = [
     price: 75,
     category: 'gorditas',
     portion: 'Pieza',
-    image: fotoQuesoFundido,
+    image: '',
     canCustomize: true,
     customType: 'gordita',
   },
@@ -852,7 +851,7 @@ const PRODUCTS: Product[] = [
     price: 50,
     category: 'gorditas',
     portion: 'Pieza',
-    image: fotoQuesoFundido,
+    image: '',
     canCustomize: true,
     customType: 'gordita',
   },
@@ -863,7 +862,7 @@ const PRODUCTS: Product[] = [
     price: 65,
     category: 'gorditas',
     portion: 'Pieza',
-    image: fotoQuesoFundido,
+    image: '',
     canCustomize: true,
     customType: 'gordita',
   },
@@ -963,7 +962,7 @@ const PRODUCTS: Product[] = [
     price: 20,
     category: 'tacos',
     portion: 'Porción',
-    image: fotoSuadero,
+    image: fotoJugo,
     canCustomize: false,
   },
   {
@@ -973,7 +972,7 @@ const PRODUCTS: Product[] = [
     price: 17,
     category: 'tacos',
     portion: 'Porción',
-    image: fotoSuadero,
+    image: '',
     canCustomize: false,
   },
 ];
@@ -1301,11 +1300,16 @@ export default function ElPaisaDelValleMenu() {
       </header>
 
       {/* ── HERO BANNER: RAYOS AMARILLO/NARANJA Y LOGO GRANDE ── */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#FFA726] via-[#FFB74D] to-[#FFF8E7] pt-4 pb-3 text-center border-b border-[#F2DFB8]">
-        {/* Fondo con rayos */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#FFA726] via-[#FFB74D] to-[#FFF8E7] pt-5 pb-4 text-center border-b border-[#F2DFB8]">
+        {/* Fondo limpio con rayos cómics en CSS (sin logo ni botellas de fondo) */}
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none mix-blend-multiply"
-          style={{ backgroundImage: `url(${heroBg})` }}
+          className="absolute inset-0 opacity-30 pointer-events-none"
+          style={{
+            background:
+              'repeating-conic-gradient(from 0deg at 50% 38%, #F57C00 0deg 9deg, #FFB300 9deg 18deg)',
+            maskImage: 'radial-gradient(circle at 50% 45%, black 45%, transparent 85%)',
+            WebkitMaskImage: 'radial-gradient(circle at 50% 45%, black 45%, transparent 85%)',
+          }}
         />
 
         <div className="relative max-w-xl mx-auto px-4 flex flex-col items-center">
@@ -1313,23 +1317,24 @@ export default function ElPaisaDelValleMenu() {
           <img
             src={paisaLogo}
             alt="Logo oficial El Paisa del Valle"
-            className="w-40 sm:w-52 h-auto object-contain filter drop-shadow mb-1.5"
+            className="w-44 sm:w-56 h-auto object-contain filter drop-shadow-md mb-2"
           />
 
-          {/* Frase oficial de la página 5 */}
+          {/* Frase oficial de la carta física en blanco con contorno oscuro marcado */}
           <h1
-            className="text-xl sm:text-3xl text-[#E8261F] tracking-wide uppercase drop-shadow-sm mb-0.5 leading-tight"
+            className="text-[26px] sm:text-4xl text-white tracking-wide uppercase mb-1 leading-tight"
             style={{
               fontFamily: "'Lilita One', cursive",
-              WebkitTextStroke: '1px #FFF',
+              textShadow:
+                '2px 2px 0 #7A100B, -2px -2px 0 #7A100B, 2px -2px 0 #7A100B, -2px 2px 0 #7A100B, 0 3px 6px rgba(0,0,0,0.45)',
             }}
           >
-            Donde hay <span className="text-[#FF7A00]">TACOS</span> hay{' '}
-            <span className="text-[#2B1A0E]">ALEGRÍA...</span>
+            Donde hay <span className="text-[#FFE358]">TACOS</span> hay{' '}
+            <span className="text-[#FFE358]">ALEGRÍA...</span>
           </h1>
 
           {/* Descripción corta de una sola línea */}
-          <p className="text-[11px] sm:text-xs text-[#4E3928] font-bold max-w-md">
+          <p className="text-xs sm:text-sm text-[#4E3928] font-extrabold max-w-md">
             Suadero estilo Arandas al jugo de carne y cecina 100% de Yecapixtla
           </p>
         </div>
@@ -1402,8 +1407,14 @@ export default function ElPaisaDelValleMenu() {
                   key={`feat-${p.id}`}
                   className="flex-shrink-0 w-36 sm:w-40 bg-white rounded-xl p-2 border border-[#F2DFB8] shadow-sm flex flex-col justify-between"
                 >
-                  <div className="relative w-full h-20 rounded-lg overflow-hidden mb-1.5 bg-[#FFF3D1]">
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                  <div className="relative w-full h-20 rounded-lg overflow-hidden mb-1.5 bg-[#FFF3D1] border border-[#F2DFB8] flex items-center justify-center">
+                    {p.image ? (
+                      <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-[#FFF0CE] p-2">
+                        <img src={paisaLogo} alt={p.name} className="w-10 h-10 object-contain opacity-75" />
+                      </div>
+                    )}
                     {p.stamp && (
                       <span className="absolute top-1 left-1 bg-[#FFE358] text-[#D0140D] border border-[#D0140D] font-black uppercase text-[8px] px-1 py-0.2 rounded shadow">
                         {p.stamp}
@@ -1503,13 +1514,23 @@ export default function ElPaisaDelValleMenu() {
                           key={product.id}
                           className="bg-white rounded-xl py-1.5 px-2.5 sm:py-2 sm:px-3 border border-[#F2DFB8] shadow-sm flex items-center justify-between gap-2.5 hover:border-[#FF7A00] transition-colors"
                         >
-                          {/* Izquierda: Foto cuadrada de 64-68px */}
-                          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-[#FFF3D1] flex-shrink-0">
-                            <img
-                              src={product.image}
-                              alt={product.name}
-                              className="w-full h-full object-cover"
-                            />
+                          {/* Izquierda: Foto cuadrada de 64-68px o recuadro de la marca */}
+                          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-[#FFF3D1] border border-[#F2DFB8] flex items-center justify-center flex-shrink-0">
+                            {product.image ? (
+                              <img
+                                src={product.image}
+                                alt={product.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center p-1.5 bg-[#FFF0CE]">
+                                <img
+                                  src={paisaLogo}
+                                  alt="El Paisa del Valle"
+                                  className="w-9 h-9 sm:w-11 sm:h-11 object-contain opacity-75"
+                                />
+                              </div>
+                            )}
                             {product.portion && (
                               <span className="absolute bottom-0.5 right-0.5 bg-black/75 text-white font-bold text-[8px] px-1 py-0.2 rounded">
                                 {product.portion}
@@ -1984,11 +2005,17 @@ export default function ElPaisaDelValleMenu() {
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex items-center gap-2">
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="w-10 h-10 rounded-lg object-cover bg-[#FFF3D1]"
-                            />
+                            {item.image ? (
+                              <img
+                                src={item.image}
+                                alt={item.name}
+                                className="w-10 h-10 rounded-lg object-cover bg-[#FFF3D1]"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded-lg bg-[#FFF0CE] border border-[#F2DFB8] flex items-center justify-center p-1">
+                                <img src={paisaLogo} alt="Logo" className="w-6 h-6 object-contain opacity-75" />
+                              </div>
+                            )}
                             <div>
                               <h4 className="text-xs font-black text-[#2B1A0E] leading-tight">
                                 {item.name}
