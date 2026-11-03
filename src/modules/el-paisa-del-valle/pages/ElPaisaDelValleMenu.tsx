@@ -1424,30 +1424,6 @@ export default function ElPaisaDelValleMenu() {
 
       {/* ── CONTENIDO PRINCIPAL: CATÁLOGO DE PLATILLOS ── */}
       <main className="max-w-6xl mx-auto px-4 py-8">
-        {/* Banner de Plataformas Delivery */}
-        <div className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-[#1C1814] via-[#241F1A] to-[#1C1814] border border-[#FF5E00]/20 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FF5E00]/15 border border-[#FF5E00]/30 flex items-center justify-center text-[#FF8A00]">
-              <Bike className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-white">¿Prefieres ordenar por aplicación de delivery?</p>
-              <p className="text-xs text-[#AFA498]">También nos encuentras en DiDi Food, Uber Eats y Rappi</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {clientConfig.deliveryPlatforms.map((plat) => (
-              <span
-                key={plat.name}
-                className="px-2.5 py-1 rounded-md text-xs font-black uppercase text-white shadow"
-                style={{ backgroundColor: plat.color }}
-              >
-                {plat.name}
-              </span>
-            ))}
-          </div>
-        </div>
-
         {/* Encabezado de Sección */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -1648,14 +1624,14 @@ export default function ElPaisaDelValleMenu() {
             </div>
           </div>
 
-          {/* Columna 3: Contacto, Apps y Privacidad */}
+          {/* Columna 3: Contacto y Privacidad */}
           <div>
             <h4 className="text-sm font-black text-white uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <Phone className="w-4 h-4 text-[#FF5E00]" />
-              Pedidos & Apps
+              Pedidos WhatsApp
             </h4>
             <p className="text-xs text-[#AFA498] mb-3">
-              Haz tu pedido directo en este menú y recíbelo por WhatsApp sin comisiones extra:
+              Haz tu pedido directo en este menú y recíbelo por WhatsApp sin comisiones ni intermediarios:
             </p>
             <a
               href={`https://wa.me/${clientConfig.phonePrimary}?text=Hola,%20quisiera%20información%20del%20menú%20de%20El%20Paisa%20del%20Valle`}
@@ -2406,3 +2382,4 @@ export default function ElPaisaDelValleMenu() {
     </div>
   );
 }
+
