@@ -1125,6 +1125,248 @@ export default function HomePage({
                 </div>
               </div>
             </div>
+
+            {/* ═══════════════════════════════════════════════════════════════
+                TABLA DE PAQUETES Y PRECIOS TRANSPARENTES DE PÁGINAS WEB
+            ═══════════════════════════════════════════════════════════════ */}
+            <div className="mt-16 pt-16 border-t border-primary/10">
+              <div className="text-center max-w-3xl mx-auto mb-12">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-secondary/15 text-secondary text-[11px] font-black uppercase tracking-[0.2em] mb-3">
+                  <Sparkles size={14} />
+                  <span>Paquetes y Precios Transparentes</span>
+                </div>
+                <h3 className="text-2xl sm:text-4xl font-headline font-black text-primary tracking-tight mb-3">
+                  Elige el paquete ideal para tu negocio
+                </h3>
+                <p className="text-primary/70 text-sm sm:text-base leading-relaxed">
+                  Un solo pago, sin mensualidades forzosas. Todos nuestros planes incluyen diseño adaptado a celular, hospedaje web de alta velocidad, certificado SSL y entrega rápida.
+                </p>
+              </div>
+
+              {/* Grid 4 Columnas de Planes */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+                {/* 1. Plan Web Express */}
+                <div className="rounded-3xl p-6 sm:p-7 bg-slate-50 border border-slate-200 flex flex-col justify-between hover:shadow-xl hover:border-primary/20 transition-all">
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-blue-100 text-blue-800 inline-block mb-4">
+                      Más Rápido · 3 Días
+                    </span>
+                    <h4 className="text-xl font-headline font-black text-primary mb-1">Plan Web Express</h4>
+                    <p className="text-xs text-primary/60 mb-4 min-h-[32px]">Perfecto para profesionistas o negocios que requieren presencia digital en tiempo récord.</p>
+                    <div className="text-3xl font-headline font-black text-primary mb-6 pb-4 border-b border-slate-200">
+                      $1,450 <span className="text-xs font-normal text-primary/60">MXN / pago único</span>
+                    </div>
+                    <ul className="space-y-3 text-xs text-primary/80 mb-8">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <span>Formato <strong>One Page</strong> moderno y directo</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <span><strong>2 correos profesionales</strong> con tu marca</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <span>Entrega lista en <strong>3 días hábiles</strong></span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <span>Optimizado 100% para celular y tablet</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <span>Botón directo de WhatsApp para cotizaciones</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <span>Hospedaje web y dominio SSL incluidos (1er año)</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <a
+                    href={whatsappLink('Hola René, me interesa el Plan Web Express de $1,450 MXN para mi negocio')}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-3.5 rounded-full bg-primary hover:bg-[#002244] text-white font-headline font-bold text-xs uppercase tracking-wider text-center shadow-md transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <span>Solicitar Plan Express</span>
+                    <ArrowRight size={13} />
+                  </a>
+                </div>
+
+                {/* 2. Plan Negocio (MÁS POPULAR / RECOMENDADO) */}
+                <div className="rounded-3xl p-6 sm:p-7 bg-white border-2 border-secondary shadow-2xl relative flex flex-col justify-between hover:shadow-orange-500/10 transition-all">
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-secondary text-white font-headline font-black text-[10px] uppercase tracking-wider shadow-md whitespace-nowrap">
+                    ⭐ Más Popular
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-secondary/20 text-secondary inline-block mb-4 mt-2">
+                      Negocios &amp; Pymes
+                    </span>
+                    <h4 className="text-xl font-headline font-black text-primary mb-1">Plan Negocio</h4>
+                    <p className="text-xs text-primary/60 mb-4 min-h-[32px]">Estructura completa con catálogo interactivo enfocada en generar ventas y prospectos.</p>
+                    <div className="text-3xl font-headline font-black text-secondary mb-6 pb-4 border-b border-slate-100">
+                      $1,850 <span className="text-xs font-normal text-primary/60">MXN / pago único</span>
+                    </div>
+                    <ul className="space-y-3 text-xs text-primary/80 mb-8">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-secondary shrink-0 mt-0.5" />
+                        <span>Hasta <strong>4 secciones personalizadas</strong></span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-secondary shrink-0 mt-0.5" />
+                        <span><strong>Catálogo digital interactivo</strong> de servicios</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-secondary shrink-0 mt-0.5" />
+                        <span><strong>5 cuentas de correo corporativo</strong></span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-secondary shrink-0 mt-0.5" />
+                        <span>Botones de WhatsApp desglosados por servicio</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-secondary shrink-0 mt-0.5" />
+                        <span>Optimización SEO Local para Google Maps</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-secondary shrink-0 mt-0.5" />
+                        <span>Hospedaje de alta velocidad y certificado SSL</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <a
+                    href={whatsappLink('Hola René, me interesa el Plan Negocio de $1,850 MXN para mi empresa')}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-3.5 rounded-full bg-secondary hover:bg-orange-600 text-white font-headline font-black text-xs uppercase tracking-wider text-center shadow-lg transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <span>Solicitar Plan Negocio</span>
+                    <ArrowRight size={13} />
+                  </a>
+                </div>
+
+                {/* 3. Plan Profesional */}
+                <div className="rounded-3xl p-6 sm:p-7 bg-slate-50 border border-slate-200 flex flex-col justify-between hover:shadow-xl hover:border-primary/20 transition-all">
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-purple-100 text-purple-800 inline-block mb-4">
+                      Posicionamiento Google
+                    </span>
+                    <h4 className="text-xl font-headline font-black text-primary mb-1">Plan Profesional</h4>
+                    <p className="text-xs text-primary/60 mb-4 min-h-[32px]">Arquitectura avanzada en Silos y SEO Semántico para dominar búsquedas locales.</p>
+                    <div className="text-3xl font-headline font-black text-primary mb-6 pb-4 border-b border-slate-200">
+                      $2,900 <span className="text-xs font-normal text-primary/60">MXN / pago único</span>
+                    </div>
+                    <ul className="space-y-3 text-xs text-primary/80 mb-8">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <span>Hasta <strong>8 secciones estructuradas</strong> (Silos)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <span><strong>SEO Semántico y Schema Markup</strong> Google</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <span><strong>10 correos corporativos</strong> para tu equipo</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <span>Micro-animaciones fluidas con Motion</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <span>Google Analytics + Meta Pixel instalados</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <span>Hosting Cloud SSD de alto rendimiento</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <a
+                    href={whatsappLink('Hola René, me interesa el Plan Profesional de $2,900 MXN para mi negocio')}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-3.5 rounded-full bg-primary hover:bg-[#002244] text-white font-headline font-bold text-xs uppercase tracking-wider text-center shadow-md transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <span>Solicitar Plan Profesional</span>
+                    <ArrowRight size={13} />
+                  </a>
+                </div>
+
+                {/* 4. Plan E-Commerce */}
+                <div className="rounded-3xl p-6 sm:p-7 bg-slate-900 text-white border border-slate-800 flex flex-col justify-between hover:shadow-2xl transition-all">
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 inline-block mb-4">
+                      Ventas 24/7
+                    </span>
+                    <h4 className="text-xl font-headline font-black text-white mb-1">Plan E-Commerce</h4>
+                    <p className="text-xs text-slate-300 mb-4 min-h-[32px]">Tienda en línea completa y automatizada para vender productos las 24 horas del día.</p>
+                    <div className="text-3xl font-headline font-black text-emerald-400 mb-6 pb-4 border-b border-slate-800">
+                      $4,200 <span className="text-xs font-normal text-slate-400">MXN / pago único</span>
+                    </div>
+                    <ul className="space-y-3 text-xs text-slate-200 mb-8">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                        <span><strong>Carrito de compras</strong> rápido y dinámico</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                        <span><strong>Pagos en línea</strong> (Mercado Pago, Tarjeta, OXXO)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                        <span>Plataforma 100% autogestionable (stock y fotos)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                        <span>Alertas y confirmación de pedidos a WhatsApp</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                        <span>Buscador y filtros por categorías</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                        <span>Hospedaje e-commerce seguro con certificado SSL</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <a
+                    href={whatsappLink('Hola René, me interesa el Plan E-Commerce de $4,200 MXN para mi tienda en línea')}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-headline font-black text-xs uppercase tracking-wider text-center shadow-lg transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <span>Solicitar Tienda Online</span>
+                    <ArrowRight size={13} />
+                  </a>
+                </div>
+              </div>
+
+              {/* Banner de Asesoría Personalizada */}
+              <div className="mt-10 p-6 rounded-3xl bg-primary/5 border border-primary/10 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-secondary/20 text-secondary flex items-center justify-center shrink-0">
+                    <ShieldCheck size={24} />
+                  </div>
+                  <div>
+                    <h5 className="font-headline font-black text-base text-primary">¿Tienes requerimientos especiales o dudas sobre qué plan elegir?</h5>
+                    <p className="text-xs text-primary/70 mt-0.5">Te asesoramos sin compromiso por WhatsApp y armamos una propuesta a la medida exacta de tu negocio.</p>
+                  </div>
+                </div>
+                <a
+                  href={whatsappLink('Hola René, quiero asesoría para elegir el paquete de página web adecuado para mi negocio')}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-7 py-3.5 rounded-full bg-primary hover:bg-[#002244] text-white font-headline font-black text-xs uppercase tracking-wider shadow-md shrink-0 transition-all flex items-center justify-center gap-2"
+                >
+                  <MessageCircle size={15} />
+                  <span>Asesoría Directa por WhatsApp</span>
+                </a>
+              </div>
+            </div>
           </div>
         </section>
 
