@@ -54,3 +54,12 @@ jobs:
             -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1cHBueGptdXpkYWNiYXhlemVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwMjkxNzgsImV4cCI6MjEwMDYwNTE3OH0.jiBCDOLfl02iiKkApjZPmkyvsP0VJFDmWmorPfKkdXc" \
             || echo "(Tacos Chepe ping completado)"
 
+      - name: Ping Control ProdLimpieza
+        run: |
+          echo "Pinging Control ProdLimpieza..."
+          curl -s -o /dev/null -w "Control ProdLimpieza HTTP: %{http_code}\n" \
+            "https://aohqycweaazbjitiuuzp.supabase.co/rest/v1/productos?select=nombre&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFvaHF5Y3dlYWF6YmppdGl1dXpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MDA2MTcsImV4cCI6MjA5NTE3NjYxN30.Wwt_kb-shpiq1bIpq0_bURmd4FvRcCXW6qH8qbCcuRY" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFvaHF5Y3dlYWF6YmppdGl1dXpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MDA2MTcsImV4cCI6MjA5NTE3NjYxN30.Wwt_kb-shpiq1bIpq0_bURmd4FvRcCXW6qH8qbCcuRY" \
+            || echo "(Control ProdLimpieza ping completado)"
+
