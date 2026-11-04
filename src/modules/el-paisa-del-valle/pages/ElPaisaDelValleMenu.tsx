@@ -1017,6 +1017,15 @@ export default function ElPaisaDelValleMenu() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
 
+  // ── SEO Dinámico y Título en Pestaña ──
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = 'Taquería El Paisa del Valle | Menú Digital con Pedido por WhatsApp 🌮🔥';
+    return () => {
+      document.title = prevTitle;
+    };
+  }, []);
+
   // ── Persistencia del Carrito ──
   useEffect(() => {
     try {
