@@ -2,6 +2,23 @@
 <html lang="es-MX">
 <head>
 <meta charset="UTF-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-F6ESDRF6N3"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-F6ESDRF6N3');
+      // Cuenta cada clic que lleva a WhatsApp (links wa.me y botones de pedido de los menús)
+      document.addEventListener('click', function (e) {
+        var el = e.target.closest && e.target.closest('a, button');
+        if (!el) return;
+        var href = el.getAttribute('href') || '';
+        if (/wa\.me|whatsapp/i.test(href + ' ' + el.id + ' ' + el.textContent)) {
+          gtag('event', 'clic_whatsapp', { link_url: href, page_location: location.href });
+        }
+      }, true);
+    </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Hosting y Dominio para tu Página Web en México | Imagine &amp; Stamp</title>
 <meta name="description" content="Registramos tu dominio, configuramos tu hosting y publicamos tu página web con candado de seguridad y correo con tu marca. Atención directa por WhatsApp en CDMX." />
