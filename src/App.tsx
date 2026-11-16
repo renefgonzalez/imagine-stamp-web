@@ -37,6 +37,8 @@ const SalonUnas = React.lazy(() => import('./modules/salon-unas/pages/SalonUnas'
 const Lavanderia = React.lazy(() => import('./modules/lavanderia/pages/Lavanderia'));
 const ConsultorioDental = React.lazy(() => import('./modules/consultorio-dental/pages/ConsultorioDental'));
 const ElPaisaDelValleMenu = React.lazy(() => import('./modules/el-paisa-del-valle/pages/ElPaisaDelValleMenu'));
+const DemoTaqueriaMenu = React.lazy(() => import('./modules/demo-taqueria/pages/DemoTaqueriaMenu'));
+const DemoAntojitosMenu = React.lazy(() => import('./modules/demo-antojitos/pages/DemoAntojitosMenu'));
 
 import { GlobalFooter } from './components/common/GlobalFooter';
 import { useCartStore } from './store/useCartStore';
@@ -461,6 +463,8 @@ export default function App() {
         <Route path="/faq" element={homeElement} />
         <Route path="/preguntas" element={homeElement} />
         <Route path="/demo-menu" element={<Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" /></div>}><DemoMenu /></Suspense>} />
+        <Route path="/demo-taqueria" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#C0392B]" /></div>}><DemoTaqueriaMenu /></Suspense></ErrorBoundary>} />
+        <Route path="/demo-antojitos" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B2D8B]" /></div>}><DemoAntojitosMenu /></Suspense></ErrorBoundary>} />
         <Route path="/contacto" element={<Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" /></div>}><ContactCard /></Suspense>} />
         <Route path="/tarjeta" element={<Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" /></div>}><ContactCard /></Suspense>} />
 

@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-F6ESDRF6N3"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-F6ESDRF6N3');
+      // Cuenta cada clic que lleva a WhatsApp (links wa.me y botones de pedido)
+      document.addEventListener('click', function (e) {
+        var el = e.target.closest && e.target.closest('a, button');
+        if (!el) return;
+        var href = el.getAttribute('href') || '';
+        if (/wa\.me|whatsapp/i.test(href + ' ' + el.id + ' ' + el.textContent)) {
+          gtag('event', 'clic_whatsapp', { link_url: href, page_location: location.href });
+        }
+      }, true);
+    </script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Página Web para Dentistas y Clínicas Dentales | Imagine &amp; Stamp</title>
+<meta name="description" content="Diseño de páginas web para dentistas, ortodoncistas y clínicas dentales en México. Muestra tus tratamientos, testimonios, ubicación y recibe pacientes directo en tu WhatsApp." />
+<link rel="canonical" href="https://imagineandstamp.site/pagina-web-para-dentistas/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="geo.region" content="MX-CMX" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="es_MX" />
+<meta property="og:site_name" content="Imagine &amp; Stamp" />
+<meta property="og:title" content="Página Web para Dentistas y Clínicas Dentales | Imagine &amp; Stamp" />
+<meta property="og:description" content="Diseño de páginas web profesionales para dentistas en México. Presenta tus tratamientos, genera confianza y capta pacientes todos los días por WhatsApp." />
+<meta property="og:url" content="https://imagineandstamp.site/pagina-web-para-dentistas/" />
+<meta property="og:image" content="https://imagineandstamp.site/og-dental.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Página Web para Dentistas y Clínicas Dentales | Imagine &amp; Stamp" />
+<meta name="twitter:description" content="Diseño de páginas web profesionales para dentistas en México. Tratamientos, testimonios, ubicación y botón directo a WhatsApp." />
+<meta name="twitter:image" content="https://imagineandstamp.site/og-dental.jpg" />
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "@id": "https://imagineandstamp.site/pagina-web-para-dentistas/#servicio",
+      "name": "Diseño de Página Web para Dentistas y Clínicas Dentales",
+      "serviceType": "Diseño de páginas web para profesionales de la salud dental",
+      "description": "Página web para consultorios dentales y clínicas odontológicas. Catálogo de tratamientos, casos antes/después, ubicación en Google Maps y contacto directo por WhatsApp.",
+      "url": "https://imagineandstamp.site/pagina-web-para-dentistas/",
+      "image": "https://imagineandstamp.site/og-dental.jpg",
+      "provider": {
+        "@id": "https://imagineandstamp.site/#business"
+      },
+      "areaServed": [
+        { "@type": "City", "name": "Ciudad de México" },
+        { "@type": "State", "name": "Estado de México" },
+        { "@type": "Country", "name": "México" }
+      ]
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://imagineandstamp.site/#business",
+      "name": "Imagine & Stamp",
+      "url": "https://imagineandstamp.site/",
+      "telephone": "+52-56-5046-9993",
+      "email": "imagineandstamp@gmail.com",
+      "image": "https://imagineandstamp.site/og-menu-demo.jpg",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Ciudad de México",
+        "addressRegion": "CDMX",
+        "addressCountry": "MX"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Inicio",
+          "item": "https://imagineandstamp.site/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Páginas Web",
+          "item": "https://imagineandstamp.site/paginas-web/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Página web para dentistas",
+          "item": "https://imagineandstamp.site/pagina-web-para-dentistas/"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Cuánto cuesta la página web para un consultorio dental?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Cada consultorio tiene necesidades distintas: desde una landing ágil para campañas de ortodoncia o blanqueamiento, hasta un sitio completo con múltiples especialistas y casos clínicos. Cotizamos a tu medida y sin costo por WhatsApp."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Puedo agregar un sistema para que los pacientes agenden su cita?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sí. Puedes integrar nuestro módulo de agenda de citas para consultorio dental, donde el paciente elige tratamiento, doctor, fecha y horario, y la confirmación llega a tu WhatsApp."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Apareceré en Google cuando busquen dentista cerca de mí?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Diseñamos la página con optimización SEO local: microdatos schema para consultorios, títulos pensados para tu zona o colonia y vinculación directa a tu ficha de Google Maps."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Qué pasa si cambio de tratamientos o de horarios después?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Tu sitio queda listo para actualizarse fácilmente. Te entregamos soporte directo y no dependes de desarrolladores para hacer ajustes básicos."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+:root{--navy:#002E5D;--orange:#FF8C00;--teal:#0284c7;--cream:#F9F7F2;--ink:#1A1C1C;--muted:#4b5563;--card:#fff;--line:rgba(0,46,93,.09)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3,.brand{font-family:Manrope,Inter,sans-serif;color:var(--navy);line-height:1.2;letter-spacing:-.02em}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:30;background:rgba(249,247,242,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;height:64px}
+.brand{font-weight:800;font-size:19px;text-decoration:none}
+.brand span{color:var(--orange)}
+
+.menu-wrap{display:flex;align-items:center;gap:14px;position:relative}
+.brand,.menu-sum{white-space:nowrap}
+@media(max-width:420px){.brand{font-size:16px}.bar{gap:8px}.menu-sum{padding:7px 12px}.bar>.btn-sm{padding:8px 12px}}
+@media(max-width:370px){.brand{font-size:15px}.menu-sum{padding:6px 10px}}
+.menu-drop{position:relative;background:none!important;border:0!important;padding:0!important;margin:0!important}
+.menu-sum{cursor:pointer;list-style:none;border:1px solid var(--line);border-radius:999px;padding:8px 16px;background:#fff;font-weight:700;font-size:13px;color:var(--navy);display:inline-flex;align-items:center;gap:4px;user-select:none;transition:background .2s}
+.menu-sum::-webkit-details-marker{display:none}
+.menu-sum:hover{background:rgba(0,46,93,.04)}
+.menu-pop{position:absolute;top:calc(100% + 8px);left:0;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 16px 40px -10px rgba(0,46,93,.25);padding:10px;width:240px;z-index:50;display:flex;flex-direction:column;gap:3px}
+.menu-pop a{text-decoration:none;padding:10px 14px;border-radius:12px;font-size:14px;font-weight:600;color:var(--muted);transition:background .15s,color .15s}
+.menu-pop a:hover{background:rgba(0,46,93,.05);color:var(--navy)}
+.menu-pop a[aria-current="page"]{background:rgba(255,140,0,.12);color:#b45f00;font-weight:700}
+.menu-home{color:var(--navy)!important;font-weight:700!important}
+.menu-sep{border:none;border-top:1px solid var(--line);margin:4px 0}
+.link-home-desk{display:none;font-size:14px;font-weight:600;text-decoration:none;color:var(--muted)}
+.link-home-desk:hover{color:var(--navy)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:14px 28px;font-weight:700;font-size:15px;text-decoration:none;transition:transform .2s,box-shadow .2s;cursor:pointer}
+.btn:hover{transform:translateY(-2px)}
+.btn-wa{background:#25D366;color:#fff;box-shadow:0 10px 24px -10px rgba(37,211,102,.7)}
+.btn-sm{padding:9px 18px;font-size:13px}
+.btn-ghost{border:1.5px solid var(--navy);color:var(--navy);background:transparent}
+.crumbs{font-size:13px;color:var(--muted);padding:18px 0 0}
+.crumbs a{text-decoration:none}
+
+.hero{padding:28px 0 48px}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:32px;align-items:center}
+.hero-content{display:flex;flex-direction:column}
+.tag{display:inline-block;background:rgba(2,132,199,.12);color:#0369a1;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:999px;margin-bottom:16px;width:fit-content}
+h1{font-size:clamp(30px,5vw,46px);font-weight:800;margin-bottom:16px}
+.lead{font-size:clamp(16px,2vw,18px);color:var(--muted);line-height:1.6;margin-bottom:20px}
+.price{font-family:Manrope,sans-serif;font-weight:800;color:var(--navy);font-size:22px;margin-bottom:24px}
+.ctas{display:flex;flex-wrap:wrap;gap:12px}
+
+.card-agenda-link{background:linear-gradient(135deg, rgba(2,132,199,.08), rgba(0,46,93,.05));border:1.5px dashed #0284c7;border-radius:20px;padding:20px;margin-top:20px}
+.card-agenda-link p{font-size:14px;color:var(--muted);margin-bottom:10px}
+.card-agenda-link strong{color:var(--navy)}
+
+section{padding:40px 0}
+h2{font-size:clamp(24px,3.8vw,32px);font-weight:800;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:1fr;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 12px 30px -22px rgba(0,46,93,.3)}
+.card h3{font-size:17px;margin-bottom:6px}
+.card p{font-size:15px;color:var(--muted)}
+ul.list{list-style:none;display:grid;gap:10px}
+ul.list li{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 14px 44px;position:relative;font-size:15px}
+ul.list li::before{content:"✓";position:absolute;left:16px;top:13px;color:#0284c7;font-weight:800}
+
+details{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:700;color:var(--navy);font-family:Manrope,sans-serif}
+details p{margin-top:10px;color:var(--muted);font-size:15px}
+
+.cta-box{background:var(--navy);color:#fff;border-radius:28px;padding:40px 24px;text-align:center}
+.cta-box h2{color:#fff;margin-bottom:8px}
+.cta-box p{color:rgba(255,255,255,.8);margin-bottom:24px;font-size:16px}
+
+.others{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.others a{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;text-decoration:none;font-weight:600;color:var(--navy);font-size:14px}
+
+footer{border-top:1px solid var(--line);padding:32px 0 100px;font-size:14px;color:var(--muted)}
+footer .cols{display:grid;gap:20px}
+footer a{text-decoration:none}
+
+.btn-float-wa{position:fixed;right:18px;bottom:18px;z-index:40;background:#25D366;color:#fff;text-decoration:none;box-shadow:0 12px 28px rgba(37,211,102,.55);display:flex;align-items:center;justify-content:center;transition:transform .2s,box-shadow .2s;width:56px;height:56px;border-radius:50%}
+.btn-float-wa:hover{transform:scale(1.05);box-shadow:0 16px 34px rgba(37,211,102,.65)}
+.float-text{display:none;font-weight:700;font-size:15px}
+
+@media(min-width:768px){
+  .link-home-desk{display:inline-block}
+  .grid{grid-template-columns:1fr 1fr}
+  .others{grid-template-columns:repeat(3,1fr)}
+  footer .cols{grid-template-columns:2fr 1fr 1fr}
+  footer{padding-bottom:44px}
+  .btn-float-wa{width:auto;height:auto;border-radius:999px;padding:12px 24px;gap:10px}
+  .float-text{display:inline}
+}
+@media(min-width:900px){
+  .hero-grid{grid-template-columns:1.15fr .85fr}
+  .others{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap bar">
+  <a class="brand" href="/">Imagine <span>&amp;</span> Stamp</a>
+  <div class="menu-wrap">
+    <details class="menu-drop">
+      <summary class="menu-sum">Servicios ▾</summary>
+      <div class="menu-pop">
+        <a href="/" class="menu-home">🏠 Ir al Inicio</a>
+        <hr class="menu-sep" />
+        <a href="/paginas-web/" aria-current="page">Páginas web</a>
+        <a href="/aplicaciones-para-negocios/">Aplicaciones para negocios</a>
+        <a href="/hosting-y-dominio/">Hosting y dominio</a>
+        <a href="/menu-digital/">Menús digitales</a>
+        <a href="/tarjetas-digitales/">Tarjetas digitales</a>
+        <a href="/invitaciones-digitales/">Invitaciones digitales</a>
+      </div>
+    </details>
+    <a href="/" class="link-home-desk">Inicio</a>
+  </div>
+  <a class="btn btn-wa btn-sm" href="https://wa.me/5215650469993?text=Hola,%20quiero%20cotizar%20una%20p%C3%A1gina%20web%20para%20mi%20consultorio%20dental">Cotizar por WhatsApp</a>
+</div></header>
+
+<main class="wrap">
+  <div class="crumbs"><a href="/">Inicio</a> / <a href="/paginas-web/">Páginas web</a> / Página web para dentistas</div>
+
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <span class="tag">🩺 Salud Dental · México</span>
+        <h1>Página web para dentistas y clínicas dentales</h1>
+        <p class="lead">Genera confianza con pacientes que buscan atención seria. Presenta tus tratamientos, credenciales médicas, casos de éxito, ubicación exacta y botón directo a tu WhatsApp para pedir informes o agendar.</p>
+        <p class="price">Cotiza sin costo por WhatsApp</p>
+        <div class="ctas">
+          <a class="btn btn-wa" href="https://wa.me/5215650469993?text=Hola,%20quiero%20cotizar%20una%20p%C3%A1gina%20web%20para%20mi%20consultorio%20dental">
+            Cotizar por WhatsApp
+          </a>
+          <a class="btn btn-ghost" href="/agenda-citas-consultorio-dental/">
+            Ver App de Citas Dentales →
+          </a>
+        </div>
+
+        <!-- Módulo complementario de citas -->
+        <div class="card-agenda-link">
+          <p><strong>¿Buscas que tus pacientes elijan día y hora desde el celular?</strong></p>
+          <p>Además de la página informativa, contamos con el sistema de citas automatizado para consultorios. Puedes integrarlo a tu sitio web o usarlo de forma independiente.</p>
+          <a href="/agenda-citas-consultorio-dental/" style="color:#0284c7;font-weight:700;font-size:14px;text-decoration:none;">Conocer la App de Agenda Dental →</a>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px solid var(--line);border-radius:28px;padding:32px 24px;box-shadow:0 20px 40px -20px rgba(0,46,93,.25);">
+        <h3 style="font-size:18px;margin-bottom:14px;color:var(--navy);">Lo que incluye tu página dental:</h3>
+        <ul class="list" style="margin-bottom:20px;">
+          <li>Catálogo claro de tratamientos (ortodoncia, implantes, blanqueamiento, resinas)</li>
+          <li>Galería de casos clínicos y testimonios reales de pacientes</li>
+          <li>Ficha de tu equipo de odontólogos y cédulas profesionales</li>
+          <li>Ubicación vinculada a Google Maps y horarios de atención</li>
+          <li>Botón flotante de WhatsApp configurado para tu recepcionista</li>
+          <li>Optimización para celular: carga en menos de 2 segundos</li>
+        </ul>
+        <a class="btn btn-wa" style="width:100%;" href="https://wa.me/5215650469993?text=Hola,%20quiero%20ver%20ejemplos%20de%20p%C3%A1ginas%20para%20dentistas">
+          Pedir ejemplos por WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>¿Por qué un dentista necesita más que solo Facebook o Instagram?</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>1. La confianza es la clave de la salud</h3>
+        <p>Los pacientes que necesitan una endodoncia o brackets no eligen por un meme en redes. Buscan en Google, comparan reputación, revisan cédulas médicas y quieren ver instalaciones limpias y profesionales antes de agendar.</p>
+      </div>
+      <div class="card">
+        <h3>2. Posicionamiento en tu zona geográfica</h3>
+        <p>Una página optimizada con SEO local le dice a Google que estás en la Roma, Satélite, Del Valle o Guadalajara. Cuando alguien busca "dentista cerca de mí", tu clínica compite con fuerza.</p>
+      </div>
+      <div class="card">
+        <h3>3. Filtra preguntas repetitivas</h3>
+        <p>Precios aproximados, qué incluye cada consulta, métodos de pago aceptados y estacionamiento disponible. Tu recepcionista recibe pacientes informados y listos para agendar, no curiosos.</p>
+      </div>
+      <div class="card">
+        <h3>4. Tu clínica visible 24 horas al día</h3>
+        <p>El dolor de muelas y la urgencia de cotizar un tratamiento estético ocurren a las 11 de la noche o en domingo. Tu página web recibe las consultas directo en tu WhatsApp para responder a primera hora.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Especialidades que adaptamos en tu sitio</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>🦷 Odontología General y Prevención</h3>
+        <p>Limpiezas con ultrasonido, selladores, resinas estéticas y diagnósticos con cámara intraoral.</p>
+      </div>
+      <div class="card">
+        <h3>😁 Ortodoncia y Alineadores Invisibles</h3>
+        <p>Brackets tradicionales, autoligado y ortodoncia invisible explicados paso a paso para jóvenes y adultos.</p>
+      </div>
+      <div class="card">
+        <h3>✨ Estética Dental y Blanqueamiento</h3>
+        <p>Diseño de sonrisa, carillas de resina y porcelana, blanqueamiento láser y recontorneo gingival.</p>
+      </div>
+      <div class="card">
+        <h3>🔩 Implantología y Rehabilitación</h3>
+        <p>Coronas, puentes fijos, prótesis sobre implantes y reconstrucciones completas para adultos mayores.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Preguntas frecuentes</h2>
+    <details>
+      <summary>¿Cuánto cuesta la página web para mi consultorio?</summary>
+      <p>Depende de las secciones requeridas (landing de una sola especialidad o sitio completo de clínica). Escríbenos por WhatsApp y te cotizamos con presupuesto cerrado y sin sorpresas.</p>
+    </details>
+    <details>
+      <summary>¿Puedo integrar la agenda de citas en línea?</summary>
+      <p>Totalmente. Puedes enlazar nuestro módulo especializado de <a href="/agenda-citas-consultorio-dental/" style="color:#0284c7;font-weight:700;">agenda de citas dental</a>, donde tus pacientes seleccionan horario y reciben confirmación inmediata en WhatsApp.</p>
+    </details>
+    <details>
+      <summary>¿En cuánto tiempo queda lista?</summary>
+      <p>Una landing de captación rápida queda lista en 3 a 5 días hábiles una vez que nos compartes tu logotipo, fotos del consultorio y lista de tratamientos.</p>
+    </details>
+    <details>
+      <summary>¿Incluye dominio y correo profesional con el nombre de mi clínica?</summary>
+      <p>Sí, configuramos tu dominio .com o .mx y tus correos institucionales (ejemplo: citas@tudominiodental.com) para proyectar máxima formalidad.</p>
+    </details>
+  </section>
+
+  <section class="cta-box">
+    <h2>Lleva tu clínica al siguiente nivel digital</h2>
+    <p>Cuéntanos sobre tu consultorio y te asesoramos sin costo ni compromiso.</p>
+    <a class="btn btn-wa" href="https://wa.me/5215650469993?text=Hola,%20quiero%20cotizar%20la%20p%C3%A1gina%20web%20para%20mi%20consultorio%20dental">
+      Hablar por WhatsApp con Imagine &amp; Stamp
+    </a>
+  </section>
+
+  <section>
+    <h2>Otras soluciones para negocios</h2>
+    <div class="others">
+      <a href="/agenda-citas-consultorio-dental/">App Citas Dentistas</a>
+      <a href="/menu-digital/">Menús Digitales QR</a>
+      <a href="/pagina-web-para-gimnasio/">Páginas para Gimnasios</a>
+      <a href="/tarjeta-digital-barberia/">Tarjetas para Barberías</a>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap cols">
+  <div>
+    <strong style="color:var(--navy);font-size:16px;">Imagine &amp; Stamp</strong>
+    <p style="margin-top:8px;">Páginas web, menús digitales y aplicaciones para negocios en México. Sin complicaciones técnicas.</p>
+  </div>
+  <div>
+    <strong style="color:var(--navy);">Servicios</strong>
+    <p style="margin-top:8px;"><a href="/paginas-web/">Páginas Web</a></p>
+    <p><a href="/menu-digital/">Menús Digitales</a></p>
+    <p><a href="/aplicaciones-para-negocios/">Apps para Negocios</a></p>
+  </div>
+  <div>
+    <strong style="color:var(--navy);">Contacto</strong>
+    <p style="margin-top:8px;">WhatsApp: +52 56 5046 9993</p>
+    <p>Ciudad de México, México</p>
+  </div>
+</div></footer>
+
+<a class="btn-float-wa" href="https://wa.me/5215650469993?text=Hola,%20quiero%20cotizar%20una%20p%C3%A1gina%20web%20para%20mi%20consultorio%20dental" aria-label="Contactar por WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+  <span class="float-text">Cotizar por WhatsApp</span>
+</a>
+</body>
+</html>
