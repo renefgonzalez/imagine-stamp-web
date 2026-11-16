@@ -16,7 +16,7 @@ import {
 import { clientConfig } from '../config';
 import { useCartStore } from '../../../store/useCartStore';
 
-// Imágenes placeholder (sustituir con WebP reales de Antigravity)
+// Imágenes WebP optimizadas (≤ 120 KB)
 import heroCoverImg   from '../assets/hero_cover.webp';
 import tacoPastorImg  from '../assets/taco_pastor.webp';
 import tacoSuaderoImg from '../assets/taco_suadero.webp';
