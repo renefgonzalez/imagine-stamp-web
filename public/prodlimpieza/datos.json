@@ -1,0 +1,632 @@
+{
+  "meta": {
+    "nombre": "Catálogo de Productos de Limpieza",
+    "moneda": "MXN",
+    "iva": 0.16
+  },
+  "materiales": [
+    {
+      "proveedor": "ABC Quimicos",
+      "funcion": "Aceite Desinfectante",
+      "descripcion": "Aceite de Pino",
+      "precio_kg_sin_iva": 90,
+      "precio_gr_sin_iva": 0.09,
+      "precio_gr_con_iva": 0.1044
+    },
+    {
+      "proveedor": "Pochteca",
+      "funcion": "Agente Acondicionador",
+      "descripcion": "Larsoft 65",
+      "precio_kg_sin_iva": 100.22,
+      "precio_gr_sin_iva": 0.10022,
+      "precio_gr_con_iva": 0.1162552
+    },
+    {
+      "proveedor": "Pochteca",
+      "funcion": "Agente Perlante",
+      "descripcion": "Perlar 40",
+      "precio_kg_sin_iva": 41.47,
+      "precio_gr_sin_iva": 0.04147,
+      "precio_gr_con_iva": 0.0481052
+    },
+    {
+      "proveedor": "ABC Quimicos",
+      "funcion": "Aroma",
+      "descripcion": "Base Lavanda",
+      "precio_kg_sin_iva": 181.03,
+      "precio_gr_sin_iva": 0.18103,
+      "precio_gr_con_iva": 0.2099948
+    },
+    {
+      "proveedor": "ABC Quimicos",
+      "funcion": "Aroma",
+      "descripcion": "Base Mar Fresco",
+      "precio_kg_sin_iva": 181.03,
+      "precio_gr_sin_iva": 0.18103,
+      "precio_gr_con_iva": 0.2099948
+    },
+    {
+      "proveedor": "ABC Quimicos",
+      "funcion": "Aroma",
+      "descripcion": "Base Mas Color",
+      "precio_kg_sin_iva": 181.03,
+      "precio_gr_sin_iva": 0.18103,
+      "precio_gr_con_iva": 0.2099948
+    },
+    {
+      "proveedor": "ABC Quimicos",
+      "funcion": "Aroma",
+      "descripcion": "Base Vel Rosita",
+      "precio_kg_sin_iva": 181.03,
+      "precio_gr_sin_iva": 0.18103,
+      "precio_gr_con_iva": 0.2099948
+    },
+    {
+      "proveedor": "ABC Quimicos",
+      "funcion": "Aroma",
+      "descripcion": "Base ZOTE",
+      "precio_kg_sin_iva": 181.03,
+      "precio_gr_sin_iva": 0.18103,
+      "precio_gr_con_iva": 0.2099948
+    },
+    {
+      "proveedor": "ABC Quimicos",
+      "funcion": "Aroma",
+      "descripcion": "Base Salvo",
+      "precio_kg_sin_iva": 181.03,
+      "precio_gr_sin_iva": 0.18103,
+      "precio_gr_con_iva": 0.2099948
+    },
+    {
+      "proveedor": "ABC Quimicos",
+      "funcion": "Aroma",
+      "descripcion": "Base Dawmi",
+      "precio_kg_sin_iva": 181.03,
+      "precio_gr_sin_iva": 0.18103,
+      "precio_gr_con_iva": 0.2099948
+    },
+    {
+      "proveedor": "ABC Quimicos",
+      "funcion": "Aroma",
+      "descripcion": "Base Pino Fresco",
+      "precio_kg_sin_iva": 181.03,
+      "precio_gr_sin_iva": 0.18103,
+      "precio_gr_con_iva": 0.2099948
+    },
+    {
+      "proveedor": "Pochteca",
+      "funcion": "Base",
+      "descripcion": "BASE UC Lavanderia",
+      "precio_kg_sin_iva": 64.27,
+      "precio_gr_sin_iva": 0.06427,
+      "precio_gr_con_iva": 0.0745532
+    },
+    {
+      "proveedor": "Pochteca",
+      "funcion": "Base",
+      "descripcion": "Base UC Lavatrastes",
+      "precio_kg_sin_iva": 73.89,
+      "precio_gr_sin_iva": 0.07389,
+      "precio_gr_con_iva": 0.0857124
+    },
+    {
+      "proveedor": "Pochteca",
+      "funcion": "Base",
+      "descripcion": "Base UC Multiusos",
+      "precio_kg_sin_iva": 62.51,
+      "precio_gr_sin_iva": 0.06251,
+      "precio_gr_con_iva": 0.0725116
+    },
+    {
+      "proveedor": "Pochteca",
+      "funcion": "Base",
+      "descripcion": "Base UC Suavizante",
+      "precio_kg_sin_iva": 324.71,
+      "precio_gr_sin_iva": 0.32471,
+      "precio_gr_con_iva": 0.3766636
+    },
+    {
+      "proveedor": "JOGA",
+      "funcion": "Base",
+      "descripcion": "Hipoclorito",
+      "precio_kg_sin_iva": 16.37,
+      "precio_gr_sin_iva": 0.01637,
+      "precio_gr_con_iva": 0.0189892
+    },
+    {
+      "proveedor": "Pochteca",
+      "funcion": "Colorante",
+      "descripcion": "Azul FD&C",
+      "precio_kg_sin_iva": 567,
+      "precio_gr_sin_iva": 0.567,
+      "precio_gr_con_iva": 0.65772
+    },
+    {
+      "proveedor": "Pochteca",
+      "funcion": "Colorante",
+      "descripcion": "Rosa Brillante",
+      "precio_kg_sin_iva": 567,
+      "precio_gr_sin_iva": 0.567,
+      "precio_gr_con_iva": 0.65772
+    },
+    {
+      "proveedor": "Pochteca",
+      "funcion": "Colorante",
+      "descripcion": "Verde Esmeralda",
+      "precio_kg_sin_iva": 567,
+      "precio_gr_sin_iva": 0.567,
+      "precio_gr_con_iva": 0.65772
+    },
+    {
+      "proveedor": "Pochteca",
+      "funcion": "Conservador",
+      "descripcion": "Dodecil Bencen SS 80%",
+      "precio_kg_sin_iva": 154.4,
+      "precio_gr_sin_iva": 0.1544,
+      "precio_gr_con_iva": 0.179104
+    },
+    {
+      "proveedor": "Pochteca",
+      "funcion": "Conservador",
+      "descripcion": "Hydantoin DMDM",
+      "precio_kg_sin_iva": 81.03,
+      "precio_gr_sin_iva": 0.08103,
+      "precio_gr_con_iva": 0.0939948
+    },
+    {
+      "proveedor": "Pochteca",
+      "funcion": "Emulsificante",
+      "descripcion": "Emulsificante de Pino",
+      "precio_kg_sin_iva": 33.9,
+      "precio_gr_sin_iva": 0.0339,
+      "precio_gr_con_iva": 0.039324
+    },
+    {
+      "proveedor": "Pochteca",
+      "funcion": "Espesante",
+      "descripcion": "Sal de Grano Industrial",
+      "precio_kg_sin_iva": 17.33,
+      "precio_gr_sin_iva": 0.01733,
+      "precio_gr_con_iva": 0.0201028
+    },
+    {
+      "proveedor": "Pochteca",
+      "funcion": "Perlas",
+      "descripcion": "Sunny Pop Manecaps",
+      "precio_kg_sin_iva": 200,
+      "precio_gr_sin_iva": 0.2,
+      "precio_gr_con_iva": 0.232
+    },
+    {
+      "proveedor": "-",
+      "funcion": "Vehiculo",
+      "descripcion": "Agua",
+      "precio_kg_sin_iva": 0.98,
+      "precio_gr_sin_iva": 0.00098,
+      "precio_gr_con_iva": 0.0011368,
+      "stock_infinito": true
+    }
+  ],
+  "productos": [
+    {
+      "nombre": "Mas Color",
+      "costo_kg": 12.044512,
+      "pv_publico": 19,
+      "pv_sugerido": 30,
+      "ganancia": 6.955488,
+      "componentes": [
+        {
+          "nombre": "Agua",
+          "porcentaje": 86.4,
+          "gr_por_kg": 864,
+          "costo_kg": 0.9821952
+        },
+        {
+          "nombre": "BASE UC Lavanderia",
+          "porcentaje": 11,
+          "gr_por_kg": 110,
+          "costo_kg": 8.200852
+        },
+        {
+          "nombre": "Fragancia",
+          "porcentaje": 0.5,
+          "gr_por_kg": 5,
+          "costo_kg": 1.049974
+        },
+        {
+          "nombre": "Sal Industrial",
+          "porcentaje": 2,
+          "gr_por_kg": 20,
+          "costo_kg": 0.402056
+        },
+        {
+          "nombre": "Color en solucion",
+          "porcentaje": 0.2,
+          "gr_por_kg": 2,
+          "costo_kg": 1.31544
+        },
+        {
+          "nombre": "Hidantoina",
+          "porcentaje": 0.1,
+          "gr_por_kg": 1,
+          "costo_kg": 0.0939948
+        }
+      ]
+    },
+    {
+      "nombre": "Zote",
+      "costo_kg": 14.43290676,
+      "pv_publico": 19,
+      "pv_sugerido": 36,
+      "ganancia": 4.56709324,
+      "componentes": [
+        {
+          "nombre": "Agua",
+          "porcentaje": 85.4,
+          "gr_por_kg": 854,
+          "costo_kg": 0.9708272
+        },
+        {
+          "nombre": "BASE UC Lavanderia",
+          "porcentaje": 9,
+          "gr_por_kg": 90,
+          "costo_kg": 6.709788
+        },
+        {
+          "nombre": "Dodecilbencen sulfonato de sodio 80%",
+          "porcentaje": 3,
+          "gr_por_kg": 30,
+          "costo_kg": 5.37312
+        },
+        {
+          "nombre": "Fragancia",
+          "porcentaje": 0.5,
+          "gr_por_kg": 5,
+          "costo_kg": 1.049974
+        },
+        {
+          "nombre": "Sal Industrial",
+          "porcentaje": 1.17,
+          "gr_por_kg": 11.7,
+          "costo_kg": 0.23520276
+        },
+        {
+          "nombre": "Hidantoina",
+          "porcentaje": 0.1,
+          "gr_por_kg": 1,
+          "costo_kg": 0.0939948
+        }
+      ]
+    },
+    {
+      "nombre": "Suavizante",
+      "costo_kg": 9.543262,
+      "pv_publico": 22,
+      "pv_sugerido": 24,
+      "ganancia": 12.456738,
+      "componentes": [
+        {
+          "nombre": "Agua",
+          "porcentaje": 97.4,
+          "gr_por_kg": 974,
+          "costo_kg": 1.1072432
+        },
+        {
+          "nombre": "BASE UC Suavizante",
+          "porcentaje": 1,
+          "gr_por_kg": 10,
+          "costo_kg": 3.766636
+        },
+        {
+          "nombre": "Fragancia",
+          "porcentaje": 1,
+          "gr_por_kg": 10,
+          "costo_kg": 2.099948
+        },
+        {
+          "nombre": "Sunny Pops Manecaps",
+          "porcentaje": 0.5,
+          "gr_por_kg": 5,
+          "costo_kg": 1.16
+        },
+        {
+          "nombre": "Color en solucion",
+          "porcentaje": 0.2,
+          "gr_por_kg": 2,
+          "costo_kg": 1.31544
+        },
+        {
+          "nombre": "Hidantoina",
+          "porcentaje": 0.1,
+          "gr_por_kg": 1,
+          "costo_kg": 0.0939948
+        }
+      ]
+    },
+    {
+      "nombre": "Pinol",
+      "costo_kg": 12.148796,
+      "pv_publico": 15,
+      "pv_sugerido": 30,
+      "ganancia": 2.851204,
+      "componentes": [
+        {
+          "nombre": "Agua",
+          "porcentaje": 84,
+          "gr_por_kg": 840,
+          "costo_kg": 0.954912
+        },
+        {
+          "nombre": "Base UC Multiusos",
+          "porcentaje": 1.7,
+          "gr_por_kg": 17,
+          "costo_kg": 1.2326972
+        },
+        {
+          "nombre": "Emulsificante de PINO",
+          "porcentaje": 9.8,
+          "gr_por_kg": 98,
+          "costo_kg": 3.853752
+        },
+        {
+          "nombre": "Aceite de Pino",
+          "porcentaje": 4.5,
+          "gr_por_kg": 45,
+          "costo_kg": 4.698
+        },
+        {
+          "nombre": "Color en solucion",
+          "porcentaje": 0.2,
+          "gr_por_kg": 2,
+          "costo_kg": 1.31544
+        },
+        {
+          "nombre": "Hidantoina",
+          "porcentaje": 0.1,
+          "gr_por_kg": 1,
+          "costo_kg": 0.0939948
+        }
+      ]
+    },
+    {
+      "nombre": "Fabuloso Lavanda",
+      "costo_kg": 4.3220904,
+      "pv_publico": 15,
+      "pv_sugerido": 11,
+      "ganancia": 10.6779096,
+      "componentes": [
+        {
+          "nombre": "Agua",
+          "porcentaje": 97.5,
+          "gr_por_kg": 975,
+          "costo_kg": 0
+        },
+        {
+          "nombre": "Base UC Multiusos",
+          "porcentaje": 1.7,
+          "gr_por_kg": 17,
+          "costo_kg": 1.2326972
+        },
+        {
+          "nombre": "Fragancia",
+          "porcentaje": 0.8,
+          "gr_por_kg": 8,
+          "costo_kg": 1.6799584
+        },
+        {
+          "nombre": "Color en solucion",
+          "porcentaje": 0.2,
+          "gr_por_kg": 2,
+          "costo_kg": 1.31544
+        },
+        {
+          "nombre": "Hidantoina",
+          "porcentaje": 0.1,
+          "gr_por_kg": 1,
+          "costo_kg": 0.0939948
+        }
+      ]
+    },
+    {
+      "nombre": "Fabuloso Mar Fresco",
+      "costo_kg": 4.3220904,
+      "pv_publico": 15,
+      "pv_sugerido": 11,
+      "ganancia": 10.6779096,
+      "componentes": [
+        {
+          "nombre": "Agua",
+          "porcentaje": 97.5,
+          "gr_por_kg": 975,
+          "costo_kg": 0
+        },
+        {
+          "nombre": "Base UC Multiusos",
+          "porcentaje": 1.7,
+          "gr_por_kg": 17,
+          "costo_kg": 1.2326972
+        },
+        {
+          "nombre": "Fragancia",
+          "porcentaje": 0.8,
+          "gr_por_kg": 8,
+          "costo_kg": 1.6799584
+        },
+        {
+          "nombre": "Color en solucion",
+          "porcentaje": 0.2,
+          "gr_por_kg": 2,
+          "costo_kg": 1.31544
+        },
+        {
+          "nombre": "Hidantoina",
+          "porcentaje": 0.1,
+          "gr_por_kg": 1,
+          "costo_kg": 0.0939948
+        }
+      ]
+    },
+    {
+      "nombre": "Fabuloso Pino Fresco",
+      "costo_kg": 4.3220904,
+      "pv_publico": 15,
+      "pv_sugerido": 11,
+      "ganancia": 10.6779096,
+      "componentes": [
+        {
+          "nombre": "Agua",
+          "porcentaje": 97.5,
+          "gr_por_kg": 975,
+          "costo_kg": 0
+        },
+        {
+          "nombre": "Base UC Multiusos",
+          "porcentaje": 1.7,
+          "gr_por_kg": 17,
+          "costo_kg": 1.2326972
+        },
+        {
+          "nombre": "Fragancia",
+          "porcentaje": 0.8,
+          "gr_por_kg": 8,
+          "costo_kg": 1.6799584
+        },
+        {
+          "nombre": "Color en solucion",
+          "porcentaje": 0.2,
+          "gr_por_kg": 2,
+          "costo_kg": 1.31544
+        },
+        {
+          "nombre": "Hidantoina",
+          "porcentaje": 0.1,
+          "gr_por_kg": 1,
+          "costo_kg": 0.0939948
+        }
+      ]
+    },
+    {
+      "nombre": "Salvo",
+      "costo_kg": 13.9077852,
+      "pv_publico": 19,
+      "pv_sugerido": 35,
+      "ganancia": 5.0922148,
+      "componentes": [
+        {
+          "nombre": "Agua",
+          "porcentaje": 85.4,
+          "gr_por_kg": 854,
+          "costo_kg": 0.9708272
+        },
+        {
+          "nombre": "BASE UC Lavatrastes",
+          "porcentaje": 12,
+          "gr_por_kg": 120,
+          "costo_kg": 10.285488
+        },
+        {
+          "nombre": "Fragancia",
+          "porcentaje": 0.4,
+          "gr_por_kg": 4,
+          "costo_kg": 0.8399792
+        },
+        {
+          "nombre": "Sal Industrial",
+          "porcentaje": 2,
+          "gr_por_kg": 20,
+          "costo_kg": 0.402056
+        },
+        {
+          "nombre": "Color en solucion",
+          "porcentaje": 0.2,
+          "gr_por_kg": 2,
+          "costo_kg": 1.31544
+        },
+        {
+          "nombre": "Hidantoina",
+          "porcentaje": 0.1,
+          "gr_por_kg": 1,
+          "costo_kg": 0.0939948
+        }
+      ]
+    },
+    {
+      "nombre": "Vel Rosita - Ariel - +C Negro",
+      "costo_kg": 12.931216,
+      "pv_publico": 15,
+      "pv_sugerido": 32,
+      "ganancia": 2.068784,
+      "componentes": [
+        {
+          "nombre": "Agua",
+          "porcentaje": 85.4,
+          "gr_por_kg": 854,
+          "costo_kg": 0.9708272
+        },
+        {
+          "nombre": "BASE UC Lavanderia",
+          "porcentaje": 10,
+          "gr_por_kg": 100,
+          "costo_kg": 7.45532
+        },
+        {
+          "nombre": "Larsoft 65",
+          "porcentaje": 1,
+          "gr_por_kg": 10,
+          "costo_kg": 1.162552
+        },
+        {
+          "nombre": "Perlar 40",
+          "porcentaje": 1,
+          "gr_por_kg": 10,
+          "costo_kg": 0.481052
+        },
+        {
+          "nombre": "Fragancia",
+          "porcentaje": 0.5,
+          "gr_por_kg": 5,
+          "costo_kg": 1.049974
+        },
+        {
+          "nombre": "Sal Industrial",
+          "porcentaje": 2,
+          "gr_por_kg": 20,
+          "costo_kg": 0.402056
+        },
+        {
+          "nombre": "Color en solucion",
+          "porcentaje": 0.2,
+          "gr_por_kg": 2,
+          "costo_kg": 1.31544
+        },
+        {
+          "nombre": "Hidantoina",
+          "porcentaje": 0.1,
+          "gr_por_kg": 1,
+          "costo_kg": 0.0939948
+        }
+      ]
+    },
+    {
+      "nombre": "Cloro",
+      "costo_kg": 3.79784,
+      "pv_publico": 6,
+      "pv_sugerido": 9,
+      "ganancia": 2.20216,
+      "componentes": [
+        {
+          "nombre": "Agua",
+          "porcentaje": 80,
+          "gr_por_kg": 800,
+          "costo_kg": 0
+        },
+        {
+          "nombre": "Hipoclorito",
+          "porcentaje": 20,
+          "gr_por_kg": 200,
+          "costo_kg": 3.79784
+        }
+      ]
+    }
+  ]
+}
