@@ -3389,6 +3389,15 @@ async function iniciarConAuth() {
     });
   }
 
+  const btnTogglePass = document.getElementById('btn-toggle-pass');
+  if (btnTogglePass && !btnTogglePass.dataset.bound) {
+    btnTogglePass.dataset.bound = '1';
+    btnTogglePass.addEventListener('click', () => {
+      const inp = document.getElementById('auth-password');
+      if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+    });
+  }
+
   if (authForm && !authForm.dataset.bound) {
     authForm.dataset.bound = '1';
     authForm.addEventListener('submit', async (e) => {
@@ -3405,7 +3414,9 @@ async function iniciarConAuth() {
 
       if (error) {
         if (authError) {
-          authError.textContent = 'Correo o contraseña incorrectos.';
+          authError.textContent = error.message === 'Invalid login credentials'
+            ? 'Correo o contraseña incorrectos.'
+            : error.message;
           authError.hidden = false;
         }
         return;

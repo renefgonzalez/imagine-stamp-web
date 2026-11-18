@@ -37,7 +37,10 @@
         </div>
         <div class="form-field">
           <label for="auth-password">Contraseña</label>
-          <input type="password" id="auth-password" required autocomplete="current-password" placeholder="••••••••" />
+          <div style="display: flex; gap: 0.4rem;">
+            <input type="password" id="auth-password" required autocomplete="current-password" placeholder="••••••••" style="flex: 1;" />
+            <button type="button" class="btn-secondary" id="btn-toggle-pass" title="Mostrar u ocultar contraseña" style="padding: 0 0.7rem;">👁</button>
+          </div>
         </div>
         <p id="auth-error" class="auth-error" hidden></p>
         <button type="submit" class="btn-primary" id="btn-auth-submit" style="width: 100%; justify-content: center;">Entrar</button>
