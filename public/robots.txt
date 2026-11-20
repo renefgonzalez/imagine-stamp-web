@@ -6,6 +6,8 @@
 User-agent: *
 Allow: /
 Disallow: /admin
+Disallow: /prodlimpieza
+Disallow: /cotizador-astas
 
 # Asistentes de IA (búsqueda y respuestas)
 User-agent: OAI-SearchBot

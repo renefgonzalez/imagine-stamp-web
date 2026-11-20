@@ -63,3 +63,11 @@ jobs:
             -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFvaHF5Y3dlYWF6YmppdGl1dXpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MDA2MTcsImV4cCI6MjA5NTE3NjYxN30.Wwt_kb-shpiq1bIpq0_bURmd4FvRcCXW6qH8qbCcuRY" \
             || echo "(Control ProdLimpieza ping completado)"
 
+      - name: Ping Cotizador Astas y Mantenimiento
+        run: |
+          echo "Pinging Cotizador Astas y Mantenimiento..."
+          curl -s -o /dev/null -w "Cotizador Astas HTTP: %{http_code}\n" \
+            "https://ukbskttrezmmwrlsfczt.supabase.co/rest/v1/astas_ping?select=id&limit=1" \
+            -H "apikey: sb_publishable_m444EP98AULhwnexjczhiw_BnolEmKJ" \
+            || echo "(Cotizador Astas ping completado)"
+

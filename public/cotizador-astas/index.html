@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Cotizador Astas" />
+  <title>Cotizador Inteligente — Astas y Mantenimiento</title>
+  <link rel="icon" href="assets/favicon.ico" />
+  <link rel="apple-touch-icon" href="assets/icon-astas.jpg" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       PANTALLA DE ACCESO PRIVADO (SUPABASE AUTH — MISMO LOGIN PRODLIMPIEZA)
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="auth-screen" class="auth-screen">
+    <div class="auth-card">
+      <img src="assets/logo-astas.png" alt="Astas y Mantenimiento" class="auth-logo" />
+      <h2 style="text-align: center; margin: 0 0 0.25rem; font-size: 1.25rem;">Astas y Mantenimiento</h2>
+      <p style="text-align: center; margin: 0 0 1.25rem; color: #64748b; font-size: 0.86rem;">
+        Cotizador Industrial Privado · Entra con tu cuenta de Supabase
+      </p>
+      <form id="auth-form" style="display: flex; flex-direction: column; gap: 0.85rem;">
+        <div class="field">
+          <label for="auth-email">Correo electrónico</label>
+          <input type="email" id="auth-email" required autocomplete="email" placeholder="tu@correo.com" />
+        </div>
+        <div class="field">
+          <label for="auth-password">Contraseña</label>
+          <div style="display: flex; gap: 0.4rem;">
+            <input type="password" id="auth-password" required autocomplete="current-password" placeholder="••••••••" />
+            <button type="button" class="btn btn-secondary" id="btn-toggle-pass" title="Mostrar contraseña">👁</button>
+          </div>
+        </div>
+        <p id="auth-error" class="auth-error" hidden></p>
+        <button type="submit" class="btn btn-primary" id="btn-auth-submit" style="width: 100%;">Entrar al Cotizador</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       BARRA SUPERIOR Y PESTAÑAS
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <header id="app-topbar" class="topbar" hidden>
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="assets/logo-astas-blanco.png" alt="Logo Astas" />
+        <div>
+          <h1 class="brand-title">Astas y Mantenimiento</h1>
+          <span class="brand-sub">Cotizador B2B + Soporte IA</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <span id="sync-status" class="sync-pill">☁️ Conectando...</span>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-nueva-limpia" title="Empezar cotización en blanco">+ Nueva</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-logout" title="Cerrar sesión">Salir</button>
+      </div>
+    </div>
+    <nav class="tabs-bar">
+      <div class="tabs-inner" id="main-tabs">
+        <button type="button" class="tab-btn active" data-tab="cotizar">📝 Cotizar</button>
+        <button type="button" class="tab-btn" data-tab="historial">📂 Historial</button>
+        <button type="button" class="tab-btn" data-tab="insumos">🔩 Precios Acero</button>
+        <button type="button" class="tab-btn" data-tab="auditor">🔍 Auditor IA</button>
+        <button type="button" class="tab-btn" data-tab="ajustes">⚙️ Ajustes</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       CONTENIDO PRINCIPAL
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <main id="app-main" class="container" hidden>
+
+    <!-- Aviso si falta correr el SQL en Supabase o si el acero lleva >18 días sin actualizarse -->
+    <div id="banner-sql" class="alert-banner" hidden>
+      <div>
+        <strong>⚡ Modo local activo:</strong> Para sincronizar tus precios e historial entre iPhone y PC, ejecuta una sola vez <code>supabase_cotizador_astas.sql</code> en tu SQL Editor de Supabase.
+      </div>
+      <button type="button" class="btn btn-primary btn-sm" id="btn-reintentar-sync">Reintentar Nube</button>
+    </div>
+
+    <div id="banner-acero" class="alert-banner" hidden>
+      <div id="banner-acero-texto"></div>
+      <button type="button" class="btn btn-dark btn-sm" id="btn-ir-acero">Actualizar Acero</button>
+    </div>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         PESTAÑA 1: COTIZAR (CONSTRUCTOR MODULAR + SOPORTE IA DE CALLE)
+         ───────────────────────────────────────────────────────────────────── -->
+    <section id="tab-cotizar" class="tab-panel">
+
+      <!-- 1A. Asistente Rápido IA (Para cuando vas en la calle) -->
+      <div class="card card-ai">
+        <div class="card-header" style="margin-bottom: 0.55rem;">
+          <h2 class="card-title">✨ Asistente Rápido para la Calle (Tus Precios + Soporte IA)</h2>
+          <span class="badge" style="background: rgba(255,255,255,0.16); color: #fff;">Toma primero tu catálogo de acero</span>
+        </div>
+        <p style="margin: 0 0 0.7rem; font-size: 0.83rem; color: #cbd5e1;">
+          Escribe o dicta por voz como le hablabas a Gemini. Ejemplo: <em>"2 astas de 25 pies y 2 de 30 pies en acero al carbón con pintura epóxica blanca e instalación en Santa Catarina NL"</em> o <em>"asta 10m tubo 1007 matraca y cable 2650 poleas 500"</em>.
+        </p>
+        <div class="field">
+          <textarea id="ai-street-prompt" rows="2" placeholder="Escribe o toca 🎙️ Dictar para armar toda la cotización en segundos..."></textarea>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.65rem;">
+          <button type="button" class="btn btn-primary" id="btn-ai-armar">⚡ Armar Cotización con IA</button>
+          <button type="button" class="btn btn-secondary" id="btn-voz-dictar">🎙️ Dictar por voz</button>
+        </div>
+        <div id="ai-street-feedback" style="margin-top: 0.65rem; font-size: 0.82rem; color: #fde68a;" hidden></div>
+      </div>
+
+      <!-- 1B. Tablero Privado de Ganancia Real (NUNCA SALE EN EL PDF) -->
+      <div class="profit-dashboard" title="Estos costos y ganancias son 100% privados, nunca salen en el PDF del cliente">
+        <div class="profit-kpi">
+          <span>🔒 Tu Costo Directo Real</span>
+          <strong id="kpi-costo-directo">$0.00</strong>
+        </div>
+        <div class="profit-kpi highlight">
+          <span>💰 Tu Ganancia Limpia (s/IVA)</span>
+          <strong id="kpi-ganancia">$0.00 (0%)</strong>
+        </div>
+        <div class="profit-kpi">
+          <span>📄 Subtotal + IVA (16%)</span>
+          <strong id="kpi-total-iva">$0.00</strong>
+        </div>
+        <div class="profit-kpi">
+          <span>🏦 Anticipo Cliente (<span id="kpi-pct-anticipo">75</span>%)</span>
+          <strong id="kpi-monto-anticipo">$0.00</strong>
+        </div>
+      </div>
+
+      <!-- 1C. Datos del Folio, Cliente, Material y Tipo de Pintura/Color -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">👤 Datos del Cliente y Especificación General</h3>
+          <span id="badge-folio-actual" class="badge">COT-2026-001</span>
+        </div>
+        <div class="grid-4">
+          <div class="field">
+            <label for="cot-folio">Folio</label>
+            <input type="text" id="cot-folio" placeholder="COT-2026-001" />
+          </div>
+          <div class="field">
+            <label for="cot-fecha">Fecha</label>
+            <input type="date" id="cot-fecha" />
+          </div>
+          <div class="field">
+            <label for="cot-estado">Estado</label>
+            <select id="cot-estado">
+              <option value="Enviada">📤 Enviada</option>
+              <option value="Borrador">📝 Borrador</option>
+              <option value="Aprobada">✅ Aprobada (75% pagado)</option>
+              <option value="Perdida">❌ No cerrada</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="cot-ciudad">Ciudad / Destino de Obra</label>
+            <input type="text" id="cot-ciudad" placeholder="Ej. Puebla, Pue. / Monterrey, N.L." />
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top: 0.75rem;">
+          <div class="field">
+            <label for="cot-titulo">Título de la Cotización (Encabezado PDF)</label>
+            <input type="text" id="cot-titulo" placeholder="Ej. Cotización Asta Bandera 10m Acero al Carbón" />
+          </div>
+          <div class="field">
+            <label for="cot-cliente">Atención a (Nombre)</label>
+            <input type="text" id="cot-cliente" placeholder="A quien corresponda / Ing. / Lic." />
+          </div>
+          <div class="field">
+            <label for="cot-empresa">Empresa / Institución / Municipio</label>
+            <input type="text" id="cot-empresa" placeholder="Opcional (ej. constructora, colegio, municipio)" />
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 0.75rem;">
+          <div class="field">
+            <label for="cot-telefono">WhatsApp del Cliente (10 dígitos, para envío rápido)</label>
+            <input type="tel" id="cot-telefono" placeholder="Ej. 5512345678" />
+          </div>
+          <div class="field">
+            <label for="cot-correo">Correo del Cliente (opcional)</label>
+            <input type="email" id="cot-correo" placeholder="compras@empresa.com" />
+          </div>
+        </div>
+
+        <!-- Selectores pedidos por René: Material + Pintura Normal vs Epóxica + Color -->
+        <div class="grid-3" style="margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px dashed #cbd5e1;">
+          <div class="field">
+            <label for="cot-material">🔩 Tipo de Material Principal</label>
+            <select id="cot-material"></select>
+          </div>
+          <div class="field">
+            <label for="cot-pintura">🎨 Sistema de Pintura / Recubrimiento</label>
+            <select id="cot-pintura"></select>
+          </div>
+          <div class="field">
+            <label for="cot-color">🌈 Color de Acabado</label>
+            <input type="text" id="cot-color" list="lista-colores" placeholder="Color a elegir / Blanco / Gris..." />
+            <datalist id="lista-colores"></datalist>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1D. Partidas Modulares (Se va armando conforme se necesita) -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">🏗️ Partidas de la Cotización (Agrega lo que necesites)</h3>
+          <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-agregar-desde-insumo">+ Desde mi Catálogo Acero</button>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-agregar-vacia">+ Partida Libre</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 0.85rem;">
+          <span style="display: block; font-size: 0.76rem; font-weight: 700; color: var(--muted); margin-bottom: 0.4rem;">
+            ⚡ TOCA PARA AGREGAR PLANTILLA RÁPIDA:
+          </span>
+          <div id="chips-plantillas" class="chips-row"></div>
+        </div>
+
+        <!-- Selector rápido de insumo cuando toca "+ Desde mi Catálogo Acero" -->
+        <div id="box-selector-insumo" style="background: #eff6ff; border: 1px solid #93c5fd; padding: 0.75rem; border-radius: 9px; margin-bottom: 0.85rem;" hidden>
+          <div class="grid-3">
+            <div class="field" style="grid-column: span 2;">
+              <label for="sel-insumo-catalogo">Selecciona un paquete o material de tu catálogo:</label>
+              <select id="sel-insumo-catalogo"></select>
+            </div>
+            <div style="display: flex; align-items: flex-end; gap: 0.4rem;">
+              <button type="button" class="btn btn-primary btn-sm" id="btn-confirmar-insumo" style="flex: 1;">Insertar</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-cerrar-insumo">Cerrar</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="lista-partidas"></div>
+      </div>
+
+      <!-- 1E. Calculadora Modular de Viaje e Instalación Foránea desde Chalco -->
+      <div class="card">
+        <div class="card-header">
+          <label style="display: flex; align-items: center; gap: 0.55rem; cursor: pointer; font-weight: 800; font-size: 1rem;">
+            <input type="checkbox" id="viaje-activo" style="width: 20px; height: 20px; accent-color: var(--blue);" />
+            🚚 Agregar Viaje / Instalación desde Chalco, Edo. Méx.
+          </label>
+          <span id="badge-resumen-viaje" class="badge badge-ok" hidden>$0.00</span>
+        </div>
+
+        <div id="panel-viaje" hidden>
+          <div class="grid-3" style="margin-bottom: 0.75rem;">
+            <div class="field">
+              <label for="viaje-ruta">Ruta frecuente desde Chalco</label>
+              <select id="viaje-ruta"></select>
+            </div>
+            <div class="field">
+              <label for="viaje-destino">Ciudad destino (sale en el PDF)</label>
+              <input type="text" id="viaje-destino" placeholder="Ej. Puebla, Pue. / Santa Catarina, N.L." />
+            </div>
+            <div class="field">
+              <label for="viaje-modo">¿Cómo mostrarlo en el PDF al cliente?</label>
+              <select id="viaje-modo">
+                <option value="separado">Partida separada ("Traslado e instalación") — Recomendado</option>
+                <option value="integrado">Integrado / oculto dentro del precio de las astas</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-4 grid-mobile-2">
+            <div class="field">
+              <label for="viaje-km">Km redondos (ida y vuelta)</label>
+              <input type="number" id="viaje-km" min="0" step="1" value="210" />
+            </div>
+            <div class="field">
+              <label for="viaje-casetas">Casetas totales MXN</label>
+              <input type="number" id="viaje-casetas" min="0" step="1" value="452" />
+            </div>
+            <div class="field">
+              <label for="viaje-personas">Personas (1 oficial + ayudantes)</label>
+              <input type="number" id="viaje-personas" min="1" step="1" value="3" />
+            </div>
+            <div class="field">
+              <label for="viaje-dias">Días / Jornadas (8h)</label>
+              <input type="number" id="viaje-dias" min="1" step="1" value="1" />
+            </div>
+          </div>
+
+          <div class="grid-4 grid-mobile-2" style="margin-top: 0.65rem;">
+            <div class="field">
+              <label for="viaje-noches">Noches de hotel</label>
+              <input type="number" id="viaje-noches" min="0" step="1" value="0" />
+            </div>
+            <div class="field">
+              <label for="viaje-hotel">Costo por noche hotel ($)</label>
+              <input type="number" id="viaje-hotel" min="0" step="50" value="1900" />
+            </div>
+            <div class="field">
+              <label for="viaje-factor">Factor margen viaje (ej. 1.35)</label>
+              <input type="number" id="viaje-factor" min="1" step="0.05" value="1.35" />
+            </div>
+            <div class="field">
+              <label for="viaje-venta-manual">Precio Venta Viaje s/IVA ($)</label>
+              <input type="number" id="viaje-venta-manual" min="0" step="10" />
+            </div>
+          </div>
+
+          <div id="desglose-interno-viaje" style="margin-top: 0.75rem; padding: 0.65rem 0.85rem; background: #f8fafc; border-radius: 8px; font-size: 0.82rem; color: var(--muted);"></div>
+        </div>
+      </div>
+
+      <!-- 1F. Condiciones Comerciales (75% Anticipo, 30 Días) y Cláusulas de 1 Clic -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">📋 Condiciones (75% Anticipo · 30 Días) y Cláusulas de 1 Clic</h3>
+        </div>
+
+        <div class="grid-4 grid-mobile-2" style="margin-bottom: 0.85rem;">
+          <div class="field">
+            <label for="cot-anticipo">Anticipo requerido (%)</label>
+            <input type="number" id="cot-anticipo" min="0" max="100" step="5" value="75" />
+          </div>
+          <div class="field">
+            <label for="cot-vigencia">Vigencia cotización (días)</label>
+            <input type="number" id="cot-vigencia" min="1" max="90" step="1" value="30" />
+          </div>
+          <div class="field">
+            <label for="cot-entrega">Tiempo de entrega</label>
+            <input type="text" id="cot-entrega" value="10 a 15 días hábiles a partir de anticipo" />
+          </div>
+          <div class="field">
+            <label for="cot-garantia">Garantía por escrito</label>
+            <input type="text" id="cot-garantia" value="12 meses contra defectos de fabricación" />
+          </div>
+        </div>
+
+        <div class="clause-grid">
+          <label class="clause-check">
+            <input type="checkbox" id="cl-cimentacion" />
+            <span><strong>🧱 Cimentación / Canastilla:</strong> Incluye canastilla de anclaje y plano técnico; NO incluye obra civil (excavación ni colado f'c 250 local, requiere 7 días de fraguado).</span>
+          </label>
+          <label class="clause-check">
+            <input type="checkbox" id="cl-flete" checked />
+            <span><strong>🚛 No incluye flete:</strong> Entrega en planta Chalco, Edo. Méx. o envío foráneo por cobrar.</span>
+          </label>
+          <label class="clause-check">
+            <input type="checkbox" id="cl-grua" />
+            <span><strong>🏗️ No incluye grúa / plataforma:</strong> La renta de grúa articulada, telescópica o plataforma se cotiza aparte o la provee el cliente.</span>
+          </label>
+          <label class="clause-check">
+            <input type="checkbox" id="cl-trifasica" />
+            <span><strong>⚡ Requiere línea trifásica 220V:</strong> Para izaje motorizado, el cliente provee acometida eléctrica a pie de asta.</span>
+          </label>
+          <label class="clause-check">
+            <input type="checkbox" id="cl-banco" />
+            <span><strong>🏦 Mostrar datos bancarios en el PDF:</strong> Imprime banco, titular y CLABE configurados en Ajustes.</span>
+          </label>
+        </div>
+
+        <div class="grid-2" style="margin-top: 0.75rem;">
+          <div class="field">
+            <label for="cl-nota-extra">Nota adicional visible para el cliente en el PDF (opcional)</label>
+            <input type="text" id="cl-nota-extra" placeholder="Ej. Precios sujetos a disponibilidad de tubería en planta..." />
+          </div>
+          <div class="field">
+            <label for="cot-notas-internas">🔒 Nota privada interna (solo para ti, no sale en el PDF)</label>
+            <input type="text" id="cot-notas-internas" placeholder="Ej. Me pidió descuento si compra las 4 piezas..." />
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         PESTAÑA 2: HISTORIAL DE COTIZACIONES
+         ───────────────────────────────────────────────────────────────────── -->
+    <section id="tab-historial" class="tab-panel" hidden>
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">📂 Historial de Cotizaciones Guardadas</h2>
+          <input type="text" id="buscar-historial" placeholder="Buscar por folio, cliente, empresa o ciudad..." style="max-width: 320px;" />
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Folio / Fecha</th>
+                <th>Cliente / Proyecto</th>
+                <th>Material / Pintura</th>
+                <th>Total c/IVA</th>
+                <th>🔒 Utilidad</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-historial"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         PESTAÑA 3: PRECIOS DE ACERO E INSUMOS (ACTUALIZACIÓN 1-2 VECES/MES)
+         ───────────────────────────────────────────────────────────────────── -->
+    <section id="tab-insumos" class="tab-panel" hidden>
+
+      <!-- Lector IA de cotizaciones de proveedores de acero -->
+      <div class="card card-ai">
+        <div class="card-header">
+          <h2 class="card-title">📄 Subir Cotización de Proveedor de Acero (1 o 2 veces al mes)</h2>
+          <span class="badge" style="background: rgba(255,255,255,0.18); color: #fff;">Soporte IA Extractor</span>
+        </div>
+        <p style="margin: 0 0 0.75rem; font-size: 0.84rem; color: #cbd5e1;">
+          Sube foto, captura o PDF de la cotización de tu proveedor de acero/herrajes (o pega el mensaje de WhatsApp). La IA extrae los precios sin IVA, te muestra cuánto subió o bajó cada material y tú confirmas cuáles actualizar.
+        </p>
+        <div class="grid-2">
+          <div class="field">
+            <label for="acero-archivo">Foto o PDF de cotización del proveedor</label>
+            <input type="file" id="acero-archivo" accept="image/*,application/pdf" style="background: rgba(255,255,255,0.92); padding: 0.48rem;" />
+          </div>
+          <div class="field">
+            <label for="acero-texto">O pega aquí los precios que te mandó el proveedor</label>
+            <input type="text" id="acero-texto" placeholder="Ej. Proveedor Aceros: tubo 6 ced 40 $..., cable 3/16 $..." />
+          </div>
+        </div>
+        <div style="margin-top: 0.7rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button type="button" class="btn btn-primary" id="btn-procesar-acero">🔍 Extraer Precios de Proveedor</button>
+        </div>
+        <div id="panel-preview-acero" style="margin-top: 0.9rem; background: #fff; color: var(--text); border-radius: 10px; padding: 0.9rem;" hidden></div>
+      </div>
+
+      <!-- Catálogo editable de materiales -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">🔩 Mi Catálogo Base de Acero, Herrajes y Motores (Costos sin IVA)</h3>
+          <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+            <input type="text" id="buscar-insumo" placeholder="Filtrar material..." style="max-width: 220px;" />
+            <button type="button" class="btn btn-primary btn-sm" id="btn-nuevo-insumo">+ Nuevo Material</button>
+          </div>
+        </div>
+
+        <div id="form-nuevo-insumo" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem; margin-bottom: 0.9rem;" hidden>
+          <div class="grid-3">
+            <div class="field">
+              <label>Código corto</label>
+              <input type="text" id="ni-codigo" placeholder="Ej. AC-TUB-8C40" />
+            </div>
+            <div class="field">
+              <label>Categoría</label>
+              <select id="ni-categoria">
+                <option>Acero y Tubería</option>
+                <option>Izaje y Herrajes</option>
+                <option>Motorización</option>
+                <option>Pintura y Recubrimientos</option>
+                <option>Banderas y Escritorio</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Unidad</label>
+              <input type="text" id="ni-unidad" value="pieza" />
+            </div>
+          </div>
+          <div class="grid-3" style="margin-top: 0.65rem;">
+            <div class="field">
+              <label>Descripción del material</label>
+              <input type="text" id="ni-nombre" placeholder="Ej. Tramo 6m Tubo 8 pulg Cédula 40" />
+            </div>
+            <div class="field">
+              <label>Costo sin IVA ($ MXN)</label>
+              <input type="number" id="ni-costo" min="0" step="0.01" />
+            </div>
+            <div class="field">
+              <label>Proveedor</label>
+              <input type="text" id="ni-proveedor" placeholder="Ej. Aceros / Mairsa" />
+            </div>
+          </div>
+          <div style="margin-top: 0.65rem; display: flex; gap: 0.45rem;">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-guardar-nuevo-insumo">Guardar Material</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-cancelar-nuevo-insumo">Cancelar</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Código / Categoría</th>
+                <th>Material</th>
+                <th>Costo s/IVA ($)</th>
+                <th>Proveedor</th>
+                <th>Vigencia Acero</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-insumos"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bitácora de variaciones del acero -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">📈 Historial de Variaciones de Precios (Acero e Insumos)</h3>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Material</th>
+                <th>Proveedor</th>
+                <th>Anterior</th>
+                <th>Nuevo</th>
+                <th>Variación</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-historial-insumos"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         PESTAÑA 4: AUDITOR IA DE COTIZACIONES EXTERNAS (PROVEEDOR / COMPETENCIA)
+         ───────────────────────────────────────────────────────────────────── -->
+    <section id="tab-auditor" class="tab-panel" hidden>
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🔍 Auditor Técnico de Cotizaciones (Proveedores o Competencia)</h2>
+          <span class="badge">Compara contra tus costos reales + mercado MX</span>
+        </div>
+        <p style="margin: 0 0 0.8rem; font-size: 0.86rem; color: var(--muted);">
+          Sube una imagen/PDF o pega el texto de una cotización que te enviaron (como la de $101,442 de izaje de 11m) para detectar sobreprecios, motores sobredimensionados y cuánto te costaría realmente a ti hacerla.
+        </p>
+        <div class="grid-2">
+          <div class="field">
+            <label for="auditor-archivo">Subir foto o PDF de la cotización a auditar</label>
+            <input type="file" id="auditor-archivo" accept="image/*,application/pdf" />
+          </div>
+          <div class="field">
+            <label for="auditor-texto">Contexto o texto de la cotización</label>
+            <textarea id="auditor-texto" rows="2" placeholder="Ej. Cotización de izaje para asta de 11 metros en $101,442 con IVA con motor 2HP trifásico..."></textarea>
+          </div>
+        </div>
+        <div style="margin-top: 0.75rem;">
+          <button type="button" class="btn btn-primary" id="btn-ejecutar-auditoria">⚖️ Analizar Costo Real vs Sobreprecio</button>
+        </div>
+        <div id="resultado-auditoria" style="margin-top: 1rem;" hidden></div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         PESTAÑA 5: AJUSTES OPERATIVOS Y CONEXIÓN IA
+         ───────────────────────────────────────────────────────────────────── -->
+    <section id="tab-ajustes" class="tab-panel" hidden>
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">⚙️ Parámetros Operativos de Taller y Viajes (Chalco, Edo. Méx.)</h2>
+        </div>
+        <div class="grid-4 grid-mobile-2">
+          <div class="field">
+            <label for="aj-factor">Factor fabricación default</label>
+            <input type="number" id="aj-factor" step="0.1" value="3.5" />
+          </div>
+          <div class="field">
+            <label for="aj-anticipo">Anticipo por defecto (%)</label>
+            <input type="number" id="aj-anticipo" step="5" value="75" />
+          </div>
+          <div class="field">
+            <label for="aj-vigencia">Vigencia cotización (días)</label>
+            <input type="number" id="aj-vigencia" step="1" value="30" />
+          </div>
+          <div class="field">
+            <label for="aj-alerta-acero">Avisar actualización acero cada (días)</label>
+            <input type="number" id="aj-alerta-acero" step="1" value="18" />
+          </div>
+        </div>
+
+        <div class="grid-4 grid-mobile-2" style="margin-top: 0.75rem;">
+          <div class="field">
+            <label for="aj-gasolina">Precio gasolina ($/L)</label>
+            <input type="number" id="aj-gasolina" step="0.5" value="24.5" />
+          </div>
+          <div class="field">
+            <label for="aj-rendimiento">Rendimiento vehículo (km/L)</label>
+            <input type="number" id="aj-rendimiento" step="0.5" value="10" />
+          </div>
+          <div class="field">
+            <label for="aj-oficial">Sueldo Oficial Instalador ($/día)</label>
+            <input type="number" id="aj-oficial" step="50" value="1000" />
+          </div>
+          <div class="field">
+            <label for="aj-ayudante">Sueldo cada Ayudante ($/día)</label>
+            <input type="number" id="aj-ayudante" step="50" value="600" />
+          </div>
+        </div>
+
+        <div class="grid-4 grid-mobile-2" style="margin-top: 0.75rem;">
+          <div class="field">
+            <label for="aj-comida">Comidas por persona/día ($)</label>
+            <input type="number" id="aj-comida" step="25" value="250" />
+          </div>
+          <div class="field">
+            <label for="aj-desgaste">Desgaste vehículo ($/km)</label>
+            <input type="number" id="aj-desgaste" step="0.1" value="1.8" />
+          </div>
+          <div class="field">
+            <label for="aj-hotel">Hotel referencia ($/noche)</label>
+            <input type="number" id="aj-hotel" step="100" value="1900" />
+          </div>
+          <div class="field">
+            <label for="aj-folio-seq">Siguiente consecutivo de folio</label>
+            <input type="number" id="aj-folio-seq" min="1" step="1" value="1" />
+          </div>
+        </div>
+
+        <h3 style="margin: 1.2rem 0 0.65rem; font-size: 0.92rem;">🏦 Datos Bancarios Opcionales (Solo salen en el PDF si marcas la casilla)</h3>
+        <div class="grid-4">
+          <div class="field">
+            <label for="aj-banco">Banco</label>
+            <input type="text" id="aj-banco" placeholder="Ej. BBVA / Banorte / Santander" />
+          </div>
+          <div class="field">
+            <label for="aj-titular">Titular</label>
+            <input type="text" id="aj-titular" placeholder="René Félix González Granados" />
+          </div>
+          <div class="field">
+            <label for="aj-clabe">CLABE Interbancaria (18 dígitos)</label>
+            <input type="text" id="aj-clabe" placeholder="012..." />
+          </div>
+          <div class="field">
+            <label for="aj-rfc">RFC Emisor (opcional)</label>
+            <input type="text" id="aj-rfc" placeholder="RFC..." />
+          </div>
+        </div>
+
+        <h3 style="margin: 1.2rem 0 0.45rem; font-size: 0.92rem;">🤖 Conexión Segura con Gemini IA</h3>
+        <p style="margin: 0 0 0.65rem; font-size: 0.8rem; color: var(--muted);">
+          Por defecto el cotizador llama a tu función segura de servidor <code>cotizador-astas-ai</code> en Supabase (sin exponer claves). Si aún no despliegas la Edge Function y quieres usar IA hoy mismo desde este dispositivo, puedes pegar abajo una API Key de Google AI Studio (se guarda <strong>únicamente</strong> en la memoria privada de este teléfono/navegador, jamás en el código ni en GitHub).
+        </p>
+        <div class="grid-2">
+          <div class="field">
+            <label for="aj-gemini-local">Clave Gemini de respaldo local en este dispositivo (opcional)</label>
+            <input type="password" id="aj-gemini-local" placeholder="AIzaSy... (dejar vacío si usas Supabase Edge Function)" />
+          </div>
+          <div style="display: flex; align-items: flex-end; gap: 0.5rem;">
+            <button type="button" class="btn btn-primary" id="btn-guardar-ajustes">💾 Guardar todos los Ajustes</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       BARRA INFERIOR FIJA PARA OPERAR CON UNA MANO EN LA CALLE
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="bottom-bar" class="bottom-action-bar" hidden>
+    <div class="bottom-action-inner">
+      <div class="bottom-total">
+        Total c/IVA (Anticipo <span id="bar-pct-anticipo">75</span>%)
+        <strong id="bar-total-mxn">$0.00 MXN</strong>
+      </div>
+      <div class="bottom-btns">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-guardar-cot">☁️ Guardar</button>
+        <button type="button" class="btn btn-dark btn-sm" id="btn-vista-previa">👁 Ver PDF</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btn-descargar-pdf">⬇ PDF</button>
+        <button type="button" class="btn btn-whatsapp btn-sm" id="btn-enviar-wa">📲 WhatsApp</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE VISTA PREVIA DEL PDF -->
+  <div id="modal-pdf" class="modal-backdrop" hidden>
+    <div class="modal-box">
+      <div class="modal-head">
+        <strong id="modal-pdf-titulo">Vista Previa de Cotización PDF</strong>
+        <div style="display: flex; gap: 0.45rem;">
+          <button type="button" class="btn btn-primary btn-sm" id="btn-modal-descargar">⬇ Descargar PDF</button>
+          <button type="button" class="btn btn-whatsapp btn-sm" id="btn-modal-wa">📲 Compartir WhatsApp</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-modal-cerrar">✕ Cerrar</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <iframe id="iframe-pdf" title="Vista previa PDF"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <!-- LIBRERÍAS OFICIALES: SUPABASE v2 + JSPDF + AUTOTABLE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
+
+  <script src="config.js"></script>
+  <script src="datos-base.js"></script>
+  <script src="pdf-generator.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

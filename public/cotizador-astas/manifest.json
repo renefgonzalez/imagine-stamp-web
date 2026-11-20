@@ -1,0 +1,18 @@
+{
+  "name": "Cotizador Astas y Mantenimiento",
+  "short_name": "Cotizador Astas",
+  "description": "Cotizador industrial con soporte IA y exportación PDF para Astas y Mantenimiento",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "assets/icon-astas.jpg",
+      "sizes": "1024x1024",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
