@@ -2,23 +2,6 @@
 <html lang="es-MX">
 <head>
 <meta charset="UTF-8" />
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-F6ESDRF6N3"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-F6ESDRF6N3');
-      // Cuenta cada clic que lleva a WhatsApp (links wa.me y botones de pedido de los menús)
-      document.addEventListener('click', function (e) {
-        var el = e.target.closest && e.target.closest('a, button');
-        if (!el) return;
-        var href = el.getAttribute('href') || '';
-        if (/wa\.me|whatsapp/i.test(href + ' ' + el.id + ' ' + el.textContent)) {
-          gtag('event', 'clic_whatsapp', { link_url: href, page_location: location.href });
-        }
-      }, true);
-    </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>App de Citas para Salón de Uñas y Belleza con Anticipo por WhatsApp | Imagine &amp; Stamp</title>
 <meta name="description" content="App para salones de uñas, pestañas y belleza: catálogo de diseños con foto y precio, elegir día y horario, aviso de anticipo y cita por WhatsApp. Sin descargas y sin comisiones. Desde $1,650 MXN." />
@@ -31,7 +14,7 @@
 <meta property="og:title" content="App de citas para salón de uñas: diseños, horarios y anticipo por WhatsApp | Imagine &amp; Stamp" />
 <meta property="og:description" content="App para salones de uñas, pestañas y belleza: catálogo de diseños con foto y precio, elegir día y horario, aviso de anticipo y cita por WhatsApp. Sin descargas y sin comisiones. Desde $1,650 MXN." />
 <meta property="og:url" content="https://imagineandstamp.site/app-citas-salon-de-unas/" />
-<meta property="og:image" content="https://imagineandstamp.site/og-salon-unas.jpg" />
+<meta property="og:image" content="https://imagineandstamp.site/og-menu-demo.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -40,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Service","@id":"https://imagineandstamp.site/app-citas-salon-de-unas/#servicio","name":"App de citas para salón de uñas: diseños, horarios y anticipo por WhatsApp","serviceType":"App de citas para salones de uñas y belleza","description":"App para salones de uñas, pestañas y belleza: catálogo de diseños con foto y precio, elegir día y horario, aviso de anticipo y cita por WhatsApp. Sin descargas y sin comisiones. Desde $1,650 MXN.","url":"https://imagineandstamp.site/app-citas-salon-de-unas/","image":"https://imagineandstamp.site/img-servicios/salon-unas.webp","provider":{"@id":"https://imagineandstamp.site/#business"},"areaServed":[{"@type":"City","name":"Ciudad de México"},{"@type":"State","name":"Estado de México"},{"@type":"Country","name":"México"}],"offers":{"@type":"Offer","price":"1650","priceCurrency":"MXN","url":"https://imagineandstamp.site/app-citas-salon-de-unas/"}},{"@type":"ProfessionalService","@id":"https://imagineandstamp.site/#business","name":"Imagine & Stamp","url":"https://imagineandstamp.site/","telephone":"+52-56-5046-9993","email":"imagineandstamp@gmail.com","image":"https://imagineandstamp.site/og-salon-unas.jpg","address":{"@type":"PostalAddress","addressLocality":"Ciudad de México","addressRegion":"CDMX","addressCountry":"MX"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://imagineandstamp.site/"},{"@type":"ListItem","position":2,"name":"Aplicaciones para negocios","item":"https://imagineandstamp.site/aplicaciones-para-negocios/"},{"@type":"ListItem","position":3,"name":"App de citas para salón de uñas","item":"https://imagineandstamp.site/app-citas-salon-de-unas/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cuánto cuesta la app para mi salón?","acceptedAnswer":{"@type":"Answer","text":"Desde $1,650 MXN en un solo pago. Si necesitas agenda en línea con horarios bloqueados, se cotiza aparte."}},{"@type":"Question","name":"¿Mis clientas tienen que descargar algo?","acceptedAnswer":{"@type":"Answer","text":"No. Abren la liga o el QR y la pueden agregar a la pantalla de inicio de su celular."}},{"@type":"Question","name":"¿Puedo cobrar anticipo?","acceptedAnswer":{"@type":"Answer","text":"Sí. La app muestra tus datos de transferencia y tu política antes de que la clienta mande su solicitud."}}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Service","@id":"https://imagineandstamp.site/app-citas-salon-de-unas/#servicio","name":"App de citas para salón de uñas: diseños, horarios y anticipo por WhatsApp","serviceType":"App de citas para salones de uñas y belleza","description":"App para salones de uñas, pestañas y belleza: catálogo de diseños con foto y precio, elegir día y horario, aviso de anticipo y cita por WhatsApp. Sin descargas y sin comisiones. Desde $1,650 MXN.","url":"https://imagineandstamp.site/app-citas-salon-de-unas/","image":"https://imagineandstamp.site/img-servicios/salon-unas.webp","provider":{"@id":"https://imagineandstamp.site/#business"},"areaServed":[{"@type":"City","name":"Ciudad de México"},{"@type":"State","name":"Estado de México"},{"@type":"Country","name":"México"}],"offers":{"@type":"Offer","price":"1650","priceCurrency":"MXN","url":"https://imagineandstamp.site/app-citas-salon-de-unas/"}},{"@type":"ProfessionalService","@id":"https://imagineandstamp.site/#business","name":"Imagine & Stamp","url":"https://imagineandstamp.site/","telephone":"+52-56-5046-9993","email":"imagineandstamp@gmail.com","image":"https://imagineandstamp.site/og-menu-demo.jpg","address":{"@type":"PostalAddress","addressLocality":"Ciudad de México","addressRegion":"CDMX","addressCountry":"MX"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://imagineandstamp.site/"},{"@type":"ListItem","position":2,"name":"Aplicaciones para negocios","item":"https://imagineandstamp.site/aplicaciones-para-negocios/"},{"@type":"ListItem","position":3,"name":"App de citas para salón de uñas","item":"https://imagineandstamp.site/app-citas-salon-de-unas/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cuánto cuesta la app para mi salón?","acceptedAnswer":{"@type":"Answer","text":"Desde $1,650 MXN en un solo pago. Si necesitas agenda en línea con horarios bloqueados, se cotiza aparte."}},{"@type":"Question","name":"¿Mis clientas tienen que descargar algo?","acceptedAnswer":{"@type":"Answer","text":"No. Abren la liga o el QR y la pueden agregar a la pantalla de inicio de su celular."}},{"@type":"Question","name":"¿Puedo cobrar anticipo?","acceptedAnswer":{"@type":"Answer","text":"Sí. La app muestra tus datos de transferencia y tu política antes de que la clienta mande su solicitud."}}]}]}</script>
 <style>
 :root{--navy:#002E5D;--orange:#FF8C00;--cream:#F9F7F2;--ink:#1A1C1C;--muted:#4b5563;--card:#fff;--line:rgba(0,46,93,.09)}
 *{box-sizing:border-box;margin:0;padding:0}

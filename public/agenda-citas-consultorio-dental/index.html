@@ -2,26 +2,9 @@
 <html lang="es-MX">
 <head>
 <meta charset="UTF-8" />
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-F6ESDRF6N3"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-F6ESDRF6N3');
-      // Cuenta cada clic que lleva a WhatsApp (links wa.me y botones de pedido de los menús)
-      document.addEventListener('click', function (e) {
-        var el = e.target.closest && e.target.closest('a, button');
-        if (!el) return;
-        var href = el.getAttribute('href') || '';
-        if (/wa\.me|whatsapp/i.test(href + ' ' + el.id + ' ' + el.textContent)) {
-          gtag('event', 'clic_whatsapp', { link_url: href, page_location: location.href });
-        }
-      }, true);
-    </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Agenda de Citas para Consultorio Dental y Médico por WhatsApp | Imagine &amp; Stamp</title>
-<meta name="description" content="Agenda de citas para consultorios dentales y médicos: servicios con precio desde, elegir día y horario, motivo de consulta y confirmación por WhatsApp, cuidando la privacidad de tus pacientes." />
+<meta name="description" content="Agenda de citas para consultorios dentales y médicos en CDMX y todo México: servicios con precio desde, selección de día y horario, motivo general y confirmación por WhatsApp cuidando la privacidad." />
 <link rel="canonical" href="https://imagineandstamp.site/agenda-citas-consultorio-dental/" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta name="geo.region" content="MX-CMX" />
@@ -29,7 +12,7 @@
 <meta property="og:locale" content="es_MX" />
 <meta property="og:site_name" content="Imagine &amp; Stamp" />
 <meta property="og:title" content="Agenda de citas para consultorio dental, cuidando la privacidad de tus pacientes | Imagine &amp; Stamp" />
-<meta property="og:description" content="Agenda de citas para consultorios dentales y médicos: servicios con precio desde, elegir día y horario, motivo de consulta y confirmación por WhatsApp, cuidando la privacidad de tus pacientes." />
+<meta property="og:description" content="Agenda de citas para consultorios dentales y médicos en CDMX y todo México: servicios con precio desde, selección de día y horario, motivo general y confirmación por WhatsApp cuidando la privacidad." />
 <meta property="og:url" content="https://imagineandstamp.site/agenda-citas-consultorio-dental/" />
 <meta property="og:image" content="https://imagineandstamp.site/og-dental.jpg" />
 <meta property="og:image:width" content="1200" />
@@ -40,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Service","@id":"https://imagineandstamp.site/agenda-citas-consultorio-dental/#servicio","name":"Agenda de citas para consultorio dental, cuidando la privacidad de tus pacientes","serviceType":"Agenda de citas para consultorios dentales y médicos","description":"Agenda de citas para consultorios dentales y médicos: servicios con precio desde, elegir día y horario, motivo de consulta y confirmación por WhatsApp, cuidando la privacidad de tus pacientes.","url":"https://imagineandstamp.site/agenda-citas-consultorio-dental/","image":"https://imagineandstamp.site/img-servicios/consultorio-dental.webp","provider":{"@id":"https://imagineandstamp.site/#business"},"areaServed":[{"@type":"City","name":"Ciudad de México"},{"@type":"State","name":"Estado de México"},{"@type":"Country","name":"México"}]},{"@type":"ProfessionalService","@id":"https://imagineandstamp.site/#business","name":"Imagine & Stamp","url":"https://imagineandstamp.site/","telephone":"+52-56-5046-9993","email":"imagineandstamp@gmail.com","image":"https://imagineandstamp.site/og-dental.jpg","address":{"@type":"PostalAddress","addressLocality":"Ciudad de México","addressRegion":"CDMX","addressCountry":"MX"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://imagineandstamp.site/"},{"@type":"ListItem","position":2,"name":"Aplicaciones para negocios","item":"https://imagineandstamp.site/aplicaciones-para-negocios/"},{"@type":"ListItem","position":3,"name":"Agenda de citas para consultorio dental","item":"https://imagineandstamp.site/agenda-citas-consultorio-dental/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Se guardan los datos de mis pacientes?","acceptedAnswer":{"@type":"Answer","text":"En la versión básica no: la solicitud viaja directo a tu WhatsApp. No pedimos síntomas ni historial clínico."}},{"@type":"Question","name":"¿Cuánto cuesta?","acceptedAnswer":{"@type":"Answer","text":"Escríbenos y te cotizamos según los servicios y si necesitas agenda con horarios bloqueados."}},{"@type":"Question","name":"¿Sirve para consultorios médicos?","acceptedAnswer":{"@type":"Answer","text":"Sí. Cambiamos servicios, colores e indicaciones a tu especialidad."}}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Service","@id":"https://imagineandstamp.site/agenda-citas-consultorio-dental/#servicio","name":"Agenda de citas para consultorio dental, cuidando la privacidad de tus pacientes","serviceType":"Agenda de citas para consultorios dentales y médicos","description":"Agenda de citas para consultorios dentales y médicos en CDMX y todo México: servicios con precio desde, selección de día y horario, motivo general y confirmación por WhatsApp cuidando la privacidad.","url":"https://imagineandstamp.site/agenda-citas-consultorio-dental/","image":"https://imagineandstamp.site/img-servicios/consultorio-dental.webp","provider":{"@id":"https://imagineandstamp.site/#business"},"areaServed":[{"@type":"City","name":"Ciudad de México"},{"@type":"State","name":"Estado de México"},{"@type":"Country","name":"México"}]},{"@type":"ProfessionalService","@id":"https://imagineandstamp.site/#business","name":"Imagine & Stamp","url":"https://imagineandstamp.site/","telephone":"+52-56-5046-9993","email":"imagineandstamp@gmail.com","image":"https://imagineandstamp.site/og-menu-demo.jpg","address":{"@type":"PostalAddress","addressLocality":"Ciudad de México","addressRegion":"CDMX","addressCountry":"MX"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://imagineandstamp.site/"},{"@type":"ListItem","position":2,"name":"Aplicaciones para negocios","item":"https://imagineandstamp.site/aplicaciones-para-negocios/"},{"@type":"ListItem","position":3,"name":"Agenda de citas para consultorio dental","item":"https://imagineandstamp.site/agenda-citas-consultorio-dental/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Se guardan datos médicos o expedientes en la página?","acceptedAnswer":{"@type":"Answer","text":"No. En la versión conectada a WhatsApp no almacenamos historiales clínicos ni síntomas en servidores externos; la solicitud llega directo a tu WhatsApp."}},{"@type":"Question","name":"¿Cuánto cuesta y hay pagos mensuales?","acceptedAnswer":{"@type":"Answer","text":"Es un pago único que depende de si necesitas solo la agenda web o también panel administrativo con horarios bloqueados. Escríbenos por WhatsApp y te cotizamos al instante."}},{"@type":"Question","name":"¿Se puede conectar con Google Maps y campañas de anuncios?","acceptedAnswer":{"@type":"Answer","text":"Sí. Es ideal como página de destino para tu perfil de Google Business Profile o anuncios de Google/Meta hacia WhatsApp."}},{"@type":"Question","name":"¿Sirve para consultorios con varios doctores o especialidades?","acceptedAnswer":{"@type":"Answer","text":"Sí, podemos agregar selector de especialista o mostrar cada área con sus tratamientos y horarios propios."}},{"@type":"Question","name":"¿En cuánto tiempo se entrega?","acceptedAnswer":{"@type":"Answer","text":"De 2 a 4 días hábiles a partir de que nos compartes tus tratamientos, horarios y ubicación."}},{"@type":"Question","name":"¿Funciona también para consultorios médicos o psicólogos?","acceptedAnswer":{"@type":"Answer","text":"Sí, adaptamos los textos, especialidades e indicaciones previas a cualquier área de la salud."}}]}]}</script>
 <style>
 :root{--navy:#002E5D;--orange:#FF8C00;--cream:#F9F7F2;--ink:#1A1C1C;--muted:#4b5563;--card:#fff;--line:rgba(0,46,93,.09)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -205,7 +188,7 @@ footer a{text-decoration:none}
       <div class="hero-content">
         <span class="tag">Ciudad de México, Iztapalapa, Estado de México y a distancia en todo México</span>
         <h1>Agenda de citas para consultorio dental, cuidando la privacidad de tus pacientes</h1>
-        <p class="lead">Tus pacientes ven tus servicios, eligen día y horario y te mandan la solicitud por WhatsApp. Sin pedir datos de salud por internet: solo nombre, teléfono, motivo general y la cita.</p>
+        <p class="lead">Tus pacientes ven tus tratamientos, eligen día y horario preferido y te mandan la solicitud ordenada por WhatsApp. Sin pedir datos sensibles de salud por internet: solo nombre, teléfono, motivo general y la cita.</p>
         <div class="ctas">
           <a class="btn btn-wa" href="https://wa.me/525650469993?text=Hola%20Ren%C3%A9%2C%20tengo%20un%20consultorio%20y%20quiero%20una%20agenda%20de%20citas" rel="noopener">Quiero la agenda de mi consultorio</a>
           <a class="btn btn-ghost" href="#ejemplos">Ver ejemplos</a>
@@ -222,10 +205,10 @@ footer a{text-decoration:none}
   <section aria-labelledby="por-que">
     <h2 id="por-que">Por qué funciona</h2>
     <div class="grid">
-      <div class="card"><h3>Citas sin llamadas</h3><p>El paciente elige servicio, día y horario y te escribe con todo listo.</p></div>
-      <div class="card"><h3>Privacidad cuidada</h3><p>El motivo se elige de una lista general; no se piden síntomas ni historial por internet.</p></div>
-      <div class="card"><h3>Indicaciones antes de la cita</h3><p>Qué llevar, cuánto antes llegar y cómo llegar, en un solo lugar.</p></div>
-      <div class="card"><h3>Imagen profesional</h3><p>Tus servicios, tu especialidad y tu ubicación con un diseño limpio y confiable.</p></div>
+      <div class="card"><h3>Citas ordenadas sin perder tiempo</h3><p>En lugar de intercambiar 10 mensajes para saber qué necesita el paciente y a qué hora puede, te llega la solicitud completa en un solo mensaje de WhatsApp.</p></div>
+      <div class="card"><h3>Privacidad de datos cuidada</h3><p>El motivo se elige de una lista general (limpieza, revisión, urgencia); nunca pedimos historial clínico ni síntomas sensibles en formularios públicos.</p></div>
+      <div class="card"><h3>Indicaciones claras antes de llegar</h3><p>Qué llevar, cuánto tiempo antes presentarse, métodos de pago y mapa exacto para reducir inasistencias.</p></div>
+      <div class="card"><h3>Imagen profesional sin mensualidades</h3><p>Tus especialidades, cédula o experiencia y ubicación con un diseño limpio, sin pagar rentas mensuales de software médico.</p></div>
     </div>
   </section>
 
@@ -236,6 +219,13 @@ footer a{text-decoration:none}
         <div class="demo-thumb"><img src="/img-servicios/consultorio-dental.webp" alt="Sonrisa Clara · demo dental" loading="lazy" decoding="async" width="390" height="488" /></div>
         <div class="demo-info">
           <strong>Sonrisa Clara · demo dental</strong>
+          <span class="demo-link">Probar demo →</span>
+        </div>
+      </a>
+      <a href="https://imagineandstamp.site/pagina-web-para-dentistas/" class="demo-card">
+        <div class="demo-thumb"><img src="/img-servicios/consultorio-dental.webp" alt="Página web para dentistas" loading="lazy" decoding="async" width="390" height="488" /></div>
+        <div class="demo-info">
+          <strong>Página web para dentistas</strong>
           <span class="demo-link">Probar demo →</span>
         </div>
       </a>
@@ -252,21 +242,40 @@ footer a{text-decoration:none}
 
 
   <section>
-    <h2>Qué incluye</h2>
+    <h2>Qué incluye la agenda de tu consultorio</h2>
     <ul class="list">
-      <li>Servicios con precio "desde" o "pregunta el precio".</li>
-      <li>Selección de día y horario según tu consulta.</li>
-      <li>Motivo de la cita de una lista cerrada (revisión, dolor, limpieza, estética, otro).</li>
-      <li>Aviso de privacidad conforme a la ley de protección de datos personales.</li>
-      <li>Botones de WhatsApp y ubicación en Google Maps.</li>
+      <li>Catálogo de tratamientos con precio "desde" o "solicitar valoración" (limpieza, resinas, ortodoncia, extracciones, blanqueamiento).</li>
+      <li>Selector visual de día de la semana y bloque de horario según tus días de consulta.</li>
+      <li>Motivo general de la cita mediante opciones cerradas para proteger la privacidad del paciente.</li>
+      <li>Aviso de privacidad enlazado conforme a la LFPDPPP (protección de datos personales en México).</li>
+      <li>Botón directo a Google Maps, llamada de urgencias y confirmación en tu WhatsApp.</li>
     </ul>
   </section>
 
   <section>
-    <h2>También para</h2>
+    <h2>Flujo real de cómo agenda un paciente en 30 segundos</h2>
     <ul class="list">
-      <li>Consultorios médicos, psicólogos, nutriólogos y fisioterapeutas.</li>
-      <li>Clínicas veterinarias.</li>
+      <li>1. El paciente abre tu enlace desde Google Maps, Instagram o tu tarjeta de presentación.</li>
+      <li>2. Revisa el tratamiento que busca y las indicaciones previas.</li>
+      <li>3. Elige día y horario tentativo y presiona "Solicitar cita por WhatsApp".</li>
+      <li>4. Tu asistente o tú reciben el mensaje ordenado y confirman disponibilidad en 1 minuto.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Por qué conviene frente a plataformas médicas con mensualidad</h2>
+    <ul class="list">
+      <li>Muchas plataformas de citas cobran suscripciones mensuales altas o comisiones por paciente nuevo; aquí pagas una sola vez.</li>
+      <li>Los datos y la relación con el paciente se quedan directamente en tu WhatsApp, sin intermediarios.</li>
+      <li>También podemos integrarlo dentro de una página web completa para tu clínica si buscas posicionarte en Google.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>También ideal para</h2>
+    <ul class="list">
+      <li>Consultorios médicos generales y especialistas, psicólogos, nutriólogos y fisioterapeutas.</li>
+      <li>Clínicas veterinarias, podólogos y laboratorios de análisis.</li>
     </ul>
   </section>
 
@@ -283,9 +292,12 @@ footer a{text-decoration:none}
 
   <section aria-labelledby="faq">
     <h2 id="faq">Preguntas frecuentes</h2>
-    <details><summary>¿Se guardan los datos de mis pacientes?</summary><p>En la versión básica no: la solicitud viaja directo a tu WhatsApp. No pedimos síntomas ni historial clínico.</p></details>
-    <details><summary>¿Cuánto cuesta?</summary><p>Escríbenos y te cotizamos según los servicios y si necesitas agenda con horarios bloqueados.</p></details>
-    <details><summary>¿Sirve para consultorios médicos?</summary><p>Sí. Cambiamos servicios, colores e indicaciones a tu especialidad.</p></details>
+    <details><summary>¿Se guardan datos médicos o expedientes en la página?</summary><p>No. En la versión conectada a WhatsApp no almacenamos historiales clínicos ni síntomas en servidores externos; la solicitud llega directo a tu WhatsApp.</p></details>
+    <details><summary>¿Cuánto cuesta y hay pagos mensuales?</summary><p>Es un pago único que depende de si necesitas solo la agenda web o también panel administrativo con horarios bloqueados. Escríbenos por WhatsApp y te cotizamos al instante.</p></details>
+    <details><summary>¿Se puede conectar con Google Maps y campañas de anuncios?</summary><p>Sí. Es ideal como página de destino para tu perfil de Google Business Profile o anuncios de Google/Meta hacia WhatsApp.</p></details>
+    <details><summary>¿Sirve para consultorios con varios doctores o especialidades?</summary><p>Sí, podemos agregar selector de especialista o mostrar cada área con sus tratamientos y horarios propios.</p></details>
+    <details><summary>¿En cuánto tiempo se entrega?</summary><p>De 2 a 4 días hábiles a partir de que nos compartes tus tratamientos, horarios y ubicación.</p></details>
+    <details><summary>¿Funciona también para consultorios médicos o psicólogos?</summary><p>Sí, adaptamos los textos, especialidades e indicaciones previas a cualquier área de la salud.</p></details>
   </section>
 
   <section>
