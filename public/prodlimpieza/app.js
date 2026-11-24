@@ -9,6 +9,7 @@ let ingredientesUsados = []; // nombres únicos de componentes usados en fórmul
 let compras = []; // lista de compras/pedidos
 let comprasHistorial = []; // historial de compras reales para rastrear variación de precios
 let historialTablaDisponible = true;
+let prodFavoritos = []; // favoritos de producción [{id, producto_nombre, kg}]
 
 // --- Operación ---
 let puntos = [];      // [{id, nombre, ubicacion, activo, creado_en}]
@@ -336,7 +337,18 @@ async function init() {
     // Sincronizar datos de local storage a Supabase si existen
     chequearMigracionLocal();
   } catch (err) {
-    mostrarError('No se pudo conectar con Supabase: ' + err.message);
+    const msg = (err && err.message) ? err.message : String(err);
+    if (/JWT|401|No autorizado|permission denied|refresh/i.test(msg)) {
+      await sb.auth.signOut().catch(() => {});
+      mostrarAppAutenticada(false);
+      const authError = document.getElementById('auth-error');
+      if (authError) {
+        authError.textContent = 'Tu sesión expiró. Vuelve a iniciar sesión.';
+        authError.hidden = false;
+      }
+      return;
+    }
+    mostrarError('No se pudo conectar con Supabase: ' + msg);
     console.error(err);
   }
 }
@@ -704,10 +716,86 @@ function initProduccion() {
   const cantidad = document.getElementById('prod-cantidad');
   select.innerHTML = productos.map((p, i) => `<option value="${i}">${escapeHtml(p.nombre)}</option>`).join('');
   const recalc = () => calcularProduccion(parseInt(select.value, 10), parseFloat(cantidad.value) || 0);
-  select.addEventListener('change', recalc);
-  cantidad.addEventListener('input', recalc);
+  if (!select.dataset.bound) {
+    select.dataset.bound = '1';
+    select.addEventListener('change', recalc);
+    cantidad.addEventListener('input', recalc);
+  }
+  const btnFav = document.getElementById('btn-guardar-fav-prod');
+  if (btnFav && !btnFav.dataset.bound) {
+    btnFav.dataset.bound = '1';
+    btnFav.addEventListener('click', guardarFavoritoProduccion);
+  }
+  pintarFavoritosProduccion();
   recalc();
 }
+
+function saveProdFavoritos() {
+  localStorage.setItem('catalogo_prod_favoritos', JSON.stringify(prodFavoritos));
+  sb.auth.updateUser({ data: { prod_favoritos: prodFavoritos } }).catch(() => {});
+}
+
+function guardarFavoritoProduccion() {
+  const select = document.getElementById('prod-select');
+  const cantidad = document.getElementById('prod-cantidad');
+  const p = productos[parseInt(select?.value, 10)];
+  const kg = +(parseFloat(cantidad?.value) || 0).toFixed(2);
+  if (!p || kg <= 0) {
+    mostrarError('Selecciona un producto y una cantidad mayor a 0 kg para guardar como favorito.');
+    return;
+  }
+  const yaExiste = prodFavoritos.some(f => f.producto_nombre === p.nombre && Math.abs(f.kg - kg) < 0.01);
+  if (yaExiste) {
+    mostrarError(`Ya tienes guardado "${p.nombre} · ${fmtNum(kg)} kg" en favoritos.`);
+    return;
+  }
+  prodFavoritos.push({ id: genId('fav'), producto_nombre: p.nombre, kg });
+  saveProdFavoritos();
+  pintarFavoritosProduccion();
+}
+
+window.cargarFavoritoProduccion = function(id) {
+  const fav = prodFavoritos.find(f => f.id === id);
+  if (!fav) return;
+  abrirProduccionCon(fav.producto_nombre, fav.kg);
+};
+
+window.eliminarFavoritoProduccion = function(id) {
+  prodFavoritos = prodFavoritos.filter(f => f.id !== id);
+  saveProdFavoritos();
+  pintarFavoritosProduccion();
+};
+
+function pintarFavoritosProduccion() {
+  const cont = document.getElementById('prod-favoritos');
+  if (!cont) return;
+  if (prodFavoritos.length === 0) {
+    cont.innerHTML = '';
+    return;
+  }
+  cont.innerHTML = prodFavoritos.map(f => `
+    <span class="fav-chip">
+      <button type="button" class="fav-chip-btn" onclick="cargarFavoritoProduccion('${escapeHtml(f.id)}')" title="Cargar ${escapeHtml(f.producto_nombre)} (${fmtNum(f.kg)} kg)">
+        ⭐ ${escapeHtml(f.producto_nombre)} · ${fmtNum(f.kg)} kg
+      </button>
+      <button type="button" class="fav-chip-del" onclick="eliminarFavoritoProduccion('${escapeHtml(f.id)}')" title="Quitar favorito">&times;</button>
+    </span>
+  `).join('');
+}
+
+window.abrirProduccionCon = function(nombreProducto, kg) {
+  const idx = productos.findIndex(p => p.nombre === nombreProducto);
+  if (idx < 0) return;
+  const tabProd = document.querySelector('#tabs .tab[data-view="produccion"]');
+  if (tabProd) tabProd.click();
+  const select = document.getElementById('prod-select');
+  const cantidad = document.getElementById('prod-cantidad');
+  if (select && cantidad) {
+    select.value = String(idx);
+    cantidad.value = (+Number(kg).toFixed(2)).toString();
+    calcularProduccion(idx, parseFloat(cantidad.value) || 0);
+  }
+};
 
 function calcularProduccion(idx, kg) {
   const cont = document.getElementById('produccion-resultado');
@@ -836,6 +924,7 @@ function calcularInversa(ingrediente, kgDisponibles) {
             <th class="num">Costo total</th>
             <th class="num">Ingreso PV sug.</th>
             <th class="num">Ganancia</th>
+            <th style="width:110px;text-align:center;">Acción</th>
           </tr>
         </thead>
         <tbody>
@@ -847,6 +936,9 @@ function calcularInversa(ingrediente, kgDisponibles) {
               <td class="num">${fmt(f.costoTotal)}</td>
               <td class="num">${fmt(f.ingreso)}</td>
               <td class="num"><strong class="success" style="color:var(--success);">${fmt(f.ganancia)}</strong></td>
+              <td style="text-align:center;">
+                <button class="btn-action btn-action-edit" onclick="abrirProduccionCon('${escapeHtml(f.nombre)}', ${f.kgProducto.toFixed(2)})">Producir →</button>
+              </td>
             </tr>
           `).join('')}
         </tbody>
@@ -3408,7 +3500,7 @@ async function iniciarConAuth() {
 
       btnSubmit.disabled = true;
       btnSubmit.textContent = 'Entrando...';
-      const { error } = await sb.auth.signInWithPassword({ email, password });
+      const { data: signData, error } = await sb.auth.signInWithPassword({ email, password });
       btnSubmit.disabled = false;
       btnSubmit.textContent = 'Entrar';
 
@@ -3422,6 +3514,8 @@ async function iniciarConAuth() {
         return;
       }
 
+      const metaFavs = signData?.user?.user_metadata?.prod_favoritos;
+      prodFavoritos = Array.isArray(metaFavs) ? metaFavs : JSON.parse(localStorage.getItem('catalogo_prod_favoritos') || '[]');
       mostrarAppAutenticada(true);
       await init();
     });
@@ -3429,6 +3523,14 @@ async function iniciarConAuth() {
 
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
+    const { data: { user }, error: userErr } = await sb.auth.getUser();
+    if (userErr || !user) {
+      await sb.auth.signOut().catch(() => {});
+      mostrarAppAutenticada(false);
+      return;
+    }
+    const metaFavs = user.user_metadata?.prod_favoritos;
+    prodFavoritos = Array.isArray(metaFavs) ? metaFavs : JSON.parse(localStorage.getItem('catalogo_prod_favoritos') || '[]');
     mostrarAppAutenticada(true);
     await init();
   } else {

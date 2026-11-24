@@ -738,6 +738,48 @@ th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
   flex-shrink: 0;
 }
 
+.fav-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.fav-chips-wrap:empty {
+  display: none;
+}
+.fav-chip {
+  display: inline-flex;
+  align-items: center;
+  background: var(--primary-light);
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.fav-chip-btn {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.84rem;
+  padding: 0.35rem 0.65rem;
+  cursor: pointer;
+}
+.fav-chip-btn:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+.fav-chip-del {
+  background: transparent;
+  border: none;
+  color: var(--text-soft);
+  font-size: 0.9rem;
+  padding: 0.35rem 0.55rem 0.35rem 0.2rem;
+  cursor: pointer;
+}
+.fav-chip-del:hover {
+  color: var(--danger);
+}
+
 /* ═══════════════════════════════════════════════════════════════
    SUB-TABS (Operación)
    ═══════════════════════════════════════════════════════════════ */
