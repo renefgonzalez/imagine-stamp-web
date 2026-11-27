@@ -531,10 +531,12 @@ export default function HomePage({
                   </p>
                 </div>
                 <a
-                  href="#/candymar"
+                  href="https://candymar.imagineandstamp.site"
+                  target="_blank"
+                  rel="noreferrer"
                   className="w-full py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-headline font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
                 >
-                  <span>Abrir Demo Candymar</span>
+                  <span>Ver Sitio Candymar</span>
                   <ExternalLink size={14} />
                 </a>
               </div>

@@ -142,7 +142,7 @@ const SERVICIOS = [
       ]],
     ],
     demos: [
-      ['Candymar · restaurante', '/#/candymar', '/img-servicios/candymar.webp'],
+      ['Candymar · restaurante', 'https://candymar.imagineandstamp.site', '/img-servicios/candymar.webp'],
       ['Strong Gym · catálogo', '/#/strong-gym', '/img-servicios/strong-gym.webp'],
       ['Barbería Gentleman\'s Cut', '/#/tarjeta-barberia', '/img-servicios/tarjeta-barberia.webp'],
       ['Veterinaria Vita Vet', '/#/tarjeta-veterinaria', '/img-servicios/tarjeta-veterinaria.webp'],
@@ -195,7 +195,7 @@ const SERVICIOS = [
     ],
     demos: [
       ['Vicma Laser · hosting rápido', '/#/vicma-laser', '/img-servicios/vicma-laser.webp'],
-      ['Candymar · alta disponibilidad', '/#/candymar', '/img-servicios/candymar.webp'],
+      ['Candymar · alta disponibilidad', 'https://candymar.imagineandstamp.site', '/img-servicios/candymar.webp'],
     ],
     faqs: [
       ['¿El dominio queda a mi nombre?', 'Sí. Lo registramos a tu nombre para que siempre sea tuyo, aunque algún día cambies de proveedor.'],
@@ -245,7 +245,7 @@ const SERVICIOS = [
       ]],
     ],
     demos: [
-      ['Candymar · mariscos', '/#/candymar', '/img-servicios/candymar.webp'],
+      ['Candymar · mariscos', 'https://candymar.imagineandstamp.site', '/img-servicios/candymar.webp'],
       ['Brothers Pizza · pizzería', '/#/brothers-pizza', '/img-servicios/brothers-pizza.webp'],
       ['La Cueva del Lobo · antojitos', '/#/la-cueva-del-lobo', '/img-servicios/la-cueva-del-lobo.webp'],
       ['AAAH! Carbón · parrilla', '/#/aaah-carbon', '/img-servicios/aaah-carbon.webp'],
@@ -488,7 +488,7 @@ const ESPECIALIDADES = [
     ],
     demos: [
       ['Brothers Pizza · pizzería', '/#/brothers-pizza', '/img-servicios/brothers-pizza.webp'],
-      ['Candymar · mariscos', '/#/candymar', '/img-servicios/candymar.webp'],
+      ['Candymar · mariscos', 'https://candymar.imagineandstamp.site', '/img-servicios/candymar.webp'],
     ],
     faqs: [
       ['¿Se puede pedir mitad y mitad?', 'Sí. Configuramos la opción para que el cliente elija dos especialidades y el precio se ajuste.'],
@@ -858,7 +858,7 @@ const ESPECIALIDADES = [
       ]],
     ],
     demos: [
-      ['Candymar · mariscos', '/#/candymar', '/img-servicios/candymar.webp'],
+      ['Candymar · mariscos', 'https://candymar.imagineandstamp.site', '/img-servicios/candymar.webp'],
       ["Takero's CDMX · taquería", 'https://takeros-cdmx.imagineandstamp.site', '/img-servicios/takeros.webp'],
     ],
     faqs: [

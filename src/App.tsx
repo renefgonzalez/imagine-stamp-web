@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef, ErrorInfo, ReactNode, Component, Suspense } from 'react';
+﻿import React, { useState, useMemo, useEffect, useRef, ErrorInfo, ReactNode, Component, Suspense } from 'react';
 import { supabase } from './lib/supabase';
 import { 
   Search, Heart, Plus, Sparkles, X, ShoppingBag,
@@ -30,7 +30,6 @@ const AaahCarbonMenu = React.lazy(() => import('./modules/aaah-carbon/pages/Aaah
 const PincheCheMenu = React.lazy(() => import('./modules/pinche-che/pages/PincheCheMenu'));
 const MesaJarochaMenu = React.lazy(() => import('./modules/mesa-jarocha/pages/MesaJarochaMenu'));
 const LaCuevaDelLoboMenu = React.lazy(() => import('./modules/la-cueva-del-lobo/pages/LaCuevaDelLoboMenu'));
-const CandymarMenu = React.lazy(() => import('./modules/candymar/pages/CandymarMenu'));
 const StrongGymMenu = React.lazy(() => import('./modules/strong-gym/pages/StrongGymMenu'));
 const IronPlan = React.lazy(() => import('./modules/iron-plan/pages/IronPlan'));
 const SalonUnas = React.lazy(() => import('./modules/salon-unas/pages/SalonUnas'));
@@ -55,28 +54,28 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   static getDerivedStateFromError(_: Error) { return { hasError: true }; }
   componentDidCatch(error: Error, errorInfo: ErrorInfo) { console.error("ErrorBoundary caught error:", error, errorInfo); }
   render() {
-    if (this.state.hasError) return <div className="p-10 text-center text-red-500">Algo salió mal. Por favor recarga la página.</div>;
+    if (this.state.hasError) return <div className="p-10 text-center text-red-500">Algo saliÃ³ mal. Por favor recarga la pÃ¡gina.</div>;
     return this.props.children;
   }
 }
 
 export const DEFAULT_CATEGORIES = [
   { id: 'all', name: 'VER TODO', icon: LayoutGrid, bgColor: 'bg-gray-100', iconColor: 'text-gray-600', dotColor: 'bg-gray-400', submenus: [] },
-  { id: 'fiestas-y-cumpleanos', name: 'Fiestas y Cumpleaños', icon: PartyPopper, bgColor: 'bg-purple-50', iconColor: 'text-purple-500', dotColor: 'bg-purple-500', submenus: [] },
+  { id: 'fiestas-y-cumpleanos', name: 'Fiestas y CumpleaÃ±os', icon: PartyPopper, bgColor: 'bg-purple-50', iconColor: 'text-purple-500', dotColor: 'bg-purple-500', submenus: [] },
   { id: 'invitaciones', name: 'Invitaciones', icon: MailIcon, bgColor: 'bg-orange-50', iconColor: 'text-orange-500', dotColor: 'bg-orange-500', submenus: [] },
   { id: 'empresarial', name: 'Empresarial', icon: Briefcase, bgColor: 'bg-amber-50', iconColor: 'text-amber-500', dotColor: 'bg-amber-500', submenus: [] },
-  { id: 'personalizacion', name: 'Personalización', icon: Gift, bgColor: 'bg-green-50', iconColor: 'text-green-500', dotColor: 'bg-green-500', submenus: [] },
-  { id: 'paginas-webs-y-apps', name: 'Páginas Web y Apps', icon: Sparkles, bgColor: 'bg-blue-50', iconColor: 'text-blue-500', dotColor: 'bg-blue-500', submenus: [] },
-  { id: 'catalogo-and-portafolio', name: 'Catálogo y Portafolio', icon: Sparkles, bgColor: 'bg-indigo-50', iconColor: 'text-indigo-500', dotColor: 'bg-indigo-500', submenus: [] }
+  { id: 'personalizacion', name: 'PersonalizaciÃ³n', icon: Gift, bgColor: 'bg-green-50', iconColor: 'text-green-500', dotColor: 'bg-green-500', submenus: [] },
+  { id: 'paginas-webs-y-apps', name: 'PÃ¡ginas Web y Apps', icon: Sparkles, bgColor: 'bg-blue-50', iconColor: 'text-blue-500', dotColor: 'bg-blue-500', submenus: [] },
+  { id: 'catalogo-and-portafolio', name: 'CatÃ¡logo y Portafolio', icon: Sparkles, bgColor: 'bg-indigo-50', iconColor: 'text-indigo-500', dotColor: 'bg-indigo-500', submenus: [] }
 ];
 
 const ICON_MAP: Record<string, any> = {
-  'Fiestas y Cumpleaños': PartyPopper,
+  'Fiestas y CumpleaÃ±os': PartyPopper,
   'Invitaciones': MailIcon,
   'Empresarial': Briefcase,
-  'Personalización': Gift,
-  'Páginas Web y Apps': Sparkles,
-  'Catálogo y Portafolio': Sparkles,
+  'PersonalizaciÃ³n': Gift,
+  'PÃ¡ginas Web y Apps': Sparkles,
+  'CatÃ¡logo y Portafolio': Sparkles,
   'all': LayoutGrid
 };
 
@@ -134,14 +133,14 @@ export default function App() {
     } catch (e) {}
   }, [favorites]);
 
-  // Reiniciar paginación cuando cambia categoría o búsqueda
+  // Reiniciar paginaciÃ³n cuando cambia categorÃ­a o bÃºsqueda
   useEffect(() => {
     setVisibleItems(10);
   }, [selectedCategory, searchQuery, selectedSubcategory, selectedSubcategory2]);
 
 
 
-  // ═══════════════════════ CARGAR DATOS DESDE SUPABASE ═══════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• CARGAR DATOS DESDE SUPABASE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   useEffect(() => {
     async function loadData() {
       try {
@@ -188,7 +187,7 @@ export default function App() {
       result = result.filter(p => favorites.includes(p.id));
     }
 
-    // Búsqueda global (ignora acentos y mayúsculas)
+    // BÃºsqueda global (ignora acentos y mayÃºsculas)
     if (searchQuery.trim() !== '') {
       const q = searchQuery.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       result = result.filter(p => {
@@ -197,11 +196,11 @@ export default function App() {
         return name.includes(q) || desc.includes(q);
       });
     } else {
-      // Filtrar por categoría
+      // Filtrar por categorÃ­a
       if (selectedCategory !== 'all') {
         result = result.filter(p => p.category?.toLowerCase() === selectedCategory.toLowerCase());
       }
-      // Filtrar por subcategoría 1
+      // Filtrar por subcategorÃ­a 1
       if (selectedSubcategory) {
         result = result.filter(p => {
           const sub = (p.sub_category || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -209,7 +208,7 @@ export default function App() {
           return sub.includes(sel) || sel.includes(sub);
         });
       }
-      // Filtrar por subcategoría 2
+      // Filtrar por subcategorÃ­a 2
       if (selectedSubcategory2) {
         result = result.filter(p => {
           const sub2 = ((p as any).sub_category_2 || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -250,7 +249,7 @@ export default function App() {
   };
 
 
-  // ═════════════ CONFIRMAR PAGO AL REGRESAR DE MERCADO PAGO ═════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â• CONFIRMAR PAGO AL REGRESAR DE MERCADO PAGO â•â•â•â•â•â•â•â•â•â•â•â•â•
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const pago = params.get('pago');
@@ -274,11 +273,11 @@ export default function App() {
       localStorage.removeItem('imagine-pending-whatsapp');
     } catch (e) {}
 
-    // Agregar el texto de confirmación al mensaje si el pago fue exitoso
+    // Agregar el texto de confirmaciÃ³n al mensaje si el pago fue exitoso
     if (savedMessage && pago === 'exito' && status === 'approved') {
       try {
         const decoded = decodeURIComponent(savedMessage);
-        const confirmationText = `\n\n✅ *PAGO EN LÍNEA CONFIRMADO*\nFolio MP: ${paymentId || 'Aprobado'}\n`;
+        const confirmationText = `\n\nâœ… *PAGO EN LÃNEA CONFIRMADO*\nFolio MP: ${paymentId || 'Aprobado'}\n`;
         savedMessage = encodeURIComponent(decoded + confirmationText);
       } catch (e) {
         console.error("Error decoding whatsapp message", e);
@@ -287,7 +286,7 @@ export default function App() {
 
     setPaymentResult({ status: pago, whatsappMessage: savedMessage });
 
-    // Limpiar los parámetros de la URL para que no se repita el aviso al recargar
+    // Limpiar los parÃ¡metros de la URL para que no se repita el aviso al recargar
     window.history.replaceState({}, '', window.location.pathname + window.location.hash);
   }, []);
 
@@ -317,7 +316,7 @@ export default function App() {
                     <Plus size={16} className="text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/60">¡Agregado al carrito!</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Â¡Agregado al carrito!</p>
                     <p className="text-sm font-bold truncate">{cartToast.name}</p>
                   </div>
                 </div>
@@ -340,14 +339,14 @@ export default function App() {
           )}
         </AnimatePresence>
 
-        {/* Botón flotante WhatsApp */}
+        {/* BotÃ³n flotante WhatsApp */}
         <div className="fixed bottom-8 right-6 z-50 flex flex-col gap-4 items-end">
           <motion.a
-            href="https://wa.me/525650469993?text=Hola,%20vengo%20de%20la%20página%20web%20y%20quiero%20cotizar" target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }}
+            href="https://wa.me/525650469993?text=Hola,%20vengo%20de%20la%20pÃ¡gina%20web%20y%20quiero%20cotizar" target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }}
             onClick={() => trackMetaEvent('Contact')}
             className="flex items-center gap-3 bg-[#25D366] text-white px-5 py-3.5 rounded-full shadow-2xl hover:bg-[#1EBE5D] transition-all"
           >
-            <span className="font-bold text-xs uppercase tracking-wider hidden sm:inline">¡Cotizar por WhatsApp!</span>
+            <span className="font-bold text-xs uppercase tracking-wider hidden sm:inline">Â¡Cotizar por WhatsApp!</span>
             <MessageCircle size={26} fill="currentColor" />
           </motion.a>
         </div>
@@ -369,12 +368,12 @@ export default function App() {
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-green-600">
                       <Check size={32} />
                     </div>
-                    <h3 className="text-primary text-xl font-black uppercase mb-2">¡Pago Aprobado!</h3>
+                    <h3 className="text-primary text-xl font-black uppercase mb-2">Â¡Pago Aprobado!</h3>
                     <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 mt-2">
                       <p className="text-amber-600 font-bold text-xs mb-1 uppercase tracking-wider flex items-center justify-center gap-1">
-                        ⚠️ Paso Final Obligatorio
+                        âš ï¸ Paso Final Obligatorio
                       </p>
-                      <p className="text-primary/70 text-xs">Para que preparemos tu pedido, <strong className="text-primary">DEBES ENVIARLO</strong> haciendo clic en el botón verde de WhatsApp aquí abajo.</p>
+                      <p className="text-primary/70 text-xs">Para que preparemos tu pedido, <strong className="text-primary">DEBES ENVIARLO</strong> haciendo clic en el botÃ³n verde de WhatsApp aquÃ­ abajo.</p>
                     </div>
                   </>
                 ) : paymentResult.status === 'pendiente' ? (
@@ -383,7 +382,7 @@ export default function App() {
                       <ShoppingBag size={32} />
                     </div>
                     <h3 className="text-primary text-xl font-black uppercase mb-2">Pago Pendiente</h3>
-                    <p className="text-primary/60 text-sm mb-6">Tu pago está siendo procesado. Avísanos por WhatsApp para darle seguimiento.</p>
+                    <p className="text-primary/60 text-sm mb-6">Tu pago estÃ¡ siendo procesado. AvÃ­sanos por WhatsApp para darle seguimiento.</p>
                   </>
                 ) : (
                   <>
@@ -506,9 +505,6 @@ export default function App() {
         <Route path="/lacuevadellobo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0E0D0B]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E08722]" /></div>}><LaCuevaDelLoboMenu /></Suspense></ErrorBoundary>} />
         <Route path="/cueva-del-lobo" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0E0D0B]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E08722]" /></div>}><LaCuevaDelLoboMenu /></Suspense></ErrorBoundary>} />
 
-        <Route path="/candymar" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#1c1c1c]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00e5ff]" /></div>}><CandymarMenu /></Suspense></ErrorBoundary>} />
-        <Route path="/candymarmenu" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#1c1c1c]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00e5ff]" /></div>}><CandymarMenu /></Suspense></ErrorBoundary>} />
-        <Route path="/candymar-menu" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#1c1c1c]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00e5ff]" /></div>}><CandymarMenu /></Suspense></ErrorBoundary>} />
 
         <Route path="/strong-gym" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><StrongGymMenu /></Suspense></ErrorBoundary>} />
         <Route path="/stronggym" element={<ErrorBoundary><Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] bg-[#0A0A0A]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E50914]" /></div>}><StrongGymMenu /></Suspense></ErrorBoundary>} />
